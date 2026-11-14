@@ -18,7 +18,7 @@ static int in_bounds(const Country *c)
 static void test_catalog(void)
 {
     int i, k, j;
-    CHECK(EVT_COUNT >= 10 && EVT_COUNT <= 32);
+    CHECK(EVT_COUNT >= 10 && EVT_COUNT <= EVENT_CAPACITY);
     CHECK(event_get(EVT_COUNT) == 0);
     for (i = 0; i < EVT_COUNT; i++) {
         const EventDef *e = event_get((u8)i);

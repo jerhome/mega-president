@@ -1,7 +1,7 @@
-# Lois V2 (brouillon)
+# Lois V2
 
-Brouillon : 25 lois supplémentaires. Format de lois_v1.md plus Orientation et Souveraineté.
-Les données chiffrées définitives seront ajoutées dans la simulation. Tout est fictif.
+25 lois supplémentaires, format de lois_v1.md. Les lignes Orientation, Souveraineté et Effets suggérés
+sont indicatives : les valeurs réelles sont dans src/sim/laws.c. Tout est fictif.
 
 ## LOI_SURPROFITS
 Orientation : -55
@@ -302,33 +302,3 @@ Description :
 Journal si adoptée : Peines planchers : barème durci
 Journal si rejetée : Peines planchers : la balance penche
 Effets suggérés : SECURITE +3, TENSION +3, POP_AISEES +2, POP_POPULAIRES +1, DETTE +1, REL_PARTI +1, Coût CP 4, Délai 2
-
-## Récapitulatif
-
-| Id | Thème | Orientation | Souveraineté |
-|---|---|---|---|
-| LOI_SURPROFITS | Fiscalité | -55 | non |
-| LOI_SEMAINE4J | Travail | -60 | non |
-| LOI_CANTINE | Éducation | -35 | non |
-| LOI_VOLS_COURTS | Écologie | -45 | non |
-| LOI_DESERTS_MED | Santé | -25 | non |
-| LOI_RIC | Institutions | -30 | oui |
-| LOI_PROPORTIONNELLE | Institutions | -35 | oui |
-| LOI_AIDE_DEV | International | -30 | oui |
-| LOI_POLICE_PROX | Sécurité | -30 | oui |
-| LOI_ENCADREMENT | Logement | -40 | non |
-| LOI_BIO_CANTINE | Agriculture | -25 | non |
-| LOI_CULTURE | Culture | -20 | non |
-| LOI_FLAT_TAX | Fiscalité | +60 | non |
-| LOI_LICENCIEMENT | Travail | +55 | non |
-| LOI_UNIFORME | Éducation | +40 | non |
-| LOI_VIDEO | Sécurité | +60 | oui |
-| LOI_PARLEMENTAIRES | Institutions | +35 | oui |
-| LOI_LPM | Défense | +50 | oui |
-| LOI_SERVICE_MIL | Défense | +55 | oui |
-| LOI_ALLIANCE | International | +30 | oui |
-| LOI_EXPORT_ARMES | International | +45 | oui |
-| LOI_AGRI_PRODUCT | Agriculture | +35 | non |
-| LOI_CARBONE | Écologie | -5 | non |
-| LOI_CYBER | Numérique | +10 | non |
-| LOI_PEINES_PLANCHERS | Sécurité | +65 | oui |

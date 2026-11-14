@@ -214,14 +214,14 @@ static void report_draw(void)
     y++;
 
     // À la une : lois votées ce trimestre
-    if (g_game.laws_tried) {
+    if (law_mask_any(&g_game.laws_tried)) {
         ui_text_draw(1, y++, "À la une", UI_STYLE_HIGHLIGHT);
         for (u16 i = 0; i < LOI_COUNT && y <= LAST_ROW; i++) {
-            if (!(g_game.laws_tried & (1 << i))) continue;
+            if (!law_mask_get(&g_game.laws_tried, (u8)i)) continue;
             ui_icon_draw(1, y, UI_ICON_BULLET);
             n = ui_text_wrap(3, y, 35, LAST_ROW + 1 - y > 2 ? 2 : LAST_ROW + 1 - y,
-                             (g_game.laws_adopted & (1 << i)) ? law_journal_ok[i] : law_journal_ko[i],
-                             (g_game.laws_adopted & (1 << i)) ? UI_STYLE_TEXT : UI_STYLE_DIM);
+                             law_mask_get(&g_game.laws_adopted, (u8)i) ? law_journal_ok[i] : law_journal_ko[i],
+                             law_mask_get(&g_game.laws_adopted, (u8)i) ? UI_STYLE_TEXT : UI_STYLE_DIM);
             y += n ? n : 1;
         }
         y++;

@@ -34,6 +34,21 @@ const char *const evt_title[EVT_COUNT] = {
     "Rumeur virale", // EVT_DESINFORMATION
     "Incendie industriel", // EVT_ACCIDENT_INDUSTRIEL
     "La jeunesse se mobilise", // EVT_VOTE_JEUNES
+    "L'affaire rebondit", // EVT_AFFAIRE_SUITE
+    "Le Sénat fait front", // EVT_SENAT_FRONDEUR
+    "Rapport de la Cour des comptes", // EVT_COUR_COMPTES
+    "Dégradation de la note", // EVT_AGENCE_NOTATION
+    "Sommet sur le climat", // EVT_SOMMET_CLIMAT
+    "Prix Nobel français", // EVT_NOBEL
+    "Urgences pédiatriques", // EVT_URGENCES_PEDIATRIQUES
+    "Fermeture de classes rurales", // EVT_CLASSES_RURALES
+    "Festival menacé", // EVT_FESTIVAL
+    "Mouvement lycéen", // EVT_LYCEENS
+    "Contrôleurs aériens en grève", // EVT_GREVE_AIGUILLEURS
+    "Pour une VIe République", // EVT_REFORME_INSTITUTIONS
+    "Scandale d'espionnage", // EVT_ESPIONNAGE
+    "Panne géante d'électricité", // EVT_PANNE_ELECTRIQUE
+    "Marée noire", // EVT_MAREE_NOIRE
 };
 
 const char *const evt_text[EVT_COUNT] = {
@@ -67,6 +82,21 @@ const char *const evt_text[EVT_COUNT] = {
     "Un faux document circule en ligne :\nil attribue au gouvernement un projet\nde taxe sur les animaux de compagnie.\nQuinze millions de vues avant midi.\nLe démenti en fera dix mille.", // EVT_DESINFORMATION
     "Un entrepôt de produits chimiques\nprend feu près d'un quartier habité.\nUn nuage noir traverse la ville.\nLes riverains veulent des réponses,\nl'exploitant des avocats.", // EVT_ACCIDENT_INDUSTRIEL
     "Des milliers de lycéens et d'étudiants\ndéfilent pour le climat, l'emploi et\nle logement. Slogans soignés,\nbanderoles inventives, abstention.\nLes sondeurs sont aux aguets.", // EVT_VOTE_JEUNES
+    "Chaîne Info 24 diffuse de nouvelles\nécoutes : les affaires en cours\ntouchent désormais le premier cercle.\nLes députés réclament des comptes,\nle bandeau rouge est en surchauffe.", // EVT_AFFAIRE_SUITE
+    "Le Sénat rejette trois textes en une\nsemaine et convoque le gouvernement\npour une audition fleuve. Le\nprésident du Palais du Luxembourg\nparle de « contrôle républicain ».", // EVT_SENAT_FRONDEUR
+    "La Cour des comptes publie un rapport\nsévère : dérapage de la dette,\ndépenses mal évaluées, niches\nfiscales à la dérive. Les magistrats\ndemandent « un effort inédit ».", // EVT_COUR_COMPTES
+    "Une agence de notation abaisse la\nnote de la France d'un cran. Les\ntaux d'emprunt montent, les\néditorialistes aussi. L'agence\nprécise qu'elle « n'a rien de\npersonnel ».", // EVT_AGENCE_NOTATION
+    "Le sommet mondial sur le climat\ns'ouvre à Lyon. Cent quatre-vingt\ndélégations, des discours émus et\ndes avions privés. Noémie Vasseur\nest venue à vélo cargo, forcément.", // EVT_SOMMET_CLIMAT
+    "Un chercheur français reçoit le prix\nNobel de physique. Il remercie son\néquipe, son laboratoire et ses\ncrédits « enfin renouvelés ». Les\nministres se bousculent sur la photo.", // EVT_NOBEL
+    "Une bronchiolite sature les\nurgences pédiatriques. Des enfants\nsont transférés à 200 kilomètres.\nLes soignants lancent l'alerte,\nles parents, eux, l'ont déjà donnée.", // EVT_URGENCES_PEDIATRIQUES
+    "Quarante classes rurales vont fermer\nà la rentrée. Les maires nouent\nleur écharpe aux grilles des écoles,\nles parents occupent les cours de\nrécréation. Les vaches regardent.", // EVT_CLASSES_RURALES
+    "Le grand festival d'été d'Avignon-les-\nPins perd la moitié de sa subvention\nlocale. Les intermittents menacent\nde jouer devant les préfectures.\nLe théâtre vit, mais sous perfusion.", // EVT_FESTIVAL
+    "Les lycéens bloquent leurs\nétablissements contre une réforme du\nbaccalauréat. Poubelles en barricade,\nslogans au feutre. Les parents\nhésitent entre fierté et inquiétude.", // EVT_LYCEENS
+    "Les contrôleurs aériens cessent le\ntravail un vendredi de départs en\nvacances. Les aéroports ressemblent\nà des gares de campagne. Les valises\ntournent, les avions restent au sol.", // EVT_GREVE_AIGUILLEURS
+    "Des cortèges réclament une VIe\nRépublique : référendum d'initiative\ncitoyenne, fin du 49.3, mandat non\nrenouvelable. Camille Roussel parle\nde « Constitution à rénover ».", // EVT_REFORME_INSTITUTIONS
+    "Des journalistes révèlent qu'un\nservice de renseignement a surveillé\ndes opposants et des reporters.\nLe ministre jure ignorer tout. Les\nmicros, eux, n'ont rien dit.", // EVT_ESPIONNAGE
+    "Un incident sur le réseau plonge le\nquart du pays dans le noir. Métros\nbloqués, feux éteints, ascenseurs\nhabités. Au bout de six heures,\nles bougies sont en rupture de stock.", // EVT_PANNE_ELECTRIQUE
+    "Un pétrolier s'échoue au large de la\nBretagne. Les plages se couvrent de\nmazout, les bénévoles de gants jaunes.\nL'armateur, basé dans un paradis\nfiscal, promet de « suivre ça ».", // EVT_MAREE_NOIRE
 };
 
 const char *const evt_choice[EVT_COUNT][EVENT_MAX_CHOICES] = {
@@ -100,6 +130,21 @@ const char *const evt_choice[EVT_COUNT][EVENT_MAX_CHOICES] = {
     { "Démentir sans attendre", "Loi sur les plateformes", "Ignorer, la rumeur passera" }, // EVT_DESINFORMATION
     { "Enquête et sanctions", "Plan de contrôle des sites", "Indemniser et rassurer" }, // EVT_ACCIDENT_INDUSTRIEL
     { "Recevoir leurs représentants", "Un plan jeunesse", "Ne rien céder" }, // EVT_VOTE_JEUNES
+    { "S'expliquer devant la presse", "Sacrifier un ministre", "Dénoncer un complot" }, // EVT_AFFAIRE_SUITE
+    { "Négocier avec les sénateurs", "Passer outre", "Annoncer une réforme du Sénat" }, // EVT_SENAT_FRONDEUR
+    { "Plan d'économies", "Taxer les niches fiscales", "Contester le rapport" }, // EVT_COUR_COMPTES
+    { "Rassurer les marchés", "Dénoncer les agences", "Un plan de relance ciblé" }, // EVT_AGENCE_NOTATION
+    { "Porter un accord ambitieux", "Un accord a minima", "Défendre l'industrie d'abord" }, // EVT_SOMMET_CLIMAT
+    { "Annoncer un plan recherche", "Fêter sans dépenser", "Rappeler les coupes passées" }, // EVT_NOBEL
+    { "Plan d'urgence pour l'enfance", "Réquisitionner des cliniques", "Miser sur la télémédecine" }, // EVT_URGENCES_PEDIATRIQUES
+    { "Geler les fermetures", "Regrouper les écoles", "Un plan pour les territoires" }, // EVT_CLASSES_RURALES
+    { "Sauver le festival", "Le laisser trouver des mécènes", "Lancer un fonds pour la culture" }, // EVT_FESTIVAL
+    { "Retirer la réforme", "Ouvrir une concertation", "Faire évacuer les lycées" }, // EVT_LYCEENS
+    { "Négocier les effectifs", "Réquisitionner les contrôleurs", "Laisser pourrir le conflit" }, // EVT_GREVE_AIGUILLEURS
+    { "Convoquer une convention", "Réformer à la marge", "Refuser tout changement" }, // EVT_REFORME_INSTITUTIONS
+    { "Ouvrir une enquête", "Invoquer le secret défense", "Réformer le renseignement" }, // EVT_ESPIONNAGE
+    { "Plan de sécurisation du réseau", "Blâmer l'opérateur", "Miser sur la sobriété" }, // EVT_PANNE_ELECTRIQUE
+    { "Faire payer l'armateur", "Financer le nettoyage", "Minimiser l'accident" }, // EVT_MAREE_NOIRE
 };
 
 const char *const evt_journal[EVT_COUNT][EVENT_MAX_CHOICES] = {
@@ -133,4 +178,19 @@ const char *const evt_journal[EVT_COUNT][EVENT_MAX_CHOICES] = {
     { "Démenti officiel dans l'heure. La\nrumeur, elle, a déjà fait le tour.", "Les plateformes sommées de réagir.\nElles promettent un « dialogue ».", "Le président laisse dire. Les\ninternautes, eux, ne se gênent pas." }, // EVT_DESINFORMATION
     { "L'exploitant est sanctionné. Le\nnuage s'est dissipé, pas la colère.", "Contrôles renforcés. Trop tard\npour cet entrepôt, mieux que rien.", "Les riverains sont indemnisés.\nLes causes restent à éclaircir." }, // EVT_ACCIDENT_INDUSTRIEL
     { "Les jeunes à l'Élysée. Les canapés\nn'en reviennent pas.", "Plan jeunesse : bourses, emploi et\nlogement. L'addition viendra après.", "Pas de concession. Les cortèges\nreviendront, plus nombreux." }, // EVT_VOTE_JEUNES
+    { "Le président s'explique. Les\njournalistes en demandent plus.", "Un ministre part « pour se\nconsacrer à sa famille ».", "« Un complot ! » Personne n'en\ntrouve la preuve. Ni le contraire." }, // EVT_AFFAIRE_SUITE
+    { "Le président reçoit les sénateurs.\nLes petits fours calment les esprits.", "Le Sénat contourné. Il note, il\ns'en souviendra.", "Réformer le Sénat : promesse qui\nrevient comme les sénatoriales." }, // EVT_SENAT_FRONDEUR
+    { "Plan d'économies annoncé. Les\nministères ressortent les ciseaux.", "Les niches fiscales rabotées. Les\nlobbies sortent leurs avocats.", "Le gouvernement conteste les\nchiffres. Les chiffres tiennent bon." }, // EVT_COUR_COMPTES
+    { "Le président rassure les marchés.\nLes marchés prennent des notes.", "Haro sur les agences : la\ndette, elle, ne s'en émeut pas.", "Relance ciblée pour regagner la\nconfiance. Les taux restent perplexes." }, // EVT_AGENCE_NOTATION
+    { "Accord ambitieux porté par Paris.\nLes industriels demandent un délai.", "Accord a minima signé. Chacun\nrepart avec sa conclusion.", "La France défend ses usines. Le\nclimat verra plus tard." }, // EVT_SOMMET_CLIMAT
+    { "Plan recherche annoncé. Le Nobel\nsourit, les labos comptent.", "Dîner à l'Élysée, discours ému.\nLes crédits attendront.", "Le chercheur rappelle les coupes.\nLa photo officielle est moins nette." }, // EVT_NOBEL
+    { "Lits et postes en pédiatrie. Les\nparents respirent, Bercy tousse.", "Les cliniques privées réquisitionnées.\nElles sortent le stylo rouge.", "Un écran pour les bronchiolites.\nLe thermomètre reste manuel." }, // EVT_URGENCES_PEDIATRIQUES
+    { "Fermetures gelées. Les écharpes\ndes maires reprennent leur cou.", "Écoles regroupées, cars scolaires\nen plus. Le village se vide un peu.", "Plan ruralité : de la fibre et des\npromesses. L'école viendra après." }, // EVT_CLASSES_RURALES
+    { "Festival sauvé. Le public applaudit,\nla Cour des comptes soupire.", "Le festival cherche un mécène.\nOmnicorp propose un logo géant.", "Fonds pour la culture créé. Les\nguichets ouvrent, les salles aussi." }, // EVT_FESTIVAL
+    { "Réforme retirée. Les poubelles\nretrouvent leur trottoir.", "Concertation lancée. Les lycéens\nexigent un ordre du jour clair.", "Lycées évacués. Les images tournent\nen boucle, les cortèges grossissent." }, // EVT_LYCEENS
+    { "Contrôleurs recrutés. Les avions\nreprennent l'air, Bercy ses calculs.", "Contrôleurs réquisitionnés. Ils\ncontrôlent, mais pas de bon cœur.", "Le conflit s'enlise. Les touristes\nvisitent Roissy en détail." }, // EVT_GREVE_AIGUILLEURS
+    { "Convention citoyenne annoncée.\nCent cinquante tirés au sort.", "Quelques retouches à la Constitution.\nLa rue est tenue au courant.", "« La Constitution tient. » Les\ncortèges, eux aussi." }, // EVT_REFORME_INSTITUTIONS
+    { "Enquête ouverte sur les services.\nLes dossiers sont dans les tiroirs.", "Secret défense invoqué. Il est\nbien gardé, y compris des juges.", "Contrôle des services renforcé.\nLes micros seront déclarés." }, // EVT_ESPIONNAGE
+    { "Réseau renforcé : des lignes neuves.\nLa lumière a un prix.", "L'opérateur est sermonné. Il\npromet de rallumer, c'est déjà ça.", "Sobriété prônée. Les citoyens\néteignent, le président sourit." }, // EVT_PANNE_ELECTRIQUE
+    { "L'armateur est sommé de payer. Ses\navocats ont déjà une réponse.", "L'État finance le nettoyage. Les\nplages sont nettes, les caisses moins.", "« Rien de grave. » Les mouettes\nne sont pas de cet avis." }, // EVT_MAREE_NOIRE
 };

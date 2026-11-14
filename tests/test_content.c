@@ -63,7 +63,7 @@ void test_content(void)
         CHECK(grp_name[i] && *grp_name[i]);
 #ifdef HAVE_TEXTS
     for (i = 0; i < TXT_COUNT; i++)
-        CHECK(text_ok(txt[i], 3, 38));
+        CHECK(text_ok(txt[i], 6, 38));   // TXT_COHAB_AIDE : 6 lignes
     CHECK(strlen(txt[TXT_PM_TECHNOCRATE_NOM]) > 0);
     CHECK(text_ok(txt[TXT_BUD_RELANCE], 1, 20));
     CHECK(text_ok(txt[TXT_BUD_RELANCE_DESC], 2, 38));

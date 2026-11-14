@@ -8,7 +8,7 @@ u8 sim_cohabitation(const Country *c)
 
 u8 sim_law_sovereign(u8 law_id)
 {
-    return (u8)(law_id < LOI_COUNT && ((COHAB_SOVEREIGN_MASK >> law_id) & 1));
+    return (u8)(law_id < LOI_COUNT && law_defs[law_id].sovereign);
 }
 
 u8 sim_cohab_camp(const Country *c)

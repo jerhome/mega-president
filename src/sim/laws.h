@@ -23,6 +23,32 @@ enum {
     LOI_CHOMAGE,     // réforme de l'assurance chômage
     LOI_NUMERIQUE,   // taxe sur les géants du numérique
     LOI_LOGEMENT,    // logements sociaux
+    // V2 (docs/contenu/lois_v2.md, 25 lois, ordre du fichier)
+    LOI_SURPROFITS,
+    LOI_SEMAINE4J,
+    LOI_CANTINE,
+    LOI_VOLS_COURTS,
+    LOI_DESERTS_MED,
+    LOI_RIC,
+    LOI_PROPORTIONNELLE,
+    LOI_AIDE_DEV,
+    LOI_POLICE_PROX,
+    LOI_ENCADREMENT,
+    LOI_BIO_CANTINE,
+    LOI_CULTURE,
+    LOI_FLAT_TAX,
+    LOI_LICENCIEMENT,
+    LOI_UNIFORME,
+    LOI_VIDEO,
+    LOI_PARLEMENTAIRES,
+    LOI_LPM,
+    LOI_SERVICE_MIL,
+    LOI_ALLIANCE,
+    LOI_EXPORT_ARMES,
+    LOI_AGRI_PRODUCT,
+    LOI_CARBONE,
+    LOI_CYBER,
+    LOI_PEINES_PLANCHERS,
     LOI_COUNT
 };
 
@@ -38,6 +64,7 @@ typedef struct {
     u8 n_immediate;
     Effect effects[LAW_MAX_EFFECTS];       // différés, appliqués à maturité
     Effect immediate[LAW_MAX_IMMEDIATE];   // à l'adoption (opinion surtout)
+    u8 sovereign;     // V2 : loi de souveraineté (autorisée en cohabitation)
 } LawDef;
 
 extern const LawDef law_defs[LOI_COUNT];

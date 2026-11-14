@@ -184,7 +184,7 @@ u8 sim_law_cost(const Country *c, u8 law_id)
 void sim_law_adopt(Country *c, u8 law_id, u8 gov)
 {
     const LawDef *law = law_get(law_id);
-    c->laws_adopted |= (u16)(1u << law_id);
+    law_mask_set(&c->laws_adopted, law_id);
     if (gov) {
         // Loi du gouvernement : le président n'en récolte que la moitié de l'opinion.
         u8 i;
@@ -491,7 +491,7 @@ void sim_start_second_mandate(Country *c, LegislativeResult *out)
     c->referendum_done = 0;
     c->reshuffle_year = 0;
     c->grace_pm = 0;
-    c->laws_adopted = 0;   // le catalogue redevient disponible au 2nd mandat
+    law_mask_clear(&c->laws_adopted);   // le catalogue redevient disponible au 2nd mandat
     sim_legislatives(c, out);
 }
 

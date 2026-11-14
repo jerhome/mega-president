@@ -100,8 +100,8 @@ static void end_draw(void)
     x = 21 + ui_text_draw(21, 9, buf, UI_STYLE_HIGHLIGHT);
     ui_text_draw(x, 9, " %", UI_STYLE_HIGHLIGHT);
 
-    for (i = 0; i < 16; i++)
-        if (c->laws_adopted & (1u << i))
+    for (i = 0; i < LOI_COUNT; i++)
+        if (law_mask_get(&c->laws_adopted, (u8)i))
             nlaws++;
     ui_text_draw(1, 10, "Lois adoptées :", UI_STYLE_TEXT);
     ui_number_draw(21, 10, nlaws, 0, UI_STYLE_HIGHLIGHT);

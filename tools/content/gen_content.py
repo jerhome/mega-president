@@ -21,7 +21,7 @@ MAX_TEXT_LINES, MAX_JOURNAL_LINES, MAX_LAW_NAME = 6, 2, 24
 MAX_LAW_DESC_LINES = 3
 MAX_CHOICES = 3
 MAX_EFFECTS = 6
-MAX_EVENTS = 32   # bitfield u32 dans Country
+MAX_EVENTS = 64   # EVENT_CAPACITY (events_done sur 64 bits)
 
 WEIGHTS = {"faible": 1, "moyenne": 2, "forte": 4}
 
@@ -286,8 +286,8 @@ def parse_law_file(fname, laws):
                 cur["ok"] = val
             elif key == "Journal si rejetée":
                 cur["ko"] = val
-            elif key.startswith("Effets suggérés"):
-                pass
+            elif key.startswith("Effets suggérés") or key in ("Orientation", "Souveraineté"):
+                pass   # indicatifs : les valeurs réelles sont dans src/sim/laws.c
             else:
                 err(where, "champ inconnu : %s" % key)
         elif line.startswith(" ") and field == "desc":
@@ -318,13 +318,61 @@ TEXT_KEYS = [
 ]
 
 
+TEXT_KEYS_V2 = (
+    [("TXT_COHAB_TITRE", 1, 24), ("TXT_COHAB_DEBUT", 3, 38), ("TXT_COHAB_FIN", 3, 38),
+     ("TXT_COHAB_AIDE", 6, 38), ("TXT_COHAB_LOI_REFUSEE", 2, 38), ("TXT_COHAB_SOUVERAINE", 1, 12),
+     ("TXT_COHAB_LOI_GOUV", 1, 38), ("TXT_COHAB_BUDGET_GOUV", 2, 38)]
+    + [("TXT_COHAB_PM_%s_NOM" % c, 1, 24) for c in ("GAUCHE", "CENTRE", "DROITE")]
+    + [("TXT_COHAB_PM_%s_DESC" % c, 3, 38) for c in ("GAUCHE", "CENTRE", "DROITE")]
+    + [("TXT_SENAT_TITRE", 1, 24), ("TXT_SENAT_AIDE", 5, 38),
+       ("TXT_SENAT_RENOUVELE_GAIN", 3, 38), ("TXT_SENAT_RENOUVELE_PERTE", 3, 38),
+       ("TXT_SENAT_PROCHAIN", 1, 28), ("TXT_SENAT_VOIX", 1, 24),
+       ("TXT_DESTITUTION_SENAT_REJETEE", 3, 38), ("TXT_DESTITUTION_SENAT_VOTEE", 3, 38)]
+    + [("TXT_ACT_REFERENDUM", 1, 24), ("TXT_REF_TITRE", 1, 24), ("TXT_REF_AIDE", 5, 38),
+       ("TXT_REF_CONFIRME", 2, 38), ("TXT_REF_DEJA", 2, 38), ("TXT_REF_ANNONCE", 3, 38),
+       ("TXT_REF_OUI", 3, 38), ("TXT_REF_NON", 3, 38),
+       ("TXT_REF_LABEL_OUI", 1, 8), ("TXT_REF_LABEL_NON", 1, 8)]
+    + [("TXT_ACT_REMANIEMENT", 1, 24), ("TXT_RSH_TITRE", 1, 24), ("TXT_RSH_AIDE", 4, 38),
+       ("TXT_RSH_CONFIRME", 2, 38), ("TXT_RSH_FAIT", 3, 38), ("TXT_RSH_ANNEE", 2, 38),
+       ("TXT_RSH_COHAB", 2, 38)]
+    + [("TXT_DUREE_TITRE", 1, 24), ("TXT_DUREE_20", 1, 38), ("TXT_DUREE_60", 1, 38),
+       ("TXT_DUREE_20_DESC", 2, 38), ("TXT_DUREE_60_DESC", 2, 38)]
+    + [("TXT_MOIS_%d" % i, 1, 12) for i in range(1, 13)]
+    + [("TXT_TOUR_MOIS", 1, 12)]
+)
+TEXT_KEYS += TEXT_KEYS_V2
+V2_KEYS = set(k for k, _, _ in TEXT_KEYS_V2)
+TEXT_FILES = ("textes.md", "textes_v2.md")
+warnings = []
+
+
 def parse_texts():
-    fname = "textes.md"
     texts = {}
-    if not os.path.exists(os.path.join(SRC, fname)):
-        err("docs/contenu/" + fname, "fichier absent")
-        return texts
     limits = dict((k, (nl, nc)) for k, nl, nc in TEXT_KEYS)
+    v2_present = os.path.exists(os.path.join(SRC, "textes_v2.md"))
+    for fname in TEXT_FILES:
+        if not os.path.exists(os.path.join(SRC, fname)):
+            if fname == "textes_v2.md":
+                continue
+            err("docs/contenu/" + fname, "fichier absent")
+            return texts
+        parse_text_file(fname, texts, limits)
+    for key, nl, nc in TEXT_KEYS:
+        if key not in texts:
+            if key in V2_KEYS and not v2_present:
+                texts[key] = {"line": 0, "text": ["[%s]" % key], "placeholder": True}
+                continue
+            err("textes*.md", "clé absente : %s" % key)
+            continue
+        t = texts[key]
+        check_lines("%s (%s:%d)" % (key, t["file"], t["line"]), "texte", t["text"], nl, nc)
+    if not v2_present:
+        warnings.append("docs/contenu/textes_v2.md absent : %d clés V2 générées avec un texte provisoire « [clé] »"
+                        % len(V2_KEYS))
+    return texts
+
+
+def parse_text_file(fname, texts, limits):
     cur = None
     for n, raw in enumerate(read(fname), 1):
         line = raw.rstrip()
@@ -338,20 +386,13 @@ def parse_texts():
                 elif name in texts:
                     err(where, "clé en double : %s" % name)
                 else:
-                    cur = {"line": n, "text": []}
+                    cur = {"line": n, "file": fname, "text": []}
                     texts[name] = cur
             continue
         if cur is None or line.startswith("#"):
             continue
         if line.strip():
             cur["text"].append(line.strip())
-    for key, nl, nc in TEXT_KEYS:
-        if key not in texts:
-            err(fname, "clé absente : %s" % key)
-            continue
-        t = texts[key]
-        check_lines("%s (%s:%d)" % (key, fname, t["line"]), "texte", t["text"], nl, nc)
-    return texts
 
 
 def table_rows(lines, start_marker):
@@ -507,7 +548,7 @@ def gen_world(groups, cands):
 
 def gen_texts(texts):
     h = ["#ifndef CONTENT_TEXTS_H\n#define CONTENT_TEXTS_H\n\n" + HEADER,
-         "// Textes institutionnels UTF-8 (docs/contenu/textes.md), lignes séparées par '\\n'.\n",
+         "// Textes institutionnels UTF-8 (docs/contenu/textes.md, textes_v2.md), lignes séparées par '\\n'.\n",
          "enum {\n"]
     for k, _, _ in TEXT_KEYS:
         h.append("    %s,\n" % k)
@@ -534,6 +575,8 @@ def main():
     gen_laws(laws)
     gen_world(groups, cands)
     gen_texts(texts)
+    for w in warnings:
+        sys.stderr.write("gen_content : AVERTISSEMENT : %s\n" % w)
     print("gen_content : %d événements, %d lois, %d groupes, %d candidats, %d textes" %
           (len(events), len(LAW_NAMES), 5, len(CAND_NAMES), len(TEXT_KEYS)))
     return 0

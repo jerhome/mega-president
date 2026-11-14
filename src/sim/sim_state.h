@@ -8,6 +8,20 @@
 #include "sim/rng.h"
 #include "sim/ids_v1.h"
 
+// Masque de lois (64 bits en deux u32 : évite les u64 sur 68000).
+typedef struct { u32 w[2]; } LawMask;
+#define LAW_MASK_BITS 64
+static inline u8 law_mask_get(const LawMask *m, u8 id)
+{
+    return (u8)((id < LAW_MASK_BITS) ? ((m->w[id >> 5] >> (id & 31)) & 1u) : 0);
+}
+static inline void law_mask_set(LawMask *m, u8 id)
+{
+    if (id < LAW_MASK_BITS) m->w[id >> 5] |= (u32)1 << (id & 31);
+}
+static inline void law_mask_clear(LawMask *m) { m->w[0] = 0; m->w[1] = 0; }
+static inline u8 law_mask_any(const LawMask *m) { return (u8)((m->w[0] | m->w[1]) != 0); }
+
 // Électorats
 enum { ELEC_POPULAIRES, ELEC_MOYENNES, ELEC_AISEES, ELEC_COUNT };
 // Piliers (dixièmes, 0-1000)
@@ -99,7 +113,7 @@ typedef struct {
     u8 relation_base[GRP_COUNT]; // relation « naturelle » vers laquelle on dérive
     u16 seats[GRP_COUNT];
 
-    u16 laws_adopted;          // bit i = loi i adoptée
+    LawMask laws_adopted;      // bit i = loi i adoptée (64 lois max)
     u32 events_done;           // bit i = événement i déjà tiré ce mandat (ids 0-31, sim/events.h)
     u8  last_event;            // dernier événement tiré + 1 (0 = aucun)
     u8 n_pending;

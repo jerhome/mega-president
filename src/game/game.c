@@ -25,9 +25,9 @@ u8 game_propose_law(u8 law_id, VoteResult *out)
 {
     u8 r = sim_propose_law(&g_game.country, law_id, out);
     if (r == LAW_OK) {
-        g_game.laws_tried |= (u16)(1u << law_id);
+        law_mask_set(&g_game.laws_tried, law_id);
         if (out->adopted)
-            g_game.laws_adopted |= (u16)(1u << law_id);
+            law_mask_set(&g_game.laws_adopted, law_id);
     }
     return r;
 }
@@ -72,8 +72,8 @@ void game_end_turn(void)
 void game_after_report(void)
 {
     // Le journal du trimestre est lu : on repart de zéro pour le suivant.
-    g_game.laws_tried = 0;
-    g_game.laws_adopted = 0;
+    law_mask_clear(&g_game.laws_tried);
+    law_mask_clear(&g_game.laws_adopted);
     if (game_destitue()) {
         sram_game_erase();
         screen_change(SCREEN_END);

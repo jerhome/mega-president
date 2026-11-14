@@ -79,7 +79,7 @@ static void test_v1_init(void)
     }
 
     // Catalogue : 15 lois, coûts et délais dans les bornes
-    CHECK_EQ(LOI_COUNT, 15);
+    CHECK_EQ(LOI_COUNT, 40);
     CHECK_EQ(LOI_RETRAITES, 5);
     CHECK_EQ(LOI_LOGEMENT, 14);
     CHECK_EQ(law_get(LOI_IMMIGRATION)->orientation, 70);
@@ -385,7 +385,9 @@ static void test_v1_second_mandate(void)
 
 enum { BOT_ACTIF, BOT_PASSIF, BOT_SCANDALE, BOT_PREMIER_CHOIX, BOT_DISSOLVEUR, BOT_REFERENDUM, BOT_COUNT };
 
-static const u8 bot_pref[ORIENT_COUNT][LOI_COUNT] = {
+#define BOT_NEW_LAW_RESERVE 4
+
+static u8 bot_pref[ORIENT_COUNT][LOI_COUNT] = {
     { LOI_SMIC, LOI_HOPITAL, LOI_RENOV, LOI_ECOLE, LOI_TRANSPORTS, LOI_LOGEMENT,
       LOI_ISF, LOI_NUMERIQUE, LOI_CIR, LOI_ENERGIE, LOI_POLICE, LOI_IS,
       LOI_CHOMAGE, LOI_RETRAITES, LOI_IMMIGRATION },
@@ -396,6 +398,28 @@ static const u8 bot_pref[ORIENT_COUNT][LOI_COUNT] = {
       LOI_IMMIGRATION, LOI_RENOV, LOI_ECOLE, LOI_HOPITAL, LOI_NUMERIQUE,
       LOI_LOGEMENT, LOI_TRANSPORTS, LOI_SMIC, LOI_ISF },
 };
+
+// V2 : après les 15 lois de base (ordre ci-dessus), le joueur automatique utilise
+// les 25 nouvelles lois, de la plus proche de son orientation à la plus éloignée.
+static void bot_pref_init(void)
+{
+    static const s8 target[ORIENT_COUNT] = { -50, 0, 50 };
+    static int done;
+    int o, i, j, n;
+    if (done) return;
+    done = 1;
+    for (o = 0; o < ORIENT_COUNT; o++) {
+        u8 *p = bot_pref[o];
+        for (n = 0, i = LOI_LOGEMENT + 1; i < LOI_COUNT; i++, n++) p[15 + n] = (u8)i;
+        for (i = 15; i < LOI_COUNT; i++)          // tri par insertion, stable
+            for (j = i; j > 15; j--) {
+                int da = sim_abs16((s16)(law_defs[p[j - 1]].orientation - target[o]));
+                int db = sim_abs16((s16)(law_defs[p[j]].orientation - target[o]));
+                if (db >= da) break;
+                { u8 t = p[j]; p[j] = p[j - 1]; p[j - 1] = t; }
+            }
+    }
+}
 
 static u8 bot_budget(const Country *c)
 {
@@ -417,6 +441,7 @@ static void bot_actions(Country *c, int bot)
     u8 left = (u8)(((sim_mandate_turns(c) - c->turn) * 4 + c->turns_per_year - 1) / c->turns_per_year);   // en tours de 20
 
     if (bot == BOT_PASSIF || bot == BOT_PREMIER_CHOIX) return;
+    bot_pref_init();
 
     // Défense contre la destitution
     if (sim_impeach_pending(c) && bot != BOT_SCANDALE) {
@@ -464,6 +489,9 @@ static void bot_actions(Country *c, int bot)
     for (i = 0; i < LOI_COUNT; i++) {
         u8 id = bot_pref[c->orientation][i];
         if (law_can_propose(c, id) != LAW_OK) continue;
+        // Les lois V2 ne servent que de surplus : le joueur garde une réserve de CP
+        // pour le référendum, la télévision et le 49.3.
+        if (id > LOI_LOGEMENT && c->cp < law_cost(c, law_get(id)) + BOT_NEW_LAW_RESERVE) continue;
         parl_vote(c, law_get(id)->orientation, &v);
         if (v.adopted) {
             sim_propose_law(c, id, &v);

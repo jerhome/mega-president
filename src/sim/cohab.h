@@ -19,10 +19,7 @@
 #include "sim/sim_state.h"
 #include "sim/laws.h"
 
-// Lois de souveraineté (masque de bits LOI_*) : police, immigration, énergie,
-// recherche (CIR, défense et industrie).
-#define COHAB_SOVEREIGN_MASK  ((u16)((1u << LOI_POLICE) | (1u << LOI_IMMIGRATION) \
-                                     | (1u << LOI_ENERGIE) | (1u << LOI_CIR)))
+// Lois de souveraineté : champ `sovereign` de LawDef (laws.c).
 #define COHAB_LAW_PCT         50    // % de chance par trimestre d'une loi du gouvernement
 #define COHAB_OPINION_REF     420   // cible d'opinion sous laquelle la baisse est amortie
 

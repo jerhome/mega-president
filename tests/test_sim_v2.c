@@ -217,6 +217,15 @@ static void test_cohabitation(void)
     CHECK(sim_law_sovereign(LOI_ENERGIE) && sim_law_sovereign(LOI_CIR));
     CHECK(!sim_law_sovereign(LOI_SMIC) && !sim_law_sovereign(LOI_RETRAITES));
     CHECK(!sim_law_sovereign(LOI_COUNT));
+    {   // masque de 64 bits : les lois V2 (id >= 32) sont bien mémorisées
+        Country m;
+        u8 i, n = 0;
+        law_mask_clear(&m.laws_adopted);
+        law_mask_set(&m.laws_adopted, LOI_COUNT - 1);
+        CHECK(law_is_adopted(&m, LOI_COUNT - 1) && !law_is_adopted(&m, LOI_SMIC) && !law_is_adopted(&m, LOI_COUNT - 2));
+        for (i = 0; i < LOI_COUNT; i++) n = (u8)(n + sim_law_sovereign(i));
+        CHECK_EQ(n, 15);   // 4 lois V1 + 11 lois V2
+    }
 
     // Hors cohabitation : rien ne change.
     new_game(&c, ORIENT_CENTRE, DIFF_NORMAL, 4);
@@ -278,12 +287,10 @@ static void test_cohabitation(void)
     // Le gouvernement propose des lois non souveraines, avec effets ; budget imposé.
     {
         int gov = 0, budgets = 0, sov_gov = 0;
-        u16 mask_before;
         find_cohab(&c, ORIENT_CENTRE);
         c.turn = 8;
-        c.laws_adopted = 0;
+        law_mask_clear(&c.laws_adopted);
         c.n_pending = 0;
-        mask_before = c.laws_adopted;
         for (i = 0; i < 12; i++) {
             sim_end_turn(&c, &r);
             if (c.status != STATUS_PLAYING) break;
@@ -297,7 +304,6 @@ static void test_cohabitation(void)
             CHECK(!r.budget_reconduit || !r.budget_gov);
             if (sim_mandate_over(&c)) break;
         }
-        (void)mask_before;
         CHECK(gov >= 1);
         CHECK_EQ(sov_gov, 0);
         CHECK(budgets >= 1);
@@ -390,9 +396,9 @@ static void test_referendum(void)
     CHECK_EQ(sim_referendum_check(&c, LOI_SMIC), RFD_ERR_CP);
     c.cp = 6;
     CHECK_EQ(sim_referendum_check(&c, LOI_SMIC), RFD_OK);
-    c.laws_adopted = (u16)(1u << LOI_SMIC);
+    law_mask_set(&c.laws_adopted, LOI_SMIC);
     CHECK_EQ(sim_referendum_check(&c, LOI_SMIC), RFD_ERR_ADOPTED);
-    c.laws_adopted = 0;
+    law_mask_clear(&c.laws_adopted);
     c.n_pending = SIM_MAX_PENDING;
     CHECK_EQ(sim_referendum_check(&c, LOI_SMIC), RFD_ERR_FULL);
     c.n_pending = 0;

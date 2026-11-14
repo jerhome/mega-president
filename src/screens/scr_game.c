@@ -288,7 +288,7 @@ static void law_refresh_disabled(void)
 {
     u32 d = 0;
     for (u16 i = 0; i < LOI_COUNT; i++)
-        if (law_err((u8)i) != LAW_OK)
+        if (i < 32 && law_err((u8)i) != LAW_OK)   // UiList.disabled : 32 éléments max
             d |= (u32)1 << i;
     law_list.disabled = d;
 }
@@ -417,8 +417,8 @@ static void update_confirm(void)
     }
     if (confirm_kind == C_FORCE) {
         if (sim_force_law(&g_game.country, last_law) == LAW_OK) {
-            g_game.laws_tried |= (u16)(1u << last_law);
-            g_game.laws_adopted |= (u16)(1u << last_law);
+            law_mask_set(&g_game.laws_tried, last_law);
+            law_mask_set(&g_game.laws_adopted, last_law);
             res_kind = R_FORCE;
             sfx_play(SFX_ADOPTED);
             set_mode(M_RESULT);

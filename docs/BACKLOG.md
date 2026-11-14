@@ -156,10 +156,10 @@ La V0 n'est pas un prototype jetable : c'est une première tranche de la V1. Les
 | 2.06 | ✅ Référendum | 2 h |
 | 2.07 | ✅ Remaniement et ministres un par un | 4 h |
 | 2.08 | 6e pilier, Rayonnement international : diplomatie, Union européenne, sommets | 5 h |
-| 2.09 | 5 électorats au lieu de 3 | 2 h |
-| 2.10 | Budget détaillé : 6 postes et 3 impôts | 3 h |
-| 2.11 | 🔄 Plus de 100 événements au total | 12 h |
-| 2.12 | 🔄 Plus de 40 lois au total | 5 h |
+| 2.09 | ⏭️ Reporté (V3) — remplacé par la popularité par région (13 régions, carte) | 2 h |
+| 2.10 | ⏭️ Reporté (V3) — le budget en un choix suffit | 3 h |
+| 2.11 | ✅ Plus de 100 événements au total | 12 h |
+| 2.12 | ✅ Plus de 40 lois au total | 5 h |
 | 2.13 | ✅ Sauvegarde d'une partie en cours | 3 h |
 | 2.14 | Équilibrage V2 | 5 h |
 | 2.15 | ✅ Mode 60 tours (reporté de la V1, tâche 1.01) | 3 h |

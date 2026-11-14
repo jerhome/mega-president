@@ -11,7 +11,7 @@
 | `sim_state.h` | struct `Country` (148 octets sur 68000 avec alignement 2 ; 126 en V1), énumérations, bornes |
 | `sim.h` / `sim.c` | `sim_init_ex`, `sim_end_turn`, lois, 49.3, télévision, PM, jauges, CP, 2nd mandat, scores |
 | `effects.*` | clés d'effets, conversion et bornage (`sim_apply_effect`) |
-| `laws.*` | catalogue `law_defs` (15 lois), coût effectif, file des lois en attente |
+| `laws.*` | catalogue `law_defs` (40 lois, masque `LawMask` de 64 bits : `law_mask_get/set`), coût effectif, file des lois en attente |
 | `economy.c` | croissance, chômage, dette, tension |
 | `opinion.c` | opinion des 3 électorats, état de grâce, usure |
 | `parliament.*` | votes, relations |
@@ -211,7 +211,7 @@ Champs ajoutés à `Country` : `events_done_hi`, `senate[5]`, `cohab`, `cohab_gr
 
 - **Début** : `sim_legislatives` (dissolution ou début du 2nd mandat) ne donne pas la victoire au bloc présidentiel (`won` = 0 : pas de majorité et moins de sièges qu'avant). Le PM devient `PM_OPPOSITION` (4, hors `PM_COUNT`) ; le camp (`sim_cohab_camp`) est celui du groupe d'opposition le plus nombreux hors du bloc. Le PM du joueur est mémorisé (`pm_prev`) et rétabli à la fin.
 - **Fin** : à la première législative où `won` = 1 (majorité, ou sièges gagnés). La dissolution reste possible (au plus une par an).
-- **Lois** : le joueur ne propose que les lois de souveraineté : **POLICE, IMMIGRATION, ENERGIE, CIR** (`COHAB_SOVEREIGN_MASK`) ; les autres donnent `LAW_ERR_COHAB`. Le 49.3 suit la même règle.
+- **Lois** : le joueur ne propose que les lois de souveraineté : (champ `sovereign` de `LawDef` : 15 lois, dont POLICE, IMMIGRATION, ENERGIE, CIR et 11 lois V2) ; les autres donnent `LAW_ERR_COHAB`. Le 49.3 suit la même règle.
 - **Gouvernement** : chaque trimestre, 50 % de chances qu'il fasse adopter, sans CP, la loi non souveraine non adoptée la plus proche de l'orientation de son groupe (aperçu : `sim_cohab_next_law`) ; effets différés complets, effets d'opinion immédiats divisés par 2. Compte rendu : `TurnReport.gov_law`.
 - **Budget** : `sim_budget_due` = 0 ; en fin d'année le PM impose relance (camp gauche), équilibre (centre) ou rigueur (droite) : `TurnReport.budget_gov`.
 - **Popularité** : cible d'opinion sous 42 % : écart réduit d'un tiers (exposition aux 2/3) ; au-dessus, inchangée.

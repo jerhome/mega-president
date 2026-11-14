@@ -40,4 +40,61 @@ const char *const txt[TXT_COUNT] = {
     "Dépenses en baisse, dette contenue.\nLes agences de notation sourient.", // TXT_BUD_RIGUEUR_DESC
     "On reconduit l'existant, à la marge.\nPersonne n'est content, rien ne casse.", // TXT_BUD_EQUILIBRE_DESC
     "Investissement public et services\nrenforcés. Bercy fait la grimace.", // TXT_BUD_RELANCE_DESC
+    "Cohabitation", // TXT_COHAB_TITRE
+    "Législatives perdues : l'opposition\ngouverne. Vous gardez l'Élysée, elle\ngarde Matignon. Les dîners se tendent.", // TXT_COHAB_DEBUT
+    "Législatives gagnées : la cohabitation\ns'achève. Le gouvernement redevient le\nvôtre, et le Premier ministre aussi.", // TXT_COHAB_FIN
+    "Cohabitation : le Premier ministre\nest celui de l'Assemblée. Restent\nles lois de souveraineté, référendum\net dissolution. Pas de remaniement ;\nlois et budget : au gouvernement.", // TXT_COHAB_AIDE
+    "En cohabitation, seules les lois de\nsouveraineté relèvent de l'Élysée.", // TXT_COHAB_LOI_REFUSEE
+    "Souveraineté", // TXT_COHAB_SOUVERAINE
+    "Le gouvernement fait adopter une loi :", // TXT_COHAB_LOI_GOUV
+    "Le Premier ministre impose son budget,\nsans vous demander votre avis :", // TXT_COHAB_BUDGET_GOUV
+    "Sophie Carrel", // TXT_COHAB_PM_GAUCHE_NOM
+    "Bernard Lacombe", // TXT_COHAB_PM_CENTRE_NOM
+    "Philippe de Montclar", // TXT_COHAB_PM_DROITE_NOM
+    "Gauche sociale, ancienne syndicaliste.\nElle impose un budget social et taxe\nles hauts revenus. Bercy transpire.", // TXT_COHAB_PM_GAUCHE_DESC
+    "Gestionnaire prudent et sans éclat.\nIl impose un budget d'équilibre :\nun peu de tout, beaucoup de rien.", // TXT_COHAB_PM_CENTRE_DESC
+    "Notable libéral, ancien patron de PME.\nIl impose un budget de rigueur et des\nbaisses d'impôts. Les képis sourient.", // TXT_COHAB_PM_DROITE_DESC
+    "Sénat", // TXT_SENAT_TITRE
+    "Le Sénat compte 348 sièges, renouvelé\npar moitié tous les 3 ans. Il survit\naux dissolutions. Pour destituer le\nprésident, les deux chambres doivent\nvoter. Le Sénat est plus têtu.", // TXT_SENAT_AIDE
+    "Renouvellement du Sénat : le bloc\nprésidentiel gagne des sièges. Les\nsénateurs sourient dans les dorures.", // TXT_SENAT_RENOUVELE_GAIN
+    "Renouvellement du Sénat : le bloc\nprésidentiel perd des sièges. Les\nsénateurs vous le disent, poliment.", // TXT_SENAT_RENOUVELE_PERTE
+    "Prochain renouvellement", // TXT_SENAT_PROCHAIN
+    "Voix au Sénat", // TXT_SENAT_VOIX
+    "L'Assemblée vote la destitution, mais\nle Sénat refuse. Vous restez à\nl'Élysée, pâle et reconnaissant.", // TXT_DESTITUTION_SENAT_REJETEE
+    "Le Sénat vote aussi la destitution.\nLes deux chambres sont d'accord :\nc'est rare, et c'est fini pour vous.", // TXT_DESTITUTION_SENAT_VOTEE
+    "Référendum", // TXT_ACT_REFERENDUM
+    "Référendum", // TXT_REF_TITRE
+    "Une fois par mandat, pour 6 CP, le\npeuple tranche une loi non adoptée.\nSuccès : la loi passe et votre cote\nmonte. Échec : elle tombe, et vous\navec elle dans les sondages.", // TXT_REF_AIDE
+    "Soumettre cette loi au peuple ?\nLes urnes ne font pas de cadeaux.", // TXT_REF_CONFIRME
+    "Vous avez déjà consulté le peuple\nce mandat. Une seule fois, pas deux.", // TXT_REF_DEJA
+    "Le peuple est appelé aux urnes.\nLes bureaux ferment, les plateaux\ntélé retiennent leur souffle.", // TXT_REF_ANNONCE
+    "Le oui l'emporte : la loi est adoptée\npar le peuple. Les éditorialistes\ndécouvrent la démocratie directe.", // TXT_REF_OUI
+    "Le non l'emporte : le peuple rejette\nla loi. Chaîne Info 24 parle de leçon,\nl'opposition de claque.", // TXT_REF_NON
+    "OUI", // TXT_REF_LABEL_OUI
+    "NON", // TXT_REF_LABEL_NON
+    "Remaniement", // TXT_ACT_REMANIEMENT
+    "Nouveau Premier ministre", // TXT_RSH_TITRE
+    "Remaniement : 3 CP, une fois par an.\nNouveau profil de Premier ministre,\nrelations et popularité rafraîchies.\nImpossible en cohabitation.", // TXT_RSH_AIDE
+    "Changer de Premier ministre ?\nLe nouveau sera :", // TXT_RSH_CONFIRME
+    "Remaniement ministériel : nouvelle\néquipe, nouvel état de grâce. Les\ncartons de Matignon circulent déjà.", // TXT_RSH_FAIT
+    "Un seul remaniement par an.\nLes déménageurs ont besoin de repos.", // TXT_RSH_ANNEE
+    "Impossible en cohabitation : le\nPremier ministre n'est pas le vôtre.", // TXT_RSH_COHAB
+    "Durée de la partie", // TXT_DUREE_TITRE
+    "20 tours (1 tour = 1 trimestre)", // TXT_DUREE_20
+    "60 tours (1 tour = 1 mois)", // TXT_DUREE_60
+    "Partie courte, un trimestre par tour.\nUn événement presque à chaque tour.", // TXT_DUREE_20_DESC
+    "Partie longue, un mois par tour.\nUn événement environ 1 tour sur 3.", // TXT_DUREE_60_DESC
+    "Janvier", // TXT_MOIS_1
+    "Février", // TXT_MOIS_2
+    "Mars", // TXT_MOIS_3
+    "Avril", // TXT_MOIS_4
+    "Mai", // TXT_MOIS_5
+    "Juin", // TXT_MOIS_6
+    "Juillet", // TXT_MOIS_7
+    "Août", // TXT_MOIS_8
+    "Septembre", // TXT_MOIS_9
+    "Octobre", // TXT_MOIS_10
+    "Novembre", // TXT_MOIS_11
+    "Décembre", // TXT_MOIS_12
+    "Mois", // TXT_TOUR_MOIS
 };

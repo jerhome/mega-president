@@ -20,3 +20,6 @@ Décisions prises en autonomie (ou arbitrages du joueur), à relire. Chacune est
 | 14/11 | Musique V2 provisoire : 3 compositions originales simples sur le PSG (titre, jeu, élection) | Attendre le choix du joueur ; musiques libres de droits | Avancer sans bloquer ; facilement remplaçable par une vraie bande-son (XGM) |
 | 14/11 | 4e agent temporaire (sauvegarde, musique et lois en parallèle de la simulation) | Rester à 3 | Autorisé par le joueur pour accélérer ; fichiers disjoints |
 | 14/11 | Sauvegarde de partie : struct Game copiée en bloc avec signature, taille et somme de contrôle | Format champ par champ | Simple et robuste ; une sauvegarde d'une autre version est ignorée proprement |
+| 14/11 | PM d'opposition de gauche renommée « Sophie Carrel » (au lieu de « Marianne Aubrac ») | Garder le nom proposé | Aubrac évoque des résistants réels ; prénom Marianne déjà pris par une PM |
+| 14/11 | 5 électorats (2.09) et budget détaillé (2.10) reportés en V3 | Les faire en V2 | Tableau de bord déjà dense ; la popularité par région (carte) apporte plus ; le budget en un choix a été validé par le joueur |
+| 14/11 | Équilibrage V2 : +1 popularité générale sur les choix 1 et 2 des nouveaux événements | Retoucher le cœur de la simulation | Les 15 événements V2 faisaient perdre ~5 points de réélection ; réglage local et réversible |
