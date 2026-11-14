@@ -45,11 +45,11 @@ La V0 n'est pas un prototype jetable : c'est une première tranche de la V1. Les
 
 | # | Tâche | Durée |
 |---|---|---|
-| 1.1 | 🔄 Gestion des écrans (titre, jeu, événement, élection, fin) | 1,5 h |
-| 1.2 | 🔄 **Couche d'interface** (fenêtres, listes, jauges, curseur) : le jeu ne manipule jamais les tuiles directement, ce qui permet de passer au pixel art sans réécriture | 3,5 h |
-| 1.3 | 🔄 Police 8×8 avec les accents français et codage des textes | 2 h |
-| 1.4 | 🔄 Manette (répétition des touches, A/B/C/Start) | 1 h |
-| 1.5 | 🔄 Graphismes provisoires avec des noms fixes : en V2, on remplace les fichiers sans toucher au code | 1,5 h |
+| 1.1 | ✅ Gestion des écrans (titre, jeu, événement, élection, fin) | 1,5 h |
+| 1.2 | ✅ **Couche d'interface** (fenêtres, listes, jauges, curseur) : le jeu ne manipule jamais les tuiles directement, ce qui permet de passer au pixel art sans réécriture | 3,5 h |
+| 1.3 | ✅ Police 8×8 avec les accents français et codage des textes | 2 h |
+| 1.4 | ✅ Manette (répétition des touches, A/B/C/Start) | 1 h |
+| 1.5 | ✅ Graphismes provisoires avec des noms fixes : en V2, on remplace les fichiers sans toucher au code | 1,5 h |
 | 1.6 | ✅ Hasard reproductible à partir d'une graine | 0,5 h |
 
 ### E2 — Simulation (≈ 8 h)

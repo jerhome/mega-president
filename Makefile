@@ -6,6 +6,7 @@
 #   make debug      ROM de debug (symboles, -O1)
 #   make test       tests unitaires du cœur de simulation, sur PC (gcc natif)
 #   make content    régénère le code C depuis docs/contenu/*.md
+#   make gfx        régénère la police et les images d'interface (res/gfx/)
 #   make check      tests + ROM + budgets mémoire
 #   make clean      supprime out/
 
@@ -24,7 +25,7 @@ SIM_SRC     := $(wildcard src/sim/*.c) $(wildcard src/content/*.c)
 TEST_SRC    := $(wildcard tests/*.c)
 TEST_BIN    := out/host/tests
 
-.PHONY: all rom debug run run-ntsc test check clean blastem content
+.PHONY: all rom debug run run-ntsc test check clean blastem content gfx
 
 all: rom
 
@@ -36,6 +37,9 @@ $(CONTENT_GEN) &: $(CONTENT_MD) tools/content/gen_content.py src/sim/effects.h s
 	python3 tools/content/gen_content.py
 
 content: $(CONTENT_GEN)
+
+gfx:
+	python3 tools/font/make_gfx.py
 
 rom: $(CONTENT_GEN)
 	$(DOCKER_SGDK) release

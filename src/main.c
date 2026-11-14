@@ -1,134 +1,193 @@
-// Mega Président — ROM de test de la phase 0 (tâche 0.4).
-// Vérifie : affichage, détection PAL/NTSC, manette, sauvegarde SRAM,
-// et le cœur de simulation (src/sim) compilé pour le 68000.
+// Mega Président — point d'entrée.
+// V0 (tâches 1.1 à 1.5) : écran titre et écran de démonstration des widgets.
+// Ce fichier n'appelle jamais VDP_* / PAL_* : tout passe par src/ui/.
 
 #include <genesis.h>
-#include "sim/rng.h"
+#include "ui/ui.h"
+#include "ui/input.h"
+#include "ui/screen.h"
 
-#define SRAM_MAGIC_0 'M'
-#define SRAM_MAGIC_1 'P'
-#define SRAM_MAGIC_2 '0'
-#define SRAM_MAGIC_3 '1'
-#define SRAM_OFS_COUNT 4    // compteur 16 bits (octets 4 et 5)
+// --- Écran titre ------------------------------------------------------------
 
-static u16 boot_count;
+static bool title_blink_on;
 
-static u16 sram_load_and_count_boot(void)
+static void title_init(void)
 {
-    u16 count;
+    ui_window(3, 4, 34, 9);
+    ui_text_center(4, 6, 32, "MEGA PRÉSIDENT", UI_STYLE_HIGHLIGHT);
+    ui_text_center(4, 8, 32, "Élysée, cinq ans de pouvoir", UI_STYLE_TEXT);
+    ui_text_center(4, 10, 32, "« À vous de gouverner ! »", UI_STYLE_DIM);
 
-    SRAM_enable();
-    if (SRAM_readByte(0) != SRAM_MAGIC_0 || SRAM_readByte(1) != SRAM_MAGIC_1 ||
-        SRAM_readByte(2) != SRAM_MAGIC_2 || SRAM_readByte(3) != SRAM_MAGIC_3) {
-        // SRAM vierge : on l'initialise.
-        SRAM_writeByte(0, SRAM_MAGIC_0);
-        SRAM_writeByte(1, SRAM_MAGIC_1);
-        SRAM_writeByte(2, SRAM_MAGIC_2);
-        SRAM_writeByte(3, SRAM_MAGIC_3);
-        count = 0;
-    } else {
-        count = ((u16)SRAM_readByte(SRAM_OFS_COUNT) << 8) | SRAM_readByte(SRAM_OFS_COUNT + 1);
+    ui_text_draw(1, 18, "Jeu de caractères :", UI_STYLE_DIM);
+    ui_text_draw(1, 19, "éèêëàâçîïôùûüœ ÉÈÊÀÇÔ «»°€’…", UI_STYLE_TEXT);
+    ui_text_draw(1, 20, "0123456789 ,;:!?.'\"()[]{}%&@#$*+-=/<>", UI_STYLE_TEXT);
+
+    ui_text_draw(1, 25, IS_PAL_SYSTEM ? "PAL 50 Hz" : "NTSC 60 Hz", UI_STYLE_DIM);
+    title_blink_on = FALSE;
+}
+
+static void title_update(void)
+{
+    if (input_pressed() & (INPUT_START | INPUT_OK))
+        screen_change(SCREEN_DEMO);
+}
+
+static void title_draw(void)
+{
+    // Clignotement toutes les 500 ms, quelle que soit la fréquence.
+    bool on = ((screen_time_ms() / 500) & 1) == 0;
+
+    if (on != title_blink_on) {
+        title_blink_on = on;
+        if (on)
+            ui_text_center(0, 15, UI_COLS, "Appuyez sur START", UI_STYLE_TEXT);
+        else
+            ui_clear_rect(0, 15, UI_COLS, 1);
     }
-    count++;
-    SRAM_writeByte(SRAM_OFS_COUNT, count >> 8);
-    SRAM_writeByte(SRAM_OFS_COUNT + 1, count & 0xFF);
-    SRAM_disable();
-    return count;
 }
 
-static void sram_reset(void)
+static const Screen screen_title = { title_init, title_update, title_draw, NULL };
+
+// --- Écran de démonstration des widgets ----------------------------------------
+
+static const char demo_text[] =
+    "Le Président élu au suffrage universel gère l’économie, l’écologie et la "
+    "sécurité. «\u00A0Où ça\u00A0?\u00A0» À Noël, Ève a payé 15\u00A0€ un cœur "
+    "d’œuf à 37\u00A0°C\u00A0; naïf, maïs, sûr… ÊTRE ÉLU, c’est être "
+    "«\u00A0président des riches\u00A0».";
+
+static const char *const law_names[] = {
+    "Hausse du SMIC",
+    "Réforme des retraites",
+    "Taxe sur les écrans",
+    "Plan école numérique",
+    "Loi « Sécurité globale »",
+    "Prime à l’isolation",
+    "Impôt sur la fortune",
+    "Gratuité des transports",
+};
+#define LAW_COUNT (sizeof(law_names) / sizeof(law_names[0]))
+
+static const char *const vote_choices[] = { "Voter la loi", "Amender le texte", "Retirer" };
+
+enum { DIRTY_ALL = 1, DIRTY_LIST = 2, DIRTY_STATUS = 4 };
+
+static UiList demo_list;
+static u8 demo_dirty;
+static s16 demo_last_choice;
+static u8 demo_last_law;
+
+static void demo_init(void)
 {
-    SRAM_enable();
-    SRAM_writeByte(SRAM_OFS_COUNT, 0);
-    SRAM_writeByte(SRAM_OFS_COUNT + 1, 0);
-    SRAM_disable();
-    boot_count = 0;
+    ui_list_init(&demo_list, 1, 13, 18, 7, law_names, LAW_COUNT);
+    demo_list.disabled = (u32)1 << 2;   // « Taxe sur les écrans » grisée
+    demo_dirty = DIRTY_ALL;
+    demo_last_choice = -1;
+    demo_last_law = 0;
 }
 
-static void draw_u16(u16 v, u16 x, u16 y)
+static void demo_update(void)
 {
-    char buf[8];
-    uintToStr(v, buf, 5);
-    VDP_drawText(buf, x, y);
-}
+    s16 r;
 
-static void draw_static(void)
-{
-    VDP_drawText("MEGA PRESIDENT", 13, 2);
-    VDP_drawText("ROM DE TEST - PHASE 0", 9, 3);
-
-    VDP_drawText("Video   :", 2, 6);
-    VDP_drawText(IS_PAL_SYSTEM ? "PAL 50 Hz" : "NTSC 60 Hz", 12, 6);
-
-    VDP_drawText("Demarrages sauvegardes :", 2, 8);
-
-    VDP_drawText("Manette :", 2, 11);
-
-    VDP_drawText("Tirage aleatoire (B) :", 2, 14);
-
-    VDP_drawText("A : relire la SRAM", 2, 20);
-    VDP_drawText("B : nouveau tirage", 2, 21);
-    VDP_drawText("C : remettre le compteur a zero", 2, 22);
-    VDP_drawText("Reset ou Start : relancer pour tester", 2, 24);
-    VDP_drawText("la sauvegarde", 2, 25);
-}
-
-static void draw_buttons(u16 pad)
-{
-    static const char *names[] = { "HAUT", "BAS", "GAUCHE", "DROITE", "A", "B", "C", "START" };
-    static const u16 masks[] = { BUTTON_UP, BUTTON_DOWN, BUTTON_LEFT, BUTTON_RIGHT,
-                                 BUTTON_A, BUTTON_B, BUTTON_C, BUTTON_START };
-    u16 x = 2, i;
-
-    VDP_clearText(2, 12, 36);
-    for (i = 0; i < 8; i++) {
-        if (pad & masks[i]) {
-            VDP_drawText(names[i], x, 12);
-            x += strlen(names[i]) + 1;
+    if (ui_msgbox_is_open()) {
+        r = ui_msgbox_update();
+        if (r >= 0) {
+            ui_msgbox_close();
+            demo_last_choice = r;
+            demo_dirty = DIRTY_ALL;   // la boîte recouvrait une partie de l'écran
         }
+        return;
+    }
+
+    switch (ui_list_update(&demo_list)) {
+    case UI_LIST_MOVED:
+        demo_dirty |= DIRTY_LIST;
+        break;
+    case UI_LIST_CHOSEN:
+        demo_last_law = demo_list.sel;
+        ui_msgbox_open(law_names[demo_list.sel],
+                       "Le gouvernement présente ce texte à l’Assemblée nationale. "
+                       "Les syndicats menacent d’une grève générale ; la majorité "
+                       "hésite. Que décidez-vous ?",
+                       vote_choices, 3);
+        break;
+    case UI_LIST_CANCELLED:
+        screen_change(SCREEN_TITLE);
+        break;
+    default:
+        break;
     }
 }
+
+static void demo_draw_status(void)
+{
+    ui_clear_rect(1, 23, UI_TEXT_COLS, 1);
+    if (demo_last_choice < 0) {
+        ui_text_draw(1, 23, "Aucune décision pour l’instant.", UI_STYLE_DIM);
+    } else {
+        u16 n = ui_text_draw(1, 23, vote_choices[demo_last_choice], UI_STYLE_HIGHLIGHT);
+        n += ui_text_draw(1 + n, 23, " : ", UI_STYLE_TEXT);
+        ui_text_draw_n(1 + n, 23, law_names[demo_last_law], UI_TEXT_COLS - n, 0, UI_STYLE_TEXT);
+    }
+}
+
+static void demo_draw_gauge(u16 y, const char *label, s32 value, u16 decimals,
+                            const char *unit, s16 gval, s16 gmax, UiStyle style)
+{
+    char buf[14];
+    u16 n;
+
+    ui_text_draw_n(21, y, label, 11, 11, UI_STYLE_TEXT);
+    n = ui_format_number(buf, value, decimals);
+    ui_clear_rect(32, y, 6, 1);
+    ui_text_draw(38 - n - ui_text_len(unit), y, buf, style);
+    ui_text_draw(38 - ui_text_len(unit), y, unit, style);
+    ui_gauge_draw(21, y + 1, 17, gval, gmax, style);
+}
+
+static void demo_draw(void)
+{
+    if (demo_dirty & DIRTY_ALL) {
+        ui_window(0, 0, 40, 10);
+        ui_text_draw(1, 1, "Démonstration de l’interface", UI_STYLE_HIGHLIGHT);
+        ui_text_wrap(1, 3, UI_TEXT_COLS, 6, demo_text, UI_STYLE_TEXT);
+
+        ui_window(0, 10, 20, 12);
+        ui_text_draw(1, 11, "Lois", UI_STYLE_HIGHLIGHT);
+
+        ui_window(20, 10, 20, 12);
+        demo_draw_gauge(11, "Popularité", 425, 1, " %", 425, 1000, UI_GAUGE_POSITIVE);
+        demo_draw_gauge(13, "Chômage", 750, 2, " %", 750, 2000, UI_GAUGE_NEUTRAL);
+        demo_draw_gauge(15, "Dette", 1100, 1, " %", 1100, 2000, UI_GAUGE_GOLD);
+
+        ui_window(0, 22, 40, 5);
+        ui_text_draw(1, 24, "Haut/Bas : choisir  A : voter", UI_STYLE_DIM);
+        ui_text_draw(1, 25, "Gauche/Droite : page  B : titre", UI_STYLE_DIM);
+        demo_dirty = DIRTY_LIST | DIRTY_STATUS;
+    }
+    if (demo_dirty & DIRTY_LIST)
+        ui_list_draw(&demo_list);
+    if (demo_dirty & DIRTY_STATUS)
+        demo_draw_status();
+    demo_dirty = 0;
+
+    if (!ui_msgbox_is_open()) {
+        // Jauge animée : une montée de 0 à 100 en 4 s, identique en PAL et NTSC.
+        s16 tension = (s16)((screen_time_ms() % 4000) / 40);
+        demo_draw_gauge(17, "Tension", tension, 0, "", tension, 100, UI_GAUGE_NEGATIVE);
+    }
+}
+
+static const Screen screen_demo = { demo_init, demo_update, demo_draw, NULL };
+
+// -----------------------------------------------------------------------------
 
 int main(bool hard)
 {
-    Rng rng;
-    u16 pad, prev = 0;
-
-    boot_count = sram_load_and_count_boot();
-    rng_seed(&rng, 0xC0FFEE);
-
-    VDP_setScreenWidth320();
-    PAL_setColor(0, RGB24_TO_VDPCOLOR(0x002266));   // fond bleu nuit
-    PAL_setColor(15, RGB24_TO_VDPCOLOR(0xFFFFFF));  // texte blanc
-
-    draw_static();
-    draw_u16(boot_count, 27, 8);
-    draw_u16(rng_below(&rng, 100), 25, 14);
-
-    while (TRUE) {
-        pad = JOY_readJoypad(JOY_1);
-        if (pad != prev) {
-            u16 pressed = pad & ~prev;
-            draw_buttons(pad);
-
-            if (pressed & BUTTON_A) {
-                u16 c;
-                SRAM_enableRO();
-                c = ((u16)SRAM_readByte(SRAM_OFS_COUNT) << 8) | SRAM_readByte(SRAM_OFS_COUNT + 1);
-                SRAM_disable();
-                draw_u16(c, 27, 8);
-            }
-            if (pressed & BUTTON_B)
-                draw_u16(rng_below(&rng, 100), 25, 14);
-            if (pressed & BUTTON_C) {
-                sram_reset();
-                draw_u16(boot_count, 27, 8);
-            }
-            if (pressed & BUTTON_START)
-                SYS_hardReset();
-            prev = pad;
-        }
-        SYS_doVBlankProcess();
-    }
+    (void)hard;
+    screen_register(SCREEN_TITLE, &screen_title);
+    screen_register(SCREEN_DEMO, &screen_demo);
+    screen_run(SCREEN_TITLE);
     return 0;
 }

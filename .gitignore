@@ -4,3 +4,4 @@ tools/blastem*/
 *.srm
 *.sav
 .claude/settings.local.json
+res/*.h

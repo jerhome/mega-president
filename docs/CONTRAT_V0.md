@@ -76,3 +76,23 @@ Noms validés par le joueur : voir `docs/contenu/univers.md`.
 
 - Les chaînes sont écrites en **UTF-8** dans le code C et dans le contenu. L'interface décode les accents français (é è ê ë à â ç î ï ô ù û ü œ É È Ê À Ç Ô « » ° € ’).
 - 38 colonnes maximum par ligne affichée.
+
+## 7. Enchaînement des écrans (V0)
+
+Module commun : `src/game/game.h` (état `g_game`, transitions). Les écrans ne modifient la simulation que par ses fonctions.
+
+```
+TITRE (choix de l'orientation, START) --game_new--> JEU
+JEU (tableau de bord, proposer une loi, « Fin du trimestre ») --game_end_turn--> RAPPORT
+RAPPORT (journal) --game_after_report--> ÉVÉNEMENT si tiré, sinon JEU (ou ÉLECTION si mandat fini)
+ÉVÉNEMENT (choix) --game_event_chosen--> JEU ou ÉLECTION
+ÉLECTION (game_run_election : 1er et 2nd tour) --> FIN (score) --> TITRE
+```
+
+| Écran | Fichier | Propriétaire |
+|---|---|---|
+| Jeu, rapport, événement | `src/screens/scr_game.c`, `scr_report.c`, `scr_event.c` | agent écrans A |
+| Titre, élection, fin | `src/screens/scr_title.c`, `scr_election.c`, `scr_end.c` | agent écrans B |
+| Enregistrement des écrans | `src/main.c` | session principale |
+
+Chaque fichier d'écran expose `extern const Screen scr_xxx;` déclaré dans `src/screens/screens.h` (session principale).
