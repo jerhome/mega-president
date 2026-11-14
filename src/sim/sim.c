@@ -45,6 +45,7 @@ static const DiffParams diff_params[DIFF_COUNT] = {
 
 #define GRACE_START    120   // +12 points d'opinion cible au début du 1er mandat
 #define GRACE_START2   40    // +4 points au début du 2nd mandat
+#define GRACE_PM_DECAY   6   // érosion de l'état de grâce du remaniement, par trimestre
 #define RASSEMBLEUR_INIT 5   // PM Rassembleur : relations + 5 à la nomination
 
 void sim_init_ex(Country *c, const SimSetup *s)
@@ -97,6 +98,8 @@ void sim_init_ex(Country *c, const SimSetup *s)
         c->relation[i] = c->relation_base[i];
         c->seats[i] = seats_start[diff][orientation][i];
     }
+    sim_senate_init(c);
+    c->pm_prev = PM_NONE;
     if (s->pm < PM_COUNT) sim_change_pm(c, s->pm);
 }
 
@@ -178,11 +181,22 @@ u8 sim_law_cost(const Country *c, u8 law_id)
     return law ? law_cost(c, law) : 0;
 }
 
-static void law_adopt(Country *c, u8 law_id)
+void sim_law_adopt(Country *c, u8 law_id, u8 gov)
 {
     const LawDef *law = law_get(law_id);
     c->laws_adopted |= (u16)(1u << law_id);
-    sim_apply_effects(c, law->immediate, law->n_immediate);
+    if (gov) {
+        // Loi du gouvernement : le président n'en récolte que la moitié de l'opinion.
+        u8 i;
+        for (i = 0; i < law->n_immediate; i++) {
+            u8 k = law->immediate[i].key;
+            s8 v = law->immediate[i].value;
+            if (k >= EFF_POP_POPULAIRES && k <= EFF_POP_TOUS) v = (s8)(v / 2);
+            sim_apply_effect(c, k, v);
+        }
+    } else {
+        sim_apply_effects(c, law->immediate, law->n_immediate);
+    }
     c->pending[c->n_pending].law = law_id;
     c->pending[c->n_pending].turns_left = law_delay_turns(c, law);
     c->n_pending++;
@@ -200,7 +214,7 @@ u8 sim_propose_law(Country *c, u8 law_id, VoteResult *out)
     parl_after_vote(c, law->orientation, out);
 
     if (out->adopted) {
-        law_adopt(c, law_id);
+        sim_law_adopt(c, law_id, 0);
     } else {
         // Échec : CP perdu, défiance en hausse, petit coût d'image.
         sim_apply_effect(c, EFF_DEFIANCE, 5);
@@ -240,7 +254,7 @@ u8 sim_force_law(Country *c, u8 law_id)
     for (g = 0; g < GRP_COUNT; g++)
         if (g != c->player_group)
             c->relation[g] = (u8)sim_clamp((s32)c->relation[g] - ART49_REL, 0, RELATION_MAX);
-    law_adopt(c, law_id);
+    sim_law_adopt(c, law_id, 0);
     sim_apply_effect(c, EFF_DEFIANCE, ART49_DEFIANCE);
     sim_apply_effect(c, EFF_POP_TOUS, -1);
     return LAW_OK;
@@ -285,7 +299,7 @@ u8 sim_tv(Country *c)
 u8 sim_change_pm(Country *c, u8 pm)
 {
     u8 g;
-    if (pm >= PM_COUNT || pm == c->pm) return 0;
+    if (pm >= PM_COUNT || pm == c->pm || c->cohab) return 0;
     c->pm = pm;
     if (pm == PM_RASSEMBLEUR)
         for (g = 0; g < GRP_COUNT; g++)
@@ -350,6 +364,10 @@ void sim_end_turn(Country *c, TurnReport *report)
     r->affair = 0;
     r->cp_gain = 0;
     r->n_matured = 0;
+    r->impeach_senate_votes = 0;
+    r->gov_law = 0;
+    r->budget_gov = 0;
+    r->senate_renewed = 0;
     if (c->status != STATUS_PLAYING) {
         r->popularity_after = r->popularity_before;
         return;
@@ -368,11 +386,21 @@ void sim_end_turn(Country *c, TurnReport *report)
     sim_opinion_update(c);
     // 5. Parlement
     parl_end_turn(c);
+    // 5b. V2 : en cohabitation, le gouvernement propose ses lois ; l'état de grâce
+    // du remaniement s'érode.
+    if (sim_quarter_tick(c)) {
+        r->gov_law = cohab_government_quarter(c);
+        c->grace_pm = (u8)(c->grace_pm > GRACE_PM_DECAY ? c->grace_pm - GRACE_PM_DECAY : 0);
+    }
     // 6. Jauges
     if (sim_quarter_tick(c)) r->affair = gauges_quarter(c);
     // 7. Clôture de l'année budgétaire : sans budget adopté, reconduction.
     if (year_end) {
-        if (!c->budget_done) {
+        if (c->cohab) {
+            // Cohabitation : le Premier ministre d'opposition décide du budget.
+            c->budget = sim_cohab_budget(c);
+            r->budget_gov = 1;
+        } else if (!c->budget_done) {
             c->budget = BUDGET_EQUILIBRE;
             r->budget_reconduit = 1;
         }
@@ -387,7 +415,12 @@ void sim_end_turn(Country *c, TurnReport *report)
     // 9. Institutions : destitution, censure (au trimestre)
     if (sim_quarter_tick(c))
         inst_end_turn_quarter(c, &r->censure, &r->censure_votes, &r->new_pm,
-                              &r->impeach, &r->impeach_votes);
+                              &r->impeach, &r->impeach_votes, &r->impeach_senate_votes);
+    // 10. V2 : renouvellement du Sénat par moitié (début de l'année 3, 6, 9).
+    if (c->status == STATUS_PLAYING && sim_senate_renewal_due(c)) {
+        sim_senate_renew(c, r->senate_before);
+        r->senate_renewed = 1;
+    }
     r->popularity_after = sim_popularity(c);
 }
 
@@ -454,6 +487,10 @@ void sim_start_second_mandate(Country *c, LegislativeResult *out)
     c->impeach = IMPEACH_NONE;
     c->impeach_def = 0;
     c->impeach_cool = 0;
+    c->events_done_hi = 0;
+    c->referendum_done = 0;
+    c->reshuffle_year = 0;
+    c->grace_pm = 0;
     c->laws_adopted = 0;   // le catalogue redevient disponible au 2nd mandat
     sim_legislatives(c, out);
 }

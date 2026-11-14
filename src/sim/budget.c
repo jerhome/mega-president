@@ -27,6 +27,7 @@ u8 sim_budget_due(const Country *c)
 {
     if (c->status != STATUS_PLAYING || c->budget_done) return 0;
     if (sim_mandate_over(c)) return 0;
+    if (c->cohab) return 0;   // V2 : le budget est décidé par le Premier ministre d'opposition
     return (u8)(sim_quarter(c) == 3);
 }
 

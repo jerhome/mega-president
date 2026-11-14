@@ -11,6 +11,9 @@
 #include "sim/election.h"
 #include "sim/budget.h"
 #include "sim/institutions.h"
+#include "sim/senate.h"
+#include "sim/cohab.h"
+#include "sim/actions.h"
 
 #define SIM_TURNS_PER_YEAR_V0 4
 #define SIM_MANDATE_YEARS     5
@@ -71,8 +74,13 @@ u8 sim_tv(Country *c);
 
 // --- Premier ministre ---
 // Change de Premier ministre (après une censure, ou au début de partie).
-// Renvoie 1 si appliqué (pm valide et différent de l'actuel).
+// Renvoie 1 si appliqué (pm valide et différent de l'actuel). Refusé (0) pendant
+// une cohabitation. En cohabitation, c->pm vaut PM_OPPOSITION (>= PM_COUNT).
 u8 sim_change_pm(Country *c, u8 pm);
+// Adopte une loi : bit « adoptée », effets immédiats, mise en attente des effets
+// différés. gov = 1 : loi du gouvernement de cohabitation (effets d'opinion /2).
+// Ne contrôle rien (voir law_can_propose). Interne, exposé pour les actions V2.
+void sim_law_adopt(Country *c, u8 law_id, u8 gov);
 // Coût effectif d'une loi (le Réformateur la rend moins chère).
 u8 sim_law_cost(const Country *c, u8 law_id);
 
@@ -95,6 +103,12 @@ typedef struct {
     u16 impeach_votes;    // voix pour la destitution (vote du tour)
     u8  budget_reconduit; // 1 : année close sans budget adopté, reconduction
     u8  affair;           // 1 : une affaire a éclaté (scandale spontané)
+    // V2
+    u16 impeach_senate_votes; // voix pour la destitution au Sénat (vote du tour)
+    u8  gov_law;          // cohabitation : loi du gouvernement adoptée ce tour (id + 1), 0 sinon
+    u8  budget_gov;       // 1 : budget imposé par le Premier ministre d'opposition (fin d'année)
+    u8  senate_renewed;   // 1 : le Sénat a été renouvelé par moitié ce tour
+    u16 senate_before[GRP_COUNT]; // sièges du Sénat avant renouvellement (si senate_renewed)
 } TurnReport;
 
 // Fin de tour, dans l'ordre : lois arrivées à maturité, budget, économie,

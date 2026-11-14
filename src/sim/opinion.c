@@ -49,7 +49,7 @@ s16 sim_opinion_target(const Country *c, u8 e)
     t += (pil / 16) * 4 / 10;   // +10 points de pilier pondéré : +4 points d'opinion
 
     t -= ((s32)c->gauges[JAUGE_TENSION] - TENSION_REF) * 2;
-    t += c->grace;
+    t += c->grace + c->grace_pm;   // état de grâce du mandat et du remaniement
 
     // V1 : scandale, défiance, budget, Premier ministre, usure du pouvoir.
     t -= (s32)c->gauges[JAUGE_SCANDALE] * SCANDAL_K / 10;
@@ -59,6 +59,9 @@ s16 sim_opinion_target(const Country *c, u8 e)
     if (c->pm == PM_TECHNOCRATE) t -= TECHNO_POP;
     if (c->mandate > 0)
         t -= WEAR_BASE + (s32)WEAR_SPAN * c->turn / sim_mandate_turns(c);
+    // V2 : en cohabitation, les échecs du gouvernement n'atteignent le président
+    // qu'aux deux tiers.
+    if (c->cohab && t < COHAB_OPINION_REF) t = COHAB_OPINION_REF - (COHAB_OPINION_REF - t) * 2 / 3;
     return sim_clamp(t, OPINION_MIN, OPINION_MAX);
 }
 

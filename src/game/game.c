@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "ui/screen.h"
+#include "save/sram_game.h"
 
 #define GAME_START_YEAR 2027
 
@@ -36,12 +37,15 @@ static void next_after_turn(void)
 {
     Country *c = &g_game.country;
 
-    if (sim_game_over(c))
+    if (sim_game_over(c)) {
+        sram_game_erase();
         screen_change(SCREEN_END);
-    else if (sim_election_due(c))
+    } else if (sim_election_due(c)) {
         screen_change(SCREEN_CAMPAIGN);
-    else
+    } else {
+        sram_game_save(&g_game);   // reprise possible au début de ce trimestre
         screen_change(SCREEN_GAME);
+    }
 }
 
 static void event_or_next(void)
@@ -70,8 +74,10 @@ void game_after_report(void)
     // Le journal du trimestre est lu : on repart de zéro pour le suivant.
     g_game.laws_tried = 0;
     g_game.laws_adopted = 0;
-    if (game_destitue())
+    if (game_destitue()) {
+        sram_game_erase();
         screen_change(SCREEN_END);
+    }
     else if (sim_impeach_pending(&g_game.country))
         screen_change(SCREEN_IMPEACH);
     else
@@ -111,6 +117,7 @@ void game_after_election(void)
         sim_start_second_mandate(&g_game.country, &g_game.legislatives);
         screen_change(SCREEN_MANDATE2);
     } else {
+        sram_game_erase();
         screen_change(SCREEN_END);
     }
 }
@@ -118,7 +125,21 @@ void game_after_election(void)
 void game_mandate2_done(void)
 {
     g_game.event = -1;
+    sram_game_save(&g_game);
     screen_change(SCREEN_GAME);
+}
+
+u8 game_continue(void)
+{
+    if (!sram_game_load(&g_game))
+        return 0;
+    screen_change(SCREEN_GAME);
+    return 1;
+}
+
+u8 game_has_save(void)
+{
+    return sram_game_exists();
 }
 
 u8 game_destitue(void)

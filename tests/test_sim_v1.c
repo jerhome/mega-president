@@ -383,7 +383,7 @@ static void test_v1_second_mandate(void)
 // Parties automatiques (1.20)
 // ---------------------------------------------------------------------------
 
-enum { BOT_ACTIF, BOT_PASSIF, BOT_SCANDALE, BOT_PREMIER_CHOIX, BOT_COUNT };
+enum { BOT_ACTIF, BOT_PASSIF, BOT_SCANDALE, BOT_PREMIER_CHOIX, BOT_DISSOLVEUR, BOT_REFERENDUM, BOT_COUNT };
 
 static const u8 bot_pref[ORIENT_COUNT][LOI_COUNT] = {
     { LOI_SMIC, LOI_HOPITAL, LOI_RENOV, LOI_ECOLE, LOI_TRANSPORTS, LOI_LOGEMENT,
@@ -407,12 +407,14 @@ static u8 bot_budget(const Country *c)
     }
 }
 
+static long n_ref, n_ref_won, n_reshuffle;
+
 static void bot_actions(Country *c, int bot)
 {
     VoteResult v;
     int i;
     s16 pop = sim_popularity(c);
-    u8 left = (u8)(sim_mandate_turns(c) - c->turn);
+    u8 left = (u8)(((sim_mandate_turns(c) - c->turn) * 4 + c->turns_per_year - 1) / c->turns_per_year);   // en tours de 20
 
     if (bot == BOT_PASSIF || bot == BOT_PREMIER_CHOIX) return;
 
@@ -432,20 +434,52 @@ static void bot_actions(Country *c, int bot)
         sim_budget_vote(c, b, &v);
         if (!v.adopted && c->cp >= BUDGET_493_CP + 2) sim_budget_force(c, b);
     }
-    // Dissolution si majorité relative et popularité suffisante
-    if (!sim_has_majority(c) && pop >= 470 && sim_can_dissolve(c))
+    // Dissolution si majorité relative et popularité suffisante (le dissolveur
+    // dissout dès qu'il le peut, quelle que soit sa popularité : cohabitations)
+    if ((bot == BOT_DISSOLVEUR ? (pop < 420 && c->turn >= 2 * c->turns_per_year)
+                               : (!sim_has_majority(c) && pop >= 470)) && sim_can_dissolve(c))
         sim_dissolve(c, 0);
+    // V2 : remaniement si la popularité s'effondre avec le Technocrate en poste
+    // (jamais en cohabitation) : le Rassembleur remplace son malus d'opinion.
+    if (pop < 400 && c->pm == PM_TECHNOCRATE && c->cp >= RESHUFFLE_CP + 4 && !sim_cohabitation(c))
+    { sim_reshuffle(c, PM_RASSEMBLEUR); n_reshuffle++; }
+    // Variante « référendaire » : dépense ses CP dans un référendum sur la loi la
+    // plus approuvée dès que possible (mi-mandat), et remanie si le PM est le Technocrate.
+    if (bot == BOT_REFERENDUM && !c->referendum_done && c->cp >= REFERENDUM_CP
+        && c->turn >= sim_mandate_turns(c) / 3) {
+        RefResult rp;
+        u8 best = LOI_COUNT;
+        s16 by = 0;
+        for (i = 0; i < LOI_COUNT; i++) {
+            if (sim_referendum_check(c, (u8)i) != RFD_OK) continue;
+            sim_referendum_preview(c, (u8)i, &rp);
+            if (rp.yes > by) { by = rp.yes; best = (u8)i; }
+        }
+        if (best < LOI_COUNT && by >= 520) { sim_referendum(c, best, &rp); n_ref++; n_ref_won += rp.adopted; }
+    }
+    if (bot == BOT_REFERENDUM && c->pm == PM_TECHNOCRATE && c->cp >= RESHUFFLE_CP + 1
+        && c->turn >= c->turns_per_year && !sim_cohabitation(c) && sim_reshuffle(c, PM_RASSEMBLEUR) == RSH_OK)
+        n_reshuffle++;
     // Lois, par ordre de préférence ; 49.3 pour une des 4 préférées
     for (i = 0; i < LOI_COUNT; i++) {
         u8 id = bot_pref[c->orientation][i];
         if (law_can_propose(c, id) != LAW_OK) continue;
         parl_vote(c, law_get(id)->orientation, &v);
-        if (v.adopted) sim_propose_law(c, id, &v);
-        else if (i < 4 && c->gauges[JAUGE_DEFIANCE] < 35 && sim_can_force_law(c, id) == LAW_OK)
+        if (v.adopted) {
+            sim_propose_law(c, id, &v);
+        } else if (i < 6 && sim_referendum_check(c, id) == RFD_OK) {
+            // V2 : référendum (une fois par mandat) sur une loi préférée que
+            // l'Assemblée refuse, si le « oui » est probable.
+            RefResult rp;
+            sim_referendum_preview(c, id, &rp);
+            if (rp.yes >= 500) { sim_referendum(c, id, &rp); n_ref++; n_ref_won += rp.adopted; }
+            else if (i < 4 && c->gauges[JAUGE_DEFIANCE] < 35 && sim_can_force_law(c, id) == LAW_OK)
+                sim_force_law(c, id);
+        } else if (i < 4 && c->gauges[JAUGE_DEFIANCE] < 35 && sim_can_force_law(c, id) == LAW_OK)
             sim_force_law(c, id);
     }
     // Télévision, avec modération
-    if (bot == BOT_ACTIF && c->tv_fatigue == 0 && c->cp >= 4 && (pop < 380 || left <= 3))
+    if (bot != BOT_SCANDALE && c->tv_fatigue == 0 && c->cp >= 4 && (pop < 380 || left <= 3))
         sim_tv(c);
 }
 
@@ -470,7 +504,7 @@ static u8 bot_event_choice(const Country *c, int bot, u8 ev, Rng *prng)
 
 typedef struct {
     s16 pop1, debt1, unemp1;   // fin du 1er mandat
-    u8  elected, destitue, nat_first, laws1, censures;
+    u8  elected, destitue, nat_first, laws1, censures, cohabs, refs;
     u16 score1, total;         // total : 0 si pas de 2nd mandat complet
 } GameStats;
 
@@ -509,9 +543,9 @@ static void bot_game(u8 orient, u8 diff, u8 pm, u8 tpy, u32 seed, int bot, GameS
     st->unemp1 = c.unemployment;
     st->laws1 = 0;
     for (k = 0; k < LOI_COUNT; k++) st->laws1 = (u8)(st->laws1 + law_is_adopted(&c, (u8)k));
-    if (c.status == STATUS_DESTITUE) { st->destitue = 1; st->censures = c.censures; return; }
+    if (c.status == STATUS_DESTITUE) { st->destitue = 1; st->censures = c.censures; st->cohabs = c.cohabitations; return; }
 
-    if (bot == BOT_ACTIF || bot == BOT_SCANDALE) {   // thème : le meilleur pour la campagne
+    if (bot != BOT_PASSIF && bot != BOT_PREMIER_CHOIX) {   // thème : le meilleur pour la campagne
         u8 t, best = 0;
         s16 bp = -1;
         for (t = 0; t < THEME_COUNT; t++) {
@@ -531,12 +565,13 @@ static void bot_game(u8 orient, u8 diff, u8 pm, u8 tpy, u32 seed, int bot, GameS
         else st->total = sim_score_total(&c);
     }
     st->censures = c.censures;
+    st->cohabs = c.cohabitations;
 }
 
 #define AUTO_SEEDS 400
 
 typedef struct {
-    double pop, debt, unemp, elected, destit, nat, laws, score1, total, censures;
+    double pop, debt, unemp, elected, destit, nat, laws, score1, total, censures, cohabs;
     long n_total;
 } Agg;
 
@@ -545,7 +580,7 @@ static void run_config(u8 orient, u8 diff, u8 tpy, int bot, Agg *a)
     u32 seed;
     long n1 = 0;
     a->pop = a->debt = a->unemp = a->elected = a->destit = a->nat = 0;
-    a->laws = a->score1 = a->total = a->censures = 0;
+    a->laws = a->score1 = a->total = a->censures = a->cohabs = 0;
     a->n_total = 0;
     for (seed = 1; seed <= AUTO_SEEDS; seed++) {
         GameStats st;
@@ -553,13 +588,13 @@ static void run_config(u8 orient, u8 diff, u8 tpy, int bot, Agg *a)
         bot_game(orient, diff, pm, tpy, seed * 2654435761u, bot, &st);
         a->pop += st.pop1; a->debt += st.debt1; a->unemp += st.unemp1;
         a->elected += st.elected; a->destit += st.destitue; a->nat += st.nat_first;
-        a->laws += st.laws1; a->censures += st.censures;
+        a->laws += st.laws1; a->censures += st.censures; a->cohabs += st.cohabs;
         if (!st.destitue || st.elected) { a->score1 += st.score1; n1++; }
         if (st.total) { a->total += st.total; a->n_total++; }
     }
     a->pop /= 10.0 * AUTO_SEEDS; a->debt /= 10.0 * AUTO_SEEDS; a->unemp /= 100.0 * AUTO_SEEDS;
     a->elected *= 100.0 / AUTO_SEEDS; a->destit *= 100.0 / AUTO_SEEDS;
-    a->nat *= 100.0 / AUTO_SEEDS; a->laws /= AUTO_SEEDS; a->censures /= AUTO_SEEDS;
+    a->nat *= 100.0 / AUTO_SEEDS; a->laws /= AUTO_SEEDS; a->censures /= AUTO_SEEDS; a->cohabs *= 100.0 / AUTO_SEEDS;
     a->score1 = n1 ? a->score1 / n1 : 0;
     a->total = a->n_total ? a->total / a->n_total : 0;
 }
@@ -568,23 +603,23 @@ static void test_v1_autoplay(void)
 {
     static const char *on[ORIENT_COUNT] = { "gauche", "centre", "droite" };
     static const char *dn[DIFF_COUNT] = { "facile", "normal", "diffic" };
-    static const char *bn[BOT_COUNT] = { "actif", "passif", "scand.", "1erch" };
+    static const char *bn[BOT_COUNT] = { "actif", "passif", "scand.", "1erch", "dissol", "refer" };
     int o, d, b;
     double passive_max = 0, scand_destit = 0, active_destit_max = 0;
     double el_norm[ORIENT_COUNT] = { 0 }, el_easy = 0, el_hard = 0, el_mid = 0;
 
     printf("  Partie automatique V1 (%d graines, 20 tours, événements, 3 PM) :\n", AUTO_SEEDS);
-    printf("  %-6s %-6s %-6s %5s %5s %5s %5s %5s %5s %5s %5s %5s %6s\n", "diff", "orient", "joueur",
-           "pop%", "chom", "dette", "lois", "élu%", "dest%", "cens", "NAT1%", "sc1", "cumul");
+    printf("  %-6s %-6s %-6s %5s %5s %5s %5s %5s %5s %5s %5s %5s %5s %6s\n", "diff", "orient", "joueur",
+           "pop%", "chom", "dette", "lois", "élu%", "dest%", "cens", "coh/100", "NAT1%", "sc1", "cumul");
     for (b = 0; b < BOT_COUNT; b++) {
         for (d = 0; d < DIFF_COUNT; d++) {
-            if ((b == BOT_SCANDALE || b == BOT_PREMIER_CHOIX) && d != DIFF_NORMAL) continue;
+            if (b >= BOT_SCANDALE && d != DIFF_NORMAL) continue;
             for (o = 0; o < ORIENT_COUNT; o++) {
                 Agg a;
                 run_config((u8)o, (u8)d, 4, b, &a);
-                printf("  %-6s %-6s %-6s %5.1f %5.2f %5.1f %5.1f %5.0f %5.1f %5.2f %5.0f %5.0f %6.0f\n",
+                printf("  %-6s %-6s %-6s %5.1f %5.2f %5.1f %5.1f %5.0f %5.1f %5.2f %5.0f %5.0f %5.0f %6.0f\n",
                        dn[d], on[o], bn[b], a.pop, a.unemp, a.debt, a.laws, a.elected, a.destit,
-                       a.censures, a.nat, a.score1, a.total);
+                       a.censures, a.cohabs, a.nat, a.score1, a.total);
                 if (b == BOT_ACTIF) {
                     if (d == DIFF_NORMAL) { el_norm[o] = a.elected; el_mid += a.elected / 3; }
                     if (d == DIFF_FACILE) el_easy += a.elected / 3;
@@ -599,6 +634,8 @@ static void test_v1_autoplay(void)
             }
         }
     }
+    printf("  Actions V2 du joueur automatique : %ld référendums (%ld adoptés), %ld remaniements\n",
+           n_ref, n_ref_won, n_reshuffle);
     printf("  Réélection moyenne (actif) : facile %.0f %%, normal %.0f %%, difficile %.0f %%\n",
            el_easy, el_mid, el_hard);
     // Cibles d'équilibrage (1.20)
@@ -611,13 +648,24 @@ static void test_v1_autoplay(void)
     CHECK(active_destit_max < 5);
     CHECK(scand_destit > 0);
 
-    // Mode 60 tours (reporté en V2) : simple contrôle de cohérence
-    {
-        GameStats st;
-        u32 seed;
-        for (seed = 1; seed <= 20; seed++)
-            bot_game((u8)(seed % 3), DIFF_NORMAL, PM_TECHNOCRATE, 12, seed, BOT_ACTIF, &st);
-    }
+    // Mode 60 tours (V2, 2.15) : mêmes statistiques que le mode 20 tours (écart <= 5 points).
+    printf("  Mode 60 tours (actif), écart 60 - 20 tours (pop %% / chômage pt / dette pt / élu %% / destit %%) :\n");
+    printf("  %-6s %-6s | %6s %6s %6s %5s %5s | %6s %6s %6s %5s %5s\n", "diff", "orient",
+           "pop20", "chom20", "det20", "élu20", "des20", "pop60", "chom60", "det60", "élu60", "des60");
+    for (d = 0; d < DIFF_COUNT; d++)
+        for (o = 0; o < ORIENT_COUNT; o++) {
+            Agg a4, a12;
+            run_config((u8)o, (u8)d, 4, BOT_ACTIF, &a4);
+            run_config((u8)o, (u8)d, 12, BOT_ACTIF, &a12);
+            printf("  %-6s %-6s | %6.1f %6.2f %6.1f %5.0f %5.1f | %6.1f %6.2f %6.1f %5.0f %5.1f\n", dn[d], on[o],
+                   a4.pop, a4.unemp, a4.debt, a4.elected, a4.destit,
+                   a12.pop, a12.unemp, a12.debt, a12.elected, a12.destit);
+            CHECK(sim_abs16((s16)((a12.pop - a4.pop) * 10)) <= 50);
+            CHECK(sim_abs16((s16)((a12.unemp - a4.unemp) * 10)) <= 50);
+            CHECK(sim_abs16((s16)((a12.debt - a4.debt) * 10)) <= 50);
+            CHECK(sim_abs16((s16)((a12.elected - a4.elected) * 10)) <= 50);
+            CHECK(sim_abs16((s16)((a12.destit - a4.destit) * 10)) <= 50);
+        }
 }
 
 static void test_v1_reproducible(void)

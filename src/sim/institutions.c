@@ -87,6 +87,15 @@ void sim_legislatives(Country *c, LegislativeResult *out)
     r->majority = sim_has_majority(c);
     r->won = (u8)(r->majority || r->bloc_after >= r->bloc_before);
     c->gauges[JAUGE_DEFIANCE] = LEG_DEFIANCE;
+    // V2 : cohabitation. Législatives perdues -> Premier ministre d'opposition ;
+    // législatives gagnées pendant une cohabitation -> elle prend fin.
+    r->cohab_started = r->cohab_ended = 0;
+    if (c->cohab) {
+        if (r->won) { cohab_end(c); r->cohab_ended = 1; }
+    } else if (!r->won) {
+        cohab_start(c);
+        r->cohab_started = 1;
+    }
     c->dissolve_turn = (u8)(c->turn + 1);
 }
 
@@ -118,6 +127,7 @@ u16 sim_opposition_seats(const Country *c)
 
 u8 sim_censure_threat(const Country *c)
 {
+    if (c->cohab) return 0;   // le gouvernement d'opposition a l'Assemblée avec lui
     return (u8)(c->gauges[JAUGE_DEFIANCE] >= CENSURE_DEFIANCE
                 && sim_opposition_seats(c) >= SEATS_MAJORITY);
 }
@@ -195,15 +205,18 @@ static u8 next_pm(u8 pm)
 }
 
 void inst_end_turn_quarter(Country *c, u8 *censure, u16 *censure_votes, u8 *new_pm,
-                           u8 *impeach, u16 *impeach_votes)
+                           u8 *impeach, u16 *impeach_votes, u16 *impeach_senate_votes)
 {
     // 1. Destitution : vote à la fin du trimestre de défense.
     if (c->impeach == IMPEACH_DEFENSE) {
         u16 v = sim_impeach_votes(c);
+        u16 vs = sim_impeach_senate_votes(c);
         *impeach_votes = v;
+        *impeach_senate_votes = vs;
         c->impeach = IMPEACH_NONE;
         c->impeach_def = 0;
-        if (v >= IMPEACH_MAJORITY) {
+        // V2 : deux tiers de l'Assemblée ET du Sénat.
+        if (v >= IMPEACH_MAJORITY && vs >= SENATE_IMPEACH_MAJORITY) {
             c->status = STATUS_DESTITUE;
             *impeach = IMP_EV_VOTEE;
             return;
@@ -221,6 +234,7 @@ void inst_end_turn_quarter(Country *c, u8 *censure, u16 *censure_votes, u8 *new_
         c->impeach_def = 0;
         *impeach = IMP_EV_ENGAGEE;
         *impeach_votes = sim_impeach_votes(c);
+        *impeach_senate_votes = sim_impeach_senate_votes(c);
         return;
     }
 

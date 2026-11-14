@@ -37,10 +37,15 @@ enum { ORIENT_GAUCHE, ORIENT_CENTRE, ORIENT_DROITE, ORIENT_COUNT };
 #define SEATS_TOTAL      577
 #define SEATS_MAJORITY   289
 
+// V2 : Sénat (348 sièges, mêmes groupes G1-G5 que l'Assemblée)
+#define SENATE_SEATS     348
+
 #define SIM_MAX_PENDING  8   // lois adoptées en attente d'effet
 
 // Absence de choix (PM, thème de campagne)
 #define PM_NONE      PM_COUNT
+// V2 : Premier ministre d'opposition pendant une cohabitation (jamais un choix du joueur).
+#define PM_OPPOSITION (PM_COUNT + 1)
 #define THEME_NONE   THEME_COUNT
 
 // État de la partie
@@ -95,7 +100,7 @@ typedef struct {
     u16 seats[GRP_COUNT];
 
     u16 laws_adopted;          // bit i = loi i adoptée
-    u32 events_done;           // bit i = événement i déjà tiré ce mandat (sim/events.h)
+    u32 events_done;           // bit i = événement i déjà tiré ce mandat (ids 0-31, sim/events.h)
     u8  last_event;            // dernier événement tiré + 1 (0 = aucun)
     u8 n_pending;
     PendingLaw pending[SIM_MAX_PENDING];
@@ -117,6 +122,18 @@ typedef struct {
     u8  status;          // STATUS_*
     u8  censures;        // gouvernements renversés (statistique)
     u16 score_first;     // score du 1er mandat (fixé au début du 2nd)
+
+    // --- V2 ---
+    u32 events_done_hi;  // bit i = événement 32 + i déjà tiré ce mandat (capacité 64)
+    u16 senate[GRP_COUNT]; // sièges du Sénat par groupe (somme = 348)
+    u8  cohab;           // 1 pendant une cohabitation
+    u8  cohab_group;     // GRP_* du groupe d'opposition le plus fort (donne le camp du PM)
+    u8  pm_prev;         // PM du joueur avant la cohabitation (rétabli à sa fin)
+    u8  referendum_done; // 1 si le référendum de ce mandat est utilisé
+    u8  reshuffle_year;  // année (1..) du dernier remaniement, 0 = jamais
+    u8  grace_pm;        // état de grâce du remaniement (dixièmes de %, décroît)
+    u8  gov_laws;        // lois adoptées par le gouvernement de cohabitation (statistique)
+    u8  cohabitations;   // cohabitations commencées (statistique)
 
     Rng rng;
 } Country;

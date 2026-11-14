@@ -46,6 +46,13 @@ extern const EventDef event_defs[EVT_COUNT];
 
 const EventDef *event_get(u8 id);   // NULL si id invalide
 
+// Capacité : 64 événements (EVT_COUNT <= EVENT_CAPACITY), marqués dans
+// Country.events_done (0-31) et events_done_hi (32-63).
+#define EVENT_CAPACITY 64
+// Lecture / marquage du bit « déjà tiré » d'un événement.
+u8   events_done_get(const Country *c, u8 id);
+void events_done_set(Country *c, u8 id);
+
 // Valeur d'une variable de condition (unités internes).
 s16 events_var_value(const Country *c, u8 var);
 // 1 si la condition de l'événement est vraie (toujours vrai sans condition).

@@ -57,6 +57,10 @@ void game_after_election(void);
 // Après l'écran du 2nd mandat : retour au jeu.
 void game_mandate2_done(void);
 
+// Partie sauvegardée (SRAM) : sauvegarde automatique au début de chaque trimestre.
+u8   game_has_save(void);      // 1 si une partie en cours est sauvegardée
+u8   game_continue(void);      // recharge la partie et va au tableau de bord (0 si échec)
+
 // Fin de partie
 u8   game_destitue(void);        // 1 si la partie s'est terminée par une destitution
 u8   game_two_mandates(void);    // 1 si le joueur a fait deux mandats

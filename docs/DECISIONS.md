@@ -16,3 +16,7 @@ Décisions prises en autonomie (ou arbitrages du joueur), à relire. Chacune est
 | 14/11 | Conversions : DETTE 1 unité = 0,5 point ; SCANDALE 1 unité = 2 points | Conversions V0 | Dette trop forte ; destitution impossible avec le contenu actuel |
 | 14/11 | Destitution rare (≈ 1 % des parties d'un joueur à scandales) | Plus fréquente | Cible « rare mais possible » ; à revoir avec plus d'événements en chaîne |
 | 14/11 | Vague 2 des écrans confiée à 2 agents Sonnet, flux (game.c) écrit par la session principale | Un seul agent | Gain de temps, fichiers disjoints |
+| 14/11 | V2 commencée par la simulation (cohabitation, Sénat, référendum, remaniement, 60 tours) ; pixel art et musique en attente du joueur | Commencer par la carte ou le pixel art | Ces deux sujets demandent des choix artistiques du joueur |
+| 14/11 | Musique V2 provisoire : 3 compositions originales simples sur le PSG (titre, jeu, élection) | Attendre le choix du joueur ; musiques libres de droits | Avancer sans bloquer ; facilement remplaçable par une vraie bande-son (XGM) |
+| 14/11 | 4e agent temporaire (sauvegarde, musique et lois en parallèle de la simulation) | Rester à 3 | Autorisé par le joueur pour accélérer ; fichiers disjoints |
+| 14/11 | Sauvegarde de partie : struct Game copiée en bloc avec signature, taille et somme de contrôle | Format champ par champ | Simple et robuste ; une sauvegarde d'une autre version est ignorée proprement |

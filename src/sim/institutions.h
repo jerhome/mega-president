@@ -14,6 +14,8 @@ typedef struct {
     u16 bloc_after;
     u8  majority;        // 1 : majorité absolue du bloc présidentiel
     u8  won;             // 1 : le bloc gagne des sièges (ou garde la majorité)
+    u8  cohab_started;   // V2 : 1 si la cohabitation commence (législatives perdues)
+    u8  cohab_ended;     // V2 : 1 si une cohabitation en cours prend fin (législatives gagnées)
 } LegislativeResult;
 
 // Bloc présidentiel : parti du joueur et groupes voisins (distance 1).
@@ -59,6 +61,6 @@ u8  sim_defend(Country *c, u8 defense, u8 group);
 
 // Interne (fin de tour).
 void inst_end_turn_quarter(Country *c, u8 *censure, u16 *censure_votes, u8 *new_pm,
-                           u8 *impeach, u16 *impeach_votes);
+                           u8 *impeach, u16 *impeach_votes, u16 *impeach_senate_votes);
 
 #endif

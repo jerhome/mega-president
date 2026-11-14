@@ -1,6 +1,9 @@
 #include "sim/events.h"
 #include "sim/sim.h"
 
+// Garde-fou : le bitfield des événements tirés tient sur 64 bits.
+typedef char evt_capacity_check[(EVT_COUNT <= EVENT_CAPACITY) ? 1 : -1];
+
 const EventDef *event_get(u8 id)
 {
     return id < EVT_COUNT ? &event_defs[id] : 0;
@@ -39,12 +42,24 @@ u8 events_cond_ok(const Country *c, const EventDef *e)
     }
 }
 
+u8 events_done_get(const Country *c, u8 id)
+{
+    if (id < 32) return (u8)((c->events_done >> id) & 1);
+    return (u8)((c->events_done_hi >> (id - 32)) & 1);
+}
+
+void events_done_set(Country *c, u8 id)
+{
+    if (id < 32) c->events_done |= (u32)1 << id;
+    else c->events_done_hi |= (u32)1 << (id - 32);
+}
+
 u8 events_eligible(const Country *c, u8 id)
 {
     const EventDef *e = event_get(id);
     if (!e) return 0;
     if (c->last_event == id + 1) return 0;
-    if (e->cond.var == EVV_NONE && (c->events_done & ((u32)1 << id))) return 0;
+    if (e->cond.var == EVV_NONE && events_done_get(c, id)) return 0;
     return events_cond_ok(c, e);
 }
 
@@ -73,7 +88,7 @@ s16 events_draw(Country *c)
     for (i = 0; i < EVT_COUNT; i++) {
         if (!events_eligible(c, i)) continue;
         if (pick < event_defs[i].weight) {
-            c->events_done |= (u32)1 << i;
+            events_done_set(c, i);
             c->last_event = (u8)(i + 1);
             return i;
         }

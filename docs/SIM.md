@@ -1,14 +1,14 @@
 # Cœur de simulation — formules et constantes
 
 > Référence pour l'équilibrage. Code : `src/sim/`. Unités internes : `docs/CONTRAT_V0.md` §2.
-> `tpy` = tours par an (4 en V1 ; le mode 12 tours/an est reporté en V2, le code reste compatible).
+> `tpy` = tours par an (4 : 20 tours ; 12 : mode 60 tours, V2 — voir « Mode 60 tours »).
 > Les variations annuelles sont ramenées au tour par `sim_step` (reste reporté d'un tour à l'autre, pas de perte par troncature).
 
 ## Fichiers
 
 | Fichier | Rôle |
 |---|---|
-| `sim_state.h` | struct `Country` (126 octets sur 68000), énumérations, bornes |
+| `sim_state.h` | struct `Country` (148 octets sur 68000 avec alignement 2 ; 126 en V1), énumérations, bornes |
 | `sim.h` / `sim.c` | `sim_init_ex`, `sim_end_turn`, lois, 49.3, télévision, PM, jauges, CP, 2nd mandat, scores |
 | `effects.*` | clés d'effets, conversion et bornage (`sim_apply_effect`) |
 | `laws.*` | catalogue `law_defs` (15 lois), coût effectif, file des lois en attente |
@@ -18,6 +18,9 @@
 | `budget.*` | budget annuel (rigueur / équilibre / relance) |
 | `institutions.*` | législatives, dissolution, majorité relative, censure, destitution |
 | `election.*` | présidentielle, thème de campagne, score de mandat |
+| `senate.*` | V2 : Sénat (348 sièges), renouvellement, voix de destitution du Sénat |
+| `cohab.*` | V2 : cohabitation (PM d'opposition, lois de souveraineté, lois du gouvernement, budget imposé) |
+| `actions.*` | V2 : référendum, remaniement |
 
 ## Conversion des clés d'effets (V1)
 
@@ -65,7 +68,7 @@ En Difficile, le **bloc présidentiel** (parti + groupes voisins) a moins de 289
 
 ## Fin de tour (`sim_end_turn`)
 
-Ordre : 1. lois arrivées à maturité → 2. budget (piliers, au trimestre) → 3. économie → 4. opinion → 5. Parlement → 6. jauges (au trimestre) → 7. clôture budgétaire (fin d'année) → 8. CP (au trimestre) → 9. institutions : destitution puis censure (au trimestre).
+Ordre : 1. lois arrivées à maturité → 2. budget (piliers, au trimestre) → 3. économie → 4. opinion → 5. Parlement → 6. jauges (au trimestre) → 7. clôture budgétaire (fin d'année) → 8. CP (au trimestre) → 9. institutions : destitution puis censure (au trimestre) → 10. (V2) renouvellement du Sénat. V2 : l'étape 5b (au trimestre) fait proposer ses lois au gouvernement de cohabitation et érode l'état de grâce du remaniement ; l'étape 7 laisse le PM d'opposition décider du budget.
 Les événements sont appliqués **avant** par l'appelant. Une partie terminée (destitution) ne bouge plus.
 
 ### Économie
@@ -189,6 +192,44 @@ Une loi adoptée ne peut plus être proposée pendant le mandat (le catalogue re
 - **Score de mandat** (`sim_mandate_score`) : popularité × 10 + piliers × 5 par point + 50 par point de chômage en moins + 5 par point de dette évité + 500 si réélu. Minimum 0.
 - **2nd mandat** : `sim_start_second_mandate` mémorise le score du 1er mandat (avec +500) et remet les valeurs de référence à zéro. `sim_score_total` = score du 1er mandat + score du 2nd mandat (sans bonus de réélection).
 
+## V2 (tâches 2.04, 2.05, 2.06, 2.07, 2.15)
+
+Champs ajoutés à `Country` : `events_done_hi`, `senate[5]`, `cohab`, `cohab_group`, `pm_prev`, `referendum_done`, `reshuffle_year`, `grace_pm`, `gov_laws`, `cohabitations` (+ 22 octets). Aucun changement de comportement hors de ces mécanismes : les statistiques V1 (20 tours) sont inchangées.
+
+### Capacité d'événements : 64
+
+`Country.events_done` (ids 0-31) et `events_done_hi` (ids 32-63) ; accès par `events_done_get/set`. `EVENT_CAPACITY` = 64 (`sim/events.h`) ; une assertion de compilation vérifie `EVT_COUNT <= 64`. **`MAX_EVENTS` dans `tools/content/gen_content.py` (ligne 24, valeur 32) doit passer à 64** (non modifié : hors périmètre).
+
+### Sénat (`senate.c`)
+
+- 348 sièges, groupes G1-G5. Départ = moyenne de la couleur de l'Assemblée de départ (donc selon difficulté et orientation) et d'une composition de fond plus centriste et droitière (22/58/92/118/58). Exemple Normal : 34/71/94/95/54 (bloc présidentiel : 199 à 260 sièges selon l'orientation ; Facile gauche 210 contre Difficile gauche 171).
+- **Renouvellement par moitié** au début des années 3, 6 et 9 de la partie (3 ans). La moitié basse de chaque groupe reste en place ; l'autre moitié est redistribuée au plus fort reste avec le poids sièges × f², f = 1000 + (score − 42 %) × k / 10, k = 8 (parti), 3 (voisins), −5 (opposition), aléa ±2,5 %, borné à 0,5-1,6. Inertie forte (≈ un tiers de la sensibilité des législatives). L'aléa vient d'un générateur dérivé : le flux de `c->rng` n'est pas consommé.
+- **Destitution** : vote aux deux tiers de l'Assemblée (385) **ET** du Sénat (232). Un sénateur d'un groupe hors parti vote pour si 100 − relation_s + (scandale − 70) + (défiance − 60) / 2 − (popularité − 40 %) ≥ 70, avec relation_s = (relation + relation de base) / 2 (jugement sur la durée).
+- Aperçus : `sim_senate_bloc_seats`, `sim_senate_has_majority`, `sim_senate_support_seats`, `sim_impeach_senate_votes`, `sim_impeach_would_pass`, `sim_senate_renewal_due/in`.
+
+### Cohabitation (`cohab.c`)
+
+- **Début** : `sim_legislatives` (dissolution ou début du 2nd mandat) ne donne pas la victoire au bloc présidentiel (`won` = 0 : pas de majorité et moins de sièges qu'avant). Le PM devient `PM_OPPOSITION` (4, hors `PM_COUNT`) ; le camp (`sim_cohab_camp`) est celui du groupe d'opposition le plus nombreux hors du bloc. Le PM du joueur est mémorisé (`pm_prev`) et rétabli à la fin.
+- **Fin** : à la première législative où `won` = 1 (majorité, ou sièges gagnés). La dissolution reste possible (au plus une par an).
+- **Lois** : le joueur ne propose que les lois de souveraineté : **POLICE, IMMIGRATION, ENERGIE, CIR** (`COHAB_SOVEREIGN_MASK`) ; les autres donnent `LAW_ERR_COHAB`. Le 49.3 suit la même règle.
+- **Gouvernement** : chaque trimestre, 50 % de chances qu'il fasse adopter, sans CP, la loi non souveraine non adoptée la plus proche de l'orientation de son groupe (aperçu : `sim_cohab_next_law`) ; effets différés complets, effets d'opinion immédiats divisés par 2. Compte rendu : `TurnReport.gov_law`.
+- **Budget** : `sim_budget_due` = 0 ; en fin d'année le PM impose relance (camp gauche), équilibre (centre) ou rigueur (droite) : `TurnReport.budget_gov`.
+- **Popularité** : cible d'opinion sous 42 % : écart réduit d'un tiers (exposition aux 2/3) ; au-dessus, inchangée.
+- Autres : pas de motion de censure (`sim_censure_threat` = 0), pas de remaniement ni de `sim_change_pm`. Le référendum reste possible sur toute loi.
+- Fréquence (joueur automatique « dissol » : dissout dès qu'il est sous 42 % de popularité) : 0 à 4 cohabitations pour 100 parties ; très rare pour un joueur compétent (il gagne ses législatives).
+
+### Référendum (`actions.c`)
+
+6 CP, au plus un par mandat (remis à zéro au 2nd mandat), sur une loi non adoptée (file non pleine). « Oui » par électorat (‰) = 470 + (affinité − 30) × 5 + effet immédiat de la loi pour l'électorat × 6 + (popularité − 45 %) × 0,6 + aléa (±4 points, commun), avec affinité = 50 − |orientation loi − orientation électorat| / 2, électorats à −40 / 0 / +40. Total pondéré 40/40/20 ; **adoptée si ≥ 50 %**. Succès : loi adoptée sans vote (relations inchangées), opinion +4, défiance −3. Échec : opinion −4, défiance +10. Aperçu sans aléa : `sim_referendum_preview` (environ 58 % de succès sur des lois tirées au hasard).
+
+### Remaniement (`actions.c`)
+
+3 CP, au plus un par an, hors cohabitation : change de PM (profil différent, effet de `sim_change_pm`, dont le +5 du Rassembleur), relations +2, opinion +1 point, état de grâce `grace_pm` = +3 points d'opinion cible, −0,6 point par trimestre (5 trimestres). Les ministres un par un restent hors périmètre.
+
+### Mode 60 tours (2.15)
+
+`turns_per_year = 12` : tous les flux (économie, opinion, dette, tension) passent par `sim_step` (reste reporté) ; bruits ramenés à ≈ 1/√3 ; lois : délai × 3 ; CP, jauges, Parlement, institutions, érosion de l'état de grâce du remaniement au trimestre (`sim_quarter_tick`, tous les 3 tours) ; budget présenté pendant les 3 derniers mois de l'année ; événements : 33 % par tour (≈ 1 tour sur 3). La calibration n'a demandé aucun changement de constante : l'écart avec le mode 20 tours est resté ≤ 5 points (voir les tableaux).
+
 ## Partie automatique (tests, 400 graines × 20 tours, événements, 3 PM à parts égales)
 
 Joueur **actif** : budget selon l'orientation (gauche relance, centre équilibre, droite rigueur si la dette dérive), 49.3 si le vote échoue sur une des 4 lois préférées (défiance < 35, CP suffisant), télévision avec modération (usure nulle, CP ≥ 4, popularité < 38 % ou fin de mandat), dissolution en majorité relative si popularité ≥ 47 %, se défend contre la destitution, choisit le meilleur thème ; événements au hasard. **Passif** : ne fait rien (budget reconduit), événements au hasard. **Scand.** : actif qui choisit le plus de scandale et ne se défend pas. **1erch** : passif qui prend toujours le 1er choix des événements.
@@ -209,3 +250,32 @@ Joueur **actif** : budget selon l'orientation (gauche relance, centre équilibre
 | normal | toutes | 1erch | 35,7–36,9 | 7,30 | 123,5 | 0 | 0 | 0 | ≈ 415 | — |
 
 Réélection moyenne du joueur actif : Facile 70 %, Normal 55 %, Difficile 26 %.
+
+### Joueur automatique V2 (tests/test_sim_v1.c) et mode 60 tours
+
+Le joueur « actif » utilise désormais le référendum (loi préférée refusée par l'Assemblée, « oui » attendu ≥ 50 %) et le remaniement (PM Technocrate remplacé par le Rassembleur si popularité < 40 % et CP abondants) : ils se déclenchent rarement (≈ 300 référendums et 420 remaniements pour 3 600 parties ; les chiffres de l'actif sont identiques à ceux de la V1). Variantes (Normal) : « refer » dépense 6 CP en référendum dès le tiers du mandat (réélection −2 à −5 points par rapport à l'actif : pas de stratégie dominante) ; « dissol » dissout dès 42 % de popularité.
+
+| Diff. | Orient. | Joueur | Pop. % | Chôm. | Dette | Lois | Réélu % | Destit. % | Score 1 | Cumul |
+|---|---|---|---|---|---|---|---|---|---|---|
+| normal | gauche | refer | 44,8 | 6,76 | 123,9 | 10,3 | 51 | 0 | 1126 | 2389 |
+| normal | centre | refer | 43,5 | 6,62 | 117,9 | 10,1 | 59 | 0 | 1151 | 2415 |
+| normal | droite | refer | 40,6 | 6,61 | 115,2 | 10,1 | 46 | 0 | 1002 | 2290 |
+| normal | gauche | dissol | 44,9 | 6,60 | 123,6 | 10,6 | 50 | 0 | 1137 | 2420 |
+| normal | centre | dissol | 44,1 | 6,46 | 118,2 | 9,9 | 60 | 0 | 1153 | 2431 |
+| normal | droite | dissol | 40,9 | 6,45 | 114,7 | 10,2 | 51 | 0 | 1047 | 2319 |
+
+Mode 60 tours comparé au mode 20 tours (joueur actif, 400 graines) :
+
+| Diff. | Orient. | Pop. 20 | Pop. 60 | Chôm. 20 | Chôm. 60 | Dette 20 | Dette 60 | Réélu 20 | Réélu 60 | Destit. 20 / 60 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| facile | gauche | 48,5 | 48,7 | 6,04 | 5,94 | 114,2 | 113,7 | 73 | 76 | 0 / 0 |
+| facile | centre | 46,0 | 46,5 | 6,13 | 6,07 | 108,0 | 107,6 | 72 | 77 | 0 / 0 |
+| facile | droite | 43,6 | 44,1 | 6,03 | 6,02 | 105,2 | 105,3 | 66 | 63 | 0 / 0 |
+| normal | gauche | 45,1 | 45,0 | 6,59 | 6,57 | 123,4 | 123,4 | 54 | 52 | 0 / 0 |
+| normal | centre | 43,6 | 43,6 | 6,53 | 6,51 | 118,0 | 117,6 | 61 | 58 | 0 / 0 |
+| normal | droite | 40,9 | 41,2 | 6,45 | 6,47 | 114,7 | 114,8 | 51 | 52 | 0 / 0 |
+| difficile | gauche | 39,7 | 39,6 | 7,64 | 7,64 | 134,3 | 134,9 | 26 | 26 | 0 / 0 |
+| difficile | centre | 37,4 | 37,4 | 7,52 | 7,54 | 128,6 | 128,7 | 29 | 27 | 0 / 0 |
+| difficile | droite | 35,3 | 35,4 | 7,50 | 7,56 | 125,7 | 126,2 | 21 | 22 | 0 / 0 |
+
+Le bruit d'échantillonnage de la réélection (400 graines) est d'environ ±2,5 points par ligne : sur d'autres graines, l'écart reste dans ±6, sans biais net (≈ −2 points en Difficile). Pour que le joueur automatique se comporte de la même façon dans les deux modes, la fin de mandat (télévision des 3 derniers trimestres) est exprimée en trimestres.

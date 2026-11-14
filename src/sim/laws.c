@@ -1,5 +1,6 @@
 #include "sim/laws.h"
 #include "sim/effects.h"
+#include "sim/cohab.h"
 
 #define E(k, v) { EFF_##k, v }
 
@@ -101,6 +102,7 @@ u8 law_can_propose(const Country *c, u8 id)
     if (!law) return LAW_ERR_ID;
     if (c->status != STATUS_PLAYING) return LAW_ERR_STATE;
     if (law_is_adopted(c, id)) return LAW_ERR_ADOPTED;
+    if (c->cohab && !sim_law_sovereign(id)) return LAW_ERR_COHAB;
     if (c->cp < law_cost(c, law)) return LAW_ERR_CP;
     if (c->n_pending >= SIM_MAX_PENDING) return LAW_ERR_FULL;
     return LAW_OK;

@@ -60,3 +60,28 @@ Valider : A ou C (`INPUT_OK`) ; annuler : B.
 `input_update`, `update`, `draw`, synchro verticale. `screen_change` est appliqué
 à l'image suivante (`exit`, effacement de l'écran, `init`). Les tuiles restent
 affichées : `draw` ne redessine que ce qui a changé.
+
+## Carte de France (src/ui/ui_map.h, res/gfx_map.res)
+Carte des 13 régions : 20×20 tuiles (160×160 px) sur le **plan B**, avec **une ligne de
+palette entière**. Un indice de couleur par région : colorer une région = changer UNE
+couleur de palette (`ui_map_set_region_level`, dégradé rouge → jaune → vert), sans
+redessiner de tuile. `ui_map_highlight` fait clignoter la région choisie (appeler
+`ui_map_update` à chaque image).
+
+**Palettes** : les 4 lignes sont prises par les styles. La carte occupe **PAL2** pendant
+son affichage : ne pas utiliser `UI_STYLE_DIM` / `UI_GAUGE_NEUTRAL` sur l'écran de la
+carte ; `ui_map_close()` restaure `pal_ui_dim`. Utiliser les styles TEXT, HIGHLIGHT, ALERT.
+Les tuiles de la carte sont chargées juste après celles de `ui.c` (400 tuiles environ).
+
+| Nom | Fichier | Contenu |
+|---|---|---|
+| `ts_map_france` | `gfx/map_france.png` 160×160 | carte ; indices 1-13 = régions, 14 = frontière, 0 = mer (transparent) |
+| `pal_map` | `gfx/pal_map.png` | 0 mer, 1-13 régions (ordre de `REGION_*`), 14 frontière, 15 libre |
+
+Régions dans l'ordre de l'enum `Region` : Hauts-de-France, Normandie, Île-de-France,
+Grand Est, Bretagne, Pays de la Loire, Centre-Val de Loire, Bourgogne-Franche-Comté,
+Nouvelle-Aquitaine, Auvergne-Rhône-Alpes, Occitanie, PACA, Corse.
+
+Provisoire : `python3 tools/map/make_map.py` génère les PNG depuis `tools/map/regions.txt`
+(une lettre par case de 4×4 px, `.` = mer ; lettres H N I E B L C U A R O P K). Pour la V2,
+remplacer `map_france.png` en gardant dimensions et indices.

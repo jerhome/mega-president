@@ -29,6 +29,7 @@ static u8 dirty;
 static bool blink_on;
 static u32 seed_acc;
 static u32 press_ms;
+static u8 has_save;
 static UiList list;
 
 // Groupe du parti du joueur selon l'orientation (contrat §4).
@@ -44,6 +45,7 @@ static void title_init(void)
     blink_on = FALSE;
     seed_acc = 0;
     press_ms = 0;
+    has_save = game_has_save();
     pm_items[PM_TECHNOCRATE] = txt[TXT_PM_TECHNOCRATE_NOM];
     pm_items[PM_RASSEMBLEUR] = txt[TXT_PM_RASSEMBLEUR_NOM];
     pm_items[PM_REFORMATEUR] = txt[TXT_PM_REFORMATEUR_NOM];
@@ -109,6 +111,9 @@ static void title_update(void)
     if (phase == PH_PRESS) {
         if (p & INPUT_C) {
             screen_change(SCREEN_SCORES);
+        } else if ((p & INPUT_B) && has_save) {
+            if (!game_continue())
+                has_save = 0;
         } else if (p & (INPUT_START | INPUT_OK)) {
             press_ms = screen_time_ms();
             go_phase(PH_ORIENT);
@@ -147,6 +152,8 @@ static void title_draw(void)
     if (dirty & D_ALL) {
         draw_frame();
         if (phase == PH_PRESS) {
+            if (has_save)
+                ui_text_center(0, 18, UI_COLS, "B : continuer la partie", UI_STYLE_TEXT);
             ui_text_center(0, 19, UI_COLS, "C : meilleurs scores", UI_STYLE_DIM);
         } else {
             static const char *const titles[3] = {

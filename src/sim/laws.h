@@ -55,7 +55,8 @@ enum {
     LAW_ERR_ADOPTED,    // déjà adoptée
     LAW_ERR_FULL,       // file des lois en attente pleine
     LAW_ERR_493,        // 49.3 déjà utilisé cette année (hors budget)
-    LAW_ERR_STATE       // partie terminée
+    LAW_ERR_STATE,      // partie terminée
+    LAW_ERR_COHAB       // V2 : cohabitation, loi réservée au gouvernement
 };
 
 // Coût effectif en CP (réduit de 1 avec le PM Réformateur, minimum 1).

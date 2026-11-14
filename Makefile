@@ -21,7 +21,7 @@ DOCKER_SGDK = docker run --rm -u $(shell id -u):$(shell id -g) -e HOME=/tmp \
 
 HOST_CC     ?= gcc
 HOST_CFLAGS := -std=c99 -Wall -Wextra -Werror -O1 -Isrc
-SIM_SRC     := $(wildcard src/sim/*.c) $(wildcard src/content/*.c) src/save/scores.c
+SIM_SRC     := $(wildcard src/sim/*.c) $(wildcard src/content/*.c) src/save/scores.c src/save/gamesave.c
 TEST_SRC    := $(wildcard tests/*.c)
 TEST_BIN    := out/host/tests
 
