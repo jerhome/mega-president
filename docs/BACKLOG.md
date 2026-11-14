@@ -80,15 +80,15 @@ La V0 n'est pas un prototype jetable : c'est une première tranche de la V1. Les
 
 | # | Tâche | Durée |
 |---|---|---|
-| 6.1 | Tableau de bord principal | 2 h |
-| 6.2 | Rapport du tour (journal simple) | 1 h |
-| 6.3 | Écran titre (choix de l'orientation) et écran de fin avec le score | 1 h |
+| 6.1 | ✅ Tableau de bord principal | 2 h |
+| 6.2 | ✅ Rapport du tour (journal simple) | 1 h |
+| 6.3 | ✅ Écran titre (choix de l'orientation) et écran de fin avec le score | 1 h |
 
 ### Jalon V0 (≈ 1,5 h)
 
 | # | Tâche | Durée |
 |---|---|---|
-| J0 | Stabilisation, essai sur la vraie console, notes de version | 1,5 h |
+| J0 | 🔄 Stabilisation, essai sur la vraie console, notes de version | 1,5 h |
 
 ---
 

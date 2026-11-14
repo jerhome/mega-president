@@ -18,7 +18,6 @@ typedef enum {
     SCREEN_ELECTION,
     SCREEN_REPORT,    // journal de fin de tour
     SCREEN_END,
-    SCREEN_DEMO,      // démonstration des widgets (V0)
     SCREEN_COUNT
 } ScreenId;
 
