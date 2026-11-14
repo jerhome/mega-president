@@ -1,0 +1,6 @@
+out/
+res/*.o
+tools/blastem*/
+*.srm
+*.sav
+.claude/settings.local.json
