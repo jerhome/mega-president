@@ -9,7 +9,7 @@ Gouvernez, faites voter vos lois, gérez les crises, survivez au Parlement, et t
 
 ## Cible technique
 
-- Megadrive d'origine (PAL ou NTSC), sans Mega-CD, via une cartouche flash (testé sur EverDrive MD V3).
+- Megadrive d'origine (PAL ou NTSC), sans Mega-CD, via une cartouche flash (prévu pour EverDrive MD V3 ; test sur console à venir).
 - High scores sauvegardés dans la SRAM de la cartouche.
 - Développé en C avec [SGDK](https://github.com/Stephane-D/SGDK).
 
