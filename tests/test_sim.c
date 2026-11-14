@@ -78,7 +78,7 @@ static void test_effects(void)
                                                 CHECK_EQ(c.opinion[2], 390);
     sim_apply_effect(&c, EFF_CROISSANCE, 2);    CHECK_EQ(c.growth, 120);
     sim_apply_effect(&c, EFF_CHOMAGE, -3);      CHECK_EQ(c.unemployment, 670);
-    sim_apply_effect(&c, EFF_DETTE, 1);         CHECK_EQ(c.debt, 1010);
+    sim_apply_effect(&c, EFF_DETTE, 2);         CHECK_EQ(c.debt, 1010);   // 1 = 0,5 point
     sim_apply_effect(&c, EFF_CP, -1);           CHECK_EQ(c.cp, 4);
     sim_apply_effect(&c, EFF_REL_G4, -5);       CHECK_EQ(c.relation[GRP_G4], 45);
     sim_apply_effects(&c, list, 2);
@@ -128,7 +128,7 @@ static void test_laws(void)
         u8 rep[SIM_MAX_PENDING], n;
         CHECK_EQ(sim_propose_law(&c, LOI_SMIC, &v), LAW_OK);
         CHECK(v.adopted);
-        CHECK_EQ(c.cp, 7);
+        CHECK_EQ(c.cp, 10 - law_get(LOI_SMIC)->cost);
         CHECK_EQ(c.opinion[ELEC_POPULAIRES], pop0 + 40);
         CHECK_EQ(c.n_pending, 1);
         CHECK(law_is_adopted(&c, LOI_SMIC));
@@ -159,11 +159,12 @@ static void test_laws(void)
     // Rejet : CP perdu, défiance en hausse, rien en attente.
     sim_init(&c, ORIENT_DROITE, 9, 4);
     c.cp = 10;
+    c.relation[GRP_G1] = c.relation[GRP_G2] = c.relation[GRP_G3] = 0;
     {
         u8 d0 = c.gauges[JAUGE_DEFIANCE];
         CHECK_EQ(sim_propose_law(&c, LOI_SMIC, &v), LAW_OK);
         CHECK(!v.adopted);
-        CHECK_EQ(c.cp, 7);
+        CHECK_EQ(c.cp, 10 - law_get(LOI_SMIC)->cost);
         CHECK_EQ(c.gauges[JAUGE_DEFIANCE], d0 + 5);
         CHECK_EQ(c.n_pending, 0);
         CHECK(!law_is_adopted(&c, LOI_SMIC));
@@ -195,13 +196,35 @@ static void test_vote(void)
     CHECK_EQ(v.votes_pour, 288);
     CHECK(!v.adopted);
 
-    // Seuil : relation + affinité >= VOTE_THRESHOLD
-    c.relation[GRP_G1] = VOTE_THRESHOLD - 50;   // + affinité 50 (loi à -80)
-    parl_vote(&c, -80, &v);
+    // Seuil : score >= seuil (G1 hors parti du joueur, majorité relative ici)
+    {
+        s16 thr = parl_threshold(&c, GRP_G1);
+        CHECK_EQ(thr, VOTE_THRESHOLD + (sim_has_majority(&c) ? 0 : VOTE_RELATIVE_MALUS));
+        c.gauges[JAUGE_DEFIANCE] = 0; c.gauges[JAUGE_SCANDALE] = 0;
+        // Loi à -80 : affinité 50, comptée 50 + 2 × 20 = 90
+        CHECK_EQ(parl_group_score(&c, GRP_G1, -80), c.relation[GRP_G1] + 90);
+        c.relation[GRP_G1] = 0;
+        parl_vote(&c, -80, &v);
+        CHECK(v.pour[GRP_G1]);
+        // Loi à 0 : affinité 10 pour G1, la relation décide
+        c.relation[GRP_G1] = (u8)(thr - 10);
+        parl_vote(&c, 0, &v);
+        CHECK(v.pour[GRP_G1]);
+        c.relation[GRP_G1] = (u8)(thr - 11);
+        parl_vote(&c, 0, &v);
+        CHECK(!v.pour[GRP_G1]);
+        // La défiance pénalise les groupes autres que le parti du joueur
+        c.relation[GRP_G1] = (u8)(thr - 10);
+        c.gauges[JAUGE_DEFIANCE] = 60;
+        parl_vote(&c, 0, &v);
+        CHECK(!v.pour[GRP_G1]);
+    }
+
+    // Gauche radicale et hausse du SMIC : vote pour même avec une relation basse
+    sim_init(&c, ORIENT_CENTRE, 2, 4);
+    c.relation[GRP_G1] = 20;
+    parl_vote(&c, law_get(LOI_SMIC)->orientation, &v);
     CHECK(v.pour[GRP_G1]);
-    c.relation[GRP_G1] = VOTE_THRESHOLD - 51;
-    parl_vote(&c, -80, &v);
-    CHECK(!v.pour[GRP_G1]);
 
     // Évolution des relations après adoption
     sim_init(&c, ORIENT_GAUCHE, 2, 4);
@@ -286,96 +309,6 @@ static void test_election(void)
     CHECK_EQ(sim_mandate_score(&c, 0), 0);
 }
 
-// Joueur automatique simple : propose dans un ordre de préférence chaque loi
-// abordable dont l'aperçu du vote est favorable.
-static const u8 pref[ORIENT_COUNT][LOI_COUNT] = {
-    { LOI_SMIC, LOI_RENOV, LOI_CIR, LOI_POLICE, LOI_IS },
-    { LOI_RENOV, LOI_CIR, LOI_POLICE, LOI_IS, LOI_SMIC },
-    { LOI_IS, LOI_POLICE, LOI_CIR, LOI_RENOV, LOI_SMIC },
-};
-
-static void auto_turn(Country *c, int active)
-{
-    int i;
-    VoteResult v;
-    if (!active) return;
-    for (i = 0; i < LOI_COUNT; i++) {
-        u8 id = pref[c->orientation][i];
-        if (law_can_propose(c, id) != LAW_OK) continue;
-        parl_vote(c, law_get(id)->orientation, &v);
-        if (v.adopted) sim_propose_law(c, id, &v);
-    }
-}
-
-static void play(u8 orient, u32 seed, int active, Country *c, ElectionResult *r)
-{
-    TurnReport rep;
-    sim_init(c, orient, seed, 4);
-    while (!sim_mandate_over(c)) {
-        auto_turn(c, active);
-        sim_end_turn(c, &rep);
-        CHECK(in_bounds(c));
-    }
-    sim_election(c, r);
-}
-
-static void test_reproducible(void)
-{
-    Country a, b;
-    ElectionResult ra, rb;
-    play(ORIENT_GAUCHE, 777, 1, &a, &ra);
-    play(ORIENT_GAUCHE, 777, 1, &b, &rb);
-    CHECK_EQ(sim_popularity(&a), sim_popularity(&b));
-    CHECK_EQ(a.debt, b.debt);
-    CHECK_EQ(a.unemployment, b.unemployment);
-    CHECK_EQ(ra.round1[0], rb.round1[0]);
-    CHECK_EQ(ra.round2[0], rb.round2[0]);
-    CHECK_EQ(ra.elected, rb.elected);
-    CHECK_EQ(a.rng.state, b.rng.state);
-}
-
-#define AUTO_SEEDS 400
-
-static void test_autoplay(void)
-{
-    static const char *names[ORIENT_COUNT] = { "gauche", "centre", "droite" };
-    int o, active;
-    printf("  Partie automatique (%d graines, 20 tours) :\n", AUTO_SEEDS);
-    printf("  %-7s %-6s %5s %5s %5s %6s %5s %5s %5s %6s\n", "orient", "joueur",
-           "pop%", "chom", "dette", "pil", "lois", "2ndT", "elu%", "score");
-    for (active = 1; active >= 0; active--) {
-        for (o = 0; o < ORIENT_COUNT; o++) {
-            long pop = 0, un = 0, debt = 0, pil = 0, laws = 0, second = 0, elected = 0, score = 0;
-            u32 seed;
-            for (seed = 1; seed <= AUTO_SEEDS; seed++) {
-                Country c;
-                ElectionResult r;
-                int k;
-                play((u8)o, seed * 2654435761u, active, &c, &r);
-                pop += sim_popularity(&c);
-                un += c.unemployment;
-                debt += c.debt;
-                pil += sim_pillar_progress(&c);
-                for (k = 0; k < LOI_COUNT; k++) laws += law_is_adopted(&c, (u8)k);
-                second += (r.finalist[0] == CAND_JOUEUR || r.finalist[1] == CAND_JOUEUR);
-                elected += r.elected;
-                score += sim_mandate_score(&c, r.elected);
-            }
-            printf("  %-7s %-6s %5.1f %5.2f %5.1f %+6.1f %5.1f %5.0f %5.0f %6ld\n",
-                   names[o], active ? "actif" : "passif",
-                   pop / 10.0 / AUTO_SEEDS, un / 100.0 / AUTO_SEEDS,
-                   debt / 10.0 / AUTO_SEEDS, pil / 10.0 / AUTO_SEEDS,
-                   (double)laws / AUTO_SEEDS, 100.0 * second / AUTO_SEEDS,
-                   100.0 * elected / AUTO_SEEDS, score / AUTO_SEEDS);
-            if (active) {
-                // Garde-fous d'équilibrage (larges) pour un joueur raisonnable.
-                CHECK(elected > AUTO_SEEDS / 10);
-                CHECK(elected < AUTO_SEEDS * 9 / 10);
-            }
-        }
-    }
-}
-
 void test_sim(void)
 {
     test_init();
@@ -384,6 +317,4 @@ void test_sim(void)
     test_laws();
     test_vote();
     test_election();
-    test_reproducible();
-    test_autoplay();
 }

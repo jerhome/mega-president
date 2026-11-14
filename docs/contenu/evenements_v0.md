@@ -194,7 +194,7 @@ Texte : Le Quotidien du Matin révèle un
   et assouplissement fiscal. Le ministre
   assure avoir « payé son homard ».
 Choix 1 : Soutenir le ministre
-  Effets : SCANDALE +5, POP_MOYENNES -2, REL_G4 +3
+  Effets : SCANDALE +5, POP_MOYENNES -2, REL_PARTI +3
   Journal : Le président défend son ministre.
     Le homard a bon dos.
 Choix 2 : Limoger le ministre

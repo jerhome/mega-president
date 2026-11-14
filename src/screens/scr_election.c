@@ -1,4 +1,5 @@
 // Mega Président — écran d'élection présidentielle (tâche 6.3).
+#include "audio/sfx.h"
 #include <genesis.h>
 #include "screens.h"
 #include "ui/ui.h"
@@ -106,6 +107,7 @@ static void election_draw(void)
             const char *l1, *l2;
             UiStyle st = e->elected ? UI_STYLE_HIGHLIGHT : UI_STYLE_ALERT;
             ui_window(4, 14, 32, 8);
+            sfx_play(e->elected ? SFX_ELECTION_WIN : SFX_ELECTION_LOSE);
             if (e->elected) {
                 l1 = "RÉÉLECTION !";
                 l2 = "Les Français vous renouvellent leur confiance.";

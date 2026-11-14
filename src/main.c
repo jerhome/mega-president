@@ -15,6 +15,8 @@ int main(bool hard)
     screen_register(SCREEN_EVENT, &scr_event);
     screen_register(SCREEN_ELECTION, &scr_election);
     screen_register(SCREEN_END, &scr_end);
+    screen_register(SCREEN_SCORES, &scr_scores);
+    screen_register(SCREEN_HELP, &scr_help);
     screen_run(SCREEN_TITLE);
     return 0;
 }

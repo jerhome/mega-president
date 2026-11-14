@@ -18,7 +18,7 @@
 #define INPUT_C      BUTTON_C
 #define INPUT_START  BUTTON_START
 #define INPUT_DIRS   (INPUT_UP | INPUT_DOWN | INPUT_LEFT | INPUT_RIGHT)
-#define INPUT_OK     (INPUT_A | INPUT_C)   // valider
+#define INPUT_OK     INPUT_A               // valider (C est réservé à l'aide)
 #define INPUT_CANCEL INPUT_B               // annuler / retour
 
 #define INPUT_REPEAT_DELAY_MS 330   // avant la première répétition

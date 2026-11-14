@@ -10,15 +10,36 @@ s16 parl_affinity(s8 law_orientation, s8 group_orient)
     return (s16)(50 - (diff >> 1));
 }
 
+// Score de vote d'un groupe : relation + affinité, l'affinité comptant triple
+// au-delà de 30 (loi très marquée dans le sens du groupe), moins la défiance
+// et le scandale pour les groupes autres que le parti du joueur.
+s16 parl_group_score(const Country *c, u8 g, s8 law_orientation)
+{
+    s16 aff = parl_affinity(law_orientation, group_orientation[g]);
+    s32 s = (s32)c->relation[g] + aff;
+    if (aff > VOTE_STRONG_AFF) s += (s32)(aff - VOTE_STRONG_AFF) * 2;
+    if (g != c->player_group) {
+        if (c->gauges[JAUGE_DEFIANCE] > 20) s -= (c->gauges[JAUGE_DEFIANCE] - 20) / 4;
+        s -= c->gauges[JAUGE_SCANDALE] / 10;
+    }
+    return (s16)s;
+}
+
+s16 parl_threshold(const Country *c, u8 g)
+{
+    if (g != c->player_group && !sim_has_majority(c)) return VOTE_THRESHOLD + VOTE_RELATIVE_MALUS;
+    return VOTE_THRESHOLD;
+}
+
 void parl_vote(const Country *c, s8 law_orientation, VoteResult *out)
 {
     u8 g;
     out->votes_pour = 0;
     out->votes_contre = 0;
     for (g = 0; g < GRP_COUNT; g++) {
-        s16 s = (s16)(c->relation[g] + parl_affinity(law_orientation, group_orientation[g]));
+        s16 s = parl_group_score(c, g, law_orientation);
         out->score[g] = s;
-        out->pour[g] = (u8)(s >= VOTE_THRESHOLD);
+        out->pour[g] = (u8)(s >= parl_threshold(c, g));
         if (out->pour[g]) out->votes_pour += c->seats[g];
         else out->votes_contre += c->seats[g];
     }
@@ -49,7 +70,8 @@ void parl_end_turn(Country *c)
     u8 g;
     if (!sim_quarter_tick(c)) return;
     for (g = 0; g < GRP_COUNT; g++) {
-        s16 target = sim_clamp((s32)c->relation_base[g] + popmod, 0, RELATION_MAX);
+        s16 target = sim_clamp((s32)c->relation_base[g] + popmod
+                               + (c->pm == PM_RASSEMBLEUR ? RASSEMBLEUR_REL : 0), 0, RELATION_MAX);
         if (c->relation[g] < target) c->relation[g]++;
         else if (c->relation[g] > target) c->relation[g]--;
     }

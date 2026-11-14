@@ -34,6 +34,9 @@ s8 sim_player_orientation(const Country *c);
 // Les 4 adversaires du joueur (écrit 4 identifiants dans out).
 void election_opponents(u8 orientation, u8 *out);
 
+// Popularité de campagne : popularité + bonus du thème de campagne par électorat.
+s16 sim_campaign_popularity(const Country *c);
+
 // Organise la présidentielle (consomme du hasard dans c->rng).
 void sim_election(Country *c, ElectionResult *out);
 

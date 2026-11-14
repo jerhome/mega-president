@@ -28,6 +28,7 @@ typedef enum {
     EFF_REL_G3,
     EFF_REL_G4,
     EFF_REL_G5,
+    EFF_REL_PARTI,       // relation avec le parti du joueur (G2, G3 ou G4)
     EFF_COUNT
 } EffectKey;
 

@@ -1,6 +1,8 @@
 // Mega Président — écran de jeu : tableau de bord, lois, Assemblée (tâche 6.1).
 // Dessin uniquement via src/ui ; la simulation est modifiée par game.h.
 
+#include "screens/scr_help.h"
+#include "audio/sfx.h"
 #include <genesis.h>
 #include <string.h>
 #include "screens.h"
@@ -118,7 +120,7 @@ static void draw_menu_full(void)
     ui_window(0, 20, 40, 8);
     ui_list_init(&menu_list, 1, 21, 38, 3, menu_items, 3);
     ui_list_draw(&menu_list);
-    ui_text_draw(1, 25, "Haut/Bas : choisir   A : valider", UI_STYLE_DIM);
+    ui_text_draw(1, 25, "Haut/Bas choisir  A valider  C aide", UI_STYLE_DIM);
 }
 
 static void update_menu(void)
@@ -220,6 +222,7 @@ static void update_laws(void)
         last_law = law_list.sel;
         if (game_propose_law(last_law, &last_vote) == LAW_OK) {
             last_adopted = last_vote.adopted;
+            sfx_play(last_adopted ? SFX_ADOPTED : SFX_REJECTED);
             set_mode(M_VOTE);
         }
         break;
@@ -346,6 +349,10 @@ static void game_init(void)
 
 static void game_update(void)
 {
+    if (input_pressed() & INPUT_C) {   // aide, depuis n'importe quel sous-écran
+        help_open(SCREEN_GAME);
+        return;
+    }
     if (mode_dirty) return;   // laisse draw() finir le changement de mode
     switch (mode) {
     case M_MENU: update_menu(); break;

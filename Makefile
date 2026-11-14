@@ -21,7 +21,7 @@ DOCKER_SGDK = docker run --rm -u $(shell id -u):$(shell id -g) -e HOME=/tmp \
 
 HOST_CC     ?= gcc
 HOST_CFLAGS := -std=c99 -Wall -Wextra -Werror -O1 -Isrc
-SIM_SRC     := $(wildcard src/sim/*.c) $(wildcard src/content/*.c)
+SIM_SRC     := $(wildcard src/sim/*.c) $(wildcard src/content/*.c) src/save/scores.c
 TEST_SRC    := $(wildcard tests/*.c)
 TEST_BIN    := out/host/tests
 
@@ -31,9 +31,10 @@ all: rom
 
 # Contenu (lois, événements, univers) : docs/contenu/*.md -> src/sim + src/content
 CONTENT_MD  := $(wildcard docs/contenu/*.md)
-CONTENT_GEN := src/sim/events_ids.h src/sim/events_data.c src/content/content_events.c
+CONTENT_GEN := src/sim/events_ids.h src/sim/events_data.c src/content/content_events.c \
+               src/content/content_texts.c src/content/content_texts.h
 
-$(CONTENT_GEN) &: $(CONTENT_MD) tools/content/gen_content.py src/sim/effects.h src/sim/laws.h src/sim/election.h
+$(CONTENT_GEN) &: $(CONTENT_MD) tools/content/gen_content.py src/sim/effects.h src/sim/laws.h src/sim/election.h src/sim/ids_v1.h
 	python3 tools/content/gen_content.py
 
 content: $(CONTENT_GEN)

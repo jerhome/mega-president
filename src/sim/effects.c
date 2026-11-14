@@ -9,14 +9,16 @@ s16 sim_effect_scale(u8 key)
     case EFF_CROISSANCE: case EFF_CHOMAGE:
         return 10;   // dixièmes de point -> centièmes
     case EFF_DETTE:
-        return 10;   // points de PIB -> dixièmes
+        return 5;    // 1 unité = 0,5 point de PIB (V1, équilibrage 1.20)
     case EFF_SOCIAL: case EFF_ECONOMIE: case EFF_TECHNOLOGIE:
     case EFF_ECOLOGIE: case EFF_SECURITE:
         return 10;   // points de pilier -> dixièmes
-    case EFF_TENSION: case EFF_SCANDALE: case EFF_DEFIANCE:
+    case EFF_SCANDALE:
+        return 2;    // 1 unité = 2 points de jauge (V1, équilibrage 1.20)
+    case EFF_TENSION: case EFF_DEFIANCE:
     case EFF_CP:
     case EFF_REL_G1: case EFF_REL_G2: case EFF_REL_G3:
-    case EFF_REL_G4: case EFF_REL_G5:
+    case EFF_REL_G4: case EFF_REL_G5: case EFF_REL_PARTI:
         return 1;
     default:
         return 0;
@@ -68,6 +70,10 @@ void sim_apply_effect(Country *c, u8 key, s8 value)
     case EFF_REL_G1: case EFF_REL_G2: case EFF_REL_G3:
     case EFF_REL_G4: case EFF_REL_G5:
         add8(&c->relation[key - EFF_REL_G1], d, RELATION_MAX);
+        break;
+    case EFF_REL_PARTI:
+        if (c->player_group < GRP_COUNT)
+            add8(&c->relation[c->player_group], d, RELATION_MAX);
         break;
     default:
         break;   // clé inconnue : ignorée

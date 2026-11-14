@@ -24,6 +24,16 @@ const char *const evt_title[EVT_COUNT] = {
     "Un ministre mis en examen", // EVT_AFFAIRE_JUDICIAIRE
     "Crise avec un voisin", // EVT_CRISE_DIPLO
     "Flambée de l'électricité", // EVT_PRIX_ELECTRICITE
+    "Sécheresse historique", // EVT_SECHERESSE
+    "Classement international", // EVT_CLASSEMENT_EDU
+    "Grand événement sportif", // EVT_EVENEMENT_SPORTIF
+    "Magistrats en colère", // EVT_JUSTICE_MOYENS
+    "Colère en outre-mer", // EVT_OUTREMER
+    "Le panier s'allège", // EVT_INFLATION_ALIM
+    "Laïcité à l'école", // EVT_LAICITE_ECOLE
+    "Rumeur virale", // EVT_DESINFORMATION
+    "Incendie industriel", // EVT_ACCIDENT_INDUSTRIEL
+    "La jeunesse se mobilise", // EVT_VOTE_JEUNES
 };
 
 const char *const evt_text[EVT_COUNT] = {
@@ -47,6 +57,16 @@ const char *const evt_text[EVT_COUNT] = {
     "Un ministre est mis en examen pour\nprise illégale d'intérêts. Il crie à\nl'acharnement, le parquet à\nl'indépendance. Le Quotidien du Matin\npublie les SMS. Tous.", // EVT_AFFAIRE_JUDICIAIRE
     "Un pays voisin saisit nos chalutiers\net ferme un tunnel frontalier. Les\nambassadeurs sont convoqués, les\ndrapeaux brûlés, les touristes\nrapatriés. La LSO réclame des\nreprésailles.", // EVT_CRISE_DIPLO
     "Le prix de gros de l'électricité\ntriple en un hiver. Les factures\nexplosent, les boulangers éteignent\nle four. Le fournisseur public\nparle de « tension sur le réseau ».", // EVT_PRIX_ELECTRICITE
+    "Les nappes phréatiques sont à sec\ndès le mois de juin. Des communes\nsont ravitaillées par camion-citerne\net le préfet interdit d'arroser les\npelouses. Le maïs, lui, s'est rendu.", // EVT_SECHERESSE
+    "Une étude internationale classe les\nélèves français en dessous de la\nmoyenne en mathématiques. Le Quotidien\ndu Matin parle de « déclassement »,\nles enseignants de « moyens ».", // EVT_CLASSEMENT_EDU
+    "La France accueille une compétition\ninternationale. Stades neufs, hôtels\ncomplets et métros bondés. Les\ncommerçants se frottent les mains,\nles riverains se bouchent l'oreille.", // EVT_EVENEMENT_SPORTIF
+    "Une tribune de mille magistrats\ndénonce le manque de moyens et les\npressions politiques. Les audiences\ndurent des mois, les dossiers\ns'empilent. Les juges rappellent\nqu'ils sont indépendants.", // EVT_JUSTICE_MOYENS
+    "Un archipel d'outre-mer proteste\ncontre le prix de la vie : un litre\nde lait coûte le double de Paris.\nBarrages sur les routes, rayons\nvides et élus qui montent à Paris.", // EVT_OUTREMER
+    "Les prix de l'alimentation ont\nbondi de 12 % en un an. Les pâtes\ndeviennent un produit de luxe, et\nla grande distribution jure ne pas\ny être pour grand-chose.", // EVT_INFLATION_ALIM
+    "Un incident dans un collège relance\nle débat sur la laïcité. Les\nenseignants demandent des règles\nclaires, les familles de l'apaisement.\nTout le monde invoque la République.", // EVT_LAICITE_ECOLE
+    "Un faux document circule en ligne :\nil attribue au gouvernement un projet\nde taxe sur les animaux de compagnie.\nQuinze millions de vues avant midi.\nLe démenti en fera dix mille.", // EVT_DESINFORMATION
+    "Un entrepôt de produits chimiques\nprend feu près d'un quartier habité.\nUn nuage noir traverse la ville.\nLes riverains veulent des réponses,\nl'exploitant des avocats.", // EVT_ACCIDENT_INDUSTRIEL
+    "Des milliers de lycéens et d'étudiants\ndéfilent pour le climat, l'emploi et\nle logement. Slogans soignés,\nbanderoles inventives, abstention.\nLes sondeurs sont aux aguets.", // EVT_VOTE_JEUNES
 };
 
 const char *const evt_choice[EVT_COUNT][EVENT_MAX_CHOICES] = {
@@ -70,6 +90,16 @@ const char *const evt_choice[EVT_COUNT][EVENT_MAX_CHOICES] = {
     { "Exiger sa démission", "Le maintenir au gouvernement", "Réformer le statut des ministres" }, // EVT_AFFAIRE_JUDICIAIRE
     { "Répondre fermement", "Négocier discrètement", "Saisir l'Union européenne" }, // EVT_CRISE_DIPLO
     { "Bouclier tarifaire", "Aide ciblée aux ménages", "Laisser jouer le marché" }, // EVT_PRIX_ELECTRICITE
+    { "Restrictions d'eau strictes", "Aide d'urgence aux exploitants", "Lancer un plan de l'eau" }, // EVT_SECHERESSE
+    { "Plan de revalorisation", "Évaluations et soutien ciblé", "Dénoncer un classement biaisé" }, // EVT_CLASSEMENT_EDU
+    { "Soigner l'accueil à tout prix", "Un événement sobre", "Réserver des places aux écoles" }, // EVT_EVENEMENT_SPORTIF
+    { "Recruter des magistrats", "Réformer la procédure", "Promettre une loi de moyens" }, // EVT_JUSTICE_MOYENS
+    { "Bouclier prix local", "Plan de développement", "Une mission d'enquête" }, // EVT_OUTREMER
+    { "Chèque alimentaire", "Plafonner les marges", "Faire confiance aux filières" }, // EVT_INFLATION_ALIM
+    { "Circulaire de fermeté", "Médiation et formation", "Réunir un comité de sages" }, // EVT_LAICITE_ECOLE
+    { "Démentir sans attendre", "Loi sur les plateformes", "Ignorer, la rumeur passera" }, // EVT_DESINFORMATION
+    { "Enquête et sanctions", "Plan de contrôle des sites", "Indemniser et rassurer" }, // EVT_ACCIDENT_INDUSTRIEL
+    { "Recevoir leurs représentants", "Un plan jeunesse", "Ne rien céder" }, // EVT_VOTE_JEUNES
 };
 
 const char *const evt_journal[EVT_COUNT][EVENT_MAX_CHOICES] = {
@@ -93,4 +123,14 @@ const char *const evt_journal[EVT_COUNT][EVENT_MAX_CHOICES] = {
     { "Le ministre démissionne. Il part\nen citant la présomption d'innocence.", "Ministre maintenu : la présomption\nd'innocence, version gouvernement.", "Un statut des ministres en vue.\nCertains le relisent à l'avance." }, // EVT_AFFAIRE_JUDICIAIRE
     { "Fermeté face au voisin : les\nchalutiers, eux, restent à quai.", "Négociations secrètes : tout se\nsait, surtout les concessions.", "Bruxelles est saisi. Réponse\nattendue d'ici la prochaine crise." }, // EVT_CRISE_DIPLO
     { "Bouclier sur l'électricité : la\nfacture est gelée, la dette chauffe.", "Chèque énergie ciblé : pour les\npauvres, un joli courrier.", "Factures libres : les ménages\ns'éclairent à la bougie." }, // EVT_PRIX_ELECTRICITE
+    { "Eau rationnée : on se lave vite,\non arrose peu, on râle beaucoup.", "Chèque pour les champs. Les nappes\nn'ont pas reçu de virement.", "Plan de l'eau : des tuyaux neufs,\ndes promesses pour dans dix ans." }, // EVT_SECHERESSE
+    { "Les profs seront mieux payés.\nLes élèves, eux, auront cours.", "Plus d'évaluations pour mieux\nmesurer. Les cartables s'alourdissent.", "Le président critique le classement.\nLe thermomètre est accusé de fièvre." }, // EVT_CLASSEMENT_EDU
+    { "Fête réussie, addition salée.\nLe chiffre officiel reste à venir.", "Des Jeux sans fard : moins de\npaillettes, moins de gaspillage.", "Des tribunes pour les écoliers.\nLes VIP se serrent un peu." }, // EVT_EVENEMENT_SPORTIF
+    { "Des juges en plus : la justice\ncherche encore des greffiers.", "La procédure est simplifiée.\nLes avocats la trouvent compliquée.", "Loi de programmation promise. Les\nmagistrats attendent le décret." }, // EVT_JUSTICE_MOYENS
+    { "Les prix sont encadrés là-bas.\nLes supermarchés négocient leur marge.", "Plan de développement : des routes,\ndes ports, des promesses durables.", "Mission d'enquête envoyée. Les\nbarrages, eux, restent sur place." }, // EVT_OUTREMER
+    { "Chèque alimentaire : le caddie\nrespire un peu, la dette moins.", "Marges plafonnées. La distribution\ndécouvre le mot « solidarité ».", "« La concurrence jouera. » Le\npanier moyen aussi, à la baisse." }, // EVT_INFLATION_ALIM
+    { "Circulaire de fermeté : les\nrègles sont claires. Les esprits, non.", "Médiateurs dans les collèges.\nL'apaisement prend son temps.", "Un comité est créé. Il rendra son\navis après la prochaine rentrée." }, // EVT_LAICITE_ECOLE
+    { "Démenti officiel dans l'heure. La\nrumeur, elle, a déjà fait le tour.", "Les plateformes sommées de réagir.\nElles promettent un « dialogue ».", "Le président laisse dire. Les\ninternautes, eux, ne se gênent pas." }, // EVT_DESINFORMATION
+    { "L'exploitant est sanctionné. Le\nnuage s'est dissipé, pas la colère.", "Contrôles renforcés. Trop tard\npour cet entrepôt, mieux que rien.", "Les riverains sont indemnisés.\nLes causes restent à éclaircir." }, // EVT_ACCIDENT_INDUSTRIEL
+    { "Les jeunes à l'Élysée. Les canapés\nn'en reviennent pas.", "Plan jeunesse : bourses, emploi et\nlogement. L'addition viendra après.", "Pas de concession. Les cortèges\nreviendront, plus nombreux." }, // EVT_VOTE_JEUNES
 };

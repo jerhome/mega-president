@@ -6,6 +6,7 @@
 
 #include "sim/sim_types.h"
 #include "sim/rng.h"
+#include "sim/ids_v1.h"
 
 // Électorats
 enum { ELEC_POPULAIRES, ELEC_MOYENNES, ELEC_AISEES, ELEC_COUNT };
@@ -38,6 +39,18 @@ enum { ORIENT_GAUCHE, ORIENT_CENTRE, ORIENT_DROITE, ORIENT_COUNT };
 
 #define SIM_MAX_PENDING  8   // lois adoptées en attente d'effet
 
+// Absence de choix (PM, thème de campagne)
+#define PM_NONE      PM_COUNT
+#define THEME_NONE   THEME_COUNT
+
+// État de la partie
+enum { STATUS_PLAYING, STATUS_DESTITUE, STATUS_COUNT };
+
+// Procédure de destitution (REGLES §10)
+enum { IMPEACH_NONE, IMPEACH_DEFENSE };
+// Défenses possibles pendant la procédure (bits de Country.impeach_def)
+enum { DEFENSE_TV, DEFENSE_SACRIFICE, DEFENSE_NEGOCIER, DEFENSE_COUNT };
+
 // Effet (clé, valeur) en unités lisibles du contrat §3.
 typedef struct {
     u8 key;      // EffectKey (sim/effects.h)
@@ -64,6 +77,11 @@ typedef struct {
 
     s16 debt_acc;              // reste de calcul de la dette (centièmes de point)
     s16 grace;                 // bonus d'état de grâce restant (dixièmes de %)
+    // Restes de calcul (mode 60 tours : pas de perte par troncature)
+    s16 acc_growth;
+    s16 acc_unemp;
+    s16 acc_tension;
+    s16 acc_opinion[ELEC_COUNT];
 
     u8 gauges[JAUGE_COUNT];    // 0-100
     u8 cp;                     // capital politique (0-15)
@@ -82,6 +100,24 @@ typedef struct {
     u8 n_pending;
     PendingLaw pending[SIM_MAX_PENDING];
 
+    // --- V1 ---
+    u8  pm;              // PM_* (PM_NONE : aucun profil)
+    u8  difficulty;      // DIFF_*
+    u8  mandate;         // 0 = 1er mandat, 1 = 2nd mandat
+    u8  theme;           // THEME_* de campagne (THEME_NONE si non choisi)
+    u8  budget;          // BUDGET_* en vigueur (reconduction : BUDGET_EQUILIBRE)
+    u8  budget_done;     // 1 si le budget de l'année est adopté (vote ou 49.3)
+    u8  art49_year;      // année (1..) du dernier 49.3 hors budget, 0 = jamais
+    u8  tv_turn;         // tour + 1 de la dernière intervention télévisée
+    u8  tv_fatigue;      // usure des interventions télévisées
+    u8  dissolve_turn;   // tour + 1 des dernières législatives, 0 = aucune ce mandat
+    u8  impeach;         // IMPEACH_*
+    u8  impeach_def;     // bits DEFENSE_* déjà utilisés pendant la procédure
+    u8  impeach_cool;    // trimestres avant qu'une nouvelle procédure soit possible
+    u8  status;          // STATUS_*
+    u8  censures;        // gouvernements renversés (statistique)
+    u16 score_first;     // score du 1er mandat (fixé au début du 2nd)
+
     Rng rng;
 } Country;
 
@@ -91,6 +127,12 @@ static inline s16 sim_clamp(s32 v, s16 lo, s16 hi)
     if (v < lo) return lo;
     if (v > hi) return hi;
     return (s16)v;
+}
+
+// Ajoute d points (non convertis) à une jauge, bornée à 0-100.
+static inline void sim_gauge_add(u8 *gauge, s16 d)
+{
+    *gauge = (u8)sim_clamp((s32)*gauge + d, 0, GAUGE_MAX);
 }
 
 static inline s16 sim_abs16(s16 v) { return v < 0 ? (s16)-v : v; }

@@ -1,5 +1,6 @@
 // Mega Président — événement du trimestre : texte, choix, ligne de journal.
 
+#include "audio/sfx.h"
 #include <genesis.h>
 #include "screens.h"
 #include "ui/ui.h"
@@ -18,6 +19,7 @@ static const char *choice_items[EVENT_MAX_CHOICES];
 
 static void event_init(void)
 {
+    sfx_play(SFX_EVENT);
     const EventDef *def;
     u16 n;
 

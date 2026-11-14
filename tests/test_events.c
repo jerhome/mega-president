@@ -91,7 +91,7 @@ static void test_choose(void)
     CHECK_EQ(e->n_choices, 3);
     CHECK_EQ(events_choose(&c, EVT_CANICULE, 0), 1);   // SOCIAL +3, DETTE +2, POP_POPULAIRES +2
     CHECK_EQ(c.pillars[PIL_SOCIAL], 530);
-    CHECK_EQ(c.debt, 1020);
+    CHECK_EQ(c.debt, 1010);   // DETTE +2 = 1 point (V1)
     CHECK_EQ(c.opinion[ELEC_POPULAIRES], 420);
     CHECK_EQ(events_choose(&c, EVT_CANICULE, 3), 0);    // choix invalide
     CHECK_EQ(events_choose(&c, EVT_COUNT, 0), 0);       // événement invalide

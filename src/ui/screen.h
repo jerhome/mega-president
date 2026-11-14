@@ -18,6 +18,8 @@ typedef enum {
     SCREEN_ELECTION,
     SCREEN_REPORT,    // journal de fin de tour
     SCREEN_END,
+    SCREEN_SCORES,
+    SCREEN_HELP,      // aide (règles), retour à l'écran appelant    // high scores (consultation, saisie des initiales)
     SCREEN_COUNT
 } ScreenId;
 

@@ -17,6 +17,8 @@ La V0 n'est pas un prototype jetable : c'est une première tranche de la V1. Les
 
 ## Décisions déjà prises
 
+- Chaque version (V0, V1, V2) se termine par une **étiquette git** et une **release GitHub** avec la ROM.
+
 - Ton sérieux et réaliste, avec parfois une pointe d'humour de gauche (événements, journal).
 - Partis et personnalités fictifs.
 - Mode 20 ou 60 tours au choix en début de partie.
@@ -37,7 +39,7 @@ La V0 n'est pas un prototype jetable : c'est une première tranche de la V1. Les
 | 0.1 | Compilation via l'image Docker SGDK 2.09 : `make`, `make run`, `make clean` | 0,5 h | ✅ |
 | 0.2 | Lancement automatique de BlastEm après la compilation (WSLg) | 0,5 h | ✅ PAL et NTSC (sans OpenGL sous WSLg) |
 | 0.3 | En-tête de ROM personnalisé (titre, SRAM déclarée, régions JUE) | 0,5 h | ✅ |
-| 0.4 | ROM de test (texte, manette, compteur sauvegardé), validée dans BlastEm puis sur l'EverDrive MD V3 | 1 h | 🔄 OK sur PC (PAL et NTSC), test EverDrive prévu le 15/11 |
+| 0.4 | ROM de test (texte, manette, compteur sauvegardé), validée dans BlastEm puis sur l'EverDrive MD V3 | 1 h | ✅ OK sur PC ; test EverDrive reporté en fin de projet (1.21) |
 | 0.5 | Cœur de simulation compilable aussi sur PC, avec des tests unitaires | 2 h | ✅ |
 | 0.6 | Dépôt git, conventions, CLAUDE.md, dépôt GitHub public | 0,5 h | ✅ |
 
@@ -98,46 +100,45 @@ La V0 n'est pas un prototype jetable : c'est une première tranche de la V1. Les
 
 | # | Tâche | Durée |
 |---|---|---|
-| 1.01 | Mode 60 tours (calculs ramenés au mois, rythme des événements) | 3 h |
-| 1.02 | Choix du Premier ministre (3 profils) | 1,5 h |
-| 1.03 | 3 niveaux de difficulté | 1 h |
-| 1.04 | Jauges de scandale et de défiance | 1,5 h |
-| 1.05 | Actions 49.3 et intervention télévisée | 2 h |
-| 1.06 | Budget annuel : 4 postes de dépenses et un niveau d'imposition | 3 h |
-| 1.07 | Motion de censure et changement de Premier ministre | 2 h |
-| 1.08 | Dissolution et législatives, y compris après une réélection | 3 h |
-| 1.09 | Majorité relative après des législatives perdues | 0,5 h |
-| 1.10 | Destitution : procédure, défense, vote aux deux tiers de l'Assemblée | 2 h |
-| 1.11 | Second mandat, usure du pouvoir, thème de campagne | 2 h |
+| 1.02 | 🔄 Choix du Premier ministre (3 profils) | 1,5 h |
+| 1.03 | 🔄 3 niveaux de difficulté | 1 h |
+| 1.04 | 🔄 Jauges de scandale et de défiance | 1,5 h |
+| 1.05 | 🔄 Actions 49.3 et intervention télévisée | 2 h |
+| 1.06 | 🔄 Budget annuel simplifié : rigueur, équilibre ou relance | 1 h |
+| 1.07 | 🔄 Motion de censure et changement de Premier ministre | 2 h |
+| 1.08 | 🔄 Dissolution et législatives, y compris après une réélection | 3 h |
+| 1.09 | 🔄 Majorité relative après des législatives perdues | 0,5 h |
+| 1.10 | 🔄 Destitution : procédure, défense, vote aux deux tiers de l'Assemblée | 2 h |
+| 1.11 | 🔄 Second mandat, usure du pouvoir, thème de campagne | 2 h |
 
 ### Contenu
 
 | # | Tâche | Durée |
 |---|---|---|
-| 1.12 | 10 lois de plus, soit **15** au total | 2 h |
-| 1.13 | 🔄 20 événements de plus, soit **30** au total, avec des chaînes d'événements | 5 h |
-| 1.14 | Relecture (ton, cohérence, textes dans 38 colonnes) | 2 h |
+| 1.12 | 🔄 10 lois de plus, soit **15** au total | 2 h |
+| 1.13 | ✅ 20 événements de plus, soit **30** au total, avec des chaînes d'événements | 5 h |
+| 1.14 | ✅ Relecture (ton, cohérence, textes dans 38 colonnes) | 2 h |
 
 ### Scores et sauvegarde
 
 | # | Tâche | Durée |
 |---|---|---|
-| 1.15 | Calcul du score (1er mandat, cumul sur 10 ans) | 1,5 h |
-| 1.16 | 2 tableaux de high scores en SRAM, avec contrôle d'intégrité et saisie des initiales | 3 h |
+| 1.15 | ✅ Calcul du score (1er mandat, cumul sur 10 ans) | 1,5 h |
+| 1.16 | ✅ 2 tableaux de high scores en SRAM, avec contrôle d'intégrité et saisie des initiales | 3 h |
 
 ### Écrans et son
 
 | # | Tâche | Durée |
 |---|---|---|
-| 1.17 | Écrans budget, groupes parlementaires et aide | 3 h |
-| 1.18 | Bruitages des menus | 2 h |
+| 1.17 | 🔄 Écrans budget, groupes parlementaires et aide | 3 h |
+| 1.18 | ✅ Bruitages des menus | 2 h |
 
 ### Équilibrage et qualité
 
 | # | Tâche | Durée |
 |---|---|---|
 | 1.19 | Simulateur sur PC : des milliers de parties automatiques et leurs statistiques | 3 h |
-| 1.20 | Passes d'équilibrage | 4 h |
+| 1.20 | 🔄 Passes d'équilibrage | 4 h |
 | 1.21 | Tests sur la vraie console (PAL) et dans BlastEm (PAL et NTSC) | 2 h |
 | 1.22 | ✅ Vérification automatique de la mémoire vive et de la taille de la ROM | 1 h |
 
@@ -161,6 +162,7 @@ La V0 n'est pas un prototype jetable : c'est une première tranche de la V1. Les
 | 2.12 | Plus de 40 lois au total | 5 h |
 | 2.13 | Sauvegarde d'une partie en cours | 3 h |
 | 2.14 | Équilibrage V2 | 5 h |
+| 2.15 | Mode 60 tours (reporté de la V1, tâche 1.01) | 3 h |
 
 ## Questions ouvertes
 

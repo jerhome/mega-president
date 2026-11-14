@@ -10,5 +10,7 @@ extern const Screen scr_report;
 extern const Screen scr_event;
 extern const Screen scr_election;
 extern const Screen scr_end;
+extern const Screen scr_scores;
+extern const Screen scr_help;
 
 #endif

@@ -35,7 +35,7 @@ Au total, 15 lois. Le masque `laws_adopted` (u16) suffit.
 
 ## 3. Identifiants partagés : `src/sim/ids_v1.h`
 
-`PM_TECHNOCRATE`, `PM_RASSEMBLEUR`, `PM_REFORMATEUR` · `DIFF_FACILE`, `DIFF_NORMAL`, `DIFF_DIFFICILE` · `THEME_EMPLOI`, `THEME_SECURITE`, `THEME_POUVOIR_ACHAT`, `THEME_ECOLOGIE` · `BUD_SOCIAL`, `BUD_EDUCATION`, `BUD_SECURITE`, `BUD_ECOLOGIE`.
+`PM_TECHNOCRATE`, `PM_RASSEMBLEUR`, `PM_REFORMATEUR` · `DIFF_FACILE`, `DIFF_NORMAL`, `DIFF_DIFFICILE` · `THEME_EMPLOI`, `THEME_SECURITE`, `THEME_POUVOIR_ACHAT`, `THEME_ECOLOGIE` · `BUDGET_RIGUEUR`, `BUDGET_EQUILIBRE`, `BUDGET_RELANCE` (budget simplifié : une décision par an).
 
 ## 4. Textes institutionnels : `docs/contenu/textes.md`
 
@@ -63,7 +63,7 @@ Clés obligatoires :
 | Premiers ministres | `TXT_PM_TECHNOCRATE_NOM`, `TXT_PM_TECHNOCRATE_DESC`, `TXT_PM_RASSEMBLEUR_NOM`, `TXT_PM_RASSEMBLEUR_DESC`, `TXT_PM_REFORMATEUR_NOM`, `TXT_PM_REFORMATEUR_DESC` (le nom est celui d'une personne fictive, 24 caractères au maximum) |
 | Difficulté | `TXT_DIFF_FACILE`, `TXT_DIFF_NORMAL`, `TXT_DIFF_DIFFICILE` (une ligne de description chacun) |
 | Thèmes de campagne | `TXT_THEME_EMPLOI`, `TXT_THEME_SECURITE`, `TXT_THEME_POUVOIR_ACHAT`, `TXT_THEME_ECOLOGIE` (libellé de 24 caractères au maximum) |
-| Budget | `TXT_BUD_SOCIAL`, `TXT_BUD_EDUCATION`, `TXT_BUD_SECURITE`, `TXT_BUD_ECOLOGIE`, `TXT_BUD_IMPOTS` (libellés de 20 caractères au maximum) |
+| Budget | `TXT_BUD_RIGUEUR`, `TXT_BUD_EQUILIBRE`, `TXT_BUD_RELANCE` (libellés de 20 caractères au maximum) et `TXT_BUD_RIGUEUR_DESC`, `TXT_BUD_EQUILIBRE_DESC`, `TXT_BUD_RELANCE_DESC` (2 lignes de 38 colonnes au maximum) |
 
 ## 5. Lois V1 : `docs/contenu/lois_v1.md`
 
@@ -76,3 +76,11 @@ Même format que `lois_v0.md`. Le convertisseur lit tous les `docs/contenu/lois_
 - Un contrôle d'intégrité (somme ou CRC) par tableau. Un tableau corrompu est réinitialisé, sans planter.
 - Une partie terminée par une destitution n'est jamais enregistrée.
 - L'accès passe par des fonctions SGDK `SRAM_*` encapsulées dans `src/save/`. La logique de classement (insertion, tri) est en C portable, testée sur PC.
+
+## 7. Arbitrages du joueur (14/11)
+
+- Mode 60 tours reporté en V2 : la V1 ne propose que 20 tours.
+- Budget simplifié : une décision par an (rigueur, équilibre, relance).
+- Bruitages maintenus en V1 (non coupés).
+- Équilibrage surtout par parties automatiques, puis un seul test du joueur.
+- Nouvelle clé d'effet `REL_PARTI` : relation avec le parti du joueur, quelle que soit son orientation.

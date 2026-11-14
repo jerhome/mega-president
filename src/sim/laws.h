@@ -12,6 +12,17 @@ enum {
     LOI_RENOV,    // plan de rénovation thermique
     LOI_POLICE,   // recrutement de policiers
     LOI_CIR,      // crédit d'impôt recherche
+    // V1 (docs/CONTRAT_V1.md §2, ordre imposé)
+    LOI_RETRAITES,   // report de l'âge de départ
+    LOI_ISF,         // impôt sur la fortune
+    LOI_HOPITAL,     // plan pour l'hôpital public
+    LOI_ECOLE,       // recrutement d'enseignants
+    LOI_ENERGIE,     // nucléaire et renouvelables
+    LOI_TRANSPORTS,  // trains du quotidien
+    LOI_IMMIGRATION, // durcissement des conditions d'entrée
+    LOI_CHOMAGE,     // réforme de l'assurance chômage
+    LOI_NUMERIQUE,   // taxe sur les géants du numérique
+    LOI_LOGEMENT,    // logements sociaux
     LOI_COUNT
 };
 
@@ -42,8 +53,13 @@ enum {
     LAW_ERR_ID,         // identifiant inconnu
     LAW_ERR_CP,         // capital politique insuffisant
     LAW_ERR_ADOPTED,    // déjà adoptée
-    LAW_ERR_FULL        // file des lois en attente pleine
+    LAW_ERR_FULL,       // file des lois en attente pleine
+    LAW_ERR_493,        // 49.3 déjà utilisé cette année (hors budget)
+    LAW_ERR_STATE       // partie terminée
 };
+
+// Coût effectif en CP (réduit de 1 avec le PM Réformateur, minimum 1).
+u8 law_cost(const Country *c, const LawDef *law);
 
 u8 law_is_adopted(const Country *c, u8 id);
 

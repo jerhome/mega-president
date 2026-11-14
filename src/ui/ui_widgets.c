@@ -1,4 +1,5 @@
 // Mega Président — widgets : liste avec curseur, boîte de message à choix.
+#include "audio/sfx.h"
 #include "ui/ui_internal.h"
 #include "ui/input.h"
 
@@ -51,12 +52,20 @@ UiListResult ui_list_update(UiList *l)
 
     if (l->sel != old) {
         list_fix_top(l);
+        sfx_play(SFX_MOVE);
         return UI_LIST_MOVED;
     }
-    if ((prs & INPUT_OK) && item_enabled(l, l->sel))
-        return UI_LIST_CHOSEN;
-    if (prs & INPUT_CANCEL)
+    if (prs & INPUT_OK) {
+        if (item_enabled(l, l->sel)) {
+            sfx_play(SFX_OK);
+            return UI_LIST_CHOSEN;
+        }
+        sfx_play(SFX_ERROR);
+    }
+    if (prs & INPUT_CANCEL) {
+        sfx_play(SFX_CANCEL);
         return UI_LIST_CANCELLED;
+    }
     return UI_LIST_IDLE;
 }
 

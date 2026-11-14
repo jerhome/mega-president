@@ -3,7 +3,7 @@
 
 Sorties (fichiers générés, ne pas modifier) :
   src/sim/events_ids.h, src/sim/events_data.c   données sans texte
-  src/content/content_{events,laws,world}.{h,c}  textes UTF-8
+  src/content/content_{events,laws,world,texts}.{h,c}  textes UTF-8
 
 Usage : python3 tools/content/gen_content.py   (depuis la racine du dépôt)
 Sortie déterministe. Code de retour 1 et messages clairs si le contenu est invalide.
@@ -227,14 +227,39 @@ def validate_events(events):
     return events
 
 
+def law_files():
+    """Tous les fichiers de lois (lois_*.md), ordre alphabétique."""
+    return sorted(f for f in os.listdir(SRC) if f.startswith("lois") and f.endswith(".md"))
+
+
 def parse_laws():
-    lines = read("lois_v0.md")
     laws = {}
+    files = law_files()
+    if not files:
+        err("docs/contenu/lois*.md", "aucun fichier de lois")
+    for fname in files:
+        parse_law_file(fname, laws)
+    for name in LAW_NAMES:
+        if name not in laws:
+            err("docs/contenu/lois*.md", "loi absente (présente dans laws.h) : %s" % name)
+            continue
+        l = laws[name]
+        w = "%s (%s:%d)" % (name, l["file"], l["line"])
+        if not l["name"] or len(l["name"]) > MAX_LAW_NAME:
+            err(w, "nom de %d caractères (max %d)" % (len(l["name"] or ""), MAX_LAW_NAME))
+        check_lines(w, "description", l["desc"], MAX_LAW_DESC_LINES, MAX_LINE)
+        for k, label in (("ok", "journal si adoptée"), ("ko", "journal si rejetée")):
+            check_lines(w, label, [l[k]] if l[k] else [], MAX_JOURNAL_LINES, MAX_LINE)
+    return laws
+
+
+def parse_law_file(fname, laws):
+    lines = read(fname)
     cur = None
     field = None
     for n, raw in enumerate(lines, 1):
         line = raw.rstrip()
-        where = "lois_v0.md:%d" % n
+        where = "%s:%d" % (fname, n)
         if line.startswith("## "):
             name = line[3:].strip()
             cur = field = None
@@ -242,8 +267,8 @@ def parse_laws():
                 if name not in LAW_NAMES:
                     err(where, "loi inconnue de laws.h : %s" % name)
                 if name in laws:
-                    err(where, "loi en double : %s" % name)
-                cur = {"line": n, "name": None, "desc": [], "ok": None, "ko": None}
+                    err(where, "loi en double : %s (déjà dans %s)" % (name, laws[name]["file"]))
+                cur = {"line": n, "file": fname, "name": None, "desc": [], "ok": None, "ko": None}
                 laws[name] = cur
             continue
         if cur is None or not line.strip():
@@ -269,18 +294,64 @@ def parse_laws():
             cur["desc"].append(line.strip())
         else:
             err(where, "ligne non reconnue : « %s »" % line.strip())
-    for name in LAW_NAMES:
-        if name not in laws:
-            err("lois_v0.md", "loi absente : %s" % name)
+
+
+# Textes institutionnels (CONTRAT_V1 §4) : clé -> (lignes max, colonnes max par ligne)
+TEXT_KEYS = [
+    ("TXT_493_UTILISE", 3, 38),
+    ("TXT_TV_SUCCES", 3, 38), ("TXT_TV_FLOP", 3, 38),
+    ("TXT_CENSURE_DEPOSEE", 3, 38), ("TXT_CENSURE_ADOPTEE", 3, 38), ("TXT_CENSURE_REJETEE", 3, 38),
+    ("TXT_NOUVEAU_PM", 3, 38),
+    ("TXT_DISSOLUTION", 3, 38), ("TXT_LEGISLATIVES_GAGNEES", 3, 38), ("TXT_LEGISLATIVES_PERDUES", 3, 38),
+    ("TXT_BUDGET_ADOPTE", 3, 38), ("TXT_BUDGET_493", 3, 38),
+    ("TXT_DESTITUTION_PROCEDURE", 3, 38), ("TXT_DESTITUTION_VOTEE", 3, 38),
+    ("TXT_DESTITUTION_REJETEE", 3, 38),
+    ("TXT_SECOND_MANDAT", 3, 38), ("TXT_FIN_SECOND_MANDAT", 3, 38),
+    ("TXT_PM_TECHNOCRATE_NOM", 1, 24), ("TXT_PM_TECHNOCRATE_DESC", 3, 38),
+    ("TXT_PM_RASSEMBLEUR_NOM", 1, 24), ("TXT_PM_RASSEMBLEUR_DESC", 3, 38),
+    ("TXT_PM_REFORMATEUR_NOM", 1, 24), ("TXT_PM_REFORMATEUR_DESC", 3, 38),
+    ("TXT_DIFF_FACILE", 1, 38), ("TXT_DIFF_NORMAL", 1, 38), ("TXT_DIFF_DIFFICILE", 1, 38),
+    ("TXT_THEME_EMPLOI", 1, 24), ("TXT_THEME_SECURITE", 1, 24),
+    ("TXT_THEME_POUVOIR_ACHAT", 1, 24), ("TXT_THEME_ECOLOGIE", 1, 24),
+    ("TXT_BUD_RIGUEUR", 1, 20), ("TXT_BUD_EQUILIBRE", 1, 20), ("TXT_BUD_RELANCE", 1, 20),
+    ("TXT_BUD_RIGUEUR_DESC", 2, 38), ("TXT_BUD_EQUILIBRE_DESC", 2, 38), ("TXT_BUD_RELANCE_DESC", 2, 38),
+]
+
+
+def parse_texts():
+    fname = "textes.md"
+    texts = {}
+    if not os.path.exists(os.path.join(SRC, fname)):
+        err("docs/contenu/" + fname, "fichier absent")
+        return texts
+    limits = dict((k, (nl, nc)) for k, nl, nc in TEXT_KEYS)
+    cur = None
+    for n, raw in enumerate(read(fname), 1):
+        line = raw.rstrip()
+        where = "%s:%d" % (fname, n)
+        if line.startswith("## "):
+            name = line[3:].strip()
+            cur = None
+            if name.startswith("TXT_"):
+                if name not in limits:
+                    err(where, "clé inconnue : %s" % name)
+                elif name in texts:
+                    err(where, "clé en double : %s" % name)
+                else:
+                    cur = {"line": n, "text": []}
+                    texts[name] = cur
             continue
-        l = laws[name]
-        w = "%s (lois_v0.md:%d)" % (name, l["line"])
-        if not l["name"] or len(l["name"]) > MAX_LAW_NAME:
-            err(w, "nom de %d caractères (max %d)" % (len(l["name"] or ""), MAX_LAW_NAME))
-        check_lines(w, "description", l["desc"], MAX_LAW_DESC_LINES, MAX_LINE)
-        for k, label in (("ok", "journal si adoptée"), ("ko", "journal si rejetée")):
-            check_lines(w, label, [l[k]] if l[k] else [], MAX_JOURNAL_LINES, MAX_LINE)
-    return laws
+        if cur is None or line.startswith("#"):
+            continue
+        if line.strip():
+            cur["text"].append(line.strip())
+    for key, nl, nc in TEXT_KEYS:
+        if key not in texts:
+            err(fname, "clé absente : %s" % key)
+            continue
+        t = texts[key]
+        check_lines("%s (%s:%d)" % (key, fname, t["line"]), "texte", t["text"], nl, nc)
+    return texts
 
 
 def table_rows(lines, start_marker):
@@ -434,10 +505,26 @@ def gen_world(groups, cands):
     write("src/content/content_world.c", "".join(c).rstrip("\n") + "\n")
 
 
+def gen_texts(texts):
+    h = ["#ifndef CONTENT_TEXTS_H\n#define CONTENT_TEXTS_H\n\n" + HEADER,
+         "// Textes institutionnels UTF-8 (docs/contenu/textes.md), lignes séparées par '\\n'.\n",
+         "enum {\n"]
+    for k, _, _ in TEXT_KEYS:
+        h.append("    %s,\n" % k)
+    h.append("    TXT_COUNT\n};\n\nextern const char *const txt[TXT_COUNT];\n\n#endif\n")
+    write("src/content/content_texts.h", "".join(h))
+    c = [HEADER, '#include "content/content_texts.h"\n\nconst char *const txt[TXT_COUNT] = {\n']
+    for k, _, _ in TEXT_KEYS:
+        c.append("    %s, // %s\n" % (cstr("\n".join(texts[k]["text"])), k))
+    c.append("};\n")
+    write("src/content/content_texts.c", "".join(c))
+
+
 def main():
     events = parse_events()
     laws = parse_laws()
     groups, cands = parse_world()
+    texts = parse_texts()
     if errors:
         sys.stderr.write("gen_content : %d erreur(s) de contenu\n" % len(errors))
         for e in errors:
@@ -446,8 +533,9 @@ def main():
     gen_events(events)
     gen_laws(laws)
     gen_world(groups, cands)
-    print("gen_content : %d événements, %d lois, %d groupes, %d candidats" %
-          (len(events), len(LAW_NAMES), 5, len(CAND_NAMES)))
+    gen_texts(texts)
+    print("gen_content : %d événements, %d lois, %d groupes, %d candidats, %d textes" %
+          (len(events), len(LAW_NAMES), 5, len(CAND_NAMES), len(TEXT_KEYS)))
     return 0
 
 

@@ -169,11 +169,11 @@ Texte : Un ministre est mis en examen pour
   l'indépendance. Le Quotidien du Matin
   publie les SMS. Tous.
 Choix 1 : Exiger sa démission
-  Effets : SCANDALE -4, CP -2, POP_POPULAIRES +2, REL_G4 -2
+  Effets : SCANDALE -4, CP -2, POP_POPULAIRES +2, REL_PARTI -2
   Journal : Le ministre démissionne. Il part
     en citant la présomption d'innocence.
 Choix 2 : Le maintenir au gouvernement
-  Effets : SCANDALE +6, POP_TOUS -2, REL_G4 +2
+  Effets : SCANDALE +6, POP_TOUS -2, REL_PARTI +2
   Journal : Ministre maintenu : la présomption
     d'innocence, version gouvernement.
 Choix 3 : Réformer le statut des ministres
@@ -205,7 +205,7 @@ Choix 3 : Saisir l'Union européenne
     attendue d'ici la prochaine crise.
 
 ## EVT_PRIX_ELECTRICITE
-Condition : DETTE > 100
+Condition : TENSION > 40
 Probabilité : moyenne
 Titre : Flambée de l'électricité
 Texte : Le prix de gros de l'électricité

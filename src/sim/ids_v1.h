@@ -10,7 +10,7 @@ enum { DIFF_FACILE, DIFF_NORMAL, DIFF_DIFFICILE, DIFF_COUNT };
 
 enum { THEME_EMPLOI, THEME_SECURITE, THEME_POUVOIR_ACHAT, THEME_ECOLOGIE, THEME_COUNT };
 
-// Postes du budget annuel (V1) ; l'imposition est un niveau global à part.
-enum { BUD_SOCIAL, BUD_EDUCATION, BUD_SECURITE, BUD_ECOLOGIE, BUD_COUNT };
+// Orientation du budget annuel (V1 simplifiée : une décision par an).
+enum { BUDGET_RIGUEUR, BUDGET_EQUILIBRE, BUDGET_RELANCE, BUDGET_COUNT };
 
 #endif

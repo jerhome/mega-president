@@ -1,4 +1,5 @@
 // Mega Président — gestion des écrans (tâche 1.1). Voir screen.h.
+#include "audio/sfx.h"
 #include "ui/screen.h"
 #include "ui/input.h"
 #include "ui/ui.h"
@@ -53,6 +54,7 @@ void screen_run(ScreenId first)
 {
     ui_init();
     input_init();
+    sfx_init();
     pending = first;
 
     while (TRUE) {
@@ -67,6 +69,7 @@ void screen_run(ScreenId first)
         // Si update() a demandé un changement d'écran, on ne dessine pas l'ancien.
         if (pending == NO_SCREEN && s && s->draw)
             s->draw();
+        sfx_update();
         SYS_doVBlankProcess();
         ticks += input_frame_ticks();
     }

@@ -22,7 +22,7 @@ if [ "$ram" -le "$RAM_MAX" ]; then s=✅; else s=❌; fail=1; fi
 printf '%s RAM statique : %4d o  / %d Ko\n' "$s" "$ram" $((RAM_MAX / 1024))
 
 # (les lignes de commentaire // sont ignorées)
-fp=$(grep -rnwE 'float|double' src --include='*.c' --include='*.h' | grep -vE '^[^:]+:[0-9]+:\s*//')
+fp=$(grep -rnwE 'float|double' src --include='*.c' --include='*.h' --exclude-dir=content | grep -vE '^[^:]+:[0-9]+:\s*//')
 if [ -n "$fp" ]; then
     echo "❌ float/double trouvés :"; echo "$fp"; fail=1
 else

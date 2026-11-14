@@ -1,6 +1,6 @@
 # Mega Président — Notes de version V0 (démo)
 
-Date : 14 novembre 2026. Étiquette git : `v0.1`.
+Date : 14 novembre 2026. Étiquette git `v0.1`, release GitHub avec la ROM : https://github.com/jerhome/mega-president/releases/tag/v0.1
 
 ## Contenu
 - Un mandat de 20 trimestres, avec choix de l'orientation : gauche (RSV), centre (MJM) ou droite (UTL).

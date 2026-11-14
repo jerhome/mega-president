@@ -8,7 +8,10 @@
 extern const s8  group_orientation[GRP_COUNT];   // -80 -40 0 +40 +80
 extern const u16 group_seats_start[GRP_COUNT];   // 75 140 160 120 82
 
-#define VOTE_THRESHOLD 75   // relation + affinité >= seuil => pour
+#define VOTE_THRESHOLD 75   // score >= seuil => pour
+#define VOTE_STRONG_AFF 30  // au-delà, l'affinité compte triple
+#define VOTE_RELATIVE_MALUS 6  // seuil relevé (hors parti du joueur) en majorité relative
+#define RASSEMBLEUR_REL 10  // PM Rassembleur : relations « naturelles » + 10
 
 typedef struct {
     u8  pour[GRP_COUNT];      // 1 si le groupe vote pour
@@ -20,6 +23,10 @@ typedef struct {
 
 // Affinité d'orientation loi/groupe : 50 - |écart| / 2 (de +50 à -50).
 s16 parl_affinity(s8 law_orientation, s8 group_orientation);
+
+// Score de vote d'un groupe et seuil à atteindre (aperçu détaillé).
+s16 parl_group_score(const Country *c, u8 group, s8 law_orientation);
+s16 parl_threshold(const Country *c, u8 group);
 
 // Vote déterministe (sans modifier l'état) : utile pour l'aperçu à l'écran.
 void parl_vote(const Country *c, s8 law_orientation, VoteResult *out);
