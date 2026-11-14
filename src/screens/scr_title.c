@@ -5,8 +5,10 @@
 #include "ui/input.h"
 #include "game/game.h"
 #include "content/content_world.h"
+#include "content/content_texts.h"
+#include "ui/screen.h"
 
-enum { PH_PRESS = 0, PH_CHOOSE };
+enum { PH_PRESS = 0, PH_ORIENT, PH_PM, PH_DIFF };
 
 enum { D_ALL = 1, D_LIST = 2, D_DESC = 4 };
 
@@ -15,6 +17,12 @@ enum { D_ALL = 1, D_LIST = 2, D_DESC = 4 };
 static const char *const orient_items[ORIENT_COUNT] = {
     "Gauche — RSV", "Centre — MJM", "Droite — UTL"
 };
+
+static const char *const diff_items[DIFF_COUNT] = { "Facile", "Normal", "Difficile" };
+static const char *pm_items[PM_COUNT];
+static u8 orient_sel = ORIENT_CENTRE;
+static u8 pm_sel = PM_TECHNOCRATE;
+static u8 diff_sel = DIFF_NORMAL;
 
 static u8 phase;
 static u8 dirty;
@@ -36,8 +44,59 @@ static void title_init(void)
     blink_on = FALSE;
     seed_acc = 0;
     press_ms = 0;
-    ui_list_init(&list, 4, LIST_Y, 20, 3, orient_items, ORIENT_COUNT);
-    list.sel = ORIENT_CENTRE;
+    pm_items[PM_TECHNOCRATE] = txt[TXT_PM_TECHNOCRATE_NOM];
+    pm_items[PM_RASSEMBLEUR] = txt[TXT_PM_RASSEMBLEUR_NOM];
+    pm_items[PM_REFORMATEUR] = txt[TXT_PM_REFORMATEUR_NOM];
+}
+
+// Prépare la liste de la phase de choix courante.
+static void list_setup(void)
+{
+    switch (phase) {
+    case PH_ORIENT:
+        ui_list_init(&list, 4, LIST_Y, 20, 3, orient_items, ORIENT_COUNT);
+        list.sel = orient_sel;
+        break;
+    case PH_PM:
+        ui_list_init(&list, 4, LIST_Y, 30, 3, pm_items, PM_COUNT);
+        list.sel = pm_sel;
+        break;
+    default:
+        ui_list_init(&list, 4, LIST_Y, 20, 3, diff_items, DIFF_COUNT);
+        list.sel = diff_sel;
+        break;
+    }
+}
+
+static void start_game(void)
+{
+    game_new(orient_sel, pm_sel, diff_sel,
+             seed_acc ^ (press_ms << 8) ^ (screen_time_ms() * 2654435761UL));
+    screen_change(SCREEN_GAME);
+}
+
+static void go_phase(u8 ph)
+{
+    phase = ph;
+    blink_on = FALSE;
+    dirty = D_ALL;
+    if (ph != PH_PRESS)
+        list_setup();
+}
+
+// Valide la sélection de la phase courante.
+static void choose(void)
+{
+    if (phase == PH_ORIENT) {
+        orient_sel = list.sel;
+        go_phase(PH_PM);
+    } else if (phase == PH_PM) {
+        pm_sel = list.sel;
+        go_phase(PH_DIFF);
+    } else {
+        diff_sel = list.sel;
+        start_game();
+    }
 }
 
 static void title_update(void)
@@ -48,10 +107,11 @@ static void title_update(void)
     seed_acc = seed_acc * 1103515245UL + 12345UL + input_frame_ticks() + input_held();
 
     if (phase == PH_PRESS) {
-        if (p & (INPUT_START | INPUT_OK)) {
+        if (p & INPUT_C) {
+            screen_change(SCREEN_SCORES);
+        } else if (p & (INPUT_START | INPUT_OK)) {
             press_ms = screen_time_ms();
-            phase = PH_CHOOSE;
-            dirty = D_ALL;
+            go_phase(PH_ORIENT);
         }
         return;
     }
@@ -61,19 +121,14 @@ static void title_update(void)
         dirty |= D_LIST | D_DESC;
         break;
     case UI_LIST_CHOSEN:
-        game_new(list.sel, seed_acc ^ (press_ms << 8) ^ (screen_time_ms() * 2654435761UL));
-        screen_change(SCREEN_GAME);
+        choose();
         break;
     case UI_LIST_CANCELLED:
-        phase = PH_PRESS;
-        blink_on = FALSE;
-        dirty = D_ALL;
+        go_phase((u8)(phase - 1));
         break;
     default:
-        if (p & INPUT_START) {
-            game_new(list.sel, seed_acc ^ (press_ms << 8) ^ (screen_time_ms() * 2654435761UL));
-            screen_change(SCREEN_GAME);
-        }
+        if (p & INPUT_START)
+            choose();
         break;
     }
 }
@@ -91,9 +146,16 @@ static void title_draw(void)
 {
     if (dirty & D_ALL) {
         draw_frame();
-        if (phase == PH_CHOOSE) {
-            ui_text_center(0, 14, UI_COLS, "Votre orientation politique", UI_STYLE_HIGHLIGHT);
-            ui_text_draw(1, 26, "Haut/Bas : choisir  A : commencer", UI_STYLE_DIM);
+        if (phase == PH_PRESS) {
+            ui_text_center(0, 19, UI_COLS, "C : meilleurs scores", UI_STYLE_DIM);
+        } else {
+            static const char *const titles[3] = {
+                "Votre orientation politique", "Votre Premier ministre", "Difficulté"
+            };
+            ui_text_center(0, 14, UI_COLS, titles[phase - PH_ORIENT], UI_STYLE_HIGHLIGHT);
+            ui_text_draw(1, 26, phase == PH_DIFF ? "Haut/Bas  A : jouer  B : retour"
+                                                 : "Haut/Bas  A : suite  B : retour",
+                         UI_STYLE_DIM);
             dirty |= D_LIST | D_DESC;
         }
         blink_on = FALSE;
@@ -118,10 +180,16 @@ static void title_draw(void)
         dirty &= (u8)~D_LIST;
     }
     if (dirty & D_DESC) {
-        u8 g = group_of(list.sel);
         ui_clear_rect(1, 20, UI_TEXT_COLS, 5);
-        ui_text_draw_n(1, 20, grp_name[g], UI_TEXT_COLS, 0, UI_STYLE_HIGHLIGHT);
-        ui_text_wrap(1, 22, UI_TEXT_COLS, 3, grp_desc[g], UI_STYLE_TEXT);
+        if (phase == PH_ORIENT) {
+            u8 g = group_of(list.sel);
+            ui_text_draw_n(1, 20, grp_name[g], UI_TEXT_COLS, 0, UI_STYLE_HIGHLIGHT);
+            ui_text_wrap(1, 22, UI_TEXT_COLS, 3, grp_desc[g], UI_STYLE_TEXT);
+        } else if (phase == PH_PM) {
+            ui_text_wrap(1, 20, UI_TEXT_COLS, 5, txt[TXT_PM_TECHNOCRATE_DESC + 2 * list.sel], UI_STYLE_TEXT);
+        } else {
+            ui_text_wrap(1, 20, UI_TEXT_COLS, 5, txt[TXT_DIFF_FACILE + list.sel], UI_STYLE_TEXT);
+        }
         dirty &= (u8)~D_DESC;
     }
 }

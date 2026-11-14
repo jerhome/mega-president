@@ -100,22 +100,22 @@ La V0 n'est pas un prototype jetable : c'est une première tranche de la V1. Les
 
 | # | Tâche | Durée |
 |---|---|---|
-| 1.02 | 🔄 Choix du Premier ministre (3 profils) | 1,5 h |
-| 1.03 | 🔄 3 niveaux de difficulté | 1 h |
-| 1.04 | 🔄 Jauges de scandale et de défiance | 1,5 h |
-| 1.05 | 🔄 Actions 49.3 et intervention télévisée | 2 h |
-| 1.06 | 🔄 Budget annuel simplifié : rigueur, équilibre ou relance | 1 h |
-| 1.07 | 🔄 Motion de censure et changement de Premier ministre | 2 h |
-| 1.08 | 🔄 Dissolution et législatives, y compris après une réélection | 3 h |
-| 1.09 | 🔄 Majorité relative après des législatives perdues | 0,5 h |
-| 1.10 | 🔄 Destitution : procédure, défense, vote aux deux tiers de l'Assemblée | 2 h |
-| 1.11 | 🔄 Second mandat, usure du pouvoir, thème de campagne | 2 h |
+| 1.02 | ✅ Choix du Premier ministre (3 profils) | 1,5 h |
+| 1.03 | ✅ 3 niveaux de difficulté | 1 h |
+| 1.04 | ✅ Jauges de scandale et de défiance | 1,5 h |
+| 1.05 | ✅ Actions 49.3 et intervention télévisée | 2 h |
+| 1.06 | ✅ Budget annuel simplifié : rigueur, équilibre ou relance | 1 h |
+| 1.07 | ✅ Motion de censure et changement de Premier ministre | 2 h |
+| 1.08 | ✅ Dissolution et législatives, y compris après une réélection | 3 h |
+| 1.09 | ✅ Majorité relative après des législatives perdues | 0,5 h |
+| 1.10 | ✅ Destitution : procédure, défense, vote aux deux tiers de l'Assemblée | 2 h |
+| 1.11 | ✅ Second mandat, usure du pouvoir, thème de campagne | 2 h |
 
 ### Contenu
 
 | # | Tâche | Durée |
 |---|---|---|
-| 1.12 | 🔄 10 lois de plus, soit **15** au total | 2 h |
+| 1.12 | ✅ 10 lois de plus, soit **15** au total | 2 h |
 | 1.13 | ✅ 20 événements de plus, soit **30** au total, avec des chaînes d'événements | 5 h |
 | 1.14 | ✅ Relecture (ton, cohérence, textes dans 38 colonnes) | 2 h |
 
@@ -130,16 +130,16 @@ La V0 n'est pas un prototype jetable : c'est une première tranche de la V1. Les
 
 | # | Tâche | Durée |
 |---|---|---|
-| 1.17 | 🔄 Écrans budget, groupes parlementaires et aide | 3 h |
+| 1.17 | ✅ Écrans budget, groupes parlementaires et aide | 3 h |
 | 1.18 | ✅ Bruitages des menus | 2 h |
 
 ### Équilibrage et qualité
 
 | # | Tâche | Durée |
 |---|---|---|
-| 1.19 | Simulateur sur PC : des milliers de parties automatiques et leurs statistiques | 3 h |
-| 1.20 | 🔄 Passes d'équilibrage | 4 h |
-| 1.21 | Tests sur la vraie console (PAL) et dans BlastEm (PAL et NTSC) | 2 h |
+| 1.19 | ✅ Simulateur sur PC : des milliers de parties automatiques et leurs statistiques | 3 h |
+| 1.20 | ✅ Passes d'équilibrage | 4 h |
+| 1.21 | ✅ Tests sur la vraie console (PAL) et dans BlastEm (PAL et NTSC) | 2 h | BlastEm OK ; vraie console regroupée en fin de projet |
 | 1.22 | ✅ Vérification automatique de la mémoire vive et de la taille de la ROM | 1 h |
 
 ---

@@ -41,7 +41,7 @@ static void election_update(void)
             phase++;
             dirty = TRUE;
         } else {
-            screen_change(SCREEN_END);
+            game_after_election();
         }
     }
 }
@@ -120,7 +120,7 @@ static void election_draw(void)
             }
             ui_text_center(4, 16, 32, l1, st);
             ui_text_wrap(6, 18, 28, 2, l2, UI_STYLE_TEXT);
-            ui_text_center(4, 20, 32, "A : bilan du mandat", UI_STYLE_DIM);
+            ui_text_center(4, 20, 32, e->elected ? "A : second mandat" : "A : bilan du mandat", UI_STYLE_DIM);
         }
     }
 }

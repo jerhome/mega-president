@@ -1,21 +1,25 @@
 #ifndef GAME_H
 #define GAME_H
 
-// État partagé d'une partie et enchaînement des écrans (V0).
+// État partagé d'une partie et enchaînement des écrans (V1).
 //
-// Flux d'un tour (docs/CONTRAT_V0.md §7) :
-//   SCREEN_GAME (tableau de bord : proposer des lois, finir le trimestre)
-//     -> game_end_turn() : sim_end_turn() puis tirage d'un événement
-//     -> SCREEN_REPORT (journal du trimestre)
-//     -> SCREEN_EVENT si g_game.event >= 0
-//     -> SCREEN_GAME, ou SCREEN_ELECTION si le mandat est terminé
-//   SCREEN_ELECTION -> SCREEN_END -> SCREEN_TITLE
+// Flux (docs/CONTRAT_V1.md §8) :
+//   TITRE (orientation, PM, difficulté) --game_new--> JEU
+//   JEU --game_end_turn--> RAPPORT
+//   RAPPORT --game_after_report--> FIN (destitué) | DESTITUTION (procédure)
+//                                  | ÉVÉNEMENT | suite
+//   DESTITUTION (défense) --game_after_impeach--> ÉVÉNEMENT | suite
+//   ÉVÉNEMENT --game_event_chosen--> suite
+//   suite = FIN (partie terminée) | CAMPAGNE (fin du 1er mandat) | JEU
+//   CAMPAGNE (thème) --game_campaign_done--> ÉLECTION
+//   ÉLECTION --game_after_election--> MANDAT2 (réélu) | FIN (battu)
+//   MANDAT2 (législatives) --game_mandate2_done--> JEU
+//   FIN (bilan) --> SCORES (si high score) | TITRE
 
 #include <genesis.h>
 #include "sim/sim.h"
 #include "sim/events.h"
-
-#define GAME_JOURNAL_MAX 6   // lignes de journal mémorisées pour le rapport
+#include "sim/ids_v1.h"
 
 typedef struct {
     Country    country;
@@ -24,23 +28,40 @@ typedef struct {
     s8         event_choice;  // choix fait pour l'événement du tour, -1 si aucun
     u16        laws_tried;    // lois proposées ce trimestre (bit = id), pour le journal
     u16        laws_adopted;  // lois adoptées ce trimestre (bit = id)
-    ElectionResult election;  // rempli par game_run_election()
-    u16        score;         // score final du mandat
+    ElectionResult election;  // dernière présidentielle
+    LegislativeResult legislatives;  // dernières législatives (dissolution ou 2nd mandat)
+    u8         reelected;     // 1 si réélu à la fin du 1er mandat
+    u16        score;         // score affiché en fin de partie (mandat ou cumul)
 } Game;
 
 extern Game g_game;
 
-// Nouvelle partie (orientation ORIENT_*, graine de hasard).
-void game_new(u8 orientation, u32 seed);
+// Nouvelle partie : orientation ORIENT_*, Premier ministre PM_*, difficulté DIFF_*.
+void game_new(u8 orientation, u8 pm, u8 difficulty, u32 seed);
 // Proposer une loi : vote immédiat. Met à jour laws_tried/laws_adopted.
 u8   game_propose_law(u8 law_id, VoteResult *out);
 // Fin du trimestre : sim_end_turn, tirage d'événement, puis SCREEN_REPORT.
 void game_end_turn(void);
-// Après le rapport : SCREEN_EVENT, SCREEN_GAME ou SCREEN_ELECTION.
+// Après le rapport (voir le flux ci-dessus).
 void game_after_report(void);
-// Après le choix d'un événement (applique ses effets) : SCREEN_GAME ou SCREEN_ELECTION.
+// Après le choix de la défense (écran de destitution).
+void game_after_impeach(void);
+// Après le choix d'un événement (applique ses effets).
 void game_event_chosen(u8 choice);
-// Calcule l'élection et le score (appelé à l'entrée de SCREEN_ELECTION).
+// Thème de campagne choisi (THEME_*) : passe à l'élection.
+void game_campaign_done(u8 theme);
+// Calcule l'élection (appelé à l'entrée de SCREEN_ELECTION).
 void game_run_election(void);
+// Après l'écran d'élection : 2nd mandat (législatives) ou fin.
+void game_after_election(void);
+// Après l'écran du 2nd mandat : retour au jeu.
+void game_mandate2_done(void);
+
+// Fin de partie
+u8   game_destitue(void);        // 1 si la partie s'est terminée par une destitution
+u8   game_two_mandates(void);    // 1 si le joueur a fait deux mandats
+u16  game_score_first(void);     // score du 1er mandat (tableau 1)
+u16  game_score_total(void);     // score cumulé sur 10 ans (tableau 2), 0 si un seul mandat
+u16  game_end_year(void);        // année civile de fin de partie
 
 #endif

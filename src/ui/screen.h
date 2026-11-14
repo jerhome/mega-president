@@ -18,8 +18,12 @@ typedef enum {
     SCREEN_ELECTION,
     SCREEN_REPORT,    // journal de fin de tour
     SCREEN_END,
-    SCREEN_SCORES,
-    SCREEN_HELP,      // aide (règles), retour à l'écran appelant    // high scores (consultation, saisie des initiales)
+    SCREEN_SCORES,    // high scores (consultation, saisie des initiales)
+    SCREEN_HELP,      // aide (règles), retour à l'écran appelant
+    SCREEN_IMPEACH,   // procédure de destitution : choix de la défense
+    SCREEN_CAMPAIGN,  // thème de campagne avant la présidentielle
+    SCREEN_MANDATE2,  // début du 2nd mandat (législatives)
+    SCREEN_BUDGET,    // budget annuel
     SCREEN_COUNT
 } ScreenId;
 

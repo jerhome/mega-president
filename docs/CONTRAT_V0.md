@@ -42,9 +42,9 @@ Un effet est un couple (clé, valeur) exprimé en **unités lisibles** dans le c
 | `POP_TOUS` | points de % appliqués aux 3 électorats | `POP_TOUS +2` |
 | `CROISSANCE` | dixièmes de point | `CROISSANCE +2` = +0,2 % |
 | `CHOMAGE` | dixièmes de point | `CHOMAGE -3` = −0,3 % |
-| `DETTE` | points de PIB | `DETTE +1` |
+| `DETTE` | demi-points de PIB (V1) | `DETTE +2` = +1 point |
 | `SOCIAL`, `ECONOMIE`, `TECHNOLOGIE`, `ECOLOGIE`, `SECURITE` | points de pilier (0–100) | `ECOLOGIE +4` |
-| `TENSION`, `SCANDALE`, `DEFIANCE` | points de jauge (0–100) | `TENSION +10` |
+| `TENSION`, `DEFIANCE` | points de jauge (0–100) ; `SCANDALE` : 2 points par unité (V1) | `TENSION +10` |
 | `CP` | capital politique | `CP -1` |
 | `REL_G1` … `REL_G5` | points de relation avec un groupe | `REL_G4 -5` |
 

@@ -42,17 +42,19 @@ static char norm_letter(char c)
 s8 score_table_insert(ScoreTable *t, const char ini[3], u16 score, u8 orient, u16 year)
 {
     s8 r = score_table_rank(t, score);
-    s8 i;
+    s16 i;
+    u16 k;
     if (r < 0)
         return -1;
-    for (i = SCORES_COUNT - 1; i > r; i--)
+    k = (u16)r;
+    for (i = SCORES_COUNT - 1; i > (s16)k; i--)
         t->e[i] = t->e[i - 1];
-    t->e[r].ini[0] = norm_letter(ini[0]);
-    t->e[r].ini[1] = norm_letter(ini[1]);
-    t->e[r].ini[2] = norm_letter(ini[2]);
-    t->e[r].score = score;
-    t->e[r].orient = orient;
-    t->e[r].year = year;
+    t->e[k].ini[0] = norm_letter(ini[0]);
+    t->e[k].ini[1] = norm_letter(ini[1]);
+    t->e[k].ini[2] = norm_letter(ini[2]);
+    t->e[k].score = score;
+    t->e[k].orient = orient;
+    t->e[k].year = year;
     return r;
 }
 

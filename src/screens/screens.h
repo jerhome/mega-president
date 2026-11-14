@@ -12,5 +12,9 @@ extern const Screen scr_election;
 extern const Screen scr_end;
 extern const Screen scr_scores;
 extern const Screen scr_help;
+extern const Screen scr_impeach;
+extern const Screen scr_campaign;
+extern const Screen scr_mandate2;
+extern const Screen scr_budget;
 
 #endif

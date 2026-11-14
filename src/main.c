@@ -17,6 +17,10 @@ int main(bool hard)
     screen_register(SCREEN_END, &scr_end);
     screen_register(SCREEN_SCORES, &scr_scores);
     screen_register(SCREEN_HELP, &scr_help);
+    screen_register(SCREEN_IMPEACH, &scr_impeach);
+    screen_register(SCREEN_CAMPAIGN, &scr_campaign);
+    screen_register(SCREEN_MANDATE2, &scr_mandate2);
+    screen_register(SCREEN_BUDGET, &scr_budget);
     screen_run(SCREEN_TITLE);
     return 0;
 }

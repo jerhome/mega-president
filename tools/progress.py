@@ -8,7 +8,12 @@ La « version en cours » est la première qui n'est pas à 100 %.
 """
 import re
 import sys
+from datetime import datetime
 from pathlib import Path
+
+# Début réel du développement (premier commit) : sert à mesurer la vitesse réelle
+# (heures estimées faites par heure réelle) pour projeter le temps restant.
+PROJECT_START = datetime(2026, 11, 14, 21, 30)
 
 BACKLOG = Path(__file__).resolve().parent.parent / "docs" / "BACKLOG.md"
 HOURS = re.compile(r"\|\s*(\d+(?:,\d+)?)\s*h\s*\|")
@@ -66,7 +71,19 @@ def main():
     print("Avancement global")
     for name, v in versions.items():
         mark = "  ← en cours" if name == current else ""
-        print(f"  {name:3} {bar(v['pct'])} {v['pct']:5.1f} %  ({v['don']:.1f} / {v['tot']:.1f} h){mark}")
+        rest = v['tot'] - v['don']
+        print(f"  {name:3} {bar(v['pct'])} {v['pct']:5.1f} %  ({v['don']:.1f} / {v['tot']:.1f} h, reste {rest:.1f} h){mark}")
+    done_all = sum(v['don'] for v in versions.values())
+    elapsed = (datetime.now() - PROJECT_START).total_seconds() / 3600
+    if elapsed > 0.25 and done_all > 0:
+        speed = done_all / elapsed
+        print(f"\nVitesse réelle : {speed:.1f} h estimées par heure réelle "
+              f"({done_all:.1f} h faites en {elapsed:.1f} h)")
+        for name, v in versions.items():
+            rest = v['tot'] - v['don']
+            if rest > 0:
+                mins = rest / speed * 60
+                print(f"  {name} : reste {rest:.1f} h estimées ≈ {mins:.0f} min réelles à ce rythme")
     if current:
         v = versions[current]
         print(f"\nDétail {v['title']}")

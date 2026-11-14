@@ -84,3 +84,15 @@ Même format que `lois_v0.md`. Le convertisseur lit tous les `docs/contenu/lois_
 - Bruitages maintenus en V1 (non coupés).
 - Équilibrage surtout par parties automatiques, puis un seul test du joueur.
 - Nouvelle clé d'effet `REL_PARTI` : relation avec le parti du joueur, quelle que soit son orientation.
+
+## 8. Vague 2 : écrans (flux dans `src/game/game.h`)
+
+| Agent | Fichiers (exclusifs) | Écrans |
+|---|---|---|
+| **Écrans A** | `scr_title.c`, `scr_campaign.c` (nouveau), `scr_election.c`, `scr_mandate2.c` (nouveau), `scr_end.c` | Titre (orientation, PM, difficulté), campagne, élection, début du 2nd mandat, fin et scores |
+| **Écrans B** | `scr_game.c`, `scr_report.c`, `scr_budget.c` (nouveau), `scr_impeach.c` (nouveau), `scr_event.c` | Tableau de bord et actions, journal, budget, destitution |
+| Session principale | `src/game/`, `src/main.c`, `src/ui/screen.h`, `src/screens/screens.h` | Flux, enregistrement des écrans |
+
+Les identifiants d'écran existent déjà : `SCREEN_IMPEACH`, `SCREEN_CAMPAIGN`, `SCREEN_MANDATE2`, `SCREEN_BUDGET`. Chaque nouvel écran définit `const Screen scr_xxx` (déclaré dans `screens.h`).
+
+Rappel des conversions modifiées par la simulation V1 : `DETTE` 1 unité = 0,5 point de PIB, `SCANDALE` 1 unité = 2 points de jauge.
