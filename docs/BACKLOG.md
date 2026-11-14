@@ -74,7 +74,7 @@ La V0 n'est pas un prototype jetable : c'est une première tranche de la V1. Les
 |---|---|---|
 | 4.1 | ✅ Moteur d'événements (conditions, probabilités, choix, conséquences) | 2 h |
 | 4.2 | ✅ Fichier texte de contenu converti automatiquement en C, pour écrire du contenu sans toucher au code | 1,5 h |
-| 4.3 | 🔄 **10 événements** | 1,5 h |
+| 4.3 | ✅ **10 événements** | 1,5 h |
 
 ### E6 — Écrans (≈ 4 h)
 
@@ -88,7 +88,7 @@ La V0 n'est pas un prototype jetable : c'est une première tranche de la V1. Les
 
 | # | Tâche | Durée |
 |---|---|---|
-| J0 | 🔄 Stabilisation, essai sur la vraie console, notes de version | 1,5 h |
+| J0 | ✅ Stabilisation, essai sur la vraie console, notes de version | 1,5 h |
 
 ---
 
@@ -139,7 +139,7 @@ La V0 n'est pas un prototype jetable : c'est une première tranche de la V1. Les
 | 1.19 | Simulateur sur PC : des milliers de parties automatiques et leurs statistiques | 3 h |
 | 1.20 | Passes d'équilibrage | 4 h |
 | 1.21 | Tests sur la vraie console (PAL) et dans BlastEm (PAL et NTSC) | 2 h |
-| 1.22 | Vérification automatique de la mémoire vive et de la taille de la ROM | 1 h |
+| 1.22 | ✅ Vérification automatique de la mémoire vive et de la taille de la ROM | 1 h |
 
 ---
 

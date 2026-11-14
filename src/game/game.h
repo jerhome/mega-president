@@ -22,8 +22,8 @@ typedef struct {
     TurnReport report;        // compte rendu du dernier trimestre
     s16        event;         // événement à présenter (EVT_*), -1 si aucun
     s8         event_choice;  // choix fait pour l'événement du tour, -1 si aucun
-    u8         laws_tried;    // lois proposées ce trimestre (bit = id), pour le journal
-    u8         laws_adopted;  // lois adoptées ce trimestre (bit = id)
+    u16        laws_tried;    // lois proposées ce trimestre (bit = id), pour le journal
+    u16        laws_adopted;  // lois adoptées ce trimestre (bit = id)
     ElectionResult election;  // rempli par game_run_election()
     u16        score;         // score final du mandat
 } Game;

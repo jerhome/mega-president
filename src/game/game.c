@@ -15,9 +15,9 @@ u8 game_propose_law(u8 law_id, VoteResult *out)
 {
     u8 r = sim_propose_law(&g_game.country, law_id, out);
     if (r == LAW_OK) {
-        g_game.laws_tried |= (u8)(1 << law_id);
+        g_game.laws_tried |= (u16)(1u << law_id);
         if (out->adopted)
-            g_game.laws_adopted |= (u8)(1 << law_id);
+            g_game.laws_adopted |= (u16)(1u << law_id);
     }
     return r;
 }
