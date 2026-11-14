@@ -1,4 +1,5 @@
 // Mega Président — gestion des écrans (tâche 1.1). Voir screen.h.
+#include "audio/music.h"
 #include "audio/sfx.h"
 #include "ui/screen.h"
 #include "ui/input.h"
@@ -55,6 +56,7 @@ void screen_run(ScreenId first)
     ui_init();
     input_init();
     sfx_init();
+    music_init();
     pending = first;
 
     while (TRUE) {
@@ -70,6 +72,7 @@ void screen_run(ScreenId first)
         if (pending == NO_SCREEN && s && s->draw)
             s->draw();
         sfx_update();
+        music_update();
         SYS_doVBlankProcess();
         ticks += input_frame_ticks();
     }

@@ -1,4 +1,5 @@
 // Mega Président — écran titre et choix de l'orientation (tâche 6.3).
+#include "audio/music.h"
 #include <genesis.h>
 #include "screens.h"
 #include "ui/ui.h"
@@ -46,6 +47,7 @@ static void title_init(void)
     seed_acc = 0;
     press_ms = 0;
     has_save = game_has_save();
+    music_play(MUS_TITLE);
     pm_items[PM_TECHNOCRATE] = txt[TXT_PM_TECHNOCRATE_NOM];
     pm_items[PM_RASSEMBLEUR] = txt[TXT_PM_RASSEMBLEUR_NOM];
     pm_items[PM_REFORMATEUR] = txt[TXT_PM_REFORMATEUR_NOM];

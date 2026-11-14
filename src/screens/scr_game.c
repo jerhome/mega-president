@@ -2,6 +2,7 @@
 // dissolution, Assemblée (tâche 6.1, V1).
 // Dessin uniquement via src/ui ; la simulation est modifiée par game.h.
 
+#include "audio/music.h"
 #include "screens/scr_help.h"
 #include "audio/sfx.h"
 #include <genesis.h>
@@ -625,6 +626,7 @@ static void update_assembly(void)
 
 static void game_init(void)
 {
+    music_play(MUS_GAME);
     ui_list_init(&law_list, 1, 4, 38, 5, law_name, LOI_COUNT);
     if (g_game.country.turn == 0) g_budget_seen = 0;   // nouvelle partie ou 2nd mandat
     menu_sel = 0;

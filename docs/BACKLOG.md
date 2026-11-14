@@ -150,7 +150,7 @@ La V0 n'est pas un prototype jetable : c'est une première tranche de la V1. Les
 |---|---|---|
 | 2.01 | 🔄 **Carte de France des 13 régions**, avec la popularité par région | 8 h |
 | 2.02 | Intégration du pixel art : portraits, Élysée, écrans illustrés (le dessin n'est pas compté) | 8 h |
-| 2.03 | 🔄 Musique (2 ou 3 morceaux XGM2) | 6 h |
+| 2.03 | ✅ Musique (2 ou 3 morceaux XGM2) | 6 h |
 | 2.04 | ✅ Cohabitation | 3 h |
 | 2.05 | ✅ Sénat, renouvelé par moitié, et pris en compte dans la destitution | 2 h |
 | 2.06 | ✅ Référendum | 2 h |
@@ -160,7 +160,7 @@ La V0 n'est pas un prototype jetable : c'est une première tranche de la V1. Les
 | 2.10 | Budget détaillé : 6 postes et 3 impôts | 3 h |
 | 2.11 | 🔄 Plus de 100 événements au total | 12 h |
 | 2.12 | 🔄 Plus de 40 lois au total | 5 h |
-| 2.13 | 🔄 Sauvegarde d'une partie en cours | 3 h |
+| 2.13 | ✅ Sauvegarde d'une partie en cours | 3 h |
 | 2.14 | Équilibrage V2 | 5 h |
 | 2.15 | ✅ Mode 60 tours (reporté de la V1, tâche 1.01) | 3 h |
 

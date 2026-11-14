@@ -1,4 +1,5 @@
 // Mega Président — écran d'élection présidentielle (tâche 6.3).
+#include "audio/music.h"
 #include "audio/sfx.h"
 #include <genesis.h>
 #include "screens.h"
@@ -16,6 +17,7 @@ static bool player_in_round2;
 
 static void election_init(void)
 {
+    music_play(MUS_ELECTION);
     const ElectionResult *e;
     u8 i, j;
 
@@ -107,6 +109,7 @@ static void election_draw(void)
             const char *l1, *l2;
             UiStyle st = e->elected ? UI_STYLE_HIGHLIGHT : UI_STYLE_ALERT;
             ui_window(4, 14, 32, 8);
+            music_stop();   // la fanfare (ou le thème de défaite) joue seule
             sfx_play(e->elected ? SFX_ELECTION_WIN : SFX_ELECTION_LOSE);
             if (e->elected) {
                 l1 = "RÉÉLECTION !";
