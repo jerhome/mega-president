@@ -5,3 +5,4 @@ tools/blastem*/
 *.sav
 .claude/settings.local.json
 res/*.h
+__pycache__/

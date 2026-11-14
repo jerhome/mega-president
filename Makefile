@@ -7,6 +7,8 @@
 #   make test       tests unitaires du cœur de simulation, sur PC (gcc natif)
 #   make content    régénère le code C depuis docs/contenu/*.md
 #   make gfx        régénère la police et les images d'interface (res/gfx/)
+#   make art        régénère les illustrations (pixel art, tools/art/)
+#   make map        régénère la carte des régions (tools/map/)
 #   make check      tests + ROM + budgets mémoire
 #   make clean      supprime out/
 
@@ -25,7 +27,7 @@ SIM_SRC     := $(wildcard src/sim/*.c) $(wildcard src/content/*.c) src/save/scor
 TEST_SRC    := $(wildcard tests/*.c)
 TEST_BIN    := out/host/tests
 
-.PHONY: all rom debug run run-ntsc test check clean blastem content gfx
+.PHONY: all rom debug run run-ntsc test check clean blastem content gfx art map
 
 all: rom
 
@@ -41,6 +43,12 @@ content: $(CONTENT_GEN)
 
 gfx:
 	python3 tools/font/make_gfx.py
+
+art:
+	python3 tools/art/make_art.py
+
+map:
+	python3 tools/map/make_map.py
 
 rom: $(CONTENT_GEN)
 	$(DOCKER_SGDK) release

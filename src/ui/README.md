@@ -85,3 +85,46 @@ Nouvelle-Aquitaine, Auvergne-Rhône-Alpes, Occitanie, PACA, Corse.
 Provisoire : `python3 tools/map/make_map.py` génère les PNG depuis `tools/map/regions.txt`
 (une lettre par case de 4×4 px, `.` = mer ; lettres H N I E B L C U A R O P K). Pour la V2,
 remplacer `map_france.png` en gardant dimensions et indices.
+
+## Illustrations (src/ui/ui_art.h, res/gfx_art.res) — tâche 2.02
+Pixel art caricatural façon BD, **généré par programme** : `python3 tools/art/make_art.py`
+(Python 3 seul) écrit `res/gfx/art_*.png` et `res/gfx_art.res`. Tous les personnages sont
+fictifs. Dessins : `tools/art/title.py`, `portraits.py`, `vignettes.py` + `vignettes2.py`,
+`decors.py` ; primitives (ellipses, polygones, contours d'encre, tramage) : `tools/art/raster.py`.
+`--preview DIR` écrit aussi des planches agrandies.
+
+API (`ui_art.c` est le seul fichier qui touche VDP/PAL pour les illustrations) :
+- `ui_art_draw(id, x, y)` : dessine sur le **plan B** (coin haut gauche en tuiles), palette
+  chargée dans **PAL2** ; `ui_art_draw_pal(id, x, y, PAL1|PAL2|PAL3)` choisit la ligne.
+- `ui_art_size(id, &w, &h)` (en tuiles), `ui_art_erase(id, x, y)` (efface le plan B).
+- `ui_art_close()` : **à appeler en quittant l'écran** (et avant `ui_map_draw`) ; restaure
+  `pal_ui_highlight` / `pal_ui_dim` / `pal_ui_alert` et libère la VRAM.
+- Macros : `ART_PRES(ORIENT_*)`, `ART_PM(PM_*)`, `ART_COHAB(camp)`, `ART_CAND(CAND_*)`.
+
+**Palettes** : chaque illustration a sa palette (15 couleurs + transparent). Les **14 portraits
+partagent la même palette** : plusieurs portraits tiennent sur une seule ligne. Une ligne
+empruntée n'est plus utilisable pour son style (PAL1 : HIGHLIGHT, PAL2 : DIM / jauge
+neutre, PAL3 : ALERT). Deux illustrations de palettes différentes = deux lignes
+(ex. portrait en PAL2 + vignette en PAL3 : n'utiliser alors que TEXT et HIGHLIGHT).
+
+**VRAM** : tuiles chargées juste après celles de `ui.c` (même zone que la carte, jamais
+affichées ensemble), empilées si plusieurs illustrations (16 au plus) ; une illustration
+déjà chargée est réutilisée. Limite : `TILE_USER_MAX_INDEX` (plus de 1 000 tuiles libres ; après dédoublonnage l'écran
+titre en prend 341, un portrait ≈ 43, une vignette ≈ 46, l'hémicycle 120, le journal 83).
+ROM : ≈ 64 Ko pour les 33 illustrations.
+Images non compressées (DMA direct depuis la ROM, aucun tampon en RAM).
+
+| Id | Taille (tuiles) | Contenu |
+|---|---|---|
+| `ART_TITLE` | 40 × 16 | palais, drapeau, président qui salue, gardes, journalistes ; lignes 0-2 = ciel uni pour le titre |
+| `ART_PRES_GAUCHE/CENTRE/DROITE` | 7 × 7 | le président selon l'orientation |
+| `ART_PM_TECHNOCRATE/RASSEMBLEUR/REFORMATEUR` | 7 × 7 | Delaunay, Deschamps, Maréchal |
+| `ART_COHAB_GAUCHE/CENTRE/DROITE` | 7 × 7 | Carrel, Lacombe, de Montclar (PM d'opposition) |
+| `ART_CAND_ROUSSEL/VASSEUR/MARCHETTI/VALMONT/LENOIR` | 7 × 7 | candidats, ordre `CAND_*` |
+| `ART_EVT_*` (15) | 8 × 6 | grève, canicule, inondation, scandale, sommet, bourse, santé, pollution, sécurité, numérique, éducation, énergie, agriculture, industrie, fête |
+| `ART_DECOR_HEMICYCLE` | 20 × 9 | Assemblée en séance (votes) |
+| `ART_DECOR_URNE` | 8 × 8 | urne, « A VOTÉ » (élection, référendum) |
+| `ART_DECOR_JOURNAL` | 38 × 5 | bandeau « Le Quotidien du Matin » (rapport) |
+
+Pour retoucher : modifier le script du dessin, relancer `make_art.py`, recompiler. L'ordre des
+`IMAGE` de `gfx_art.res` doit rester celui de l'enum `ArtId` et du tableau de `ui_art.c`.

@@ -42,6 +42,8 @@ def parse(text):
         h = HOURS.search(line)
         if not h:
             continue
+        if "⏭" in line:      # tâche reportée à une version ultérieure : hors calcul
+            continue
         hours = float(h.group(1).replace(",", "."))
         done = 1.0 if "✅" in line else 0.0
         e = versions[cur]["epics"].setdefault(epic, [0.0, 0.0, 0, 0, 0])
