@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Calcule l'avancement de chaque version à partir de docs/BACKLOG.md.
 
-Convention : une ligne de tableau contenant ✅ est faite (100 %), 🔄 est en
-cours (50 %). L'avancement est pondéré par la durée estimée de chaque tâche.
+Convention : une ligne de tableau contenant ✅ est faite (100 %) ; 🔄 signale
+une tâche en cours, comptée à part (0 % dans le pourcentage, pour ne pas le
+gonfler quand plusieurs tâches sont déléguées en même temps). L'avancement est pondéré par la durée estimée de chaque tâche.
 La « version en cours » est la première qui n'est pas à 100 %.
 """
 import re
@@ -37,12 +38,13 @@ def parse(text):
         if not h:
             continue
         hours = float(h.group(1).replace(",", "."))
-        done = 1.0 if "✅" in line else 0.5 if "🔄" in line else 0.0
-        e = versions[cur]["epics"].setdefault(epic, [0.0, 0.0, 0, 0])
+        done = 1.0 if "✅" in line else 0.0
+        e = versions[cur]["epics"].setdefault(epic, [0.0, 0.0, 0, 0, 0])
         e[0] += hours
         e[1] += hours * done
         e[2] += 1
         e[3] += 1 if done == 1.0 else 0
+        e[4] += 1 if "🔄" in line else 0
     return versions
 
 
@@ -68,9 +70,10 @@ def main():
     if current:
         v = versions[current]
         print(f"\nDétail {v['title']}")
-        for epic, (tot, don, n, ndone) in v["epics"].items():
+        for epic, (tot, don, n, ndone, nwip) in v["epics"].items():
             pct = 100 * don / tot if tot else 0
-            print(f"  {bar(pct, 10)} {pct:5.1f} %  {epic}  [{ndone}/{n} tâches]")
+            wip = f", {nwip} en cours" if nwip else ""
+            print(f"  {bar(pct, 10)} {pct:5.1f} %  {epic}  [{ndone}/{n} faites{wip}]")
 
 
 if __name__ == "__main__":

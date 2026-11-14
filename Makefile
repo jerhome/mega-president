@@ -5,6 +5,7 @@
 #   make run-ntsc   compile puis lance BlastEm en NTSC (USA, 60 Hz)
 #   make debug      ROM de debug (symboles, -O1)
 #   make test       tests unitaires du cœur de simulation, sur PC (gcc natif)
+#   make content    régénère le code C depuis docs/contenu/*.md
 #   make check      tests + ROM + budgets mémoire
 #   make clean      supprime out/
 
@@ -19,15 +20,24 @@ DOCKER_SGDK = docker run --rm -u $(shell id -u):$(shell id -g) -e HOME=/tmp \
 
 HOST_CC     ?= gcc
 HOST_CFLAGS := -std=c99 -Wall -Wextra -Werror -O1 -Isrc
-SIM_SRC     := $(wildcard src/sim/*.c)
+SIM_SRC     := $(wildcard src/sim/*.c) $(wildcard src/content/*.c)
 TEST_SRC    := $(wildcard tests/*.c)
 TEST_BIN    := out/host/tests
 
-.PHONY: all rom debug run run-ntsc test check clean blastem
+.PHONY: all rom debug run run-ntsc test check clean blastem content
 
 all: rom
 
-rom:
+# Contenu (lois, événements, univers) : docs/contenu/*.md -> src/sim + src/content
+CONTENT_MD  := $(wildcard docs/contenu/*.md)
+CONTENT_GEN := src/sim/events_ids.h src/sim/events_data.c src/content/content_events.c
+
+$(CONTENT_GEN) &: $(CONTENT_MD) tools/content/gen_content.py src/sim/effects.h src/sim/laws.h src/sim/election.h
+	python3 tools/content/gen_content.py
+
+content: $(CONTENT_GEN)
+
+rom: $(CONTENT_GEN)
 	$(DOCKER_SGDK) release
 
 debug:
@@ -49,7 +59,7 @@ $(BLASTEM):
 	# WSLg ne gère pas le réglage vsync d'OpenGL : rendu SDL sans OpenGL
 	sed -i 's/^\tgl on/\tgl off/' $(BLASTEM_DIR)/default.cfg
 
-$(TEST_BIN): $(SIM_SRC) $(TEST_SRC) $(wildcard src/sim/*.h) $(wildcard tests/*.h)
+$(TEST_BIN): $(CONTENT_GEN) $(SIM_SRC) $(TEST_SRC) $(wildcard src/sim/*.h) $(wildcard tests/*.h)
 	mkdir -p $(dir $@)
 	$(HOST_CC) $(HOST_CFLAGS) $(SIM_SRC) $(TEST_SRC) -o $@
 

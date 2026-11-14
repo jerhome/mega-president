@@ -6,7 +6,7 @@ Le joueur parle français : documents, textes du jeu et rapports en français.
 ## Documents de référence
 - `docs/REGLES.md` : règles validées (V1 et V2 distinguées).
 - `docs/BACKLOG.md` : tâches V0, V1 et V2. Marquer ✅ (fait) ou 🔄 (en cours) dans la ligne de la tâche ; `python3 tools/progress.py` calcule l'avancement.
-- `docs/AGENTS.md` : agents `md-dev`, `qa-rom`, `redacteur` (`.claude/agents/`), en Sonnet. **3 agents simultanés au maximum**, sauf exception justifiée par un gain de temps ; Opus ponctuellement.
+- `docs/AGENTS.md` : agents `md-dev`, `qa-rom`, `redacteur` (`.claude/agents/`), en Sonnet. **3 agents simultanés au maximum** ; un 4e temporaire si gain de temps, avec notification mobile (PushNotification). Opus ponctuellement si gros gain, en prévenant aussi.
 
 ## Commandes
 | Commande | Effet |

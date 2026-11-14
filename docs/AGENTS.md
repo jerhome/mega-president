@@ -1,7 +1,7 @@
 # Mega Président — Agents proposés
 
 > **Statut : validé le 2026-11-14** (démarrage avec `md-dev`, `qa-rom`, `redacteur`, en Sonnet par défaut).
-> Ces agents sont définis dans `.claude/agents/`. Règle : **3 agents simultanés au maximum**, sauf exception justifiée par un gain de temps ; modèle Sonnet par défaut, Opus ponctuellement.
+> Ces agents sont définis dans `.claude/agents/`. Règle : **3 agents simultanés au maximum** ; un **4e agent temporaire** est permis s'il fait gagner du temps, avec notification mobile au joueur ; modèle Sonnet par défaut, Opus ponctuellement.
 > Claude (la session principale) les coordonne : le joueur ne parle qu'à elle.
 
 | Agent | Rôle | Intervient sur | Quand |

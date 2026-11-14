@@ -3,7 +3,7 @@
 > **Statut : validé le 2026-11-14.**
 > Les durées sont des **heures de travail effectif** : le code de Claude, plus les tests et retours du joueur.
 > Les règles sont décrites dans [REGLES.md](REGLES.md).
-> **Suivi** : ajouter ✅ (fait) ou 🔄 (en cours, compté à 50 %) dans la ligne d'une tâche. `python3 tools/progress.py` calcule l'avancement, pondéré par les durées.
+> **Suivi** : ajouter ✅ (fait) ou 🔄 (en cours, non compté dans le %) dans la ligne d'une tâche. `python3 tools/progress.py` calcule l'avancement, pondéré par les durées.
 
 ## Synthèse
 
@@ -37,7 +37,7 @@ La V0 n'est pas un prototype jetable : c'est une première tranche de la V1. Les
 | 0.1 | Compilation via l'image Docker SGDK 2.09 : `make`, `make run`, `make clean` | 0,5 h | ✅ |
 | 0.2 | Lancement automatique de BlastEm après la compilation (WSLg) | 0,5 h | ✅ PAL et NTSC (sans OpenGL sous WSLg) |
 | 0.3 | En-tête de ROM personnalisé (titre, SRAM déclarée, régions JUE) | 0,5 h | ✅ |
-| 0.4 | ROM de test (texte, manette, compteur sauvegardé), validée dans BlastEm puis sur l'EverDrive MD V3 | 1 h | 🔄 OK dans BlastEm, reste l'EverDrive |
+| 0.4 | ROM de test (texte, manette, compteur sauvegardé), validée dans BlastEm puis sur l'EverDrive MD V3 | 1 h | 🔄 OK sur PC (PAL et NTSC), test EverDrive prévu le 15/11 |
 | 0.5 | Cœur de simulation compilable aussi sur PC, avec des tests unitaires | 2 h | ✅ |
 | 0.6 | Dépôt git, conventions, CLAUDE.md, dépôt GitHub public | 0,5 h | ✅ |
 
@@ -45,36 +45,36 @@ La V0 n'est pas un prototype jetable : c'est une première tranche de la V1. Les
 
 | # | Tâche | Durée |
 |---|---|---|
-| 1.1 | Gestion des écrans (titre, jeu, événement, élection, fin) | 1,5 h |
-| 1.2 | **Couche d'interface** (fenêtres, listes, jauges, curseur) : le jeu ne manipule jamais les tuiles directement, ce qui permet de passer au pixel art sans réécriture | 3,5 h |
-| 1.3 | Police 8×8 avec les accents français et codage des textes | 2 h |
-| 1.4 | Manette (répétition des touches, A/B/C/Start) | 1 h |
-| 1.5 | Graphismes provisoires avec des noms fixes : en V2, on remplace les fichiers sans toucher au code | 1,5 h |
+| 1.1 | 🔄 Gestion des écrans (titre, jeu, événement, élection, fin) | 1,5 h |
+| 1.2 | 🔄 **Couche d'interface** (fenêtres, listes, jauges, curseur) : le jeu ne manipule jamais les tuiles directement, ce qui permet de passer au pixel art sans réécriture | 3,5 h |
+| 1.3 | 🔄 Police 8×8 avec les accents français et codage des textes | 2 h |
+| 1.4 | 🔄 Manette (répétition des touches, A/B/C/Start) | 1 h |
+| 1.5 | 🔄 Graphismes provisoires avec des noms fixes : en V2, on remplace les fichiers sans toucher au code | 1,5 h |
 | 1.6 | ✅ Hasard reproductible à partir d'une graine | 0,5 h |
 
 ### E2 — Simulation (≈ 8 h)
 
 | # | Tâche | Durée |
 |---|---|---|
-| 2.1 | État du pays : 3 électorats, croissance, chômage, dette, 5 piliers (nombres entiers) | 1,5 h |
-| 2.2 | Boucle de tour : lois, puis événements, puis opinion, puis Parlement | 2,5 h |
-| 2.3 | Lois décrites comme des données (coût, délai, effets différés, orientation) et **5 lois** | 2 h |
-| 2.4 | Calcul de l'opinion par électorat | 2 h |
+| 2.1 | ✅ État du pays : 3 électorats, croissance, chômage, dette, 5 piliers (nombres entiers) | 1,5 h |
+| 2.2 | ✅ Boucle de tour : lois, puis événements, puis opinion, puis Parlement | 2,5 h |
+| 2.3 | ✅ Lois décrites comme des données (coût, délai, effets différés, orientation) et **5 lois** | 2 h |
+| 2.4 | ✅ Calcul de l'opinion par électorat | 2 h |
 
 ### E3 — Institutions (≈ 4,5 h)
 
 | # | Tâche | Durée |
 |---|---|---|
-| 3.1 | Assemblée de 577 sièges et 5 groupes fictifs, avec leurs relations et les votes | 2,5 h |
-| 3.2 | Présidentielle à deux tours, un seul mandat | 2 h |
+| 3.1 | ✅ Assemblée de 577 sièges et 5 groupes fictifs, avec leurs relations et les votes | 2,5 h |
+| 3.2 | ✅ Présidentielle à deux tours, un seul mandat | 2 h |
 
 ### E4 — Événements (≈ 5 h)
 
 | # | Tâche | Durée |
 |---|---|---|
-| 4.1 | Moteur d'événements (conditions, probabilités, choix, conséquences) | 2 h |
-| 4.2 | Fichier texte de contenu converti automatiquement en C, pour écrire du contenu sans toucher au code | 1,5 h |
-| 4.3 | **10 événements** | 1,5 h |
+| 4.1 | ✅ Moteur d'événements (conditions, probabilités, choix, conséquences) | 2 h |
+| 4.2 | ✅ Fichier texte de contenu converti automatiquement en C, pour écrire du contenu sans toucher au code | 1,5 h |
+| 4.3 | 🔄 **10 événements** | 1,5 h |
 
 ### E6 — Écrans (≈ 4 h)
 
@@ -115,7 +115,7 @@ La V0 n'est pas un prototype jetable : c'est une première tranche de la V1. Les
 | # | Tâche | Durée |
 |---|---|---|
 | 1.12 | 10 lois de plus, soit **15** au total | 2 h |
-| 1.13 | 20 événements de plus, soit **30** au total, avec des chaînes d'événements | 5 h |
+| 1.13 | 🔄 20 événements de plus, soit **30** au total, avec des chaînes d'événements | 5 h |
 | 1.14 | Relecture (ton, cohérence, textes dans 38 colonnes) | 2 h |
 
 ### Scores et sauvegarde
