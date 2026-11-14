@@ -36,8 +36,17 @@ typedef struct {
 
 extern Game g_game;
 
-// Nouvelle partie : orientation ORIENT_*, Premier ministre PM_*, difficulté DIFF_*.
-void game_new(u8 orientation, u8 pm, u8 difficulty, u32 seed);
+// Nouvelle partie : orientation ORIENT_*, Premier ministre PM_*, difficulté DIFF_*,
+// turns_per_year : 4 (20 tours) ou 12 (60 tours, 1 tour = 1 mois).
+void game_new(u8 orientation, u8 pm, u8 difficulty, u8 turns_per_year, u32 seed);
+// Temps du jeu (mode 60 tours : 1 tour = 1 mois).
+u8   game_is_monthly(void);                 // 1 en mode 60 tours
+// Nom du mois (TXT_MOIS_*) du tour donné, et année civile (2027 + 5 x mandat + année).
+const char *game_month_name(u8 turn);
+u16  game_calendar_year(u8 turn);
+// En-tête « Mois 5/60 - Mai 2027 » (60 tours) ou « Mandat 1 - Trimestre 5 / 20 » (20 tours).
+void game_turn_label(u8 turn, char *buf);   // buf : au moins 40 octets
+
 // Proposer une loi : vote immédiat. Met à jour laws_tried/laws_adopted.
 u8   game_propose_law(u8 law_id, VoteResult *out);
 // Fin du trimestre : sim_end_turn, tirage d'événement, puis SCREEN_REPORT.

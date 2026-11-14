@@ -134,7 +134,7 @@ u16 sim_mandate_score(const Country *c, u8 reelected)
 {
     s32 s = sim_popularity(c);                 // popularité (%) × 10
     u8 i;
-    for (i = 0; i < PIL_COUNT; i++)            // progression (points) × 5
+    for (i = 0; i < PIL_TOTAL; i++)            // progression (points) × 5
         s += ((s32)c->pillars[i] - c->pillars_start[i]) / 2;
     // Bonus économiques : 50 par point de chômage en moins, 5 par point de dette évité.
     s += ((s32)c->unemployment_start - c->unemployment) / 2;

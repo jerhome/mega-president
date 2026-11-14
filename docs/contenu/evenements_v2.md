@@ -84,7 +84,7 @@ Choix 1 : Rassurer les marchés
   Journal : Le président rassure les marchés.
     Les marchés prennent des notes.
 Choix 2 : Dénoncer les agences
-  Effets : POP_POPULAIRES +3, ECONOMIE -3, DETTE +2, POP_TOUS +1
+  Effets : POP_POPULAIRES +3, ECONOMIE -3, DETTE +2, POP_TOUS +1, INTERNATIONAL -2
   Journal : Haro sur les agences : la
     dette, elle, ne s'en émeut pas.
 Choix 3 : Un plan de relance ciblé
@@ -102,15 +102,15 @@ Texte : Le sommet mondial sur le climat
   des avions privés. Noémie Vasseur
   est venue à vélo cargo, forcément.
 Choix 1 : Porter un accord ambitieux
-  Effets : ECOLOGIE +4, ECONOMIE -2, POP_AISEES -2, POP_MOYENNES +1, POP_TOUS +1
+  Effets : ECOLOGIE +4, ECONOMIE -2, POP_AISEES -2, POP_MOYENNES +1, POP_TOUS +1, INTERNATIONAL +4
   Journal : Accord ambitieux porté par Paris.
     Les industriels demandent un délai.
 Choix 2 : Un accord a minima
-  Effets : ECOLOGIE +1, POP_TOUS +1, CP +1
+  Effets : ECOLOGIE +1, POP_TOUS +1, CP +1, INTERNATIONAL +1
   Journal : Accord a minima signé. Chacun
     repart avec sa conclusion.
 Choix 3 : Défendre l'industrie d'abord
-  Effets : ECONOMIE +3, ECOLOGIE -3, TENSION +2, POP_AISEES +1
+  Effets : ECONOMIE +3, ECOLOGIE -3, TENSION +2, POP_AISEES +1, INTERNATIONAL -3
   Journal : La France défend ses usines. Le
     climat verra plus tard.
 
@@ -124,11 +124,11 @@ Texte : Un chercheur français reçoit le prix
   crédits « enfin renouvelés ». Les
   ministres se bousculent sur la photo.
 Choix 1 : Annoncer un plan recherche
-  Effets : TECHNOLOGIE +4, DETTE +2, POP_MOYENNES +2, POP_TOUS +1
+  Effets : TECHNOLOGIE +4, DETTE +2, POP_MOYENNES +2, POP_TOUS +1, INTERNATIONAL +2
   Journal : Plan recherche annoncé. Le Nobel
     sourit, les labos comptent.
 Choix 2 : Fêter sans dépenser
-  Effets : POP_TOUS +1, TECHNOLOGIE +1
+  Effets : POP_TOUS +1, TECHNOLOGIE +1, INTERNATIONAL +1
   Journal : Dîner à l'Élysée, discours ému.
     Les crédits attendront.
 Choix 3 : Rappeler les coupes passées
@@ -278,11 +278,11 @@ Texte : Des journalistes révèlent qu'un
   Le ministre jure ignorer tout. Les
   micros, eux, n'ont rien dit.
 Choix 1 : Ouvrir une enquête
-  Effets : SCANDALE -3, SECURITE -2, DEFIANCE -2, POP_MOYENNES +1, POP_TOUS +1
+  Effets : SCANDALE -3, SECURITE -2, DEFIANCE -2, POP_MOYENNES +1, POP_TOUS +1, INTERNATIONAL +1
   Journal : Enquête ouverte sur les services.
     Les dossiers sont dans les tiroirs.
 Choix 2 : Invoquer le secret défense
-  Effets : SCANDALE +4, DEFIANCE +4, SECURITE +1, POP_MOYENNES -2, POP_TOUS +1
+  Effets : SCANDALE +4, DEFIANCE +4, SECURITE +1, POP_MOYENNES -2, POP_TOUS +1, INTERNATIONAL -3
   Journal : Secret défense invoqué. Il est
     bien gardé, y compris des juges.
 Choix 3 : Réformer le renseignement

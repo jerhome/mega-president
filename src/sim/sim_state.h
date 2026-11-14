@@ -25,7 +25,11 @@ static inline u8 law_mask_any(const LawMask *m) { return (u8)((m->w[0] | m->w[1]
 // Électorats
 enum { ELEC_POPULAIRES, ELEC_MOYENNES, ELEC_AISEES, ELEC_COUNT };
 // Piliers (dixièmes, 0-1000)
-enum { PIL_SOCIAL, PIL_ECONOMIE, PIL_TECHNOLOGIE, PIL_ECOLOGIE, PIL_SECURITE, PIL_COUNT };
+// PIL_COUNT = 5 : piliers « V1 » affichés par les écrans (compatibilité).
+// PIL_TOTAL = 6 : tous les piliers de la simulation (V2 : PIL_INTERNATIONAL, 2.08).
+enum { PIL_SOCIAL, PIL_ECONOMIE, PIL_TECHNOLOGIE, PIL_ECOLOGIE, PIL_SECURITE,
+       PIL_COUNT,
+       PIL_INTERNATIONAL = PIL_COUNT, PIL_TOTAL };
 // Jauges (0-100)
 enum { JAUGE_TENSION, JAUGE_SCANDALE, JAUGE_DEFIANCE, JAUGE_COUNT };
 // Groupes parlementaires (contrat §4) : G1 = GRP_G1 ...
@@ -47,6 +51,9 @@ enum { ORIENT_GAUCHE, ORIENT_CENTRE, ORIENT_DROITE, ORIENT_COUNT };
 #define GAUGE_MAX        100
 #define RELATION_MAX     100
 #define CP_MAX           15
+
+// V2 : 13 régions (même ordre que REGION_* de src/ui/ui_map.h)
+#define REG_COUNT        13
 
 #define SEATS_TOTAL      577
 #define SEATS_MAJORITY   289
@@ -87,10 +94,10 @@ typedef struct {
     s16 growth;                // centièmes de point (annualisée)
     s16 unemployment;          // centièmes de point
     s16 debt;                  // dixièmes de point de PIB
-    s16 pillars[PIL_COUNT];    // dixièmes (0-1000)
+    s16 pillars[PIL_TOTAL];    // dixièmes (0-1000)
 
     // Valeurs de départ (progression, score, présidentielle)
-    s16 pillars_start[PIL_COUNT];
+    s16 pillars_start[PIL_TOTAL];
     s16 unemployment_start;
     s16 debt_start;
 
@@ -148,6 +155,7 @@ typedef struct {
     u8  grace_pm;        // état de grâce du remaniement (dixièmes de %, décroît)
     u8  gov_laws;        // lois adoptées par le gouvernement de cohabitation (statistique)
     u8  cohabitations;   // cohabitations commencées (statistique)
+    s8  region_gap[REG_COUNT]; // V2 : écart de popularité de chaque région (dixièmes de %)
 
     Rng rng;
 } Country;

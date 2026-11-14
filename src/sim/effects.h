@@ -19,6 +19,7 @@ typedef enum {
     EFF_TECHNOLOGIE,
     EFF_ECOLOGIE,
     EFF_SECURITE,
+    EFF_INTERNATIONAL,   // V2 : points du pilier international (0-100)
     EFF_TENSION,         // points de jauge
     EFF_SCANDALE,
     EFF_DEFIANCE,

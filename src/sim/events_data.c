@@ -21,9 +21,9 @@ const EventDef event_defs[EVT_COUNT] = {
         { 4, { { EFF_DETTE, -2 }, { EFF_POP_POPULAIRES, 3 }, { EFF_POP_AISEES, -4 }, { EFF_CROISSANCE, -1 } } },
     } },
     { EVT_SOMMET, 2, { EVV_NONE, EVO_GT, 0 }, 3, {
-        { 3, { { EFF_POP_MOYENNES, 3 }, { EFF_ECONOMIE, -2 }, { EFF_CP, -1 } } },
-        { 3, { { EFF_ECONOMIE, 3 }, { EFF_POP_MOYENNES, -2 }, { EFF_CP, 1 } } },
-        { 3, { { EFF_ECOLOGIE, 3 }, { EFF_TECHNOLOGIE, 2 }, { EFF_DETTE, 2 } } },
+        { 4, { { EFF_POP_MOYENNES, 3 }, { EFF_ECONOMIE, -2 }, { EFF_CP, -1 }, { EFF_INTERNATIONAL, -4 } } },
+        { 4, { { EFF_ECONOMIE, 3 }, { EFF_POP_MOYENNES, -2 }, { EFF_CP, 1 }, { EFF_INTERNATIONAL, 4 } } },
+        { 4, { { EFF_ECOLOGIE, 3 }, { EFF_TECHNOLOGIE, 2 }, { EFF_DETTE, 2 }, { EFF_INTERNATIONAL, 3 } } },
     } },
     { EVT_EMEUTES, 2, { EVV_TENSION, EVO_GT, 50 }, 3, {
         { 4, { { EFF_SECURITE, 3 }, { EFF_TENSION, -5 }, { EFF_POP_POPULAIRES, -3 }, { EFF_REL_G5, 4 } } },
@@ -96,8 +96,8 @@ const EventDef event_defs[EVT_COUNT] = {
         { 4, { { EFF_SCANDALE, -2 }, { EFF_CP, -2 }, { EFF_DEFIANCE, 2 }, { EFF_POP_MOYENNES, 1 } } },
     } },
     { EVT_CRISE_DIPLO, 2, { EVV_NONE, EVO_GT, 0 }, 3, {
-        { 4, { { EFF_SECURITE, 2 }, { EFF_ECONOMIE, -2 }, { EFF_POP_MOYENNES, 2 }, { EFF_REL_G5, 3 } } },
-        { 4, { { EFF_ECONOMIE, 1 }, { EFF_CP, -1 }, { EFF_POP_MOYENNES, -3 }, { EFF_REL_G5, -3 } } },
+        { 5, { { EFF_SECURITE, 2 }, { EFF_ECONOMIE, -2 }, { EFF_POP_MOYENNES, 2 }, { EFF_REL_G5, 3 }, { EFF_INTERNATIONAL, -3 } } },
+        { 5, { { EFF_ECONOMIE, 1 }, { EFF_CP, -1 }, { EFF_POP_MOYENNES, -3 }, { EFF_REL_G5, -3 }, { EFF_INTERNATIONAL, 3 } } },
         { 4, { { EFF_CP, -1 }, { EFF_POP_MOYENNES, -1 }, { EFF_ECOLOGIE, 1 }, { EFF_DEFIANCE, 1 } } },
     } },
     { EVT_PRIX_ELECTRICITE, 2, { EVV_TENSION, EVO_GT, 40 }, 3, {
@@ -113,10 +113,10 @@ const EventDef event_defs[EVT_COUNT] = {
     { EVT_CLASSEMENT_EDU, 1, { EVV_NONE, EVO_GT, 0 }, 3, {
         { 3, { { EFF_SOCIAL, 3 }, { EFF_DETTE, 2 }, { EFF_POP_POPULAIRES, 2 } } },
         { 3, { { EFF_TECHNOLOGIE, 2 }, { EFF_POP_MOYENNES, 2 }, { EFF_POP_POPULAIRES, -2 } } },
-        { 2, { { EFF_POP_MOYENNES, -2 }, { EFF_SCANDALE, 3 } } },
+        { 3, { { EFF_POP_MOYENNES, -2 }, { EFF_SCANDALE, 3 }, { EFF_INTERNATIONAL, -2 } } },
     } },
     { EVT_EVENEMENT_SPORTIF, 1, { EVV_NONE, EVO_GT, 0 }, 3, {
-        { 3, { { EFF_ECONOMIE, 3 }, { EFF_DETTE, 3 }, { EFF_POP_TOUS, 1 } } },
+        { 4, { { EFF_ECONOMIE, 3 }, { EFF_DETTE, 3 }, { EFF_POP_TOUS, 1 }, { EFF_INTERNATIONAL, 3 } } },
         { 3, { { EFF_ECOLOGIE, 2 }, { EFF_DETTE, -1 }, { EFF_POP_MOYENNES, -1 } } },
         { 3, { { EFF_SOCIAL, 2 }, { EFF_POP_POPULAIRES, 3 }, { EFF_DETTE, 1 } } },
     } },
@@ -172,17 +172,17 @@ const EventDef event_defs[EVT_COUNT] = {
     } },
     { EVT_AGENCE_NOTATION, 2, { EVV_CROISSANCE, EVO_LT, 100 }, 3, {
         { 5, { { EFF_ECONOMIE, 2 }, { EFF_DETTE, -1 }, { EFF_POP_AISEES, 2 }, { EFF_POP_POPULAIRES, -2 }, { EFF_POP_TOUS, 1 } } },
-        { 4, { { EFF_POP_POPULAIRES, 3 }, { EFF_ECONOMIE, -3 }, { EFF_DETTE, 2 }, { EFF_POP_TOUS, 1 } } },
+        { 5, { { EFF_POP_POPULAIRES, 3 }, { EFF_ECONOMIE, -3 }, { EFF_DETTE, 2 }, { EFF_POP_TOUS, 1 }, { EFF_INTERNATIONAL, -2 } } },
         { 3, { { EFF_CROISSANCE, 2 }, { EFF_DETTE, 3 }, { EFF_CHOMAGE, -1 } } },
     } },
     { EVT_SOMMET_CLIMAT, 2, { EVV_NONE, EVO_GT, 0 }, 3, {
-        { 5, { { EFF_ECOLOGIE, 4 }, { EFF_ECONOMIE, -2 }, { EFF_POP_AISEES, -2 }, { EFF_POP_MOYENNES, 1 }, { EFF_POP_TOUS, 1 } } },
-        { 3, { { EFF_ECOLOGIE, 1 }, { EFF_POP_TOUS, 1 }, { EFF_CP, 1 } } },
-        { 4, { { EFF_ECONOMIE, 3 }, { EFF_ECOLOGIE, -3 }, { EFF_TENSION, 2 }, { EFF_POP_AISEES, 1 } } },
+        { 6, { { EFF_ECOLOGIE, 4 }, { EFF_ECONOMIE, -2 }, { EFF_POP_AISEES, -2 }, { EFF_POP_MOYENNES, 1 }, { EFF_POP_TOUS, 1 }, { EFF_INTERNATIONAL, 4 } } },
+        { 4, { { EFF_ECOLOGIE, 1 }, { EFF_POP_TOUS, 1 }, { EFF_CP, 1 }, { EFF_INTERNATIONAL, 1 } } },
+        { 5, { { EFF_ECONOMIE, 3 }, { EFF_ECOLOGIE, -3 }, { EFF_TENSION, 2 }, { EFF_POP_AISEES, 1 }, { EFF_INTERNATIONAL, -3 } } },
     } },
     { EVT_NOBEL, 1, { EVV_NONE, EVO_GT, 0 }, 3, {
-        { 4, { { EFF_TECHNOLOGIE, 4 }, { EFF_DETTE, 2 }, { EFF_POP_MOYENNES, 2 }, { EFF_POP_TOUS, 1 } } },
-        { 2, { { EFF_POP_TOUS, 1 }, { EFF_TECHNOLOGIE, 1 } } },
+        { 5, { { EFF_TECHNOLOGIE, 4 }, { EFF_DETTE, 2 }, { EFF_POP_MOYENNES, 2 }, { EFF_POP_TOUS, 1 }, { EFF_INTERNATIONAL, 2 } } },
+        { 3, { { EFF_POP_TOUS, 1 }, { EFF_TECHNOLOGIE, 1 }, { EFF_INTERNATIONAL, 1 } } },
         { 3, { { EFF_TECHNOLOGIE, 1 }, { EFF_SCANDALE, 2 }, { EFF_POP_MOYENNES, -1 } } },
     } },
     { EVT_URGENCES_PEDIATRIQUES, 2, { EVV_NONE, EVO_GT, 0 }, 3, {
@@ -216,8 +216,8 @@ const EventDef event_defs[EVT_COUNT] = {
         { 4, { { EFF_DEFIANCE, 4 }, { EFF_TENSION, 4 }, { EFF_SCANDALE, 2 }, { EFF_REL_PARTI, 2 } } },
     } },
     { EVT_ESPIONNAGE, 2, { EVV_SCANDALE, EVO_GT, 25 }, 3, {
-        { 5, { { EFF_SCANDALE, -3 }, { EFF_SECURITE, -2 }, { EFF_DEFIANCE, -2 }, { EFF_POP_MOYENNES, 1 }, { EFF_POP_TOUS, 1 } } },
-        { 5, { { EFF_SCANDALE, 4 }, { EFF_DEFIANCE, 4 }, { EFF_SECURITE, 1 }, { EFF_POP_MOYENNES, -2 }, { EFF_POP_TOUS, 1 } } },
+        { 6, { { EFF_SCANDALE, -3 }, { EFF_SECURITE, -2 }, { EFF_DEFIANCE, -2 }, { EFF_POP_MOYENNES, 1 }, { EFF_POP_TOUS, 1 }, { EFF_INTERNATIONAL, 1 } } },
+        { 6, { { EFF_SCANDALE, 4 }, { EFF_DEFIANCE, 4 }, { EFF_SECURITE, 1 }, { EFF_POP_MOYENNES, -2 }, { EFF_POP_TOUS, 1 }, { EFF_INTERNATIONAL, -3 } } },
         { 4, { { EFF_SECURITE, 1 }, { EFF_SCANDALE, 1 }, { EFF_DEFIANCE, -3 }, { EFF_CP, -1 } } },
     } },
     { EVT_PANNE_ELECTRIQUE, 1, { EVV_NONE, EVO_GT, 0 }, 3, {

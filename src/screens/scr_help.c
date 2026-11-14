@@ -78,6 +78,21 @@ static const HelpPage pages[] = {
       "Deux tableaux de 10 entrées : le 1er mandat, et le cumul sur dix "
       "ans. Trois initiales, pour la postérité." },
 
+    { "COHABITATION, SÉNAT, RÉFÉRENDUM",
+      "Cohabitation : législatives perdues, "
+      "un PM d'opposition gouverne. Vous "
+      "ne proposez que les lois de "
+      "souveraineté (*) ; il fixe le "
+      "budget.\n\n"
+      "Sénat : 348 sièges, renouvelé par "
+      "moitié tous les 3 ans. Destitution : "
+      "deux tiers de l'Assemblée ET du "
+      "Sénat.\n\n"
+      "Référendum : 6 CP, une fois par "
+      "mandat, sur une loi non adoptée.\n\n"
+      "Remaniement : 3 CP, une fois par an, "
+      "hors cohabitation." },
+
     { "LES COMMANDES",
       "Croix : naviguer, changer de choix.\n"
       "A : valider.\n"

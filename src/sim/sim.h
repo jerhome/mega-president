@@ -14,6 +14,7 @@
 #include "sim/senate.h"
 #include "sim/cohab.h"
 #include "sim/actions.h"
+#include "sim/regions.h"
 
 #define SIM_TURNS_PER_YEAR_V0 4
 #define SIM_MANDATE_YEARS     5

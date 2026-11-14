@@ -1,12 +1,14 @@
 #include "game/game.h"
 #include "ui/screen.h"
 #include "save/sram_game.h"
+#include "ui/ui.h"
+#include "content/content_texts.h"
 
 #define GAME_START_YEAR 2027
 
 Game g_game;
 
-void game_new(u8 orientation, u8 pm, u8 difficulty, u32 seed)
+void game_new(u8 orientation, u8 pm, u8 difficulty, u8 turns_per_year, u32 seed)
 {
     SimSetup s;
 
@@ -14,7 +16,7 @@ void game_new(u8 orientation, u8 pm, u8 difficulty, u32 seed)
     s.orientation = orientation;
     s.pm = pm;
     s.difficulty = difficulty;
-    s.turns_per_year = 4;           // V1 : mode 20 tours uniquement
+    s.turns_per_year = (turns_per_year == 12) ? 12 : 4;   // 20 ou 60 tours
     s.seed = seed;
     sim_init_ex(&g_game.country, &s);
     g_game.event = -1;
@@ -167,4 +169,51 @@ u16 game_end_year(void)
 {
     // sim_year compte les années du mandat en cours : on ajoute 5 ans par mandat déjà fait.
     return (u16)(GAME_START_YEAR + 5 * g_game.country.mandate + sim_year(&g_game.country));
+}
+
+u8 game_is_monthly(void)
+{
+    return g_game.country.turns_per_year == 12;
+}
+
+const char *game_month_name(u8 turn)
+{
+    return txt[TXT_MOIS_1 + (turn % 12)];
+}
+
+u16 game_calendar_year(u8 turn)
+{
+    const Country *c = &g_game.country;
+    return (u16)(GAME_START_YEAR + 5 * c->mandate + turn / c->turns_per_year);
+}
+
+static void cat_n(char *dst, s32 v)
+{
+    char b[14];
+    ui_format_number(b, v, 0);
+    strcat(dst, b);
+}
+
+void game_turn_label(u8 turn, char *buf)
+{
+    const Country *c = &g_game.country;
+    u8 total = sim_mandate_turns(c);
+    u8 t = turn < total ? turn : (u8)(total - 1);
+
+    buf[0] = 0;
+    if (game_is_monthly()) {
+        strcat(buf, txt[TXT_TOUR_MOIS]);
+        strcat(buf, " ");
+        cat_n(buf, t + 1);
+        strcat(buf, "/60 - ");
+        strcat(buf, game_month_name(t));
+        strcat(buf, " ");
+        cat_n(buf, game_calendar_year(t));
+    } else {
+        strcat(buf, "Mandat ");
+        cat_n(buf, c->mandate + 1);
+        strcat(buf, " - Trimestre ");
+        cat_n(buf, t + 1);
+        strcat(buf, " / 20");
+    }
 }

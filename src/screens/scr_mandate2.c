@@ -60,6 +60,9 @@ static void mandate2_draw(void)
     ui_text_wrap(2, 20, 36, 3,
                  txt[l->won ? TXT_LEGISLATIVES_GAGNEES : TXT_LEGISLATIVES_PERDUES],
                  UI_STYLE_TEXT);
+    if (l->cohab_started || l->cohab_ended)
+        ui_text_wrap(1, 23, 38, 3, txt[l->cohab_started ? TXT_COHAB_DEBUT : TXT_COHAB_FIN],
+                     l->cohab_started ? UI_STYLE_ALERT : UI_STYLE_HIGHLIGHT);
     ui_text_center(0, 26, UI_COLS, "A : commencer le second mandat", UI_STYLE_DIM);
 }
 

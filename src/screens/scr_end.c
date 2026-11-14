@@ -10,8 +10,8 @@
 
 static bool dirty;
 
-static const char *const pillar_names[PIL_COUNT] = {
-    "Social", "Économie", "Technologie", "Écologie", "Sécurité"
+static const char *const pillar_names[PIL_TOTAL] = {
+    "Social", "Économie", "Technologie", "Écologie", "Sécurité", "International"
 };
 
 static void end_init(void)
@@ -111,7 +111,7 @@ static void end_draw(void)
     draw_evo(14, "Dette", c->debt_start, c->debt, 1, " %", FALSE);
 
     ui_text_draw(1, 16, "Piliers (début > fin)", UI_STYLE_HIGHLIGHT);
-    for (i = 0; i < PIL_COUNT; i++)
+    for (i = 0; i < PIL_TOTAL; i++)
         draw_evo(17 + i, pillar_names[i], c->pillars_start[i], c->pillars[i], 1, "", TRUE);
 
     ui_text_center(0, 24, UI_COLS, "START : meilleurs scores", UI_STYLE_DIM);

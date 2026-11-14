@@ -16,5 +16,9 @@ extern const Screen scr_impeach;
 extern const Screen scr_campaign;
 extern const Screen scr_mandate2;
 extern const Screen scr_budget;
+extern const Screen scr_referendum;
+extern const Screen scr_reshuffle;
+
+extern const Screen scr_map;
 
 #endif

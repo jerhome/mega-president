@@ -23,3 +23,4 @@ Décisions prises en autonomie (ou arbitrages du joueur), à relire. Chacune est
 | 14/11 | PM d'opposition de gauche renommée « Sophie Carrel » (au lieu de « Marianne Aubrac ») | Garder le nom proposé | Aubrac évoque des résistants réels ; prénom Marianne déjà pris par une PM |
 | 14/11 | 5 électorats (2.09) et budget détaillé (2.10) reportés en V3 | Les faire en V2 | Tableau de bord déjà dense ; la popularité par région (carte) apporte plus ; le budget en un choix a été validé par le joueur |
 | 14/11 | Équilibrage V2 : +1 popularité générale sur les choix 1 et 2 des nouveaux événements | Retoucher le cœur de la simulation | Les 15 événements V2 faisaient perdre ~5 points de réélection ; réglage local et réversible |
+| 14/11 | Pixel art par programme, style caricatural BD, ordre titre → portraits → événements → décors ; musique provisoire conservée | — | Décisions du joueur |

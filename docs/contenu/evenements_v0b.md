@@ -192,11 +192,11 @@ Texte : Un pays voisin saisit nos chalutiers
   rapatriés. La LSO réclame des
   représailles.
 Choix 1 : Répondre fermement
-  Effets : SECURITE +2, ECONOMIE -2, POP_MOYENNES +2, REL_G5 +3
+  Effets : SECURITE +2, ECONOMIE -2, POP_MOYENNES +2, REL_G5 +3, INTERNATIONAL -3
   Journal : Fermeté face au voisin : les
     chalutiers, eux, restent à quai.
 Choix 2 : Négocier discrètement
-  Effets : ECONOMIE +1, CP -1, POP_MOYENNES -3, REL_G5 -3
+  Effets : ECONOMIE +1, CP -1, POP_MOYENNES -3, REL_G5 -3, INTERNATIONAL +3
   Journal : Négociations secrètes : tout se
     sait, surtout les concessions.
 Choix 3 : Saisir l'Union européenne

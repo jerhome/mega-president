@@ -148,14 +148,14 @@ La V0 n'est pas un prototype jetable : c'est une première tranche de la V1. Les
 
 | # | Tâche | Durée |
 |---|---|---|
-| 2.01 | 🔄 **Carte de France des 13 régions**, avec la popularité par région | 8 h |
-| 2.02 | Intégration du pixel art : portraits, Élysée, écrans illustrés (le dessin n'est pas compté) | 8 h |
+| 2.01 | ✅ **Carte de France des 13 régions**, avec la popularité par région | 8 h |
+| 2.02 | 🔄 Intégration du pixel art : portraits, Élysée, écrans illustrés (le dessin n'est pas compté) | 8 h |
 | 2.03 | ✅ Musique (2 ou 3 morceaux XGM2) | 6 h |
 | 2.04 | ✅ Cohabitation | 3 h |
 | 2.05 | ✅ Sénat, renouvelé par moitié, et pris en compte dans la destitution | 2 h |
 | 2.06 | ✅ Référendum | 2 h |
 | 2.07 | ✅ Remaniement et ministres un par un | 4 h |
-| 2.08 | 6e pilier, Rayonnement international : diplomatie, Union européenne, sommets | 5 h |
+| 2.08 | ✅ 6e pilier, Rayonnement international : diplomatie, Union européenne, sommets | 5 h |
 | 2.09 | ⏭️ Reporté (V3) — remplacé par la popularité par région (13 régions, carte) | 2 h |
 | 2.10 | ⏭️ Reporté (V3) — le budget en un choix suffit | 3 h |
 | 2.11 | ✅ Plus de 100 événements au total | 12 h |

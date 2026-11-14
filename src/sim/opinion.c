@@ -1,7 +1,7 @@
 #include "sim/sim.h"
 
 // Opinion par électorat (tâche 2.4). Constantes : docs/SIM.md.
-#define OPN_BASE        330
+#define OPN_BASE        336
 #define OPN_NOISE       8
 #define OPN_NOISE_M     5    // aléa par tour à 12 tours/an
 #define SCANDAL_K       12   // -1,2 point d'opinion cible par 10 points de scandale
@@ -28,11 +28,11 @@ static const u8 k_unemp[ELEC_COUNT]  = { 5, 4, 3 };
 static const u8 k_growth[ELEC_COUNT] = { 1, 2, 3 };
 
 // Poids des piliers par électorat (somme = 16).
-static const u8 pillar_weight[ELEC_COUNT][PIL_COUNT] = {
-    // Soc Éco Tech Écol Séc
-    {  6,  3,  1,  2,  4 },   // populaires
-    {  3,  4,  2,  3,  4 },   // moyennes
-    {  1,  7,  3,  2,  3 },   // aisées
+static const u8 pillar_weight[ELEC_COUNT][PIL_TOTAL] = {
+    // Soc Éco Tech Écol Séc Intl (V2 : poids faible, hors somme de 16)
+    {  6,  3,  1,  2,  4,  1 },   // populaires
+    {  3,  4,  2,  3,  4,  1 },   // moyennes
+    {  1,  7,  3,  2,  3,  2 },   // aisées
 };
 
 s16 sim_opinion_target(const Country *c, u8 e)
@@ -44,7 +44,7 @@ s16 sim_opinion_target(const Country *c, u8 e)
     t -= ((s32)c->unemployment - UNEMP_REF) * k_unemp[e] / 10;
     t += ((s32)c->growth - GROWTH_REF) * k_growth[e] / 10;
 
-    for (i = 0; i < PIL_COUNT; i++)
+    for (i = 0; i < PIL_TOTAL; i++)
         pil += (s32)pillar_weight[e][i] * ((s32)c->pillars[i] - 500);
     t += (pil / 16) * 4 / 10;   // +10 points de pilier pondéré : +4 points d'opinion
 

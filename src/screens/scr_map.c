@@ -1,0 +1,115 @@
+// Mega Président — carte de la popularité par région.
+// La carte emprunte PAL2 : aucun style DIM ni jauge NEUTRAL sur cet écran.
+
+#include <genesis.h>
+#include <string.h>
+#include "screens.h"
+#include "scr_map.h"
+#include "ui/ui.h"
+#include "ui/ui_map.h"
+#include "ui/input.h"
+#include "game/game.h"
+#include "sim/regions.h"
+
+#define MAP_X     1
+#define MAP_Y     4
+#define PANEL_X   23
+#define PANEL_W   16
+#define POP_SPAN  100   // dixièmes de % autour de la moyenne nationale : rouge / vert
+
+static ScreenId return_screen = SCREEN_GAME;
+static u8 sel;
+static bool dirty;
+
+void map_open(ScreenId return_to)
+{
+    return_screen = return_to;
+    screen_change(SCREEN_MAP);
+}
+
+static void paint_regions(void)
+{
+    s16 nat = sim_popularity(&g_game.country);
+    for (u8 r = 0; r < REGION_COUNT; r++)
+        ui_map_set_region_level(r, sim_region_popularity(&g_game.country, r),
+                                (s16)(nat - POP_SPAN), (s16)(nat + POP_SPAN));
+}
+
+static void map_init(void)
+{
+    sel = REGION_ILE_DE_FRANCE;
+    dirty = TRUE;
+    ui_clear();
+    ui_window(0, 0, 40, 28);
+    ui_text_center(1, 1, 38, "Popularité par région", UI_STYLE_HIGHLIGHT);
+    ui_map_draw(MAP_X, MAP_Y);
+    paint_regions();
+    ui_map_highlight(sel);
+    ui_text_draw(PANEL_X, 18, "Jaune : moyenne", UI_STYLE_HIGHLIGHT);
+    ui_text_draw(PANEL_X, 19, "Rouge : faible", UI_STYLE_ALERT);
+    ui_text_draw(PANEL_X, 20, "Vert : forte", UI_STYLE_TEXT);
+    ui_text_draw(1, 26, "Gauche/droite : région  B : retour", UI_STYLE_HIGHLIGHT);
+}
+
+static void map_update(void)
+{
+    u16 p = input_repeat();
+    if (p & (INPUT_RIGHT | INPUT_DOWN)) {
+        sel = (u8)((sel + 1) % REGION_COUNT);
+        dirty = TRUE;
+    } else if (p & (INPUT_LEFT | INPUT_UP)) {
+        sel = (u8)((sel + REGION_COUNT - 1) % REGION_COUNT);
+        dirty = TRUE;
+    }
+    if (input_pressed() & INPUT_CANCEL) {
+        ui_map_close();
+        screen_change(return_screen);
+        return;
+    }
+    if (dirty) ui_map_highlight(sel);
+    ui_map_update();
+}
+
+static void map_draw(void)
+{
+    char buf[24], num[12];
+    s16 pop, gap;
+    u16 y = 4, n;
+
+    if (!dirty) return;
+    dirty = FALSE;
+
+    // efface le panneau
+    for (u16 i = 3; i < 18; i++)
+        ui_text_draw(PANEL_X, i, "                ", UI_STYLE_TEXT);
+
+    pop = sim_region_popularity(&g_game.country, sel);
+    gap = (s16)(pop - sim_popularity(&g_game.country));
+
+    n = ui_text_wrap(PANEL_X, y, PANEL_W, 3, ui_map_region_name(sel), UI_STYLE_HIGHLIGHT);
+    y += n + 1;
+
+    ui_format_number(num, pop, 1);
+    buf[0] = 0;
+    strcat(buf, num);
+    strcat(buf, " %");
+    ui_text_draw(PANEL_X, y++, buf, UI_STYLE_TEXT);
+    y++;
+
+    ui_text_draw(PANEL_X, y++, "Moyenne nat.", UI_STYLE_TEXT);
+    ui_format_number(num, sim_popularity(&g_game.country), 1);
+    buf[0] = 0;
+    strcat(buf, num);
+    strcat(buf, " %");
+    ui_text_draw(PANEL_X, y++, buf, UI_STYLE_TEXT);
+    y++;
+
+    buf[0] = 0;
+    strcat(buf, "Écart : ");
+    if (gap > 0) strcat(buf, "+");
+    ui_format_number(num, gap, 1);
+    strcat(buf, num);
+    ui_text_draw(PANEL_X, y, buf, gap < 0 ? UI_STYLE_ALERT : UI_STYLE_HIGHLIGHT);
+}
+
+const Screen scr_map = { map_init, map_update, map_draw, NULL };

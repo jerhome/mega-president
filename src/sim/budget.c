@@ -15,7 +15,7 @@ static const s8  bud_opinion[BUDGET_COUNT][ELEC_COUNT] = {
     {  20,  10, -15 },
 };
 // Piliers par trimestre (dixièmes) : Soc Éco Tech Écol Séc
-static const s8  bud_pillar[BUDGET_COUNT][PIL_COUNT] = {
+static const s8  bud_pillar[BUDGET_COUNT][PIL_TOTAL] = {
     { -5,  2,  0, -1,  0 },
     {  0,  0,  0,  0,  0 },
     {  5, -1,  2,  2,  1 },
@@ -43,7 +43,7 @@ s16 sim_budget_opinion(u8 b, u8 e)
 
 s16 sim_budget_pillar(u8 b, u8 p)
 {
-    return (bud_ok(b) && p < PIL_COUNT) ? bud_pillar[b][p] : 0;
+    return (bud_ok(b) && p < PIL_TOTAL) ? bud_pillar[b][p] : 0;
 }
 
 // Le budget porte la couleur du gouvernement : orientation du joueur / 2
@@ -98,7 +98,7 @@ u8 sim_budget_force(Country *c, u8 b)
 void budget_quarter_update(Country *c)
 {
     u8 p;
-    for (p = 0; p < PIL_COUNT; p++)
+    for (p = 0; p < PIL_TOTAL; p++)
         c->pillars[p] = sim_clamp((s32)c->pillars[p] + sim_budget_pillar(c->budget, p),
                                   PILLAR_MIN, PILLAR_MAX);
 }

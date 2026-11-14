@@ -2,6 +2,7 @@
 // dissolution, Assemblée (tâche 6.1, V1).
 // Dessin uniquement via src/ui ; la simulation est modifiée par game.h.
 
+#include "screens/scr_map.h"
 #include "audio/music.h"
 #include "screens/scr_help.h"
 #include "audio/sfx.h"
@@ -27,9 +28,10 @@ typedef enum { M_MENU, M_LAWS, M_VOTE, M_ASSEMBLY, M_CONFIRM, M_RESULT } Mode;
 typedef enum { C_FORCE, C_DISSOLVE } ConfirmKind;
 typedef enum { R_TV, R_FORCE, R_DISSOLVE } ResultKind;
 // Actions du menu principal
-typedef enum { A_LAW, A_FORCE, A_TV, A_ASSEMBLY, A_DISSOLVE, A_BUDGET, A_END } Action;
+typedef enum { A_LAW, A_FORCE, A_TV, A_ASSEMBLY, A_MAP, A_REFERENDUM, A_RESHUFFLE, A_DISSOLVE, A_BUDGET,
+               A_END } Action;
 
-#define MENU_MAX 7
+#define MENU_MAX 10
 
 static Mode mode;
 static Mode prev_mode;
@@ -51,10 +53,12 @@ static const char *menu_items[MENU_MAX];
 static u8 menu_n;
 static u8 menu_sel, menu_top;
 static char tv_label[40];
+static char ref_label[40];
+static char rsh_label[40];
 static char confirm_text[160];
 
-static const char *const pillar_names[PIL_COUNT] = {
-    "Social", "Économie", "Technologie", "Écologie", "Sécurité"
+static const char *const pillar_names[PIL_TOTAL] = {
+    "Social", "Économie", "Technologie", "Écologie", "Sécurité", "International"
 };
 
 // --- Utilitaires -----------------------------------------------------------------
@@ -71,6 +75,18 @@ static void cat_dec(char *dst, s32 v, u16 dec)
     char b[14];
     ui_format_number(b, v, dec);
     strcat(dst, b);
+}
+
+// « N trimestre(s) » (20 tours) ou « N mois » (60 tours : délai x 3).
+static void cat_delay(char *dst, u8 delay_q)
+{
+    if (game_is_monthly()) {
+        cat_num(dst, delay_q * 3);
+        strcat(dst, " mois");
+    } else {
+        cat_num(dst, delay_q);
+        strcat(dst, delay_q > 1 ? " trimestres" : " trimestre");
+    }
 }
 
 static const char *pm_name(u8 pm)
@@ -108,13 +124,7 @@ static void draw_header(const char *title)
     if (title) {
         ui_text_draw(1, 1, title, UI_STYLE_HIGHLIGHT);
     } else {
-        u8 t = c->turn < 20 ? c->turn : 19;
-        buf[0] = 0;
-        strcat(buf, "Mandat ");
-        cat_num(buf, c->mandate + 1);
-        strcat(buf, " - Trimestre ");
-        cat_num(buf, t + 1);
-        strcat(buf, " / 20");
+        game_turn_label(c->turn, buf);
         ui_text_draw(1, 1, buf, UI_STYLE_HIGHLIGHT);
     }
     buf[0] = 0;
@@ -131,6 +141,20 @@ static u8 any_law_forceable(void)
 {
     for (u16 i = 0; i < LOI_COUNT; i++)
         if (sim_can_force_law(&g_game.country, (u8)i) == LAW_OK) return 1;
+    return 0;
+}
+
+static u8 any_law_referendum(void)
+{
+    for (u16 i = 0; i < LOI_COUNT; i++)
+        if (sim_referendum_check(&g_game.country, (u8)i) == RFD_OK) return 1;
+    return 0;
+}
+
+static u8 any_reshuffle(void)
+{
+    for (u8 p = 0; p < PM_COUNT; p++)
+        if (sim_reshuffle_check(&g_game.country, p) == RSH_OK) return 1;
     return 0;
 }
 
@@ -158,6 +182,21 @@ static void menu_build(void)
     if (!sim_tv_available(c)) dis |= (u32)1 << n;
     menu_act[n] = A_TV;       menu_items[n++] = tv_label;
     menu_act[n] = A_ASSEMBLY; menu_items[n++] = "Voir l’Assemblée";
+    menu_act[n] = A_MAP;      menu_items[n++] = "Carte des régions";
+    ref_label[0] = 0;
+    strcat(ref_label, txt[TXT_ACT_REFERENDUM]);
+    strcat(ref_label, " (");
+    cat_num(ref_label, REFERENDUM_CP);
+    strcat(ref_label, " CP)");
+    if (!any_law_referendum()) dis |= (u32)1 << n;
+    menu_act[n] = A_REFERENDUM; menu_items[n++] = ref_label;
+    rsh_label[0] = 0;
+    strcat(rsh_label, txt[TXT_ACT_REMANIEMENT]);
+    strcat(rsh_label, " (");
+    cat_num(rsh_label, RESHUFFLE_CP);
+    strcat(rsh_label, " CP)");
+    if (!any_reshuffle()) dis |= (u32)1 << n;
+    menu_act[n] = A_RESHUFFLE; menu_items[n++] = rsh_label;
     if (sim_can_dissolve(c)) {
         menu_act[n] = A_DISSOLVE; menu_items[n++] = "Dissoudre l’Assemblée";
     }
@@ -165,7 +204,10 @@ static void menu_build(void)
         menu_act[n] = A_BUDGET;   menu_items[n++] = "Présenter le budget";
     }
     menu_act[n] = A_END;
-    menu_items[n++] = budget_blocking() ? "Fin du trimestre (budget d’abord)" : "Fin du trimestre";
+    if (game_is_monthly())
+        menu_items[n++] = budget_blocking() ? "Fin du mois (budget d’abord)" : "Fin du mois";
+    else
+        menu_items[n++] = budget_blocking() ? "Fin du trimestre (budget d’abord)" : "Fin du trimestre";
     menu_n = n;
     ui_list_init(&menu_list, 1, 21, 38, 6, menu_items, n);
     menu_list.disabled = dis;
@@ -198,16 +240,28 @@ static void draw_menu_full(void)
     stat_row(7, "Chômage", c->unemployment, 2, " %", c->unemployment, UNEMP_MAX, UI_GAUGE_NEUTRAL);
     stat_row(8, "Dette", c->debt, 1, " %", c->debt, DEBT_MAX, UI_GAUGE_GOLD);
 
-    for (u16 i = 0; i < PIL_COUNT; i++)
+    for (u16 i = 0; i < PIL_TOTAL; i++)
         stat_row(9 + i, pillar_names[i], c->pillars[i], 1, "", c->pillars[i], PILLAR_MAX, UI_GAUGE_POSITIVE);
-    stat_row(14, "Tension", c->gauges[JAUGE_TENSION], 0, " %", c->gauges[JAUGE_TENSION], GAUGE_MAX, UI_GAUGE_NEGATIVE);
-    stat_row(15, "Scandale", c->gauges[JAUGE_SCANDALE], 0, " %", c->gauges[JAUGE_SCANDALE], GAUGE_MAX, UI_GAUGE_NEGATIVE);
-    stat_row(16, "Défiance", c->gauges[JAUGE_DEFIANCE], 0, " %", c->gauges[JAUGE_DEFIANCE], GAUGE_MAX, UI_GAUGE_NEGATIVE);
+    // 6 piliers (lignes 9 à 14), puis les trois jauges de danger sur deux lignes.
+    stat_row(15, "Tension", c->gauges[JAUGE_TENSION], 0, " %", c->gauges[JAUGE_TENSION], GAUGE_MAX, UI_GAUGE_NEGATIVE);
+    buf[0] = 0;
+    strcat(buf, "Scandale "); cat_dec(buf, c->gauges[JAUGE_SCANDALE], 0);
+    strcat(buf, " %   Défiance "); cat_dec(buf, c->gauges[JAUGE_DEFIANCE], 0);
+    strcat(buf, " %");
+    ui_text_draw_n(1, 16, buf, 38, 38,
+                   (c->gauges[JAUGE_SCANDALE] >= 50 || c->gauges[JAUGE_DEFIANCE] >= 50) ? UI_STYLE_ALERT : UI_STYLE_TEXT);
 
     buf[0] = 0;
     strcat(buf, "PM : ");
-    strcat(buf, pm_name(c->pm));
-    ui_text_draw_n(1, 17, buf, 38, 0, UI_STYLE_TEXT);
+    if (sim_cohabitation(c))
+        strcat(buf, txt[TXT_COHAB_PM_GAUCHE_NOM + sim_cohab_camp(c)]);
+    else
+        strcat(buf, pm_name(c->pm));
+    ui_text_draw_n(1, 17, buf, 38, 0, sim_cohabitation(c) ? UI_STYLE_ALERT : UI_STYLE_TEXT);
+    if (sim_cohabitation(c)) {
+        const char *ct = txt[TXT_COHAB_TITRE];
+        ui_text_draw(38 - ui_text_len(ct), 18, ct, UI_STYLE_ALERT);
+    }
     if (sim_has_majority(c))
         ui_text_draw(1, 18, "Majorité absolue", UI_STYLE_DIM);
     else
@@ -239,6 +293,9 @@ static void update_menu(void)
         case A_LAW: forcing = 0; set_mode(M_LAWS); break;
         case A_FORCE: forcing = 1; set_mode(M_LAWS); break;
         case A_ASSEMBLY: set_mode(M_ASSEMBLY); break;
+        case A_MAP: map_open(SCREEN_GAME); break;
+        case A_REFERENDUM: screen_change(SCREEN_REFERENDUM); break;
+        case A_RESHUFFLE: screen_change(SCREEN_RESHUFFLE); break;
         case A_TV: {
             Country *c = &g_game.country;
             res_pop_before = sim_popularity(c);
@@ -268,7 +325,7 @@ static void update_menu(void)
             g_report_snap[0] = c->growth;
             g_report_snap[1] = c->unemployment;
             g_report_snap[2] = c->debt;
-            for (u16 i = 0; i < PIL_COUNT; i++) g_report_snap[3 + i] = c->pillars[i];
+            for (u16 i = 0; i < PIL_TOTAL; i++) g_report_snap[3 + i] = c->pillars[i];
             g_report_snap[8] = c->gauges[JAUGE_TENSION];
             game_end_turn();
             break;
@@ -286,11 +343,24 @@ static u8 law_err(u8 id)
 
 static void law_refresh_disabled(void)
 {
-    u32 d = 0;
+    law_list.disabled = 0;
+    law_list.disabled_hi = 0;
     for (u16 i = 0; i < LOI_COUNT; i++)
-        if (i < 32 && law_err((u8)i) != LAW_OK)   // UiList.disabled : 32 éléments max
-            d |= (u32)1 << i;
-    law_list.disabled = d;
+        if (law_err((u8)i) != LAW_OK)
+            ui_list_set_disabled(&law_list, i, TRUE);
+}
+
+// Liste des lois ; en cohabitation, « * » à droite des lois de souveraineté.
+static void law_list_draw(void)
+{
+    ui_list_draw(&law_list);
+    if (!sim_cohabitation(&g_game.country)) return;
+    for (u16 r = 0; r < law_list.rows; r++) {
+        u16 i = law_list.top + r;
+        if (i < LOI_COUNT && sim_law_sovereign((u8)i))
+            ui_text_draw(law_list.x + law_list.w - 2, law_list.y + r, "*",
+                         ui_list_enabled(&law_list, i) ? UI_STYLE_HIGHLIGHT : UI_STYLE_DIM);
+    }
 }
 
 static void draw_law_detail(void)
@@ -303,7 +373,12 @@ static void draw_law_detail(void)
     u8 err, cost = sim_law_cost(c, id);
 
     ui_clear_rect(1, 12, 38, 12);
-    ui_text_draw(1, 12, law_name[id], UI_STYLE_HIGHLIGHT);
+    ui_text_draw_n(1, 12, law_name[id], sim_cohabitation(c) && sim_law_sovereign(id) ? 25 : 38, 0,
+                   UI_STYLE_HIGHLIGHT);
+    if (sim_cohabitation(c) && sim_law_sovereign(id)) {
+        const char *sv = txt[TXT_COHAB_SOUVERAINE];
+        ui_text_draw(38 - ui_text_len(sv), 12, sv, UI_STYLE_DIM);
+    }
 
     buf[0] = 0;
     strcat(buf, "Coût : ");
@@ -317,14 +392,12 @@ static void draw_law_detail(void)
         ui_text_draw(1, 13, buf, UI_STYLE_TEXT);
         buf[0] = 0;
         strcat(buf, "Délai : ");
-        cat_num(buf, law->delay_q);
-        strcat(buf, law->delay_q > 1 ? " trimestres" : " trimestre");
+        cat_delay(buf, law->delay_q);
         ui_text_draw(1, 14, buf, UI_STYLE_TEXT);
     } else {
         cat_num(buf, cost);
         strcat(buf, " CP   Délai : ");
-        cat_num(buf, law->delay_q);
-        strcat(buf, law->delay_q > 1 ? " trimestres" : " trimestre");
+        cat_delay(buf, law->delay_q);
         ui_text_draw(1, 13, buf, UI_STYLE_TEXT);
     }
 
@@ -354,6 +427,8 @@ static void draw_law_detail(void)
         ui_text_draw(1, 23, "Déjà adoptée", UI_STYLE_DIM);
     else if (err == LAW_ERR_493)
         ui_text_draw(1, 23, "49.3 déjà utilisé cette année", UI_STYLE_ALERT);
+    else if (err == LAW_ERR_COHAB)
+        ui_text_wrap(1, 23, 38, 2, txt[TXT_COHAB_LOI_REFUSEE], UI_STYLE_ALERT);
     else if (err != LAW_OK)
         ui_text_draw(1, 23, "Impossible pour l’instant", UI_STYLE_ALERT);
 }
@@ -365,7 +440,7 @@ static void draw_laws_full(void)
     ui_window(0, 3, 40, 8);
     ui_window(0, 11, 40, 17);
     law_refresh_disabled();
-    ui_list_draw(&law_list);
+    law_list_draw();
     ui_text_draw(1, 26, forcing ? "A : forcer   B : retour" : "A : proposer   B : retour", UI_STYLE_DIM);
     detail_dirty = TRUE;
 }
@@ -374,7 +449,7 @@ static void update_laws(void)
 {
     switch (ui_list_update(&law_list)) {
     case UI_LIST_MOVED:
-        ui_list_draw(&law_list);
+        law_list_draw();
         detail_dirty = TRUE;
         break;
     case UI_LIST_CHOSEN:
@@ -469,8 +544,8 @@ static void draw_result_full(void)
         ui_text_wrap(1, 13, 38, 3, law_journal_ok[last_law], UI_STYLE_TEXT);
         buf[0] = 0;
         strcat(buf, "Effets dans ");
-        cat_num(buf, law->delay_q);
-        strcat(buf, law->delay_q > 1 ? " trimestres." : " trimestre.");
+        cat_delay(buf, law->delay_q);
+        strcat(buf, ".");
         ui_text_draw(1, 17, buf, UI_STYLE_DIM);
         stat_row(19, "Défiance", c->gauges[JAUGE_DEFIANCE], 0, " %", c->gauges[JAUGE_DEFIANCE],
                  GAUGE_MAX, UI_GAUGE_NEGATIVE);
@@ -503,6 +578,9 @@ static void draw_result_full(void)
                      lr->majority ? UI_STYLE_TEXT : UI_STYLE_ALERT);
         ui_text_wrap(1, 19, 38, 4, txt[lr->won ? TXT_LEGISLATIVES_GAGNEES : TXT_LEGISLATIVES_PERDUES],
                      lr->won ? UI_STYLE_TEXT : UI_STYLE_ALERT);
+        if (lr->cohab_started || lr->cohab_ended)
+            ui_text_wrap(1, 23, 38, 3, txt[lr->cohab_started ? TXT_COHAB_DEBUT : TXT_COHAB_FIN],
+                         lr->cohab_started ? UI_STYLE_ALERT : UI_STYLE_HIGHLIGHT);
     }
     ui_text_draw(1, 26, "A : continuer", UI_STYLE_DIM);
 }
@@ -556,8 +634,8 @@ static void draw_vote_full(void)
         const LawDef *law = law_get(last_law);
         buf[0] = 0;
         strcat(buf, "Effets dans ");
-        cat_num(buf, law->delay_q);
-        strcat(buf, law->delay_q > 1 ? " trimestres." : " trimestre.");
+        cat_delay(buf, law->delay_q);
+        strcat(buf, ".");
         ui_text_draw(1, 22, buf, UI_STYLE_DIM);
     }
     ui_text_draw(1, 26, "A : continuer", UI_STYLE_DIM);

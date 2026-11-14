@@ -8,7 +8,7 @@
 
 | Fichier | Rôle |
 |---|---|
-| `sim_state.h` | struct `Country` (148 octets sur 68000 avec alignement 2 ; 126 en V1), énumérations, bornes |
+| `sim_state.h` | struct `Country` (≈ 164 octets sur 68000 avec alignement 2 ; 172 sur PC ; 126 en V1), énumérations, bornes |
 | `sim.h` / `sim.c` | `sim_init_ex`, `sim_end_turn`, lois, 49.3, télévision, PM, jauges, CP, 2nd mandat, scores |
 | `effects.*` | clés d'effets, conversion et bornage (`sim_apply_effect`) |
 | `laws.*` | catalogue `law_defs` (40 lois, masque `LawMask` de 64 bits : `law_mask_get/set`), coût effectif, file des lois en attente |
@@ -21,6 +21,7 @@
 | `senate.*` | V2 : Sénat (348 sièges), renouvellement, voix de destitution du Sénat |
 | `cohab.*` | V2 : cohabitation (PM d'opposition, lois de souveraineté, lois du gouvernement, budget imposé) |
 | `actions.*` | V2 : référendum, remaniement |
+| `regions.*` | V2 : popularité par région (13 régions, profils en ROM) |
 
 ## Conversion des clés d'effets (V1)
 
@@ -101,7 +102,7 @@ Les événements sont appliqués **avant** par l'appelant. Une partie terminée 
 | centre | −1,5 | +1,5 | +0,5 |
 | droite | −4 | 0 | +4 |
 
-Poids des piliers (/16) : populaires 6/3/1/2/4, moyennes 3/4/2/3/4, aisées 1/7/3/2/3 (Soc/Éco/Tech/Écol/Séc).
+Poids des piliers (/16) : populaires 6/3/1/2/4, moyennes 3/4/2/3/4, aisées 1/7/3/2/3 (Soc/Éco/Tech/Écol/Séc). V2 : 6e pilier International, poids faible hors somme (populaires 1, moyennes 1, aisées 2). `OPN_BASE` = 336 (330 en V1) : recalé après l'ajout du pilier international pour garder la réélection d'un joueur actif à ≈ 71 / 55 / 25 % (facile / normal / difficile).
 
 - **Inertie** : `opinion += (cible − opinion) / tpy` + aléa ±0,8 point.
 - **État de grâce** : +12 points au début du 1er mandat, +4 au début du 2nd, −8 par an.
@@ -229,6 +230,13 @@ Champs ajoutés à `Country` : `events_done_hi`, `senate[5]`, `cohab`, `cohab_gr
 ### Mode 60 tours (2.15)
 
 `turns_per_year = 12` : tous les flux (économie, opinion, dette, tension) passent par `sim_step` (reste reporté) ; bruits ramenés à ≈ 1/√3 ; lois : délai × 3 ; CP, jauges, Parlement, institutions, érosion de l'état de grâce du remaniement au trimestre (`sim_quarter_tick`, tous les 3 tours) ; budget présenté pendant les 3 derniers mois de l'année ; événements : 33 % par tour (≈ 1 tour sur 3). La calibration n'a demandé aucun changement de constante : l'écart avec le mode 20 tours est resté ≤ 5 points (voir les tableaux).
+
+## Pilier international et régions (V2, 2.08 et 2.01)
+
+**Pilier international** : `PIL_INTERNATIONAL` (index 5, 0-1000, départ ≈ 500), clé d'effet `EFF_INTERNATIONAL` (« INTERNATIONAL », 1 unité = 1 point de pilier). `PIL_COUNT` = 5 reste le nombre de piliers « V1 » affichés par les écrans ; `PIL_TOTAL` = 6 dimensionne `pillars` / `pillars_start` et les boucles de la simulation (opinion, score, progression, budget). Il entre dans le score et la progression moyenne comme les autres piliers. Lois : aide au développement +8, alliance +6, LPM +3, service national +2, taxe carbone +2, exportations d'armes −4, immigration −2. Événements : sommet européen, crise diplomatique, sommet climat, Nobel, espionnage, classement, événement sportif, agences de notation (ajouts de « INTERNATIONAL ±n » seulement).
+
+**Régions** (`regions.c`) : 13 régions, `REG_*` dans le même ordre que `REGION_*` de `src/ui/ui_map.h` (vérifié par `tests/test_regions.c`).
+`sim_region_popularity(c, r)` = Σ poids(r, électorat) × opinion(électorat) / 100 + `c->region_gap[r]` (dixièmes de %, `s8`, borné ±10 points). L'écart cible vaut Σ (sensibilité − 3) × (pilier − 500) / 50 − (sensibilité chômage − 3) × (chômage − 7,5 %) / 50 + effets des lois adoptées (table `region_laws`, ex. agriculture productive +1,5 point en Bretagne, énergie +1,5 en Centre-Val de Loire, transports +1,5 en Île-de-France). `sim_region_update` (après l'opinion, à chaque tour) comble 1/6 de l'écart par trimestre. Les élections ignorent les régions. Profils (poids Pop/Moy/Aisées ; sensibilités Soc/Éco/Tech/Écol/Séc/Intl ; chômage) : voir `region_profiles`.
 
 ## Partie automatique (tests, 400 graines × 20 tours, événements, 3 PM à parts égales)
 

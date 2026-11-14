@@ -7,7 +7,23 @@
 
 static bool item_enabled(const UiList *l, u16 i)
 {
-    return i >= 32 || !(l->disabled & ((u32)1 << i));
+    if (i < 32) return !(l->disabled & ((u32)1 << i));
+    if (i < 64) return !(l->disabled_hi & ((u32)1 << (i - 32)));
+    return TRUE;
+}
+
+bool ui_list_enabled(const UiList *l, u16 i)
+{
+    return item_enabled(l, i);
+}
+
+void ui_list_set_disabled(UiList *l, u16 i, bool on)
+{
+    if (i < 32) {
+        if (on) l->disabled |= (u32)1 << i; else l->disabled &= ~((u32)1 << i);
+    } else if (i < 64) {
+        if (on) l->disabled_hi |= (u32)1 << (i - 32); else l->disabled_hi &= ~((u32)1 << (i - 32));
+    }
 }
 
 static void list_fix_top(UiList *l)
@@ -24,6 +40,7 @@ void ui_list_init(UiList *list, u16 x, u16 y, u16 w, u16 rows,
     list->items = items;
     list->count = (u8)count;
     list->disabled = 0;
+    list->disabled_hi = 0;
     list->x = (u8)x;
     list->y = (u8)y;
     list->w = (u8)w;

@@ -80,7 +80,10 @@ Le rédacteur écrit ces clés dans `docs/contenu/textes_v2.md` (même format qu
 
 Les clés V1 déjà existantes (`TXT_BUD_*`, `TXT_PM_*`, `TXT_DESTITUTION_*`, noms des groupes dans `content_world`) sont réutilisées telles quelles.
 
-## 3. Reportés tant que le joueur n'a pas tranché
-- Pixel art (2.02) : il faut choisir la direction artistique et l'auteur.
-- Musique (2.03) : il faut choisir entre composition et musiques libres.
-- Carte des régions (2.01) : elle sera faite après la simulation régionale, dans un style simple et remplaçable.
+## 3. Décisions du joueur (14/11)
+- **Pixel art (2.02)** : réalisé par Claude, par programme (scripts Python reproductibles).
+  - Style **caricatural, façon BD**.
+  - Pas de priorité imposée : on suit l'ordre écran titre, portraits, vignettes d'événements, décors.
+  - Tous les personnages sont fictifs.
+- **Musique (2.03)** : les 3 compositions originales sont conservées.
+- **Carte des régions (2.01)** : style simple et remplaçable, alimentée par la popularité régionale.

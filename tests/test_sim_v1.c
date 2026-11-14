@@ -10,7 +10,7 @@ static int v1_in_bounds(const Country *c)
     u16 seats = 0;
     for (i = 0; i < ELEC_COUNT; i++)
         ok &= c->opinion[i] >= OPINION_MIN && c->opinion[i] <= OPINION_MAX;
-    for (i = 0; i < PIL_COUNT; i++)
+    for (i = 0; i < PIL_TOTAL; i++)
         ok &= c->pillars[i] >= PILLAR_MIN && c->pillars[i] <= PILLAR_MAX;
     for (i = 0; i < JAUGE_COUNT; i++) ok &= c->gauges[i] <= GAUGE_MAX;
     for (i = 0; i < GRP_COUNT; i++) { ok &= c->relation[i] <= RELATION_MAX; seats += c->seats[i]; }

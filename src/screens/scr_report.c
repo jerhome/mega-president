@@ -47,17 +47,19 @@ static u16 indicator(u16 y, const char *label, s16 before, s16 after, u16 dec, c
     return y + 1;
 }
 
-// Pages : 0 bilan ; 1 censure et destitution ; 2 affaire et budget reconduit.
+// Pages : 0 bilan ; 1 censure et destitution ; 2 affaire et budget reconduit ;
+// 3 (V2) gouvernement de cohabitation et Sénat.
 static u8 has_page(u8 p)
 {
     const TurnReport *r = &g_game.report;
     if (p == 1) return (u8)(r->censure != CENSURE_NONE || r->impeach != IMP_EV_NONE);
+    if (p == 3) return (u8)(r->gov_law || r->budget_gov || r->senate_renewed);
     return (u8)(r->affair || r->budget_reconduit);
 }
 
 static u8 next_page(u8 p)
 {
-    for (u8 i = (u8)(p + 1); i <= 2; i++)
+    for (u8 i = (u8)(p + 1); i <= 3; i++)
         if (has_page(i)) return i;
     return 0;   // plus de page
 }
@@ -132,22 +134,34 @@ static void draw_politics(void)
         y++;
     }
     if (page == 1 && r->impeach != IMP_EV_NONE) {
+        u8 sen_no = (u8)(r->impeach == IMP_EV_REJETEE && r->impeach_votes >= IMPEACH_MAJORITY
+                         && r->impeach_senate_votes < SENATE_IMPEACH_MAJORITY);
         u8 t = r->impeach == IMP_EV_ENGAGEE ? TXT_DESTITUTION_PROCEDURE
-             : r->impeach == IMP_EV_REJETEE ? TXT_DESTITUTION_REJETEE : TXT_DESTITUTION_VOTEE;
+             : r->impeach == IMP_EV_REJETEE ? (sen_no ? TXT_DESTITUTION_SENAT_REJETEE : TXT_DESTITUTION_REJETEE)
+             : TXT_DESTITUTION_VOTEE;
         ui_text_draw(1, y++, "Destitution", UI_STYLE_HIGHLIGHT);
         y = para(y, txt[t], r->impeach == IMP_EV_REJETEE ? UI_STYLE_TEXT : UI_STYLE_ALERT);
+        if (r->impeach == IMP_EV_VOTEE)
+            y = para(y, txt[TXT_DESTITUTION_SENAT_VOTEE], UI_STYLE_ALERT);
         if (r->impeach != IMP_EV_ENGAGEE) {
             buf[0] = 0;
-            strcat(buf, "Pour la destitution : ");
+            strcat(buf, "Assemblée : ");
             cat_num(buf, r->impeach_votes, 0);
-            strcat(buf, " sur ");
+            strcat(buf, " / ");
             cat_num(buf, SEATS_TOTAL, 0);
-            ui_text_draw(1, y++, buf, UI_STYLE_TEXT);
-            buf[0] = 0;
-            strcat(buf, "(majorité requise : ");
+            strcat(buf, " (il en faut ");
             cat_num(buf, IMPEACH_MAJORITY, 0);
             strcat(buf, ")");
-            ui_text_draw(1, y++, buf, UI_STYLE_DIM);
+            ui_text_draw(1, y++, buf, UI_STYLE_TEXT);
+            buf[0] = 0;
+            strcat(buf, "Sénat : ");
+            cat_num(buf, r->impeach_senate_votes, 0);
+            strcat(buf, " / ");
+            cat_num(buf, SENATE_SEATS, 0);
+            strcat(buf, " (il en faut ");
+            cat_num(buf, SENATE_IMPEACH_MAJORITY, 0);
+            strcat(buf, ")");
+            ui_text_draw(1, y++, buf, UI_STYLE_TEXT);
         }
         y++;
     }
@@ -155,6 +169,34 @@ static void draw_politics(void)
         ui_text_draw(1, y++, "Une affaire éclate", UI_STYLE_HIGHLIGHT);
         y = para(y, "Un scandale secoue l’Élysée. La presse\nfouille, l’opposition s’en réjouit.", UI_STYLE_ALERT);
         y++;
+    }
+    if (page == 3) {
+        const Country *c = &g_game.country;
+        if (r->gov_law && y <= LAST_ROW) {
+            y = para(y, txt[TXT_COHAB_LOI_GOUV], UI_STYLE_HIGHLIGHT);
+            ui_icon_draw(1, y, UI_ICON_BULLET);
+            ui_text_draw_n(3, y++, law_name[r->gov_law - 1], 35, 0, UI_STYLE_TEXT);
+            y++;
+        }
+        if (r->budget_gov && y <= LAST_ROW) {
+            y = para(y, txt[TXT_COHAB_BUDGET_GOUV], UI_STYLE_HIGHLIGHT);
+            ui_icon_draw(1, y, UI_ICON_BULLET);
+            ui_text_draw_n(3, y++, txt[TXT_BUD_RIGUEUR + sim_cohab_budget(c)], 35, 0, UI_STYLE_TEXT);
+            y++;
+        }
+        if (r->senate_renewed && y <= LAST_ROW) {
+            u16 before = 0, after = sim_senate_bloc_seats(c);
+            for (u8 g = 0; g < GRP_COUNT; g++)
+                if (sim_in_bloc(c, g)) before += r->senate_before[g];
+            y = para(y, txt[after >= before ? TXT_SENAT_RENOUVELE_GAIN : TXT_SENAT_RENOUVELE_PERTE],
+                     after >= before ? UI_STYLE_TEXT : UI_STYLE_ALERT);
+            buf[0] = 0;
+            strcat(buf, "Bloc présidentiel au Sénat : ");
+            cat_num(buf, before, 0);
+            strcat(buf, " -> ");
+            cat_num(buf, after, 0);
+            if (y <= LAST_ROW) ui_text_draw(1, y++, buf, UI_STYLE_HIGHLIGHT);
+        }
     }
     if (page == 2 && r->budget_reconduit && y <= LAST_ROW) {
         ui_text_draw(1, y++, "Budget reconduit", UI_STYLE_HIGHLIGHT);
@@ -164,8 +206,8 @@ static void draw_politics(void)
 
 static void report_draw(void)
 {
-    static const char *const pillar_names[PIL_COUNT] = {
-        "Social", "Économie", "Technologie", "Écologie", "Sécurité"
+    static const char *const pillar_names[PIL_TOTAL] = {
+        "Social", "Économie", "Technologie", "Écologie", "Sécurité", "International"
     };
     const Country *c = &g_game.country;
     const TurnReport *r = &g_game.report;
@@ -185,12 +227,19 @@ static void report_draw(void)
         return;
     }
 
-    t = c->turn > 0 ? c->turn - 1 : 0;   // trimestre qui vient de s'écouler
+    t = c->turn > 0 ? c->turn - 1 : 0;   // tour (trimestre ou mois) qui vient de s'écouler
     buf[0] = 0;
-    strcat(buf, "Bilan du trimestre T");
-    cat_num(buf, (t & 3) + 1, 0);
-    strcat(buf, " ");
-    cat_num(buf, START_YEAR + (t >> 2), 0);
+    if (game_is_monthly()) {
+        strcat(buf, "Bilan du mois : ");
+        strcat(buf, game_month_name(t));
+        strcat(buf, " ");
+        cat_num(buf, game_calendar_year(t), 0);
+    } else {
+        strcat(buf, "Bilan du trimestre T");
+        cat_num(buf, (t & 3) + 1, 0);
+        strcat(buf, " ");
+        cat_num(buf, START_YEAR + 5 * c->mandate + (t >> 2), 0);
+    }
     ui_text_center(1, 2, 38, buf, UI_STYLE_DIM);
 
     // Popularité et capital politique
@@ -213,7 +262,7 @@ static void report_draw(void)
     ui_text_draw(1, y++, buf, UI_STYLE_TEXT);
     y++;
 
-    // À la une : lois votées ce trimestre
+    // À la une : lois votées ce tour
     if (law_mask_any(&g_game.laws_tried)) {
         ui_text_draw(1, y++, "À la une", UI_STYLE_HIGHLIGHT);
         for (u16 i = 0; i < LOI_COUNT && y <= LAST_ROW; i++) {
@@ -244,7 +293,7 @@ static void report_draw(void)
         y = indicator(y, "Croissance", g_report_snap[0], c->growth, 2, " %");
         y = indicator(y, "Chômage", g_report_snap[1], c->unemployment, 2, " %");
         y = indicator(y, "Dette", g_report_snap[2], c->debt, 1, " %");
-        for (u16 i = 0; i < PIL_COUNT; i++)
+        for (u16 i = 0; i < PIL_TOTAL; i++)
             y = indicator(y, pillar_names[i], g_report_snap[3 + i], c->pillars[i], 1, "");
         y = indicator(y, "Tension", g_report_snap[8], c->gauges[JAUGE_TENSION], 0, " %");
         if (y == y0 + 1)

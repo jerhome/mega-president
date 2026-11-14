@@ -85,7 +85,8 @@ typedef enum {
 
 typedef struct {
     const char *const *items;  // chaînes UTF-8
-    u32 disabled;              // bit i = élément i grisé, non sélectionnable (32 max)
+    u32 disabled;              // bit i = élément i grisé, non sélectionnable (éléments 0-31)
+    u32 disabled_hi;           // idem pour les éléments 32-63 (bit i - 32)
     u8 count;
     u8 x, y, w, rows;          // w inclut le curseur (col. 0) et les flèches (dernière col.)
     u8 sel, top;
@@ -95,6 +96,10 @@ void ui_list_init(UiList *list, u16 x, u16 y, u16 w, u16 rows,
                   const char *const *items, u16 count);
 UiListResult ui_list_update(UiList *list);   // lit la manette (input_repeat)
 void ui_list_draw(const UiList *list);
+// Grise (on = 1) ou réactive l'élément i (0-63).
+void ui_list_set_disabled(UiList *list, u16 i, bool on);
+// 1 si l'élément i est sélectionnable.
+bool ui_list_enabled(const UiList *list, u16 i);
 
 // --- Boîte de message avec choix (modale, non bloquante) ----------------------
 // Fenêtre pleine largeur en bas de l'écran : titre (facultatif, NULL),

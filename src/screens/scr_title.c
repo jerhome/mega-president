@@ -9,7 +9,7 @@
 #include "content/content_texts.h"
 #include "ui/screen.h"
 
-enum { PH_PRESS = 0, PH_ORIENT, PH_PM, PH_DIFF };
+enum { PH_PRESS = 0, PH_ORIENT, PH_PM, PH_DIFF, PH_DUREE };
 
 enum { D_ALL = 1, D_LIST = 2, D_DESC = 4 };
 
@@ -21,6 +21,8 @@ static const char *const orient_items[ORIENT_COUNT] = {
 
 static const char *const diff_items[DIFF_COUNT] = { "Facile", "Normal", "Difficile" };
 static const char *pm_items[PM_COUNT];
+static const char *duree_items[2];
+static u8 duree_sel = 0;   // 0 : 20 tours, 1 : 60 tours
 static u8 orient_sel = ORIENT_CENTRE;
 static u8 pm_sel = PM_TECHNOCRATE;
 static u8 diff_sel = DIFF_NORMAL;
@@ -48,6 +50,8 @@ static void title_init(void)
     press_ms = 0;
     has_save = game_has_save();
     music_play(MUS_TITLE);
+    duree_items[0] = txt[TXT_DUREE_20];
+    duree_items[1] = txt[TXT_DUREE_60];
     pm_items[PM_TECHNOCRATE] = txt[TXT_PM_TECHNOCRATE_NOM];
     pm_items[PM_RASSEMBLEUR] = txt[TXT_PM_RASSEMBLEUR_NOM];
     pm_items[PM_REFORMATEUR] = txt[TXT_PM_REFORMATEUR_NOM];
@@ -65,6 +69,10 @@ static void list_setup(void)
         ui_list_init(&list, 4, LIST_Y, 30, 3, pm_items, PM_COUNT);
         list.sel = pm_sel;
         break;
+    case PH_DUREE:
+        ui_list_init(&list, 2, LIST_Y, 36, 2, duree_items, 2);
+        list.sel = duree_sel;
+        break;
     default:
         ui_list_init(&list, 4, LIST_Y, 20, 3, diff_items, DIFF_COUNT);
         list.sel = diff_sel;
@@ -74,7 +82,7 @@ static void list_setup(void)
 
 static void start_game(void)
 {
-    game_new(orient_sel, pm_sel, diff_sel,
+    game_new(orient_sel, pm_sel, diff_sel, duree_sel ? 12 : 4,
              seed_acc ^ (press_ms << 8) ^ (screen_time_ms() * 2654435761UL));
     screen_change(SCREEN_GAME);
 }
@@ -97,8 +105,11 @@ static void choose(void)
     } else if (phase == PH_PM) {
         pm_sel = list.sel;
         go_phase(PH_DIFF);
-    } else {
+    } else if (phase == PH_DIFF) {
         diff_sel = list.sel;
+        go_phase(PH_DUREE);
+    } else {
+        duree_sel = list.sel;
         start_game();
     }
 }
@@ -158,11 +169,12 @@ static void title_draw(void)
                 ui_text_center(0, 18, UI_COLS, "B : continuer la partie", UI_STYLE_TEXT);
             ui_text_center(0, 19, UI_COLS, "C : meilleurs scores", UI_STYLE_DIM);
         } else {
-            static const char *const titles[3] = {
-                "Votre orientation politique", "Votre Premier ministre", "Difficulté"
+            static const char *const titles[4] = {
+                "Votre orientation politique", "Votre Premier ministre", "Difficulté", NULL
             };
-            ui_text_center(0, 14, UI_COLS, titles[phase - PH_ORIENT], UI_STYLE_HIGHLIGHT);
-            ui_text_draw(1, 26, phase == PH_DIFF ? "Haut/Bas  A : jouer  B : retour"
+            ui_text_center(0, 14, UI_COLS, phase == PH_DUREE ? txt[TXT_DUREE_TITRE] : titles[phase - PH_ORIENT],
+                           UI_STYLE_HIGHLIGHT);
+            ui_text_draw(1, 26, phase == PH_DUREE ? "Haut/Bas  A : jouer  B : retour"
                                                  : "Haut/Bas  A : suite  B : retour",
                          UI_STYLE_DIM);
             dirty |= D_LIST | D_DESC;
@@ -196,6 +208,8 @@ static void title_draw(void)
             ui_text_wrap(1, 22, UI_TEXT_COLS, 3, grp_desc[g], UI_STYLE_TEXT);
         } else if (phase == PH_PM) {
             ui_text_wrap(1, 20, UI_TEXT_COLS, 5, txt[TXT_PM_TECHNOCRATE_DESC + 2 * list.sel], UI_STYLE_TEXT);
+        } else if (phase == PH_DUREE) {
+            ui_text_wrap(1, 20, UI_TEXT_COLS, 5, txt[TXT_DUREE_20_DESC + list.sel], UI_STYLE_TEXT);
         } else {
             ui_text_wrap(1, 20, UI_TEXT_COLS, 5, txt[TXT_DIFF_FACILE + list.sel], UI_STYLE_TEXT);
         }

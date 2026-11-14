@@ -78,10 +78,10 @@ void sim_init_ex(Country *c, const SimSetup *s)
     c->growth = (s16)(dp->growth + rng_range(&c->rng, -20, 20));
     c->unemployment = (s16)(dp->unemployment + rng_range(&c->rng, -30, 30));
     c->debt = dp->debt;
-    for (i = 0; i < PIL_COUNT; i++)
+    for (i = 0; i < PIL_TOTAL; i++)
         c->pillars[i] = (s16)(500 + rng_range(&c->rng, -20, 20));
 
-    for (i = 0; i < PIL_COUNT; i++) c->pillars_start[i] = c->pillars[i];
+    for (i = 0; i < PIL_TOTAL; i++) c->pillars_start[i] = c->pillars[i];
     c->unemployment_start = c->unemployment;
     c->debt_start = c->debt;
 
@@ -101,6 +101,7 @@ void sim_init_ex(Country *c, const SimSetup *s)
     sim_senate_init(c);
     c->pm_prev = PM_NONE;
     if (s->pm < PM_COUNT) sim_change_pm(c, s->pm);
+    sim_region_init(c);
 }
 
 void sim_init(Country *c, u8 orientation, u32 seed, u8 turns_per_year)
@@ -171,8 +172,8 @@ s16 sim_pillar_progress(const Country *c)
 {
     s16 sum = 0;
     u8 i;
-    for (i = 0; i < PIL_COUNT; i++) sum += (s16)(c->pillars[i] - c->pillars_start[i]);
-    return (s16)(sum / PIL_COUNT);
+    for (i = 0; i < PIL_TOTAL; i++) sum += (s16)(c->pillars[i] - c->pillars_start[i]);
+    return (s16)(sum / PIL_TOTAL);
 }
 
 u8 sim_law_cost(const Country *c, u8 law_id)
@@ -384,6 +385,7 @@ void sim_end_turn(Country *c, TurnReport *report)
     sim_economy_update(c);
     // 4. Opinion
     sim_opinion_update(c);
+    sim_region_update(c);
     // 5. Parlement
     parl_end_turn(c);
     // 5b. V2 : en cohabitation, le gouvernement propose ses lois ; l'état de grâce
@@ -474,7 +476,7 @@ void sim_start_second_mandate(Country *c, LegislativeResult *out)
     c->score_first = sim_mandate_score(c, 1);
     c->mandate = 1;
     c->turn = 0;
-    for (i = 0; i < PIL_COUNT; i++) c->pillars_start[i] = c->pillars[i];
+    for (i = 0; i < PIL_TOTAL; i++) c->pillars_start[i] = c->pillars[i];
     c->unemployment_start = c->unemployment;
     c->debt_start = c->debt;
     c->grace = GRACE_START2;

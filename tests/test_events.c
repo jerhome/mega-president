@@ -7,7 +7,7 @@ static int in_bounds(const Country *c)
     int i, ok = 1;
     for (i = 0; i < ELEC_COUNT; i++)
         ok &= c->opinion[i] >= OPINION_MIN && c->opinion[i] <= OPINION_MAX;
-    for (i = 0; i < PIL_COUNT; i++)
+    for (i = 0; i < PIL_TOTAL; i++)
         ok &= c->pillars[i] >= PILLAR_MIN && c->pillars[i] <= PILLAR_MAX;
     for (i = 0; i < JAUGE_COUNT; i++) ok &= c->gauges[i] <= GAUGE_MAX;
     ok &= c->unemployment >= UNEMP_MIN && c->unemployment <= UNEMP_MAX;

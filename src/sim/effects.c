@@ -11,7 +11,7 @@ s16 sim_effect_scale(u8 key)
     case EFF_DETTE:
         return 5;    // 1 unité = 0,5 point de PIB (V1, équilibrage 1.20)
     case EFF_SOCIAL: case EFF_ECONOMIE: case EFF_TECHNOLOGIE:
-    case EFF_ECOLOGIE: case EFF_SECURITE:
+    case EFF_ECOLOGIE: case EFF_SECURITE: case EFF_INTERNATIONAL:
         return 10;   // points de pilier -> dixièmes
     case EFF_SCANDALE:
         return 2;    // 1 unité = 2 points de jauge (V1, équilibrage 1.20)
@@ -58,7 +58,7 @@ void sim_apply_effect(Country *c, u8 key, s8 value)
         add16(&c->debt, d, DEBT_MIN, DEBT_MAX);
         break;
     case EFF_SOCIAL: case EFF_ECONOMIE: case EFF_TECHNOLOGIE:
-    case EFF_ECOLOGIE: case EFF_SECURITE:
+    case EFF_ECOLOGIE: case EFF_SECURITE: case EFF_INTERNATIONAL:
         add16(&c->pillars[key - EFF_SOCIAL], d, PILLAR_MIN, PILLAR_MAX);
         break;
     case EFF_TENSION: case EFF_SCANDALE: case EFF_DEFIANCE:

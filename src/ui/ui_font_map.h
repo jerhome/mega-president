@@ -2,8 +2,8 @@
 #ifndef UI_FONT_MAP_H
 #define UI_FONT_MAP_H
 
-#define UI_FONT_GLYPHS 121
-#define UI_FONT_EXTRA 26
+#define UI_FONT_GLYPHS 122
+#define UI_FONT_EXTRA 27
 
 // Points de code hors ASCII, triés, et indice du glyphe correspondant.
 static const u16 ui_font_extra_cp[UI_FONT_EXTRA] = {
@@ -15,6 +15,7 @@ static const u16 ui_font_extra_cp[UI_FONT_EXTRA] = {
     0x00C8,  // È
     0x00C9,  // É
     0x00CA,  // Ê
+    0x00CE,  // Î
     0x00D4,  // Ô
     0x00E0,  // à
     0x00E2,  // â
@@ -35,15 +36,16 @@ static const u16 ui_font_extra_cp[UI_FONT_EXTRA] = {
     0x20AC,  // €
 };
 static const u8 ui_font_extra_glyph[UI_FONT_EXTRA] = {
-    115,  // «
-    117,  // °
-    116,  // »
-    112,  // À
-    113,  // Ç
+    116,  // «
+    118,  // °
+    117,  // »
+    113,  // À
+    114,  // Ç
     110,  // È
     109,  // É
     111,  // Ê
-    114,  // Ô
+    112,  // Î
+    115,  // Ô
     99,  // à
     100,  // â
     101,  // ç
@@ -58,9 +60,9 @@ static const u8 ui_font_extra_glyph[UI_FONT_EXTRA] = {
     106,  // û
     107,  // ü
     108,  // œ
-    119,  // ’
-    120,  // …
-    118,  // €
+    120,  // ’
+    121,  // …
+    119,  // €
 };
 
 #endif

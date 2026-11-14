@@ -24,6 +24,9 @@ typedef enum {
     SCREEN_CAMPAIGN,  // thème de campagne avant la présidentielle
     SCREEN_MANDATE2,  // début du 2nd mandat (législatives)
     SCREEN_BUDGET,    // budget annuel
+    SCREEN_REFERENDUM,  // V2 : référendum
+    SCREEN_RESHUFFLE,   // V2 : remaniement (choix du nouveau PM)
+    SCREEN_MAP,       // carte de popularité par région
     SCREEN_COUNT
 } ScreenId;
 

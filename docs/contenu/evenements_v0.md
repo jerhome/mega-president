@@ -80,15 +80,15 @@ Texte : Les chefs d'État se réunissent à
   Votre voix compte, mais combien de
   fois pouvez-vous dire « non » ?
 Choix 1 : Défendre l'intérêt national
-  Effets : POP_MOYENNES +3, ECONOMIE -2, CP -1
+  Effets : POP_MOYENNES +3, ECONOMIE -2, CP -1, INTERNATIONAL -4
   Journal : Le président claque la porte.
     Applaudi à Paris, froid ailleurs.
 Choix 2 : Chercher le compromis
-  Effets : ECONOMIE +3, POP_MOYENNES -2, CP +1
+  Effets : ECONOMIE +3, POP_MOYENNES -2, CP +1, INTERNATIONAL +4
   Journal : Accord à l'aube : tout le monde a
     perdu un peu, personne ne crie.
 Choix 3 : Proposer un plan climat commun
-  Effets : ECOLOGIE +3, TECHNOLOGIE +2, DETTE +2
+  Effets : ECOLOGIE +3, TECHNOLOGIE +2, DETTE +2, INTERNATIONAL +3
   Journal : Plan climat européen : ambitieux,
     surtout sur le papier.
 

@@ -65,7 +65,7 @@ static void items_build(void)
 static void list_setup(void)
 {
     u8 sel = def_list.sel;
-    ui_list_init(&def_list, 1, 14, 38, I_COUNT, def_items, I_COUNT);
+    ui_list_init(&def_list, 1, 15, 38, I_COUNT, def_items, I_COUNT);
     items_build();
     def_list.sel = sel;
     if (def_list.disabled & (1u << sel)) {
@@ -92,6 +92,7 @@ static void apply_defense(u8 d, u8 group)
 {
     Country *c = &g_game.country;
     u16 vb = votes_now();
+    u16 sb2 = sim_impeach_senate_votes(c);
     u8 sb = c->gauges[JAUGE_SCANDALE];
     u8 db = c->gauges[JAUGE_DEFIANCE];
 
@@ -110,11 +111,15 @@ static void apply_defense(u8 d, u8 group)
     strcat(msg[0], " -> ");
     cat_num(msg[0], c->gauges[JAUGE_DEFIANCE]);
     msg[1][0] = 0;
-    strcat(msg[1], "Voix pour la destitution : ");
+    strcat(msg[1], "Assemblée ");
     cat_num(msg[1], vb);
     strcat(msg[1], " -> ");
     cat_num(msg[1], votes_now());
-    msg_alert = votes_now() >= IMPEACH_MAJORITY;
+    strcat(msg[1], "  Sénat ");
+    cat_num(msg[1], sb2);
+    strcat(msg[1], " -> ");
+    cat_num(msg[1], sim_impeach_senate_votes(c));
+    msg_alert = sim_impeach_would_pass(c);
     has_msg = 1;
     phase = P_MAIN;
     list_setup();
@@ -136,7 +141,7 @@ static void group_setup(void)
         grp_id[grp_n] = g;
         grp_n++;
     }
-    ui_list_init(&grp_list, 1, 14, 38, grp_n, grp_items, grp_n);
+    ui_list_init(&grp_list, 1, 15, 38, grp_n, grp_items, grp_n);
 }
 
 static void impeach_update(void)
@@ -185,21 +190,33 @@ static void draw_top(void)
     const Country *c = &g_game.country;
     char buf[40];
     u16 v = votes_now();
+    u16 sv = sim_impeach_senate_votes(c);
+    u8 pass = sim_impeach_would_pass(c);
 
-    ui_clear_rect(1, 8, 38, 5);
+    ui_clear_rect(1, 8, 38, 6);
     buf[0] = 0;
-    strcat(buf, "Voix pour la destitution : ");
+    strcat(buf, "Assemblée : ");
     cat_num(buf, v);
+    strcat(buf, " / ");
+    cat_num(buf, SEATS_TOTAL);
+    strcat(buf, " (il en faut ");
+    cat_num(buf, IMPEACH_MAJORITY);
+    strcat(buf, ")");
     ui_text_draw(1, 8, buf, UI_STYLE_TEXT);
     ui_gauge_draw(1, 9, 38, v, SEATS_TOTAL, v >= IMPEACH_MAJORITY ? UI_GAUGE_NEGATIVE : UI_GAUGE_POSITIVE);
     buf[0] = 0;
-    strcat(buf, "Il en faut ");
-    cat_num(buf, IMPEACH_MAJORITY);
-    strcat(buf, " sur ");
-    cat_num(buf, SEATS_TOTAL);
-    strcat(buf, " : ");
-    strcat(buf, v >= IMPEACH_MAJORITY ? "vous seriez destitué" : "vous tenez");
-    ui_text_draw(1, 10, buf, v >= IMPEACH_MAJORITY ? UI_STYLE_ALERT : UI_STYLE_TEXT);
+    strcat(buf, "Sénat : ");
+    cat_num(buf, sv);
+    strcat(buf, " / ");
+    cat_num(buf, SENATE_SEATS);
+    strcat(buf, " (il en faut ");
+    cat_num(buf, SENATE_IMPEACH_MAJORITY);
+    strcat(buf, ")");
+    ui_text_draw(1, 10, buf, UI_STYLE_TEXT);
+    ui_gauge_draw(1, 11, 38, sv, SENATE_SEATS,
+                  sv >= SENATE_IMPEACH_MAJORITY ? UI_GAUGE_NEGATIVE : UI_GAUGE_POSITIVE);
+    ui_text_draw(1, 12, pass ? "Les deux chambres : vous seriez destitué" : "Au moins une chambre vous sauve",
+                 pass ? UI_STYLE_ALERT : UI_STYLE_TEXT);
     buf[0] = 0;
     strcat(buf, "Scandale ");
     cat_num(buf, c->gauges[JAUGE_SCANDALE]);
@@ -207,22 +224,22 @@ static void draw_top(void)
     cat_num(buf, c->gauges[JAUGE_DEFIANCE]);
     strcat(buf, "   CP ");
     cat_num(buf, c->cp);
-    ui_text_draw(1, 11, buf, UI_STYLE_DIM);
+    ui_text_draw(1, 13, buf, UI_STYLE_DIM);
 }
 
 static void draw_list_zone(void)
 {
-    ui_clear_rect(1, 13, 38, 14);
+    ui_clear_rect(1, 14, 38, 13);
     if (phase == P_MAIN) {
-        ui_text_draw(1, 13, "Votre défense :", UI_STYLE_DIM);
+        ui_text_draw(1, 14, "Votre défense :", UI_STYLE_DIM);
         ui_list_draw(&def_list);
         if (has_msg) {
-            ui_text_draw(1, 20, msg[0], UI_STYLE_TEXT);
-            ui_text_draw(1, 21, msg[1], msg_alert ? UI_STYLE_ALERT : UI_STYLE_HIGHLIGHT);
+            ui_text_draw(1, 21, msg[0], UI_STYLE_TEXT);
+            ui_text_draw(1, 22, msg[1], msg_alert ? UI_STYLE_ALERT : UI_STYLE_HIGHLIGHT);
         }
         ui_text_draw(1, 26, "A : valider", UI_STYLE_DIM);
     } else {
-        ui_text_draw(1, 13, "Avec quel groupe négocier ?", UI_STYLE_DIM);
+        ui_text_draw(1, 14, "Avec quel groupe négocier ?", UI_STYLE_DIM);
         ui_list_draw(&grp_list);
         ui_text_draw(1, 26, "A : valider   B : retour", UI_STYLE_DIM);
     }

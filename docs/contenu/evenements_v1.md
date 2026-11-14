@@ -43,7 +43,7 @@ Choix 2 : Évaluations et soutien ciblé
   Journal : Plus d'évaluations pour mieux
     mesurer. Les cartables s'alourdissent.
 Choix 3 : Dénoncer un classement biaisé
-  Effets : POP_MOYENNES -2, SCANDALE +3
+  Effets : POP_MOYENNES -2, SCANDALE +3, INTERNATIONAL -2
   Journal : Le président critique le classement.
     Le thermomètre est accusé de fièvre.
 
@@ -57,7 +57,7 @@ Texte : La France accueille une compétition
   commerçants se frottent les mains,
   les riverains se bouchent l'oreille.
 Choix 1 : Soigner l'accueil à tout prix
-  Effets : ECONOMIE +3, DETTE +3, POP_TOUS +1
+  Effets : ECONOMIE +3, DETTE +3, POP_TOUS +1, INTERNATIONAL +3
   Journal : Fête réussie, addition salée.
     Le chiffre officiel reste à venir.
 Choix 2 : Un événement sobre

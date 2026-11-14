@@ -55,8 +55,8 @@ const LawDef law_defs[LOI_COUNT] = {
       { E(ECOLOGIE, 7), E(SOCIAL, 3), E(TENSION, -3), E(DETTE, 3) },
       { E(POP_POPULAIRES, 3), E(POP_MOYENNES, 1) }, 0 },
     // Immigration : sécurité affichée, cohésion sociale en baisse.
-    { LOI_IMMIGRATION, 4, 2, 70, 4, 3,
-      { E(SECURITE, 6), E(SOCIAL, -4), E(ECONOMIE, -2), E(TENSION, 4) },
+    { LOI_IMMIGRATION, 4, 2, 70, 5, 3,
+      { E(SECURITE, 6), E(SOCIAL, -4), E(ECONOMIE, -2), E(TENSION, 4), E(INTERNATIONAL, -2) },
       { E(POP_MOYENNES, 2), E(POP_AISEES, 1), E(POP_POPULAIRES, -1) }, 1 },
     // Assurance chômage : retour à l'emploi et économies, au prix du social.
     { LOI_CHOMAGE, 5, 3, 50, 4, 3,
@@ -101,8 +101,8 @@ const LawDef law_defs[LOI_COUNT] = {
       { E(DEFIANCE, -3), E(TENSION, -2) },
       { E(POP_TOUS, 1), E(REL_PARTI, -2) }, 1 },
     // Aide au développement
-    { LOI_AIDE_DEV, 3, 2, -30, 2, 3,
-      { E(DETTE, 2), E(DEFIANCE, -2) },
+    { LOI_AIDE_DEV, 3, 2, -30, 3, 3,
+      { E(DETTE, 2), E(DEFIANCE, -2), E(INTERNATIONAL, 8) },
       { E(POP_POPULAIRES, 1), E(POP_AISEES, -1), E(REL_PARTI, 2) }, 1 },
     // Police de proximité
     { LOI_POLICE_PROX, 3, 3, -30, 3, 1,
@@ -141,28 +141,28 @@ const LawDef law_defs[LOI_COUNT] = {
       { E(DETTE, -1), E(DEFIANCE, -2) },
       { E(POP_TOUS, 1), E(REL_PARTI, -3) }, 1 },
     // Loi de programmation
-    { LOI_LPM, 4, 4, 50, 3, 2,
-      { E(SECURITE, 6), E(TECHNOLOGIE, 4), E(DETTE, 3) },
+    { LOI_LPM, 4, 4, 50, 4, 2,
+      { E(SECURITE, 6), E(TECHNOLOGIE, 4), E(DETTE, 3), E(INTERNATIONAL, 3) },
       { E(POP_AISEES, 1), E(REL_PARTI, 2) }, 1 },
     // Service national
-    { LOI_SERVICE_MIL, 5, 4, 55, 3, 2,
-      { E(SECURITE, 4), E(SOCIAL, 2), E(DETTE, 2) },
+    { LOI_SERVICE_MIL, 5, 4, 55, 4, 2,
+      { E(SECURITE, 4), E(SOCIAL, 2), E(DETTE, 2), E(INTERNATIONAL, 2) },
       { E(POP_MOYENNES, 1), E(POP_POPULAIRES, -1) }, 1 },
     // Alliance militaire
-    { LOI_ALLIANCE, 3, 2, 30, 3, 2,
-      { E(SECURITE, 4), E(DEFIANCE, 1), E(ECONOMIE, 2) },
+    { LOI_ALLIANCE, 3, 2, 30, 4, 2,
+      { E(SECURITE, 4), E(DEFIANCE, 1), E(ECONOMIE, 2), E(INTERNATIONAL, 6) },
       { E(POP_AISEES, 1), E(REL_PARTI, 1) }, 1 },
     // Exportations d'armes
-    { LOI_EXPORT_ARMES, 3, 2, 45, 4, 1,
-      { E(ECONOMIE, 4), E(CROISSANCE, 1), E(DEFIANCE, 2), E(DETTE, -1) },
+    { LOI_EXPORT_ARMES, 3, 2, 45, 5, 1,
+      { E(ECONOMIE, 4), E(CROISSANCE, 1), E(DEFIANCE, 2), E(DETTE, -1), E(INTERNATIONAL, -4) },
       { E(POP_POPULAIRES, -1) }, 1 },
     // Agriculture productive
     { LOI_AGRI_PRODUCT, 3, 2, 35, 4, 1,
       { E(ECONOMIE, 4), E(CROISSANCE, 1), E(ECOLOGIE, -6), E(TENSION, 1) },
       { E(POP_MOYENNES, 1) }, 0 },
     // Taxe carbone
-    { LOI_CARBONE, 4, 2, -5, 3, 2,
-      { E(ECOLOGIE, 6), E(DETTE, -1), E(TENSION, 3) },
+    { LOI_CARBONE, 4, 2, -5, 4, 2,
+      { E(ECOLOGIE, 6), E(DETTE, -1), E(TENSION, 3), E(INTERNATIONAL, 2) },
       { E(POP_POPULAIRES, -2), E(POP_AISEES, -1) }, 0 },
     // Cybersécurité nationale
     { LOI_CYBER, 2, 2, 10, 3, 1,
