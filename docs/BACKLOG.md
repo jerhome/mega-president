@@ -34,12 +34,12 @@ La V0 n'est pas un prototype jetable : c'est une première tranche de la V1. Les
 
 | # | Tâche | Durée | État |
 |---|---|---|---|
-| 0.1 | Compilation via l'image Docker SGDK 2.09 : `make`, `make run`, `make clean` | 0,5 h | 🔄 Image téléchargée |
-| 0.2 | Lancement automatique de BlastEm après la compilation (WSLg) | 0,5 h | 🔄 BlastEm installé |
-| 0.3 | En-tête de ROM personnalisé (titre, SRAM déclarée, régions JUE) | 0,5 h | |
-| 0.4 | ROM de test (texte, manette, compteur sauvegardé), validée dans BlastEm puis sur l'EverDrive MD V3 | 1 h | |
-| 0.5 | Cœur de simulation compilable aussi sur PC, avec des tests unitaires | 2 h | |
-| 0.6 | Dépôt git, conventions, CLAUDE.md, dépôt GitHub public | 0,5 h | 🔄 Git et GitHub faits, CLAUDE.md à faire |
+| 0.1 | Compilation via l'image Docker SGDK 2.09 : `make`, `make run`, `make clean` | 0,5 h | ✅ |
+| 0.2 | Lancement automatique de BlastEm après la compilation (WSLg) | 0,5 h | ✅ PAL et NTSC (sans OpenGL sous WSLg) |
+| 0.3 | En-tête de ROM personnalisé (titre, SRAM déclarée, régions JUE) | 0,5 h | ✅ |
+| 0.4 | ROM de test (texte, manette, compteur sauvegardé), validée dans BlastEm puis sur l'EverDrive MD V3 | 1 h | 🔄 OK dans BlastEm, reste l'EverDrive |
+| 0.5 | Cœur de simulation compilable aussi sur PC, avec des tests unitaires | 2 h | ✅ |
+| 0.6 | Dépôt git, conventions, CLAUDE.md, dépôt GitHub public | 0,5 h | ✅ |
 
 ### E1 — Moteur et architecture prête pour la V2 (≈ 10 h)
 
@@ -50,7 +50,7 @@ La V0 n'est pas un prototype jetable : c'est une première tranche de la V1. Les
 | 1.3 | Police 8×8 avec les accents français et codage des textes | 2 h |
 | 1.4 | Manette (répétition des touches, A/B/C/Start) | 1 h |
 | 1.5 | Graphismes provisoires avec des noms fixes : en V2, on remplace les fichiers sans toucher au code | 1,5 h |
-| 1.6 | Hasard reproductible à partir d'une graine | 0,5 h |
+| 1.6 | ✅ Hasard reproductible à partir d'une graine | 0,5 h |
 
 ### E2 — Simulation (≈ 8 h)
 
