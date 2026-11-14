@@ -1,6 +1,6 @@
 # Mega Président — Règles du jeu
 
-> **Statut : brouillon de discussion, rien n'est validé.**
+> **Statut : validé le 2026-11-14.**
 > Les valeurs chiffrées sont des points de départ, à affiner lors de l'équilibrage.
 > Le périmètre de chaque version (V0 / V1 / V2) est détaillé dans [BACKLOG.md](BACKLOG.md).
 

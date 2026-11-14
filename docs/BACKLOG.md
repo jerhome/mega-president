@@ -1,8 +1,9 @@
 # Mega Président — Backlog
 
-> **Statut : brouillon de discussion, rien n'est validé.**
+> **Statut : validé le 2026-11-14.**
 > Les durées sont des **heures de travail effectif** : le code de Claude, plus les tests et retours du joueur.
 > Les règles sont décrites dans [REGLES.md](REGLES.md).
+> **Suivi** : ajouter ✅ (fait) ou 🔄 (en cours, compté à 50 %) dans la ligne d'une tâche. `python3 tools/progress.py` calcule l'avancement, pondéré par les durées.
 
 ## Synthèse
 
@@ -33,12 +34,12 @@ La V0 n'est pas un prototype jetable : c'est une première tranche de la V1. Les
 
 | # | Tâche | Durée | État |
 |---|---|---|---|
-| 0.1 | Compilation via l'image Docker SGDK 2.09 : `make`, `make run`, `make clean` | 0,5 h | Image téléchargée |
-| 0.2 | Lancement automatique de BlastEm après la compilation (WSLg) | 0,5 h | BlastEm installé |
+| 0.1 | Compilation via l'image Docker SGDK 2.09 : `make`, `make run`, `make clean` | 0,5 h | 🔄 Image téléchargée |
+| 0.2 | Lancement automatique de BlastEm après la compilation (WSLg) | 0,5 h | 🔄 BlastEm installé |
 | 0.3 | En-tête de ROM personnalisé (titre, SRAM déclarée, régions JUE) | 0,5 h | |
 | 0.4 | ROM de test (texte, manette, compteur sauvegardé), validée dans BlastEm puis sur l'EverDrive MD V3 | 1 h | |
 | 0.5 | Cœur de simulation compilable aussi sur PC, avec des tests unitaires | 2 h | |
-| 0.6 | Dépôt git, conventions, CLAUDE.md, dépôt GitHub public | 0,5 h | |
+| 0.6 | Dépôt git, conventions, CLAUDE.md, dépôt GitHub public | 0,5 h | 🔄 Git et GitHub faits, CLAUDE.md à faire |
 
 ### E1 — Moteur et architecture prête pour la V2 (≈ 10 h)
 

@@ -1,0 +1,77 @@
+#!/usr/bin/env python3
+"""Calcule l'avancement de chaque version à partir de docs/BACKLOG.md.
+
+Convention : une ligne de tableau contenant ✅ est faite (100 %), 🔄 est en
+cours (50 %). L'avancement est pondéré par la durée estimée de chaque tâche.
+La « version en cours » est la première qui n'est pas à 100 %.
+"""
+import re
+import sys
+from pathlib import Path
+
+BACKLOG = Path(__file__).resolve().parent.parent / "docs" / "BACKLOG.md"
+HOURS = re.compile(r"\|\s*(\d+(?:,\d+)?)\s*h\s*\|")
+
+
+def parse(text):
+    versions, cur, epic = {}, None, None
+    for line in text.splitlines():
+        m = re.match(r"^## (V\d+)\b(.*)", line)
+        if m:
+            cur = m.group(1)
+            versions[cur] = {"title": line[3:].strip(), "epics": {}}
+            epic = "Général"
+            continue
+        if line.startswith("## "):
+            cur = None
+            continue
+        if cur is None:
+            continue
+        m = re.match(r"^### (.+)", line)
+        if m:
+            epic = re.sub(r"\s*\(≈.*\)$", "", m.group(1)).strip()
+            continue
+        if not line.startswith("|"):
+            continue
+        h = HOURS.search(line)
+        if not h:
+            continue
+        hours = float(h.group(1).replace(",", "."))
+        done = 1.0 if "✅" in line else 0.5 if "🔄" in line else 0.0
+        e = versions[cur]["epics"].setdefault(epic, [0.0, 0.0, 0, 0])
+        e[0] += hours
+        e[1] += hours * done
+        e[2] += 1
+        e[3] += 1 if done == 1.0 else 0
+    return versions
+
+
+def bar(p, width=20):
+    n = round(p / 100 * width)
+    return "█" * n + "░" * (width - n)
+
+
+def main():
+    versions = parse(BACKLOG.read_text(encoding="utf-8"))
+    current = None
+    for name, v in versions.items():
+        tot = sum(e[0] for e in v["epics"].values())
+        don = sum(e[1] for e in v["epics"].values())
+        v["pct"] = 100 * don / tot if tot else 0
+        v["tot"], v["don"] = tot, don
+        if current is None and v["pct"] < 100:
+            current = name
+    print("Avancement global")
+    for name, v in versions.items():
+        mark = "  ← en cours" if name == current else ""
+        print(f"  {name:3} {bar(v['pct'])} {v['pct']:5.1f} %  ({v['don']:.1f} / {v['tot']:.1f} h){mark}")
+    if current:
+        v = versions[current]
+        print(f"\nDétail {v['title']}")
+        for epic, (tot, don, n, ndone) in v["epics"].items():
+            pct = 100 * don / tot if tot else 0
+            print(f"  {bar(pct, 10)} {pct:5.1f} %  {epic}  [{ndone}/{n} tâches]")
+
+
+if __name__ == "__main__":
+    sys.exit(main())
