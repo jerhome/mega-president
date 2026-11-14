@@ -6,6 +6,7 @@
 #include "screens.h"
 #include "scr_map.h"
 #include "ui/ui.h"
+#include "ui/ui_art.h"
 #include "ui/ui_map.h"
 #include "ui/input.h"
 #include "game/game.h"
@@ -40,6 +41,7 @@ static void map_init(void)
     sel = REGION_ILE_DE_FRANCE;
     dirty = TRUE;
     ui_clear();
+    ui_art_close();   // la carte emprunte PAL2 et la zone de VRAM des illustrations
     ui_window(0, 0, 40, 28);
     ui_text_center(1, 1, 38, "Popularité par région", UI_STYLE_HIGHLIGHT);
     ui_map_draw(MAP_X, MAP_Y);

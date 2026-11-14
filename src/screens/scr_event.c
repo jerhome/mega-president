@@ -7,6 +7,11 @@
 #include "ui/input.h"
 #include "game/game.h"
 #include "content/content_events.h"
+#include "screens/evt_art.h"
+#include "ui/ui_art.h"
+
+#define VIGNETTE_X 30   // vignette 8 x 6 tuiles, en bas à droite (sous la liste)
+#define VIGNETTE_Y 20
 
 typedef enum { P_CHOOSE, P_JOURNAL } Phase;
 
@@ -56,24 +61,30 @@ static void event_draw(void)
     dirty = FALSE;
 
     if (phase == P_CHOOSE) {
-        ui_clear();
+        art_reset();
         ui_window(0, 0, 40, 3);
         ui_text_center(1, 1, 38, evt_title[evt], UI_STYLE_HIGHLIGHT);
         ui_window(0, 3, 40, 10);
         ui_text_wrap(1, 4, 38, 8, evt_text[evt], UI_STYLE_TEXT);
         ui_window(0, 13, 40, 15);
-        ui_text_draw(1, 14, "Que décidez-vous ?", UI_STYLE_DIM);
+        ui_text_draw(1, 14, "Que décidez-vous ?", UI_STYLE_TEXT);
         ui_list_draw(&choice_list);
-        ui_text_draw(1, 26, "Haut/Bas : choisir   A : valider", UI_STYLE_DIM);
+        ui_text_draw(1, 26, "Haut/Bas : choisir   A : valider", UI_STYLE_TEXT);
+        ui_art_draw(evt_art(evt), VIGNETTE_X, VIGNETTE_Y);   // PAL2 : pas de style DIM ici
     } else {
         // Le texte reste affiché ; on remplace la liste par la décision et le journal.
         ui_clear_rect(1, 14, 38, 13);
-        ui_text_draw(1, 14, "Votre décision :", UI_STYLE_DIM);
+        ui_text_draw(1, 14, "Votre décision :", UI_STYLE_TEXT);
         ui_text_draw_n(1, 15, evt_choice[evt][chosen], 38, 0, UI_STYLE_HIGHLIGHT);
         ui_text_draw(1, 17, "Journal", UI_STYLE_HIGHLIGHT);
-        ui_text_wrap(1, 18, 38, 3, evt_journal[evt][chosen], UI_STYLE_TEXT);
-        ui_text_draw(1, 26, "A : continuer", UI_STYLE_DIM);
+        ui_text_wrap(1, 18, 28, 7, evt_journal[evt][chosen], UI_STYLE_TEXT);
+        ui_text_draw(1, 26, "A : continuer", UI_STYLE_TEXT);
     }
 }
 
-const Screen scr_event = { event_init, event_update, event_draw, NULL };
+static void event_exit(void)
+{
+    art_reset();
+}
+
+const Screen scr_event = { event_init, event_update, event_draw, event_exit };

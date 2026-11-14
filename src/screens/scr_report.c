@@ -8,6 +8,8 @@
 #include "game/game.h"
 #include "content/content_laws.h"
 #include "content/content_texts.h"
+#include "screens/evt_art.h"
+#include "ui/ui_art.h"
 
 #define START_YEAR 2027
 #define LAST_ROW   25   // dernière ligne utilisable pour le contenu
@@ -218,14 +220,17 @@ static void report_draw(void)
     if (!dirty) return;
     dirty = FALSE;
 
-    ui_clear();
+    art_reset();
     ui_window(0, 0, 40, 28);
-    ui_text_center(1, 1, 38, "LE QUOTIDIEN DU MATIN", UI_STYLE_HIGHLIGHT);
     if (page != 0) {
+        ui_text_center(1, 1, 38, "LE QUOTIDIEN DU MATIN", UI_STYLE_HIGHLIGHT);
         draw_politics();
-        ui_text_draw(1, 26, next_page(page) ? "A : suite" : "A : continuer", UI_STYLE_DIM);
+        ui_text_draw(1, 26, next_page(page) ? "A : suite" : "A : continuer", UI_STYLE_TEXT);
         return;
     }
+
+    // Page 1 : bandeau « une » (38 x 5 tuiles, PAL2 : pas de style DIM sur cette page).
+    ui_art_draw(ART_DECOR_JOURNAL, 1, 1);
 
     t = c->turn > 0 ? c->turn - 1 : 0;   // tour (trimestre ou mois) qui vient de s'écouler
     buf[0] = 0;
@@ -240,10 +245,10 @@ static void report_draw(void)
         strcat(buf, " ");
         cat_num(buf, START_YEAR + 5 * c->mandate + (t >> 2), 0);
     }
-    ui_text_center(1, 2, 38, buf, UI_STYLE_DIM);
+    ui_text_center(1, 6, 38, buf, UI_STYLE_TEXT);
 
     // Popularité et capital politique
-    y = 4;
+    y = 8;
     buf[0] = 0;
     strcat(buf, "Popularité : ");
     cat_num(buf, r->popularity_before, 1);
@@ -260,7 +265,6 @@ static void report_draw(void)
     cat_num(buf, c->cp, 0);
     strcat(buf, ")");
     ui_text_draw(1, y++, buf, UI_STYLE_TEXT);
-    y++;
 
     // À la une : lois votées ce tour
     if (law_mask_any(&g_game.laws_tried)) {
@@ -270,7 +274,7 @@ static void report_draw(void)
             ui_icon_draw(1, y, UI_ICON_BULLET);
             n = ui_text_wrap(3, y, 35, LAST_ROW + 1 - y > 2 ? 2 : LAST_ROW + 1 - y,
                              law_mask_get(&g_game.laws_adopted, (u8)i) ? law_journal_ok[i] : law_journal_ko[i],
-                             law_mask_get(&g_game.laws_adopted, (u8)i) ? UI_STYLE_TEXT : UI_STYLE_DIM);
+                             law_mask_get(&g_game.laws_adopted, (u8)i) ? UI_STYLE_TEXT : UI_STYLE_ALERT);
             y += n ? n : 1;
         }
         y++;
@@ -297,10 +301,15 @@ static void report_draw(void)
             y = indicator(y, pillar_names[i], g_report_snap[3 + i], c->pillars[i], 1, "");
         y = indicator(y, "Tension", g_report_snap[8], c->gauges[JAUGE_TENSION], 0, " %");
         if (y == y0 + 1)
-            ui_text_draw(1, y, "Rien de notable.", UI_STYLE_DIM);
+            ui_text_draw(1, y, "Rien de notable.", UI_STYLE_TEXT);
     }
 
-    ui_text_draw(1, 26, has_politics() ? "A : suite" : "A : continuer", UI_STYLE_DIM);
+    ui_text_draw(1, 26, has_politics() ? "A : suite" : "A : continuer", UI_STYLE_TEXT);
 }
 
-const Screen scr_report = { report_init, report_update, report_draw, NULL };
+static void report_exit(void)
+{
+    art_reset();
+}
+
+const Screen scr_report = { report_init, report_update, report_draw, report_exit };

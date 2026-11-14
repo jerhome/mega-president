@@ -5,6 +5,8 @@
 #include "ui/input.h"
 #include "game/game.h"
 #include "content/content_texts.h"
+#include "screens/evt_art.h"
+#include "ui/ui_art.h"
 
 static UiList list;
 static bool dirty;
@@ -18,7 +20,7 @@ static void campaign_init(void)
     items[THEME_SECURITE] = txt[TXT_THEME_SECURITE];
     items[THEME_POUVOIR_ACHAT] = txt[TXT_THEME_POUVOIR_ACHAT];
     items[THEME_ECOLOGIE] = txt[TXT_THEME_ECOLOGIE];
-    ui_list_init(&list, 3, 8, 30, 4, items, THEME_COUNT);
+    ui_list_init(&list, 2, 8, 28, 4, items, THEME_COUNT);
     dirty = TRUE;
 }
 
@@ -45,7 +47,6 @@ static const char *mark(s16 b, UiStyle *st)
     if (b >= 40) { *st = UI_STYLE_HIGHLIGHT; return "++"; }
     if (b >= 15) { *st = UI_STYLE_HIGHLIGHT; return "+"; }
     if (b <= -15) { *st = UI_STYLE_ALERT; return "-"; }
-    *st = UI_STYLE_DIM;
     return "0";
 }
 
@@ -56,10 +57,11 @@ static void campaign_draw(void)
     if (dirty) {
         const Country *c = &g_game.country;
         dirty = FALSE;
-        ui_clear();
+        art_reset();
         ui_window(0, 0, 40, 28);
+        ui_art_draw(ART_DECOR_URNE, 31, 1);   // PAL2 : pas de style DIM sur cet écran
         ui_text_center(0, 1, UI_COLS, "FIN DU MANDAT", UI_STYLE_HIGHLIGHT);
-        ui_text_wrap(2, 3, 36, 3,
+        ui_text_wrap(2, 3, 28, 4,
                      "La présidentielle approche. Choisissez le thème de votre campagne.",
                      UI_STYLE_TEXT);
         ui_list_draw(&list);
@@ -72,9 +74,14 @@ static void campaign_draw(void)
             ui_text_draw_n(20, 16 + e * 2, m, 3, 3, st);
             ui_gauge_draw(24, 16 + e * 2, 12, (s16)(b < 0 ? 0 : b), 80, st == UI_STYLE_ALERT ? UI_GAUGE_NEGATIVE : UI_GAUGE_GOLD);
         }
-        ui_text_draw(1, 23, "++ fort  + favorable  - défavorable", UI_STYLE_DIM);
-        ui_text_center(0, 26, UI_COLS, "Haut/Bas : choisir  A : valider", UI_STYLE_DIM);
+        ui_text_draw(1, 23, "++ fort  + favorable  - défavorable", UI_STYLE_TEXT);
+        ui_text_center(0, 26, UI_COLS, "Haut/Bas : choisir  A : valider", UI_STYLE_TEXT);
     }
 }
 
-const Screen scr_campaign = { campaign_init, campaign_update, campaign_draw, NULL };
+static void campaign_exit(void)
+{
+    art_reset();
+}
+
+const Screen scr_campaign = { campaign_init, campaign_update, campaign_draw, campaign_exit };

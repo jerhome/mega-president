@@ -10,8 +10,11 @@
 #include "game/game.h"
 #include "content/content_texts.h"
 #include "content/content_world.h"
+#include "screens/evt_art.h"
+#include "ui/ui_art.h"
 
-typedef enum { P_MAIN, P_GROUP } Phase;
+// P_INTRO : annonce de la procédure, avec l'hémicycle (pas de place pour lui à l'écran de défense).
+typedef enum { P_INTRO, P_MAIN, P_GROUP } Phase;
 
 enum { I_TV, I_SACRIFICE, I_NEGOCIER, I_CONTINUE, I_COUNT };
 
@@ -78,7 +81,7 @@ static void impeach_init(void)
 {
     def_list.sel = 0;
     list_setup();
-    phase = P_MAIN;
+    phase = P_INTRO;
     has_msg = 0;
     dirty = TRUE;
 }
@@ -147,6 +150,13 @@ static void group_setup(void)
 static void impeach_update(void)
 {
     if (dirty) return;
+    if (phase == P_INTRO) {
+        if (input_pressed() & (INPUT_OK | INPUT_START)) {
+            phase = P_MAIN;
+            dirty = TRUE;
+        }
+        return;
+    }
     if (phase == P_MAIN) {
         switch (ui_list_update(&def_list)) {
         case UI_LIST_MOVED:
@@ -249,11 +259,24 @@ static void impeach_draw(void)
 {
     if (dirty) {
         dirty = FALSE;
-        ui_clear();
+        art_reset();
         ui_window(0, 0, 40, 3);
         ui_text_center(1, 1, 38, "PROCÉDURE DE DESTITUTION", UI_STYLE_ALERT);
         ui_window(0, 3, 40, 25);
         ui_text_wrap(1, 4, 38, 3, txt[TXT_DESTITUTION_PROCEDURE], UI_STYLE_TEXT);
+        if (phase == P_INTRO) {
+            char buf[40];
+            ui_art_draw(ART_DECOR_HEMICYCLE, 10, 9);   // PAL2 : DIM remplacé par TEXT
+            buf[0] = 0;
+            strcat(buf, "Scandale ");
+            cat_num(buf, g_game.country.gauges[JAUGE_SCANDALE]);
+            strcat(buf, " %   Défiance ");
+            cat_num(buf, g_game.country.gauges[JAUGE_DEFIANCE]);
+            strcat(buf, " %");
+            ui_text_center(1, 20, 38, buf, UI_STYLE_ALERT);
+            ui_text_center(1, 26, 38, "A : préparer la défense", UI_STYLE_TEXT);
+            return;
+        }
         top_dirty = TRUE;
         list_dirty = TRUE;
     }
@@ -267,4 +290,9 @@ static void impeach_draw(void)
     }
 }
 
-const Screen scr_impeach = { impeach_init, impeach_update, impeach_draw, NULL };
+static void impeach_exit(void)
+{
+    art_reset();
+}
+
+const Screen scr_impeach = { impeach_init, impeach_update, impeach_draw, impeach_exit };

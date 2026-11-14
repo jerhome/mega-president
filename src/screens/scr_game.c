@@ -15,6 +15,8 @@
 #include "content/content_laws.h"
 #include "content/content_world.h"
 #include "content/content_texts.h"
+#include "screens/evt_art.h"
+#include "ui/ui_art.h"
 
 // Instantané des indicateurs pris au moment de « Fin du trimestre » : lu par
 // scr_report.c pour afficher ce qui a bougé.
@@ -223,7 +225,7 @@ static void draw_menu_full(void)
 {
     const Country *c = &g_game.country;
     char buf[40];
-    ui_clear();
+    art_reset();
     draw_header(NULL);
     ui_window(0, 3, 40, 17);
     stat_row(4, "Popularité", sim_popularity(c), 1, " %", sim_popularity(c), 1000, UI_GAUGE_GOLD);
@@ -435,7 +437,7 @@ static void draw_law_detail(void)
 
 static void draw_laws_full(void)
 {
-    ui_clear();
+    art_reset();
     draw_header(forcing ? "Forcer une loi (49.3)" : "Proposer une loi");
     ui_window(0, 3, 40, 8);
     ui_window(0, 11, 40, 17);
@@ -522,7 +524,7 @@ static void draw_result_full(void)
     char buf[40];
     u16 y;
 
-    ui_clear();
+    art_reset();
     ui_window(0, 3, 40, 25);
     if (res_kind == R_TV) {
         draw_header("Intervention télévisée");
@@ -599,36 +601,41 @@ static void draw_vote_full(void)
     char buf[40];
     u16 y;
 
-    ui_clear();
+    art_reset();
     draw_header("Vote de l’Assemblée");
     ui_window(0, 3, 40, 25);
+    // Hémicycle (20 x 9 tuiles) à droite ; PAL2 empruntée : aucun style DIM sur cet écran.
+    ui_art_draw(ART_DECOR_HEMICYCLE, 19, 5);
     ui_text_draw(1, 4, law_name[last_law], UI_STYLE_HIGHLIGHT);
+    ui_text_draw(1, 5, "Gr. Sièges Vote", UI_STYLE_TEXT);
     for (u16 g = 0; g < GRP_COUNT; g++) {
         y = 6 + g;
         ui_text_draw(1, y, grp_sigle[g], g == c->player_group ? UI_STYLE_HIGHLIGHT : UI_STYLE_TEXT);
         buf[0] = 0;
         cat_num(buf, c->seats[g]);
-        strcat(buf, " sièges");
-        ui_text_draw(7, y, buf, UI_STYLE_DIM);
-        if (last_vote.pour[g]) ui_text_draw(30, y, "Pour", UI_STYLE_TEXT);
-        else ui_text_draw(30, y, "Contre", UI_STYLE_ALERT);
+        ui_text_draw(5, y, buf, UI_STYLE_TEXT);
+        if (last_vote.pour[g]) ui_text_draw(12, y, "Pour", UI_STYLE_TEXT);
+        else ui_text_draw(12, y, "Contre", UI_STYLE_ALERT);
     }
     buf[0] = 0;
-    strcat(buf, "Pour ");
+    strcat(buf, "Pour : ");
     cat_num(buf, last_vote.votes_pour);
-    strcat(buf, "  Contre ");
-    cat_num(buf, last_vote.votes_contre);
-    strcat(buf, "  (majorité ");
-    cat_num(buf, SEATS_MAJORITY);
-    strcat(buf, ")");
     ui_text_draw(1, 12, buf, UI_STYLE_TEXT);
-    ui_gauge_draw(1, 13, 38, last_vote.votes_pour, SEATS_TOTAL,
+    buf[0] = 0;
+    strcat(buf, "Contre : ");
+    cat_num(buf, last_vote.votes_contre);
+    ui_text_draw(1, 13, buf, UI_STYLE_TEXT);
+    buf[0] = 0;
+    strcat(buf, "Majorité : ");
+    cat_num(buf, SEATS_MAJORITY);
+    ui_text_draw(1, 14, buf, UI_STYLE_TEXT);
+    ui_gauge_draw(1, 15, 38, last_vote.votes_pour, SEATS_TOTAL,
                   last_adopted ? UI_GAUGE_POSITIVE : UI_GAUGE_NEGATIVE);
 
-    ui_text_center(1, 15, 38, last_adopted ? "LOI ADOPTÉE" : "LOI REJETÉE",
+    ui_text_center(1, 17, 38, last_adopted ? "LOI ADOPTÉE" : "LOI REJETÉE",
                    last_adopted ? UI_STYLE_HIGHLIGHT : UI_STYLE_ALERT);
-    ui_text_draw(1, 17, "Le Quotidien du Matin :", UI_STYLE_DIM);
-    ui_text_wrap(1, 18, 38, 3, last_adopted ? law_journal_ok[last_law] : law_journal_ko[last_law],
+    ui_text_draw(1, 19, "Le Quotidien du Matin :", UI_STYLE_TEXT);
+    ui_text_wrap(1, 20, 38, 3, last_adopted ? law_journal_ok[last_law] : law_journal_ko[last_law],
                  UI_STYLE_TEXT);
     if (last_adopted) {
         const LawDef *law = law_get(last_law);
@@ -636,9 +643,9 @@ static void draw_vote_full(void)
         strcat(buf, "Effets dans ");
         cat_delay(buf, law->delay_q);
         strcat(buf, ".");
-        ui_text_draw(1, 22, buf, UI_STYLE_DIM);
+        ui_text_draw(1, 24, buf, UI_STYLE_TEXT);
     }
-    ui_text_draw(1, 26, "A : continuer", UI_STYLE_DIM);
+    ui_text_draw(1, 26, "A : continuer", UI_STYLE_TEXT);
 }
 
 static void update_vote(void)
@@ -655,7 +662,7 @@ static void draw_assembly_full(void)
     char buf[40];
     u16 y;
 
-    ui_clear();
+    art_reset();
     draw_header("Assemblée nationale");
     ui_window(0, 3, 40, 25);
     for (u16 g = 0; g < GRP_COUNT; g++) {
@@ -750,4 +757,9 @@ static void game_draw(void)
     }
 }
 
-const Screen scr_game = { game_init, game_update, game_draw, NULL };
+static void game_exit(void)
+{
+    art_reset();
+}
+
+const Screen scr_game = { game_init, game_update, game_draw, game_exit };

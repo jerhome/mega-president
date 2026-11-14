@@ -8,6 +8,19 @@
 #include "ui/input.h"
 #include "game/game.h"
 #include "content/content_texts.h"
+#include "screens/evt_art.h"
+#include "ui/ui_art.h"
+
+// Portrait du PM en PAL3 (le style ALERT est donc remplacé par HIGHLIGHT sur cet écran ;
+// PAL2/DIM reste libre pour les éléments grisés de la liste).
+#define PORTRAIT_X 31
+#define PORTRAIT_Y 5
+
+static void draw_portrait(u8 pm, u16 x, u16 y)
+{
+    if (pm < PM_COUNT)
+        ui_art_draw_pal(ART_PM(pm), x, y, PAL3);
+}
 
 typedef enum { P_PICK, P_CONFIRM, P_RESULT } Phase;
 
@@ -74,15 +87,16 @@ static void draw_detail(void)
     u8 err = sim_reshuffle_check(&g_game.country, pm);
 
     ui_clear_rect(1, 5 + n_items + 1, 38, 20 - n_items);
-    ui_text_wrap(1, 5 + n_items + 1, 38, 4, txt[TXT_PM_TECHNOCRATE_DESC + 2 * pm], UI_STYLE_TEXT);
+    draw_portrait(pm, PORTRAIT_X, PORTRAIT_Y);
+    ui_text_wrap(1, 5 + n_items + 1, 28, 4, txt[TXT_PM_TECHNOCRATE_DESC + 2 * pm], UI_STYLE_TEXT);
     if (err == RSH_ERR_YEAR)
-        ui_text_wrap(1, 16, 38, 2, txt[TXT_RSH_ANNEE], UI_STYLE_ALERT);
+        ui_text_wrap(1, 16, 38, 2, txt[TXT_RSH_ANNEE], UI_STYLE_HIGHLIGHT);
     else if (err == RSH_ERR_COHAB)
-        ui_text_wrap(1, 16, 38, 2, txt[TXT_RSH_COHAB], UI_STYLE_ALERT);
+        ui_text_wrap(1, 16, 38, 2, txt[TXT_RSH_COHAB], UI_STYLE_HIGHLIGHT);
     else if (err == RSH_ERR_CP)
-        ui_text_draw(1, 16, "Capital politique insuffisant", UI_STYLE_ALERT);
+        ui_text_draw(1, 16, "Capital politique insuffisant", UI_STYLE_HIGHLIGHT);
     else if (err != RSH_OK)
-        ui_text_draw(1, 16, "Impossible pour l’instant", UI_STYLE_ALERT);
+        ui_text_draw(1, 16, "Impossible pour l’instant", UI_STYLE_HIGHLIGHT);
     else
         ui_text_wrap(1, 16, 38, 4, txt[TXT_RSH_AIDE], UI_STYLE_DIM);
 }
@@ -149,7 +163,7 @@ static void rsh_draw(void)
     if (dirty) {
         char buf[40];
         dirty = FALSE;
-        ui_clear();
+        art_reset();
         draw_header();
         ui_window(0, 3, 40, 25);
         if (phase == P_PICK) {
@@ -161,6 +175,7 @@ static void rsh_draw(void)
         } else if (phase == P_RESULT) {
             const Country *c = &g_game.country;
             ui_text_draw(1, 5, txt[TXT_PM_TECHNOCRATE_NOM + 2 * c->pm], UI_STYLE_HIGHLIGHT);
+            draw_portrait(c->pm, 16, 18);   // sous les textes, au centre
             ui_text_wrap(1, 7, 38, 3, txt[TXT_RSH_FAIT], UI_STYLE_TEXT);
             ui_text_wrap(1, 11, 38, 3, txt[TXT_PM_TECHNOCRATE_DESC + 2 * c->pm], UI_STYLE_DIM);
             buf[0] = 0;
@@ -176,4 +191,9 @@ static void rsh_draw(void)
     }
 }
 
-const Screen scr_reshuffle = { rsh_init, rsh_update, rsh_draw, NULL };
+static void rsh_exit(void)
+{
+    art_reset();
+}
+
+const Screen scr_reshuffle = { rsh_init, rsh_update, rsh_draw, rsh_exit };

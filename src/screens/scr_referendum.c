@@ -9,6 +9,8 @@
 #include "game/game.h"
 #include "content/content_laws.h"
 #include "content/content_texts.h"
+#include "screens/evt_art.h"
+#include "ui/ui_art.h"
 
 typedef enum { P_PICK, P_CONFIRM, P_SUSPENSE, P_RESULT } Phase;
 
@@ -217,7 +219,7 @@ static void ref_draw(void)
 {
     if (dirty) {
         dirty = FALSE;
-        ui_clear();
+        art_reset();
         draw_header();
         ui_window(0, 3, 40, 25);
         switch (phase) {
@@ -229,7 +231,8 @@ static void ref_draw(void)
             break;
         case P_SUSPENSE:
             ui_text_wrap(1, 8, 38, 4, txt[TXT_REF_ANNONCE], UI_STYLE_TEXT);
-            ui_text_draw(1, 26, "A : passer", UI_STYLE_DIM);
+            ui_art_draw(ART_DECOR_URNE, 16, 14);   // PAL2 : pas de style DIM dans cette phase
+            ui_text_draw(1, 26, "A : passer", UI_STYLE_TEXT);
             break;
         case P_RESULT:
             draw_result();
@@ -245,4 +248,9 @@ static void ref_draw(void)
     }
 }
 
-const Screen scr_referendum = { ref_init, ref_update, ref_draw, NULL };
+static void ref_exit(void)
+{
+    art_reset();
+}
+
+const Screen scr_referendum = { ref_init, ref_update, ref_draw, ref_exit };

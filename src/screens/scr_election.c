@@ -7,6 +7,8 @@
 #include "ui/input.h"
 #include "game/game.h"
 #include "content/content_world.h"
+#include "screens/evt_art.h"
+#include "ui/ui_art.h"
 
 enum { PH_ROUND1 = 0, PH_ROUND2, PH_VERDICT };
 
@@ -80,6 +82,28 @@ static void draw_row(u16 y, u8 cand, s16 score, s16 gmax)
     ui_gauge_draw(1, y + 1, UI_TEXT_COLS, score, gmax, me ? UI_GAUGE_GOLD : UI_GAUGE_NEUTRAL);
 }
 
+// Bloc d'un finaliste (second tour) : portrait 7 x 7 à gauche, nom, parti, score et jauge à droite.
+// PAL2 est empruntée par les portraits : jauges positive / dorée, jamais NEUTRAL.
+static void draw_finalist(u16 y, u8 cand, s16 score)
+{
+    char buf[40];
+    char num[14];
+    bool me = (cand == CAND_JOUEUR);
+    UiStyle st = me ? UI_STYLE_HIGHLIGHT : UI_STYLE_TEXT;
+
+    ui_art_draw(me ? ART_PRES(g_game.country.orientation) : ART_CAND(cand), 1, y);
+    ui_text_draw_n(9, y + 1, me ? "Vous" : cand_name[cand], 30, 0, st);
+    buf[0] = 0;
+    strcat(buf, "(");
+    strcat(buf, me ? grp_sigle[g_game.country.player_group] : cand_party[cand]);
+    strcat(buf, ")");
+    ui_text_draw_n(9, y + 2, buf, 30, 0, UI_STYLE_TEXT);
+    ui_format_number(num, score, 1);
+    strcat(num, " %");
+    ui_text_draw(9, y + 4, num, st);
+    ui_gauge_draw(9, y + 5, 30, score, 1000, me ? UI_GAUGE_GOLD : UI_GAUGE_POSITIVE);
+}
+
 static void election_draw(void)
 {
     const ElectionResult *e = &g_game.election;
@@ -88,7 +112,7 @@ static void election_draw(void)
     if (!dirty)
         return;
     dirty = FALSE;
-    ui_clear();
+    art_reset();
     ui_window(0, 0, 40, 28);
 
     if (phase == PH_ROUND1) {
@@ -99,16 +123,16 @@ static void election_draw(void)
     } else {
         ui_text_center(0, 1, UI_COLS, "PRÉSIDENTIELLE : SECOND TOUR", UI_STYLE_HIGHLIGHT);
         for (i = 0; i < 2; i++)
-            draw_row(4 + i * 3, e->finalist[i], e->round2[i], 1000);
+            draw_finalist(3 + i * 7, e->finalist[i], e->round2[i]);
         if (!player_in_round2)
-            ui_text_center(0, 11, UI_COLS, "Vous n'êtes pas qualifié(e).", UI_STYLE_DIM);
+            ui_text_center(0, 17, UI_COLS, "Vous n'êtes pas qualifié(e).", UI_STYLE_TEXT);
 
         if (phase == PH_ROUND2) {
-            ui_text_center(0, 25, UI_COLS, "A : résultat", UI_STYLE_DIM);
+            ui_text_center(0, 25, UI_COLS, "A : résultat", UI_STYLE_TEXT);
         } else {
             const char *l1, *l2;
             UiStyle st = e->elected ? UI_STYLE_HIGHLIGHT : UI_STYLE_ALERT;
-            ui_window(4, 14, 32, 8);
+            ui_window(4, 18, 32, 8);
             music_stop();   // la fanfare (ou le thème de défaite) joue seule
             sfx_play(e->elected ? SFX_ELECTION_WIN : SFX_ELECTION_LOSE);
             if (e->elected) {
@@ -121,11 +145,16 @@ static void election_draw(void)
                 l1 = "DÉFAITE";
                 l2 = "Battu(e) au second tour.";
             }
-            ui_text_center(4, 16, 32, l1, st);
-            ui_text_wrap(6, 18, 28, 2, l2, UI_STYLE_TEXT);
-            ui_text_center(4, 20, 32, e->elected ? "A : second mandat" : "A : bilan du mandat", UI_STYLE_DIM);
+            ui_text_center(4, 19, 32, l1, st);
+            ui_text_wrap(6, 21, 28, 2, l2, UI_STYLE_TEXT);
+            ui_text_center(4, 24, 32, e->elected ? "A : second mandat" : "A : bilan du mandat", UI_STYLE_TEXT);
         }
     }
 }
 
-const Screen scr_election = { election_init, election_update, election_draw, NULL };
+static void election_exit(void)
+{
+    art_reset();
+}
+
+const Screen scr_election = { election_init, election_update, election_draw, election_exit };
