@@ -57,6 +57,7 @@ void ui_transition_hide(void)
 {
     if (PAL_isDoingFade())
         PAL_interruptFade();
+    VDP_setBackgroundColor(1);   // affichage coupé : couleur de fond = PAL0[1] (noir)
     VDP_setEnable(FALSE);
     fx = FX_HIDDEN;
     input_block(INPUT_BLOCK_DISCARD);
@@ -67,6 +68,7 @@ void ui_transition_show(void)
     // Palettes voulues par le nouvel écran (écrites en CRAM par init / draw).
     PAL_getColors(0, pal_target, 64);
     PAL_setColors(0, palette_black, 64, CPU);
+    VDP_setBackgroundColor(0);
     VDP_setEnable(TRUE);
     PAL_fade(0, 63, palette_black, pal_target, ms_frames(UI_FADE_IN_MS), TRUE);
     fx = FX_IN;

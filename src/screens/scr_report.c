@@ -219,6 +219,8 @@ static void draw_politics(void)
     }
     if (page == 3) {
         const Country *c = &g_game.country;
+        if ((r->gov_law || r->budget_gov) && y <= LAST_ROW)
+            y = rubric(y, "Cohabitation");
         if (r->gov_law && y <= LAST_ROW) {
             y = para(y, txt[TXT_COHAB_LOI_GOUV], UI_STYLE_HIGHLIGHT);
             ui_icon_draw(1, y, UI_ICON_BULLET);
@@ -235,12 +237,13 @@ static void draw_politics(void)
             u16 before = 0, after = sim_senate_bloc_seats(c);
             for (u8 g = 0; g < GRP_COUNT; g++)
                 if (sim_in_bloc(c, g)) before += r->senate_before[g];
+            y = rubric(y, "Sénat");
             y = para(y, txt[after >= before ? TXT_SENAT_RENOUVELE_GAIN : TXT_SENAT_RENOUVELE_PERTE],
                      after >= before ? UI_STYLE_TEXT : UI_STYLE_ALERT);
             buf[0] = 0;
             strcat(buf, "Sénat, bloc présidentiel : ");
             cat_num(buf, before, 0);
-            strcat(buf, " -> ");
+            strcat(buf, " → ");
             cat_num(buf, after, 0);
             if (y <= LAST_ROW) ui_text_draw(1, y++, buf, UI_STYLE_HIGHLIGHT);
         }
