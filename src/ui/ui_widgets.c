@@ -26,6 +26,29 @@ void ui_list_set_disabled(UiList *l, u16 i, bool on)
     }
 }
 
+void ui_list_set_enabled_by(UiList *l, bool (*enabled)(u16 i, void *ctx), void *ctx)
+{
+    u16 i;
+
+    for (i = 0; i < l->count && i < 64; i++)
+        ui_list_set_disabled(l, i, !enabled(i, ctx));
+}
+
+s16 ui_nav_cycle(s16 sel, s16 first, s16 count, bool dec, bool inc, bool wrap)
+{
+    s16 n, last = first + count - 1;
+
+    if (count <= 0 || dec == inc)
+        return sel;
+    if (dec)
+        n = sel > first ? sel - 1 : (wrap ? last : first);
+    else
+        n = sel < last ? sel + 1 : (wrap ? first : last);
+    if (n != sel)
+        sfx_play(SFX_MOVE);
+    return n;
+}
+
 static void list_fix_top(UiList *l)
 {
     if (l->sel < l->top)
@@ -49,6 +72,22 @@ void ui_list_init(UiList *list, u16 x, u16 y, u16 w, u16 rows,
     list->top = 0;
     list->flags = 0;
     list->bar_sel = 0xFF;
+}
+
+bool ui_list_select_first_enabled(UiList *l)
+{
+    u16 i;
+
+    if (l->sel < l->count && item_enabled(l, l->sel))
+        return TRUE;
+    for (i = 0; i < l->count; i++) {
+        if (item_enabled(l, i)) {
+            l->sel = (u8)i;
+            list_fix_top(l);
+            return TRUE;
+        }
+    }
+    return FALSE;
 }
 
 UiListResult ui_list_update(UiList *l)
@@ -125,6 +164,17 @@ void ui_list_draw(UiList *l)
         ui_icon_draw(l->x + l->w - 1, l->y, UI_ICON_ARROW_UP);
     if (l->top + l->rows < l->count)
         ui_icon_draw(l->x + l->w - 1, l->y + l->rows - 1, UI_ICON_ARROW_DOWN);
+}
+
+void ui_list_redraw(UiList *l)
+{
+    u16 r, bar_w = l->w > 1 ? l->w - 1 : 1;
+
+    if (!(l->flags & UI_LIST_NOBAR))
+        for (r = 0; r < l->rows; r++)
+            ui_select_bar_clear(l->x, l->y + r, bar_w);
+    l->bar_sel = 0xFF;
+    ui_list_draw(l);
 }
 
 // --- Boîte de message -------------------------------------------------------
@@ -247,4 +297,54 @@ void ui_msgbox_close(void)
     if (msg.open && msg.drawn)
         ui_window_erase(MSG_X, msg.y, MSG_W, msg.h);
     msg.open = FALSE;
+}
+
+// --- Confirmation oui / non ---------------------------------------------------
+
+static const char *confirm_choices[2];
+
+void ui_confirm_open(const char *title, const char *text,
+                     const char *yes, const char *no, bool focus_no)
+{
+    confirm_choices[0] = yes;
+    confirm_choices[1] = no;
+    ui_msgbox_open(title, text, confirm_choices, 2);
+    if (focus_no)
+        ui_msgbox_set_sel(1);
+}
+
+s16 ui_confirm_update(void)
+{
+    s16 r = ui_msgbox_update();
+
+    if (r < 0 && msg.open && msg.step > MSG_UNFOLD_STEPS && (input_pressed() & INPUT_CANCEL))
+        return 0;   // B = non (le son d'annulation vient de la liste)
+    return r == 0 ? 1 : (r > 0 ? 0 : -1);
+}
+
+// --- Indicateur ---------------------------------------------------------------
+
+void ui_value_right(u16 x_end, u16 y, u16 w, const char *str, UiStyle style)
+{
+    ui_clear_rect(x_end - w, y, w, 1);
+    ui_text_right(x_end, y, str, style);
+}
+
+#define STAT_VALUE_W 7
+
+void ui_stat_row(u16 y, const UiStatRow *r)
+{
+    char buf[UI_LINE_BUF];
+    u16 n = ui_format_number(buf, r->value, r->decimals);
+
+    if (r->unit) {
+        const char *u = r->unit;
+        while (*u && n < sizeof(buf) - 1)
+            buf[n++] = *u++;
+        buf[n] = 0;
+    }
+    ui_icon_draw(1, y, r->icon);
+    ui_text_draw_n(3, y, r->label, 13, 13, UI_STYLE_DIM);
+    ui_gauge_draw(16, y, r->x_end - STAT_VALUE_W - 16, r->gauge, r->gauge_max, r->gauge_style);
+    ui_value_right(r->x_end, y, STAT_VALUE_W, buf, r->value_style);
 }

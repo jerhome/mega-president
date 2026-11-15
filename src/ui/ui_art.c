@@ -585,3 +585,9 @@ void ui_gueule_erase(u16 x, u16 y)
     ui_gueule_anim_cover(x, y, GUEULE_W, GUEULE_H);
     VDP_clearTileMapRect(BG_B, x, y, GUEULE_W, GUEULE_H);
 }
+
+bool ui_portrait(GueuleId id, Expr e, u16 x, u16 y, u16 pal)
+{
+    ui_medallion(x, y, UI_PORTRAIT_W, UI_PORTRAIT_H);
+    return ui_gueule_draw(id, e, x, y, pal);
+}

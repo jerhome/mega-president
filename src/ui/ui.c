@@ -266,6 +266,13 @@ void ui_clear(void)
     soft_req = TRUE;
 }
 
+void ui_clear_quiet(void)
+{
+    VDP_clearPlane(BG_A, TRUE);
+    VDP_clearPlane(BG_B, TRUE);
+    ui_bg_rect(0, 0, UI_COLS, UI_ROWS);
+}
+
 void ui_clear_rect(u16 x, u16 y, u16 w, u16 h)
 {
     VDP_clearTileMapRect(BG_A, x, y, w, h);
@@ -416,7 +423,7 @@ static UiIcon button_at(const char *s, u16 *skip)
 }
 
 // Parcourt hints : dessine si draw, renvoie la largeur en colonnes.
-static u16 footer_pass(u16 x, u16 y, const char *hints, bool draw)
+static u16 footer_pass(u16 x, u16 y, const char *hints, bool draw, u16 limit)
 {
     char seg[UI_LINE_BUF];
     u16 n = 0, cols = 0, skip = 0;
@@ -428,14 +435,14 @@ static u16 footer_pass(u16 x, u16 y, const char *hints, bool draw)
         if (*s == 0 || ic != UI_ICON_LAST) {
             if (n) {
                 seg[n] = 0;
-                if (draw)
-                    ui_text_draw(x + cols, y, seg, UI_STYLE_DIM);
+                if (draw && cols < limit)
+                    ui_text_draw_n(x + cols, y, seg, limit - cols, 0, UI_STYLE_DIM);
                 cols += ui_text_len(seg);
                 n = 0;
             }
             if (*s == 0)
                 return cols;
-            if (draw)
+            if (draw && cols < limit)
                 ui_icon_draw(x + cols, y, ic);
             cols += 2;            // icône + espace
             s += skip;
@@ -451,12 +458,12 @@ static u16 footer_pass(u16 x, u16 y, const char *hints, bool draw)
 
 void ui_footer(u16 x, u16 y, u16 w, const char *hints)
 {
-    u16 cols = footer_pass(0, y, hints, FALSE);
+    u16 cols = footer_pass(0, y, hints, FALSE, 0xFFFF);
 
     VDP_clearTileMapRect(BG_A, x, y, w, 1);
     if (cols > w)
-        cols = w;
-    footer_pass(x + (w - cols) / 2, y, hints, TRUE);
+        cols = w;   // trop long : tronqué à droite, jamais au-delà de x + w (I7)
+    footer_pass(x + (w - cols) / 2, y, hints, TRUE, cols);
 }
 
 // --- Jauges et icônes ----------------------------------------------------------------

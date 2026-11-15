@@ -1,5 +1,6 @@
 // Mega Président — manette (tâche 1.4). Voir input.h.
 #include "ui/input.h"
+#include "audio/sfx.h"
 
 // Temps compté en 1/300 s : une image dure exactement 6 (PAL) ou 5 (NTSC).
 #define TICKS_PER_S 300
@@ -117,3 +118,19 @@ u16 input_held(void) { return held; }
 u16 input_pressed(void) { return pressed; }
 u16 input_repeat(void) { return repeat; }
 u16 input_frame_ticks(void) { return frame_ticks; }
+
+bool input_go(void)
+{
+    if (!(pressed & INPUT_OK))
+        return FALSE;
+    sfx_play(SFX_OK);
+    return TRUE;
+}
+
+bool input_back(void)
+{
+    if (!(pressed & INPUT_CANCEL))
+        return FALSE;
+    sfx_play(SFX_CANCEL);
+    return TRUE;
+}

@@ -41,7 +41,9 @@ sont utilisables quelles que soient les illustrations affichées.
 ## Manette
 `input_pressed()` = front ; `input_repeat()` = front + répétition des directions
 (330 ms puis toutes les 100 ms, en temps réel : identique en PAL et NTSC).
-Valider : A ou C (`INPUT_OK`) ; annuler : B.
+Valider : A (`INPUT_OK`) ; annuler : B.
+`input_go()` / `input_back()` : vrais à l'image de l'appui de A / B, avec le son
+(`SFX_OK` / `SFX_CANCEL`) ; à préférer aux tests de `input_pressed()` dans les écrans.
 
 ## Écrans
 `screen_register(id, &screen)` puis `screen_run(premier)`. Chaque image :
@@ -50,6 +52,25 @@ verticale. `screen_change` lance un fondu au noir (120 ms, non bloquant), puis
 `exit`, `ui_art_close`, palettes de l'interface, effacement, `init` et premier dessin
 affichage coupé, puis apparition (220 ms). `ui_clear` déclenche une apparition douce. Les tuiles restent
 affichées : `draw` ne redessine que ce qui a changé.
+
+## Widgets réutilisables (V4.1, lot U2)
+- `ui_clear_quiet()` : comme `ui_clear`, sans apparition douce ni blocage de la manette ;
+  pour les redessins partiels (saisie, aide, changement de page).
+- `ui_confirm_open(titre, texte, oui, non, focus_non)` / `ui_confirm_update()` : confirmation
+  à deux choix (boîte de message). Renvoie -1 en attente, 1 oui, 0 non ; **B = non**.
+  `focus_non` met le curseur sur « non » (actions destructrices). `ui_confirm_close()` retire
+  la boîte ; les chaînes doivent rester valides pendant qu'elle est ouverte.
+- Listes (`UiList`) : `ui_list_set_enabled_by(l, fn, ctx)` grise tous les éléments d'après
+  `fn(i, ctx)` ; `ui_list_select_first_enabled(l)` garde la sélection si elle est active, sinon
+  prend le premier élément actif (FALSE si tous grisés) ; `ui_list_redraw(l)` redessine tout,
+  barre comprise (après un changement de grisés ou de textes).
+- `ui_nav_cycle(sel, first, count, dec, inc, wrap)` : pas de valeur dans [first, first + count[
+  avec rebouclage ou butée, `SFX_MOVE` si elle change ; renvoie la nouvelle valeur.
+- `ui_value_right(x_end, y, w, str, style)` : valeur alignée à droite dans une zone de w
+  colonnes effacée d'abord. `UiStatRow` + `ui_stat_row(y, &ligne)` : icône (x 1), libellé
+  (x 3, 13 col.), jauge (x 16 à x_end - 8), valeur sur 7 colonnes finissant en `x_end`.
+- `ui_portrait(id, expr, x, y, pal)` (ui_art.h) : `ui_medallion` + `ui_gueule_draw`.
+- `ui_footer` tronque à droite : rien au-delà de `x + w`.
 
 ## Carte de France (src/ui/ui_map.h, res/gfx_map.res)
 Carte des 13 régions : 20×20 tuiles (160×160 px) sur le **plan B**, avec **une ligne de

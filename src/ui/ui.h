@@ -83,6 +83,9 @@ void ui_init(void);                          // écran 320, tuiles et palettes
 // Efface tout : plan A vidé, plan B rempli du fond d'écran texturé. Demande
 // aussi une « apparition douce » (fondu bref) à la fin de l'image.
 void ui_clear(void);
+// Comme ui_clear, sans apparition douce : ni fondu, ni blocage de la manette.
+// Pour les redessins partiels (saisie, fermeture d'une aide, changement de page).
+void ui_clear_quiet(void);
 void ui_clear_rect(u16 x, u16 y, u16 w, u16 h);  // efface le plan A (texte)
 
 // --- Fenêtres -----------------------------------------------------------------
@@ -111,6 +114,7 @@ void ui_select_bar(u16 x, u16 y, u16 w);
 void ui_select_bar_clear(u16 x, u16 y, u16 w);
 // Aide des boutons, centrée sur [x, x + w[ : « A : valider   B : retour ».
 // « A : », « B : », « C : » et « START : » deviennent des icônes de bouton.
+// Trop longue, elle est tronquée à droite : rien n'est écrit au-delà de x + w.
 void ui_footer(u16 x, u16 y, u16 w, const char *hints);
 
 // --- Texte (chaînes UTF-8) ----------------------------------------------------
@@ -139,6 +143,10 @@ u16 ui_text_count_lines(u16 w, const char *str);
 // quand tout est écrit : pour faire couler un texte autour d'une illustration.
 const char *ui_text_wrap_line(u16 x, u16 y, u16 w, const char *str, UiStyle style);
 
+// Valeur alignée à droite dans une zone de w colonnes qui finit en x_end (exclu) :
+// la zone est effacée d'abord (ancienne valeur plus longue). Trop longue : coupée à gauche.
+void ui_value_right(u16 x_end, u16 y, u16 w, const char *str, UiStyle style);
+
 // Nombres entiers à virgule fixe : (425, 1) -> "42,5" ; (-120, 2) -> "-1,20".
 // buf doit contenir au moins 13 octets. Renvoie la longueur.
 u16 ui_format_number(char *buf, s32 value, u16 decimals);
@@ -148,6 +156,20 @@ u16 ui_number_draw(u16 x, u16 y, s32 value, u16 decimals, UiStyle style);
 // Jauge horizontale à reflet de w tuiles (bouts arrondis ; 8 pixels par tuile).
 void ui_gauge_draw(u16 x, u16 y, u16 w, s16 value, s16 max, UiStyle style);
 void ui_icon_draw(u16 x, u16 y, UiIcon icon);
+
+// Ligne d'indicateur : icône (x 1), libellé gris (x 3, 13 colonnes), jauge (x 16 jusqu'à
+// x_end - 8), valeur alignée à droite sur 7 colonnes qui finissent en x_end (exclu).
+typedef struct {
+    UiIcon icon;
+    const char *label;
+    s32 value;         // valeur affichée (virgule fixe : decimals chiffres après la virgule)
+    u8 decimals;
+    const char *unit;  // " %", "" ou NULL
+    s16 gauge, gauge_max;
+    UiStyle gauge_style, value_style;
+    u8 x_end;
+} UiStatRow;
+void ui_stat_row(u16 y, const UiStatRow *row);
 
 // --- Liste avec curseur -------------------------------------------------------
 typedef enum {
@@ -178,6 +200,19 @@ void ui_list_draw(UiList *list);
 void ui_list_set_disabled(UiList *list, u16 i, bool on);
 // 1 si l'élément i est sélectionnable.
 bool ui_list_enabled(const UiList *list, u16 i);
+// Grise ou réactive tous les éléments d'un coup : enabled(i, ctx) dit si i est actif.
+// Ne touche ni à la sélection ni à l'affichage (voir les deux fonctions suivantes).
+void ui_list_set_enabled_by(UiList *list, bool (*enabled)(u16 i, void *ctx), void *ctx);
+// Garde la sélection si elle est active, sinon la place sur le premier élément actif.
+// Renvoie FALSE (sélection inchangée) si tous les éléments sont grisés.
+bool ui_list_select_first_enabled(UiList *list);
+// Redessin complet de la liste (barre de sélection comprise), après un changement
+// d'éléments grisés ou de texte hors déplacement du curseur.
+void ui_list_redraw(UiList *list);
+// Navigation d'une valeur dans [first, first + count[ : dec / inc vrais = un pas en
+// arrière / en avant (si les deux, rien). wrap : rebouclage, sinon butée. Joue
+// SFX_MOVE si la valeur change, et renvoie la nouvelle valeur.
+s16 ui_nav_cycle(s16 sel, s16 first, s16 count, bool dec, bool inc, bool wrap);
 
 // --- Boîte de message avec choix (modale, non bloquante) ----------------------
 // Fenêtre pleine largeur en bas de l'écran : titre (facultatif, NULL),
@@ -194,6 +229,15 @@ bool ui_msgbox_is_open(void);
 // confirmation d'effacement, par exemple.
 void ui_msgbox_set_sel(u16 i);
 void ui_msgbox_close(void);   // efface la zone de la boîte (l'écran redessine le reste)
+
+// Confirmation oui / non : boîte de message à deux choix. B = non. focus_no : curseur
+// sur « non » à l'ouverture (action destructrice). Les chaînes restent valides tant que
+// la boîte est ouverte. ui_msgbox_close (ou ui_confirm_close) retire la boîte.
+void ui_confirm_open(const char *title, const char *text,
+                     const char *yes, const char *no, bool focus_no);
+// À appeler à chaque image : -1 en attente, 1 oui, 0 non (choix « non » ou B).
+s16 ui_confirm_update(void);
+#define ui_confirm_close ui_msgbox_close
 
 // --- Animations ---------------------------------------------------------------
 // Durées en millisecondes (identiques en PAL et en NTSC).
