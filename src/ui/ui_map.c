@@ -2,12 +2,13 @@
 #include "ui/ui_internal.h"
 #include "ui/ui_map.h"
 #include "ui/ui_art.h"
+#include "ui/input.h"
 #include "gfx_ui.h"
 #include "gfx_map.h"
 
 #define MAP_PAL      PAL2
 #define MAP_PAL_BASE (MAP_PAL * 16)   // indice du premier index de la ligne
-#define BLINK_FRAMES 16               // demi-période du clignotement (images)
+#define BLINK_TICKS  96               // demi-période du clignotement : 320 ms (1/300 s)
 
 static const char *const region_names[REGION_COUNT] = {
     "Hauts-de-France", "Normandie", "Île-de-France", "Grand Est", "Bretagne",
@@ -18,7 +19,9 @@ static const char *const region_names[REGION_COUNT] = {
 
 static u16 region_color[REGION_COUNT];   // couleur courante (hors clignotement)
 static u8 selected = REGION_NONE;
-static u8 blink;
+static u16 blink;          // 1/300 s écoulées dans la période
+static bool blink_hi;      // état affiché : TRUE = blanc
+static u16 blink_col;      // mot lu par le DMA (doit rester valide jusqu'au VBlank)
 static bool map_open;
 static bool colorblind;
 
@@ -44,6 +47,7 @@ void ui_map_draw(u16 x, u16 y)
         region_color[i] = pal_map.data[1 + i];
     selected = REGION_NONE;
     blink = 0;
+    blink_hi = TRUE;
     map_open = TRUE;
     VDP_fillTileMapRectInc(BG_B, UI_ATTR(MAP_PAL, base), x, y, UI_MAP_TILES, UI_MAP_TILES);
 }
@@ -100,18 +104,26 @@ void ui_map_highlight(u8 region)
         apply(selected, region_color[selected]);
     selected = region < REGION_COUNT ? region : REGION_NONE;
     blink = 0;
+    blink_hi = TRUE;
     if (selected != REGION_NONE)
         apply(selected, 0x0EEE);
 }
 
 void ui_map_update(void)
 {
+    bool hi;
+
     if (selected == REGION_NONE || PAL_isDoingFade())
         return;   // pas de clignotement pendant un fondu (il l'écraserait)
-    blink++;
-    if (blink >= 2 * BLINK_FRAMES)
-        blink = 0;
-    apply(selected, blink < BLINK_FRAMES ? 0x0EEE : region_color[selected]);
+    blink += input_frame_ticks();
+    if (blink >= 2 * BLINK_TICKS)
+        blink -= 2 * BLINK_TICKS;
+    hi = blink < BLINK_TICKS;
+    if (hi == blink_hi)
+        return;   // palette écrite seulement au changement d'état
+    blink_hi = hi;
+    blink_col = hi ? 0x0EEE : region_color[selected];
+    PAL_setColors(MAP_PAL_BASE + 1 + selected, &blink_col, 1, DMA_QUEUE);
 }
 
 const char *ui_map_region_name(u8 region)

@@ -190,7 +190,8 @@ static const char *const ok_choice[1] = { "OK" };
 static struct {
     bool open;
     bool drawn;
-    u8 step;          // dépliement en cours (0 .. MSG_UNFOLD_STEPS), puis contenu
+    u8 step;          // prochaine étape à dessiner (0 .. MSG_UNFOLD_STEPS), puis contenu
+    u8 t;             // 1/300 s depuis la première image (dépliement)
     u8 y, h;
     const char *title;
     const char *text;
@@ -229,6 +230,7 @@ void ui_msgbox_open(const char *title, const char *text,
     msg.open = TRUE;
     msg.drawn = FALSE;
     msg.step = 0;
+    msg.t = 0;
     msg.h = (u8)h;
     msg.y = (u8)(UI_ROWS - 1 - h);   // une ligne de marge en bas (débordement TV)
     msg.title = title;
@@ -252,7 +254,8 @@ static void msgbox_draw(void)
     ui_list_draw(&msg.list);
 }
 
-#define MSG_UNFOLD_STEPS 3   // images de dépliement avant le contenu
+#define MSG_UNFOLD_STEPS 3   // étapes de dépliement avant le contenu
+#define MSG_UNFOLD_TICKS 6   // durée d'une étape : 20 ms (1/300 s), comme une image PAL
 
 s16 ui_msgbox_update(void)
 {
@@ -260,17 +263,26 @@ s16 ui_msgbox_update(void)
 
     if (!msg.open)
         return -1;
-    if (msg.step < MSG_UNFOLD_STEPS) {
-        // Dépliement : la fenêtre grandit vers le haut depuis le bas de la boîte.
-        u16 h = 2 + (u16)((msg.h - 2) * (msg.step + 1)) / (MSG_UNFOLD_STEPS + 1);
-        ui_window(MSG_X, msg.y + msg.h - h, MSG_W, h);
-        msg.step++;
-        msg.drawn = TRUE;
-        return -1;
-    }
-    if (msg.step == MSG_UNFOLD_STEPS) {
-        msgbox_draw();
-        msg.step++;
+    if (msg.step <= MSG_UNFOLD_STEPS) {
+        u8 stage;
+
+        // Étapes fondées sur le temps réel : une image perdue saute une étape.
+        if (msg.step > 0 && msg.t < 255 - 30)
+            msg.t += (u8)input_frame_ticks();
+        stage = msg.t / MSG_UNFOLD_TICKS;
+        if (stage > MSG_UNFOLD_STEPS)
+            stage = MSG_UNFOLD_STEPS;
+        if (stage < msg.step)
+            return -1;
+        if (stage < MSG_UNFOLD_STEPS) {
+            // Dépliement : la fenêtre grandit vers le haut depuis le bas de la boîte.
+            u16 h = 2 + (u16)((msg.h - 2) * (stage + 1)) / (MSG_UNFOLD_STEPS + 1);
+            ui_window(MSG_X, msg.y + msg.h - h, MSG_W, h);
+            msg.drawn = TRUE;
+        } else {
+            msgbox_draw();
+        }
+        msg.step = stage + 1;
         return -1;   // pas de saisie à l'image d'ouverture
     }
     r = ui_list_update(&msg.list);

@@ -104,12 +104,17 @@ bool voice_say(u16 gueule)
 
     if (s_off || gueule >= CHB_COUNT)
         return FALSE;
-    s_seed ^= (u16)getTick() | 1;
-    do {
-        ch.syl[0] = (u8)ch_rand(CHB_INIT);
-        ch.syl[1] = (u8)(CHB_INIT + ch_rand(CHB_FIN));
+    s_seed ^= (u16)getTick();
+    if (!s_seed)
+        s_seed = 0xC4A7;   // xorshift bloqué sur 0 : graine jamais nulle
+    ch.syl[0] = (u8)ch_rand(CHB_INIT);
+    ch.syl[1] = (u8)(CHB_INIT + ch_rand(CHB_FIN));
+    pair = (u8)(ch.syl[0] * 4 + ch.syl[1] - CHB_INIT);
+    if (pair == s_last_pair) {
+        // Correction en un coup (pas de boucle) : finale suivante, en restant dans 4..7.
+        ch.syl[1] = (u8)(CHB_INIT + (ch.syl[1] - CHB_INIT + 1) % CHB_FIN);
         pair = (u8)(ch.syl[0] * 4 + ch.syl[1] - CHB_INIT);
-    } while (pair == s_last_pair);
+    }
     s_last_pair = pair;
     ch.voice = (u8)gueule;
     ch_play(0);

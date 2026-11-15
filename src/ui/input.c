@@ -9,7 +9,9 @@
 static u16 held, pressed, repeat;
 static u16 repeat_dir;     // direction en cours de répétition
 static u16 repeat_timer;   // ticks avant la prochaine répétition
-static u16 frame_ticks;
+static u16 frame_ticks;    // 1/300 s écoulées depuis le dernier input_update (getTick)
+static u32 last_tick;
+#define MAX_FRAME_TICKS 90   // plafond (300 ms) : une longue pause ne fait pas sauter les animations
 static u8 blocked;         // fondu en cours (input_block)
 static u16 deferred;       // fronts mis de côté pendant un blocage INPUT_BLOCK_DEFER
 
@@ -17,6 +19,7 @@ void input_init(void)
 {
     held = pressed = repeat = repeat_dir = repeat_timer = 0;
     frame_ticks = IS_PAL_SYSTEM ? TICKS_PER_S / 50 : TICKS_PER_S / 60;
+    last_tick = getTick();
 }
 
 #ifdef MP_DEBUG_SCRIPT
@@ -68,6 +71,12 @@ void input_update(void)
 {
     u16 now = JOY_readJoypad(JOY_1);
     u16 dirs;
+    u32 t = getTick();
+    u32 dt = t - last_tick;
+
+    // Temps réel : une image perdue allonge dt au lieu de ralentir le jeu.
+    last_tick = t;
+    frame_ticks = dt > MAX_FRAME_TICKS ? MAX_FRAME_TICKS : (u16)dt;
 
 #ifdef MP_DEBUG_SCRIPT
     now |= script_read();
