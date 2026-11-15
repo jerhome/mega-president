@@ -26,7 +26,6 @@ static u8 chosen;
 static s16 pop_before, pop_after;
 static u8 def_before, def_after;
 static u32 phase_ms;
-static char confirm_text[100];
 
 static void cat_num(char *dst, s32 v, u16 dec)
 {
@@ -73,10 +72,10 @@ static void ref_init(void)
     dirty = TRUE;
 }
 
-static void gauge_row(u16 y, const char *label, s16 yes)
+static void gauge_row(u16 y, const char *label, s16 yes, UiStyle st)
 {
     char buf[14];
-    ui_text_draw_n(1, y, label, 18, 18, UI_STYLE_DIM);
+    ui_text_draw_n(1, y, label, 18, 18, st);
     ui_gauge_draw(20, y, 11, yes, 1000, yes >= 500 ? UI_GAUGE_POSITIVE : UI_GAUGE_NEGATIVE);
     buf[0] = 0;
     cat_num(buf, yes, 1);
@@ -95,20 +94,20 @@ static void draw_detail(void)
     ui_text_draw_n(1, 10, law_name[id], 38, 0, UI_STYLE_HIGHLIGHT);
     if (err != RFD_ERR_ADOPTED) {
         sim_referendum_preview(&g_game.country, id, &pv);
-        gauge_row(11, "OUI attendu", pv.yes);
+        gauge_row(11, "OUI attendu", pv.yes, UI_STYLE_HIGHLIGHT);
         for (u16 e = 0; e < ELEC_COUNT; e++)
-            gauge_row(12 + e, elec_txt(e, ET_LONG), pv.yes_elec[e]);
+            gauge_row(13 + e, elec_txt(e, ET_LONG), pv.yes_elec[e], UI_STYLE_DIM);
     }
     if (err == RFD_ERR_USED)
-        ui_text_wrap(1, 18, 38, 2, txt[TXT_REF_DEJA], UI_STYLE_ALERT);
+        ui_text_wrap(1, 19, 38, 2, txt[TXT_REF_DEJA], UI_STYLE_ALERT);
     else if (err == RFD_ERR_CP)
-        ui_text_draw(1, 18, "Capital politique insuffisant", UI_STYLE_ALERT);
+        ui_text_draw(1, 19, "Capital politique insuffisant", UI_STYLE_ALERT);
     else if (err == RFD_ERR_ADOPTED)
-        ui_text_draw(1, 18, "Déjà adoptée", UI_STYLE_DIM);
+        ui_text_draw(1, 19, "Déjà adoptée", UI_STYLE_DIM);
     else if (err != RFD_OK)
-        ui_text_draw(1, 18, "Impossible pour l’instant", UI_STYLE_ALERT);
+        ui_text_draw(1, 19, "Impossible pour l’instant", UI_STYLE_ALERT);
     else
-        ui_text_wrap(1, 18, 38, 5, txt[TXT_REF_AIDE], UI_STYLE_DIM);
+        ui_text_wrap(1, 19, 38, 4, txt[TXT_REF_AIDE], UI_STYLE_DIM);
 }
 
 static void go_phase(Phase p)
@@ -149,11 +148,7 @@ static void ref_update(void)
         case UI_LIST_CHOSEN: {
             static const char *const ch[2] = { "Lancer", "Annuler" };
             chosen = list.sel;
-            confirm_text[0] = 0;
-            strcat(confirm_text, txt[TXT_REF_CONFIRME]);
-            strcat(confirm_text, "\n");
-            strcat(confirm_text, law_name[chosen]);
-            ui_msgbox_open(txt[TXT_REF_TITRE], confirm_text, ch, 2);
+            ui_msgbox_open(law_name[chosen], txt[TXT_REF_CONFIRME], ch, 2);
             phase = P_CONFIRM;
             break;
         }
@@ -203,7 +198,7 @@ static void draw_result(void)
     ui_text_draw(1, 13, "OUI par électorat", UI_STYLE_HIGHLIGHT);
     ui_separator(19, 13, 20);
     for (u16 e = 0; e < ELEC_COUNT; e++)
-        gauge_row(14 + e, elec_txt(e, ET_LONG), res.yes_elec[e]);
+        gauge_row(14 + e, elec_txt(e, ET_LONG), res.yes_elec[e], UI_STYLE_DIM);
     buf[0] = 0;
     strcat(buf, "Popularité : ");
     cat_num(buf, pop_before, 1); strcat(buf, " % → "); cat_num(buf, pop_after, 1); strcat(buf, " %");

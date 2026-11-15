@@ -431,7 +431,7 @@ static void change_value(u8 v)
     switch (id) {
     case SET_MUSIC:  break;                          // la musique est l'exemple
     case SET_SFX:    sfx_play(SFX_OK); break;        // après l'application : rien en « Aucun »
-    case SET_VOICE:  if (v) voice_preview(); else sfx_play(SFX_MOVE); break;
+    case SET_VOICE:  if (v) ui_gueule_say(900); else sfx_play(SFX_MOVE); break;   // l'huissier répond
     case SET_FADES:  sfx_play(SFX_MOVE); ui_soft_replay(); break;
     default:         sfx_play(SFX_MOVE); break;
     }

@@ -373,7 +373,12 @@ void ui_gueule_anim_cover(u16 x, u16 y, u16 w, u16 h)
     g = &gueule_defs[ga.id];
     if (overlaps(x, y, w, h, ga.x + g->ex, ga.y + g->ey, g->ew, g->eh) ||
         overlaps(x, y, w, h, ga.x + g->mx, ga.y + g->my, g->mw, g->mh))
+    {
         ga.on = FALSE;   // visage recouvert : ne plus y écrire
+        ga.sung = FALSE;
+        ga.talk_t = 0;
+        voice_say_stop();   // et se taire
+    }
 }
 
 void ui_gueule_say(u16 ms)

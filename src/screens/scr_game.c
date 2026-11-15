@@ -269,15 +269,6 @@ static void menu_build(void)
 #define MED_W 10
 #define MED_H 12
 
-// Nom de famille (après la dernière espace) : la colonne du médaillon fait 10 cases.
-static const char *surname(const char *full)
-{
-    const char *s = full, *last = full;
-    for (; *s; s++)
-        if (*s == ' ') last = s + 1;
-    return last;
-}
-
 // Cinq électorats sur deux lignes (3 + 2, cellules de 8 colonnes : « Pop 52 » + flèche de
 // tendance). Libellés atténués, valeurs entières, rouge si l'électorat est sous les 50 %.
 // La seconde ligne rappelle le détail (touche C).
@@ -286,7 +277,7 @@ static void draw_electorates(u16 y)
     char b[14];
     const Country *c = &g_game.country;
     for (u16 e = 0; e < ELEC_COUNT; e++) {
-        u16 x = 2 + (e % 3) * 8;
+        u16 x = 3 + (e % 3) * 8;
         u16 row = y + e / 3;
         s16 o = c->opinion[e];
         x += ui_text_draw(x, row, elec_txt((u8)e, ET_ABR), UI_STYLE_DIM) + 1;

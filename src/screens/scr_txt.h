@@ -26,6 +26,15 @@ static inline UiIcon elec_icon(u8 e)
     return e < ELEC_COUNT ? ic[e] : UI_ICON_BULLET;
 }
 
+// Nom de famille (après la dernière espace) : la colonne du médaillon fait 10 cases.
+static inline const char *surname(const char *full)
+{
+    const char *s = full, *last = full;
+    for (; *s; s++)
+        if (*s == ' ') last = s + 1;
+    return last;
+}
+
 static inline const char *bl_nom(u8 line)
 {
     return line < BUD_LINES ? txt[TXT_BL_0_NOM + line] : "";

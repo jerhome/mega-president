@@ -14,10 +14,13 @@ static bool dirty;
 static bool effects_dirty;
 static const char *items[THEME_COUNT];
 
-// Description du thème : seul le 5e (Santé et retraites) en a une dans les textes V4.
+// Description du thème (2 lignes de 38 colonnes au plus).
 static const char *theme_desc(u8 t)
 {
-    return t == THEME_SANTE_RETRAITES ? txt[TXT_THEME_SANTE_DESC] : "";
+    static const u16 key[THEME_COUNT] = {
+        TXT_THEME_EMPLOI_DESC, TXT_THEME_SECURITE_DESC, TXT_THEME_POUVOIR_ACHAT_DESC,
+        TXT_THEME_ECOLOGIE_DESC, TXT_THEME_SANTE_DESC };
+    return t < THEME_COUNT ? txt[key[t]] : "";
 }
 
 static void campaign_init(void)
@@ -49,14 +52,15 @@ static void campaign_update(void)
     }
 }
 
-// Aperçu : « ++ » fort, « + » favorable, « - » défavorable, « 0 » neutre.
+// Aperçu : « ++ » fort, « + » favorable, « - » défavorable, « = » neutre.
 static const char *mark(s16 b, UiStyle *st)
 {
     *st = UI_STYLE_TEXT;
     if (b >= 40) { *st = UI_STYLE_HIGHLIGHT; return "++"; }
     if (b >= 15) { *st = UI_STYLE_HIGHLIGHT; return "+"; }
     if (b <= -15) { *st = UI_STYLE_ALERT; return "-"; }
-    return "0";
+    *st = UI_STYLE_DIM;
+    return "=";
 }
 
 static void campaign_draw(void)
@@ -78,7 +82,6 @@ static void campaign_draw(void)
         ui_list_draw(&list);
         ui_text_draw(1, 16, "Effet sur l’électorat", UI_STYLE_HIGHLIGHT);
         ui_separator(23, 16, 16);
-        ui_text_center(1, 24, 38, "++ fort   + favorable   - défavorable", UI_STYLE_DIM);
         ui_footer(1, 26, 38, "Haut/Bas : choisir   A : valider");
     }
     if (effects_dirty) {
@@ -92,10 +95,11 @@ static void campaign_draw(void)
             ui_text_draw_n(3, y, elec_txt(e, ET_LONG), 18, 18, UI_STYLE_DIM);
             ui_text_draw_n(22, y, m, 3, 3, st);
             ui_gauge_draw(26, y, 12, (s16)(b < 0 ? -b : b), 80,
-                          st == UI_STYLE_ALERT ? UI_GAUGE_NEGATIVE : UI_GAUGE_GOLD);
+                          st == UI_STYLE_ALERT ? UI_GAUGE_NEGATIVE
+                          : (st == UI_STYLE_DIM ? UI_GAUGE_NEUTRAL : UI_GAUGE_GOLD));
         }
-        ui_clear_rect(1, 22, 38, 2);
-        ui_text_wrap(1, 22, 38, 2, theme_desc(list.sel), UI_STYLE_DIM);
+        ui_clear_rect(1, 23, 38, 2);
+        ui_text_wrap(1, 23, 38, 2, theme_desc(list.sel), UI_STYLE_DIM);
     }
 }
 

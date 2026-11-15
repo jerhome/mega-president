@@ -84,7 +84,7 @@ static void draw_row(u8 e)
 
     ui_icon_draw(1, y, elec_icon(e));
     ui_text_draw_n(3, y, elec_txt(e, ET_LONG), 18, 18, e == sel ? UI_STYLE_HIGHLIGHT : UI_STYLE_DIM);
-    ui_gauge_draw(21, y, 9, o, OPINION_MAX, o >= 500 ? UI_GAUGE_GOLD : UI_GAUGE_NEGATIVE);
+    ui_gauge_draw(22, y, 8, o, OPINION_MAX, o >= 500 ? UI_GAUGE_GOLD : UI_GAUGE_NEGATIVE);
     buf[0] = 0;
     cat_num(buf, o, 1);
     strcat(buf, " %");

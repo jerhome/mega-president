@@ -88,7 +88,7 @@ Transition, rés.
 ## TXT_BL_4_NOM
 Impôts ménages
 ## TXT_BL_5_NOM
-Impôts entreprises
+Impôts sociétés
 
 ## TXT_BL_0_LONG
 Social et retraites
@@ -277,7 +277,7 @@ définitive : le Sénat l'emporte.
 # ---- Cohabitation
 
 ## TXT_COHAB_PLAN_GAUCHE
-Le Premier ministre impose un plan
+La Première ministre impose un plan
 social et de relance : dépenses en
 hausse, impôts des entreprises aussi.
 
@@ -301,6 +301,22 @@ Un cran de plus ou de moins, sans CP.
 Les autres lignes sont grisées.
 
 # ---- Campagne : 5e thème
+
+## TXT_THEME_EMPLOI_DESC
+Salaires, chômage, apprentissage.
+Cible les classes populaires et moyennes.
+
+## TXT_THEME_SECURITE_DESC
+Police, justice, frontières. Cible les
+retraités et les classes moyennes.
+
+## TXT_THEME_POUVOIR_ACHAT_DESC
+Prix, salaires, carburants. Cible les
+classes populaires et moyennes.
+
+## TXT_THEME_ECOLOGIE_DESC
+Climat, transports, énergie. Cible les
+jeunes et les cadres.
 
 ## TXT_THEME_SANTE
 Santé et retraites
