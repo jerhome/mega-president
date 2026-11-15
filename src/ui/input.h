@@ -35,5 +35,11 @@ u16 input_repeat(void);
 
 // Durée d'une image en 1/300 s (6 en PAL, 5 en NTSC).
 u16 input_frame_ticks(void);
+// Blocage des fronts (pressed, repeat) pendant les fondus (couche ui) :
+// DISCARD les ignore (changement d'écran), DEFER les rend à la fin (apparition douce).
+#define INPUT_BLOCK_OFF     0
+#define INPUT_BLOCK_DISCARD 1
+#define INPUT_BLOCK_DEFER   2
+void input_block(u8 mode);
 
 #endif

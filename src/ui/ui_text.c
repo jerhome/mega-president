@@ -86,7 +86,7 @@ static void put_row(u16 x, u16 y, const u8 *glyphs, u16 n, u16 pad, UiStyle styl
         u8 g = i < n ? glyphs[i] : GLYPH_SPACE;
         if (g == GLYPH_NBSP)
             g = GLYPH_SPACE;
-        row[i] = UI_ATTR(style, ui_tile_font + g);
+        row[i] = UI_ATTR(UI_STYLE_PAL(style), UI_FONT_BASE(style) + g);
     }
     VDP_setTileMapDataRow(BG_A, row, y, x, total, CPU);
 }
@@ -244,6 +244,30 @@ u16 ui_text_wrap(u16 x, u16 y, u16 w, u16 max_lines, const char *str, UiStyle st
         lines++;
     }
     return lines;
+}
+
+const char *ui_text_wrap_line(u16 x, u16 y, u16 w, const char *str, UiStyle style)
+{
+    u8 buf[UI_COLS];
+    bool end = FALSE;
+    u16 n;
+
+    if (!str)
+        return NULL;
+    if (w == 0 || w > UI_COLS)
+        w = UI_COLS;
+    n = wrap_line(&str, w, buf, &end);
+    put_row(x, y, buf, n, 0, style);
+    return end ? NULL : str;
+}
+
+void ui_text_right(u16 x_end, u16 y, const char *str, UiStyle style)
+{
+    u16 n = ui_text_len(str);
+
+    if (n > x_end)
+        n = x_end;
+    ui_text_draw_n(x_end - n, y, str, n, 0, style);
 }
 
 u16 ui_text_count_lines(u16 w, const char *str)

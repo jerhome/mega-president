@@ -9,42 +9,30 @@ lit la manette avec `input.h` et s'organise en écrans avec `screen.h`.
   Le fond des glyphes est transparent : le texte s'affiche sur le fond de la fenêtre.
 - Tuiles chargées en VRAM à partir de `TILE_USER_INDEX` : police, cadre, jauge, icônes.
 
-## Ressources (res/gfx_ui.res) : noms stables
-En V2, remplacer les PNG de `res/gfx/` en gardant **noms, dimensions et indices de couleur** :
-le code ne change pas. PNG indexés 16 couleurs (4 bits).
+## Ressources (res/gfx_ui.res) : noms stables — charte V3
+Charte complète : `docs/CHARTE_V3.md`. Tout est généré par `python3 tools/ui/make_ui.py`
+(`make gfx`) : PNG indexés 16 couleurs, plus `src/ui/ui_font_map.h` (Unicode → glyphe)
+et `src/ui/ui_tiles.h` (indices des tuiles de décor, palettes des icônes).
 
-| Nom | Fichier | Taille | Contenu |
-|---|---|---|---|
-| `ts_ui_font` | `gfx/font.png` | 128×64 | 121 glyphes, 16 par ligne : ASCII 32-126, puis les accents dans l'ordre de `tools/font/glyphs.txt` |
-| `ts_ui_frame` | `gfx/ui_frame.png` | 24×24 | cadre 3×3 tuiles : coins, bords, intérieur |
-| `ts_ui_gauge` | `gfx/ui_gauge.png` | 72×8 | 9 tuiles : 0 à 8 pixels remplis |
-| `ts_ui_icons` | `gfx/ui_icons.png` | 32×8 | curseur, flèche haut, flèche bas, puce |
-| `pal_ui_text` | `gfx/pal_ui_text.png` | 16 couleurs | ligne 0 : texte normal, cadres, jauge positive (verte) |
-| `pal_ui_highlight` | `gfx/pal_ui_highlight.png` | 16 couleurs | ligne 1 : sélection, titres (jaune), jauge dorée |
-| `pal_ui_dim` | `gfx/pal_ui_dim.png` | 16 couleurs | ligne 2 : texte atténué, jauge neutre (bleue) |
-| `pal_ui_alert` | `gfx/pal_ui_alert.png` | 16 couleurs | ligne 3 : alerte (rouge), jauge négative |
+| Nom | Fichier | Contenu |
+|---|---|---|
+| `ts_ui_font` | `gfx/font.png` 128×128 | 2 jeux de 128 glyphes : encre A (indices 2/3), encre B (indices 4/5) ; ordre de `tools/font/glyphs.txt` |
+| `ts_ui_frame` | `gfx/ui_frame.png` | décor du plan B : fonds d'écran, fenêtre, bandeaux, barre de sélection, filet, médaillon (enum `UI_T_*`) |
+| `ts_ui_gauge` | `gfx/ui_gauge.png` | jauges à reflet : 2 jeux × (bout gauche, milieu, bout droit) × 9 remplissages |
+| `ts_ui_icons` | `gfx/ui_icons.png` | 32 icônes (`UiIcon`) ; chargées **en dernier** (les illustrations suivent) |
+| `ts_ui_cursor` | `gfx/ui_cursor.png` | 4 images du curseur animé (copiées dans la tuile du curseur) |
+| `pal_ui_text` | PAL0 | encre ivoire / gris bleuté, jauges verte / bleue, fenêtres, fond |
+| `pal_ui_highlight` | PAL1 | encre or / rouge, jauges or / rouge, bandeaux |
+| `pal_ui_dim`, `pal_ui_alert` | — | copies de PAL0, rechargées par `ui_art_close()` dans PAL2/PAL3 |
 
-Un style (`UiStyle`) = une ligne de palette : les mêmes tuiles changent de couleur
-selon la palette. Les 4 palettes suivent donc la **même convention d'indices** :
-
-| Indice | Rôle |
-|---|---|
-| 0 | transparent (ligne 0 : couleur de fond de l'écran) |
-| 1 | intérieur des fenêtres |
-| 2, 3, 4 | cadre clair, moyen, sombre |
-| 5 | encre du texte (varie selon le style) |
-| 6 | ombre du texte |
-| 7, 8 | jauge remplie, reflet (varie selon le style) |
-| 9, 10 | jauge vide, bord de jauge |
-| 11 | curseur et icônes |
-| 12-15 | libres |
-
-Les images provisoires sont produites par `python3 tools/font/make_gfx.py`
-(Python 3 seul). La police s'édite dans `tools/font/glyphs.txt` (base : police
-SGDK) ; le script génère aussi `src/ui/ui_font_map.h` (Unicode → glyphe).
+**Contrat V3** : l'interface n'utilise que PAL0 et PAL1 ; PAL2 et PAL3 sont aux
+illustrations (portrait en PAL2, vignette ou second décor en PAL3). Un style
+(`UiStyle`) = ligne de palette (bit 0) + jeu d'encre de la police (bit 1) : TEXT
+(PAL0, A), HIGHLIGHT (PAL1, A), DIM (PAL0, B), ALERT (PAL1, B). Tous les styles
+sont utilisables quelles que soient les illustrations affichées.
 
 ## Texte
-- Chaînes C en UTF-8. Glyphes : ASCII 32-126, é è ê ë à â ç î ï ô ù û ü œ É È Ê À Ç Ô « » ° € ’ ….
+- Chaînes C en UTF-8. Glyphes : ASCII 32-126, é è ê ë à â ç î ï ô ù û ü œ É È Ê À Ç Ô « » ° € ’ … ✓ → ·.
   Équivalences : tirets – — → `-`, ‘ → `'`, “ ” → `"`. Autre caractère → `?`.
 - Espace insécable U+00A0 (ou fine U+202F) : affichée comme une espace, jamais coupée
   (à mettre avant ; : ! ? » % € et après «).
@@ -57,8 +45,10 @@ Valider : A ou C (`INPUT_OK`) ; annuler : B.
 
 ## Écrans
 `screen_register(id, &screen)` puis `screen_run(premier)`. Chaque image :
-`input_update`, `update`, `draw`, synchro verticale. `screen_change` est appliqué
-à l'image suivante (`exit`, effacement de l'écran, `init`). Les tuiles restent
+`input_update`, `update`, `draw`, `ui_frame_end` (fondus, curseur animé), synchro
+verticale. `screen_change` lance un fondu au noir (120 ms, non bloquant), puis
+`exit`, `ui_art_close`, palettes de l'interface, effacement, `init` et premier dessin
+affichage coupé, puis apparition (220 ms). `ui_clear` déclenche une apparition douce. Les tuiles restent
 affichées : `draw` ne redessine que ce qui a changé.
 
 ## Carte de France (src/ui/ui_map.h, res/gfx_map.res)
@@ -68,9 +58,9 @@ couleur de palette (`ui_map_set_region_level`, dégradé rouge → jaune → ver
 redessiner de tuile. `ui_map_highlight` fait clignoter la région choisie (appeler
 `ui_map_update` à chaque image).
 
-**Palettes** : les 4 lignes sont prises par les styles. La carte occupe **PAL2** pendant
-son affichage : ne pas utiliser `UI_STYLE_DIM` / `UI_GAUGE_NEUTRAL` sur l'écran de la
-carte ; `ui_map_close()` restaure `pal_ui_dim`. Utiliser les styles TEXT, HIGHLIGHT, ALERT.
+**Palettes** : la carte occupe **PAL2** pendant son affichage (ligne réservée aux
+illustrations en V3 : tous les styles de texte restent utilisables) ; `ui_map_close()`
+restaure `pal_ui_dim`. Le clignotement est suspendu pendant les fondus.
 Les tuiles de la carte sont chargées juste après celles de `ui.c` (400 tuiles environ).
 
 | Nom | Fichier | Contenu |
@@ -102,10 +92,9 @@ API (`ui_art.c` est le seul fichier qui touche VDP/PAL pour les illustrations) :
 - Macros : `ART_PRES(ORIENT_*)`, `ART_PM(PM_*)`, `ART_COHAB(camp)`, `ART_CAND(CAND_*)`.
 
 **Palettes** : chaque illustration a sa palette (15 couleurs + transparent). Les **14 portraits
-partagent la même palette** : plusieurs portraits tiennent sur une seule ligne. Une ligne
-empruntée n'est plus utilisable pour son style (PAL1 : HIGHLIGHT, PAL2 : DIM / jauge
-neutre, PAL3 : ALERT). Deux illustrations de palettes différentes = deux lignes
-(ex. portrait en PAL2 + vignette en PAL3 : n'utiliser alors que TEXT et HIGHLIGHT).
+partagent la même palette** : plusieurs portraits tiennent sur une seule ligne. V3 :
+portrait en PAL2, vignette ou second décor en PAL3 ; **ne plus utiliser PAL1** (interface).
+Les styles de texte ne dépendent plus des lignes empruntées.
 
 **VRAM** : tuiles chargées juste après celles de `ui.c` (même zone que la carte, jamais
 affichées ensemble), empilées si plusieurs illustrations (16 au plus) ; une illustration

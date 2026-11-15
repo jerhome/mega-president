@@ -99,8 +99,8 @@ void ui_map_highlight(u8 region)
 
 void ui_map_update(void)
 {
-    if (selected == REGION_NONE)
-        return;
+    if (selected == REGION_NONE || PAL_isDoingFade())
+        return;   // pas de clignotement pendant un fondu (il l'écraserait)
     blink++;
     if (blink >= 2 * BLINK_FRAMES)
         blink = 0;

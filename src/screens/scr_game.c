@@ -20,8 +20,8 @@
 
 // Instantané des indicateurs pris au moment de « Fin du trimestre » : lu par
 // scr_report.c pour afficher ce qui a bougé.
-// Ordre : croissance, chômage, dette, 5 piliers, tension.
-s16 g_report_snap[9];
+// Ordre : croissance, chômage, dette, 6 piliers, tension.
+s16 g_report_snap[3 + PIL_TOTAL + 1];
 
 // Tour (+1) où le joueur a déjà vu l'écran du budget : renseigné par scr_budget.c.
 u8 g_budget_seen;
@@ -91,22 +91,6 @@ static void cat_delay(char *dst, u8 delay_q)
     }
 }
 
-// Prochain apport de capital politique. Forme longue ou abrégée (« +2 CP/2 mois »).
-static void cat_cp_next(char *dst, u8 abbr)
-{
-    const Country *c = &g_game.country;
-    u8 n = sim_cp_turns_to_next(c);
-    strcat(dst, "+");
-    cat_num(dst, sim_cp_gain(c));
-    if (n <= 1) {
-        strcat(dst, abbr ? " CP/tour" : " CP au prochain tour");
-    } else {
-        strcat(dst, abbr ? " CP/" : " CP dans ");
-        cat_num(dst, n);
-        strcat(dst, " mois");
-    }
-}
-
 // Délai restant d'une loi votée, dans l'unité du mode de jeu (tours = mois ou trimestres).
 static void cat_turns(char *dst, u8 turns)
 {
@@ -126,39 +110,43 @@ static void set_mode(Mode m)
     mode_dirty = TRUE;
 }
 
-// Ligne « libellé, jauge, valeur » : label x=1 (13 car.), jauge x=14 (16 tuiles), valeur à droite.
-static void stat_row(u16 y, const char *label, s32 value, u16 dec, const char *unit,
-                     s16 gval, s16 gmax, UiStyle style)
+// Ligne d'indicateur : icône x=1, libellé x=3 (13 car., atténué), jauge de x=16
+// jusqu'à la valeur, valeur alignée à droite (dernière colonne x_end - 1).
+static void stat_row(u16 y, UiIcon icon, const char *label, s32 value, u16 dec, const char *unit,
+                     s16 gval, s16 gmax, UiStyle gstyle, UiStyle vstyle, u16 x_end)
 {
-    char buf[14];
-    u16 n, ul = ui_text_len(unit);
+    char buf[UI_LINE_BUF];
 
-    ui_text_draw_n(1, y, label, 13, 13, UI_STYLE_TEXT);
-    ui_gauge_draw(14, y, 16, gval, gmax, style);
-    n = ui_format_number(buf, value, dec);
-    ui_clear_rect(30, y, 8, 1);
-    if (style == UI_STYLE_DIM) style = UI_STYLE_TEXT;   // valeur lisible
-    ui_text_draw(38 - ul - n, y, buf, style);
-    if (ul) ui_text_draw(38 - ul, y, unit, style);
+    ui_icon_draw(1, y, icon);
+    ui_text_draw_n(3, y, label, 13, 13, UI_STYLE_DIM);
+    ui_gauge_draw(16, y, x_end - 7 - 16, gval, gmax, gstyle);
+    ui_format_number(buf, value, dec);
+    strcat(buf, unit);
+    ui_clear_rect(x_end - 7, y, 7, 1);
+    ui_text_right(x_end, y, buf, vstyle);
 }
 
+// Bandeau du haut : titre (ou date du tour) à gauche, capital politique à droite.
 static void draw_header(const char *title)
 {
     char buf[UI_LINE_BUF];
     const Country *c = &g_game.country;
-    ui_window(0, 0, 40, 3);
+    u16 n;
+
     if (title) {
-        ui_text_draw(1, 1, title, UI_STYLE_HIGHLIGHT);
+        ui_banner(0, 0, 40, title, TRUE);
     } else {
         game_turn_label(c->turn, buf);
-        ui_text_draw(1, 1, buf, UI_STYLE_HIGHLIGHT);
+        ui_banner(0, 0, 40, buf, TRUE);
     }
     buf[0] = 0;
-    strcat(buf, "CP ");
     cat_num(buf, c->cp);
     strcat(buf, "/");
     cat_num(buf, CP_MAX);
-    ui_text_draw(38 - ui_text_len(buf), 1, buf, UI_STYLE_TEXT);
+    n = ui_text_len(buf);
+    ui_text_right(39, 1, " CP", UI_STYLE_DIM);
+    ui_text_right(36, 1, buf, UI_STYLE_TEXT);
+    ui_icon_draw(34 - n, 1, UI_ICON_CP);
 }
 
 // --- Tableau de bord -----------------------------------------------------------------
@@ -236,7 +224,7 @@ static void menu_build(void)
         menu_items[n++] = budget_blocking() ? "Fin du trimestre (budget d’abord)" : "Fin du trimestre";
     menu_act[n] = A_QUIT;     menu_items[n++] = "Menu principal (partie sauvegardée)";
     menu_n = n;
-    ui_list_init(&menu_list, 1, 21, 38, 6, menu_items, n);
+    ui_list_init(&menu_list, 1, 22, 38, 5, menu_items, n);
     menu_list.disabled = dis;
     if (menu_sel < n && !(dis & ((u32)1 << menu_sel))) {
         menu_list.sel = menu_sel;
@@ -246,61 +234,114 @@ static void menu_build(void)
     }
 }
 
-static void draw_menu_full(void)
+// Tableau de bord (charte V3) :
+//  0-2   bandeau : date du tour, capital politique
+//  3-20  fenêtre des indicateurs ; à droite, médaillon du Premier ministre
+//        (x 29-38, y 4-15 : emplacement de portrait 8 x 10 tuiles = 64 x 80 px)
+//  21-27 fenêtre des actions (5 lignes visibles)
+#define DASH_X_END 28        // fin des lignes d'indicateurs (colonne exclue ; 28 = vide)
+#define MED_X 29             // médaillon 10 x 12 (intérieur 8 x 10)
+#define MED_Y 4
+#define MED_W 10
+#define MED_H 12
+
+// Nom de famille (après la dernière espace) : la colonne du médaillon fait 10 cases.
+static const char *surname(const char *full)
+{
+    const char *s = full, *last = full;
+    for (; *s; s++)
+        if (*s == ' ') last = s + 1;
+    return last;
+}
+
+// Trois électorats : libellés atténués, valeurs claires.
+static void draw_electorates(u16 y)
+{
+    static const char *const lab[ELEC_COUNT] = { "Pop", "Moy", "Ais" };
+    char b[14];
+    const Country *c = &g_game.country;
+    for (u16 e = 0; e < ELEC_COUNT; e++) {
+        ui_text_draw(2 + 9 * e, y, lab[e], UI_STYLE_DIM);
+        ui_format_number(b, c->opinion[e], 1);
+        ui_text_draw(6 + 9 * e, y, b, UI_STYLE_TEXT);
+    }
+}
+
+// Colonne du médaillon : portrait du PM (ou du PM de cohabitation), nom, majorité, CP.
+static void draw_pm_column(void)
 {
     const Country *c = &g_game.country;
+    u8 cohab = sim_cohabitation(c);
+    ArtId id = cohab ? ART_COHAB(sim_cohab_camp(c)) : ART_PM(c->pm);
+    const char *name = cohab ? txt[TXT_COHAB_PM_GAUCHE_NOM + sim_cohab_camp(c)] : pm_name(c->pm);
     char buf[UI_LINE_BUF];
+    u16 w, h;
+    u8 n = sim_cp_turns_to_next(c);
+
+    ui_medallion(MED_X, MED_Y, MED_W, MED_H);
+    ui_art_size(id, &w, &h);
+    if (w <= MED_W - 2 && h <= MED_H - 2)
+        ui_art_draw(id, MED_X + 1 + (MED_W - 2 - w) / 2, MED_Y + 1 + (MED_H - 2 - h) / 2);
+    ui_text_center(MED_X, MED_Y + MED_H, MED_W, surname(name), cohab ? UI_STYLE_ALERT : UI_STYLE_HIGHLIGHT);
+    if (cohab)
+        ui_text_center(MED_X, MED_Y + MED_H + 1, MED_W, "Cohab.", UI_STYLE_ALERT);
+    else
+        ui_text_center(MED_X, MED_Y + MED_H + 1, MED_W, sim_has_majority(c) ? "Maj. abs." : "Maj. rel.",
+                       sim_has_majority(c) ? UI_STYLE_TEXT : UI_STYLE_ALERT);
+    buf[0] = 0;
+    strcat(buf, "+");
+    cat_num(buf, sim_cp_gain(c));
+    strcat(buf, " CP");
+    ui_text_center(MED_X, MED_Y + MED_H + 2, MED_W, buf, UI_STYLE_HIGHLIGHT);
+    buf[0] = 0;
+    if (n <= 1) {
+        strcat(buf, "par tour");
+    } else {
+        strcat(buf, "en ");
+        cat_num(buf, n);
+        strcat(buf, " mois");
+    }
+    ui_text_center(MED_X, MED_Y + MED_H + 3, MED_W, buf, UI_STYLE_DIM);
+}
+
+static void draw_menu_full(void)
+{
+    static const UiIcon pillar_icons[PIL_TOTAL] = {
+        UI_ICON_SOCIAL, UI_ICON_ECONOMY, UI_ICON_TECHNOLOGY,
+        UI_ICON_ECOLOGY, UI_ICON_SECURITY, UI_ICON_INTERNATIONAL
+    };
+    const Country *c = &g_game.country;
+    s16 pop = sim_popularity(c);
+    s16 sc = c->gauges[JAUGE_SCANDALE], df = c->gauges[JAUGE_DEFIANCE], tn = c->gauges[JAUGE_TENSION];
+
     art_reset();
     draw_header(NULL);
-    ui_window(0, 3, 40, 17);
-    stat_row(4, "Popularité", sim_popularity(c), 1, " %", sim_popularity(c), 1000, UI_GAUGE_GOLD);
+    ui_window(0, 3, 40, 18);
 
-    buf[0] = 0;
-    strcat(buf, "Pop. "); cat_dec(buf, c->opinion[ELEC_POPULAIRES], 1);
-    strcat(buf, "  Moy. "); cat_dec(buf, c->opinion[ELEC_MOYENNES], 1);
-    strcat(buf, "  Ais. "); cat_dec(buf, c->opinion[ELEC_AISEES], 1);
-    strcat(buf, " %");
-    ui_text_draw(1, 5, buf, UI_STYLE_DIM);
-
-    stat_row(6, "Croissance", c->growth, 2, " %", c->growth - GROWTH_MIN, GROWTH_MAX - GROWTH_MIN,
-             c->growth >= 0 ? UI_GAUGE_POSITIVE : UI_GAUGE_NEGATIVE);
-    stat_row(7, "Chômage", c->unemployment, 2, " %", c->unemployment, UNEMP_MAX, UI_GAUGE_NEUTRAL);
-    stat_row(8, "Dette", c->debt, 1, " %", c->debt, DEBT_MAX, UI_GAUGE_GOLD);
-
+    stat_row(4, UI_ICON_POPULARITY, "Popularité", pop, 1, " %", pop, 1000, UI_GAUGE_GOLD,
+             pop >= 500 ? UI_STYLE_HIGHLIGHT : UI_STYLE_ALERT, DASH_X_END);
+    draw_electorates(5);
+    ui_separator(1, 6, DASH_X_END - 1);
+    stat_row(7, UI_ICON_GROWTH, "Croissance", c->growth, 2, " %", c->growth - GROWTH_MIN,
+             GROWTH_MAX - GROWTH_MIN, c->growth >= 0 ? UI_GAUGE_POSITIVE : UI_GAUGE_NEGATIVE,
+             c->growth >= 0 ? UI_STYLE_TEXT : UI_STYLE_ALERT, DASH_X_END);
+    stat_row(8, UI_ICON_UNEMPLOYMENT, "Chômage", c->unemployment, 2, " %", c->unemployment, UNEMP_MAX,
+             UI_GAUGE_NEUTRAL, UI_STYLE_TEXT, DASH_X_END);
+    stat_row(9, UI_ICON_DEBT, "Dette", c->debt, 1, " %", c->debt, DEBT_MAX, UI_GAUGE_GOLD,
+             UI_STYLE_TEXT, DASH_X_END);
+    ui_separator(1, 10, DASH_X_END - 1);
     for (u16 i = 0; i < PIL_TOTAL; i++)
-        stat_row(9 + i, pillar_names[i], c->pillars[i], 1, "", c->pillars[i], PILLAR_MAX, UI_GAUGE_POSITIVE);
-    // 6 piliers (lignes 9 à 14), puis les trois jauges de danger sur deux lignes.
-    stat_row(15, "Tension", c->gauges[JAUGE_TENSION], 0, " %", c->gauges[JAUGE_TENSION], GAUGE_MAX, UI_GAUGE_NEGATIVE);
-    buf[0] = 0;
-    strcat(buf, "Scandale "); cat_dec(buf, c->gauges[JAUGE_SCANDALE], 0);
-    strcat(buf, " %   Défiance "); cat_dec(buf, c->gauges[JAUGE_DEFIANCE], 0);
-    strcat(buf, " %");
-    ui_text_draw_n(1, 16, buf, 38, 38,
-                   (c->gauges[JAUGE_SCANDALE] >= 50 || c->gauges[JAUGE_DEFIANCE] >= 50) ? UI_STYLE_ALERT : UI_STYLE_TEXT);
+        stat_row(11 + i, pillar_icons[i], pillar_names[i], c->pillars[i], 1, "", c->pillars[i], PILLAR_MAX,
+                 UI_GAUGE_POSITIVE, c->pillars[i] < 250 ? UI_STYLE_ALERT : UI_STYLE_TEXT, DASH_X_END);
+    stat_row(17, UI_ICON_TENSION, "Tension", tn, 0, " %", tn, GAUGE_MAX, UI_GAUGE_NEGATIVE,
+             tn >= 50 ? UI_STYLE_ALERT : UI_STYLE_TEXT, DASH_X_END);
+    stat_row(18, UI_ICON_SCANDAL, "Scandale", sc, 0, " %", sc, GAUGE_MAX, UI_GAUGE_NEGATIVE,
+             sc >= 50 ? UI_STYLE_ALERT : UI_STYLE_TEXT, DASH_X_END);
+    stat_row(19, UI_ICON_DEFIANCE, "Défiance", df, 0, " %", df, GAUGE_MAX, UI_GAUGE_NEGATIVE,
+             df >= 50 ? UI_STYLE_ALERT : UI_STYLE_TEXT, DASH_X_END);
+    draw_pm_column();
 
-    buf[0] = 0;
-    strcat(buf, "PM : ");
-    if (sim_cohabitation(c))
-        strcat(buf, txt[TXT_COHAB_PM_GAUCHE_NOM + sim_cohab_camp(c)]);
-    else
-        strcat(buf, pm_name(c->pm));
-    ui_text_draw_n(1, 17, buf, 38, 0, sim_cohabitation(c) ? UI_STYLE_ALERT : UI_STYLE_TEXT);
-    {
-        // Ligne 18 : majorité à gauche ; à droite, prochain apport de CP (forme abrégée si ça ne tient pas).
-        const char *mj = sim_has_majority(c) ? "Majorité absolue" : "Majorité relative";
-        char hint[UI_LINE_BUF];
-        hint[0] = 0;
-        if (sim_cohabitation(c)) strcat(hint, "Cohab. ");
-        cat_cp_next(hint, sim_cohabitation(c));
-        if (!sim_cohabitation(c) && ui_text_len(mj) + 2 + ui_text_len(hint) > 38) {
-            hint[0] = 0;
-            cat_cp_next(hint, 1);
-        }
-        ui_text_draw(1, 18, mj, sim_has_majority(c) ? UI_STYLE_DIM : UI_STYLE_ALERT);
-        ui_text_draw(38 - ui_text_len(hint), 18, hint, sim_cohabitation(c) ? UI_STYLE_ALERT : UI_STYLE_DIM);
-    }
-
-    ui_window(0, 20, 40, 8);
+    ui_window(0, 21, 40, 7);
     menu_build();
     ui_list_draw(&menu_list);
 }
@@ -367,7 +408,7 @@ static void update_menu(void)
             g_report_snap[1] = c->unemployment;
             g_report_snap[2] = c->debt;
             for (u16 i = 0; i < PIL_TOTAL; i++) g_report_snap[3 + i] = c->pillars[i];
-            g_report_snap[8] = c->gauges[JAUGE_TENSION];
+            g_report_snap[3 + PIL_TOTAL] = c->gauges[JAUGE_TENSION];
             game_end_turn();
             break;
         }
@@ -496,7 +537,7 @@ static void draw_laws_full(void)
     ui_window(0, 11, 40, 17);
     law_refresh_disabled();
     law_list_draw();
-    ui_text_draw(1, 26, forcing ? "A : forcer   B : retour" : "A : proposer   B : retour", UI_STYLE_DIM);
+    ui_footer(1, 26, 38, forcing ? "A : forcer   B : retour" : "A : proposer   B : retour");
     detail_dirty = TRUE;
 }
 
@@ -604,8 +645,8 @@ static void draw_result_full(void)
         cat_delay(buf, law->delay_q);
         strcat(buf, ".");
         ui_text_draw(1, 17, buf, UI_STYLE_DIM);
-        stat_row(19, "Défiance", c->gauges[JAUGE_DEFIANCE], 0, " %", c->gauges[JAUGE_DEFIANCE],
-                 GAUGE_MAX, UI_GAUGE_NEGATIVE);
+        stat_row(19, UI_ICON_DEFIANCE, "Défiance", c->gauges[JAUGE_DEFIANCE], 0, " %", c->gauges[JAUGE_DEFIANCE],
+                 GAUGE_MAX, UI_GAUGE_NEGATIVE, UI_STYLE_ALERT, 39);
     } else {
         draw_header("Dissolution");
         ui_text_wrap(1, 5, 38, 3, txt[TXT_DISSOLUTION], UI_STYLE_TEXT);
@@ -639,7 +680,7 @@ static void draw_result_full(void)
             ui_text_wrap(1, 23, 38, 3, txt[lr->cohab_started ? TXT_COHAB_DEBUT : TXT_COHAB_FIN],
                          lr->cohab_started ? UI_STYLE_ALERT : UI_STYLE_HIGHLIGHT);
     }
-    ui_text_draw(1, 26, "A : continuer", UI_STYLE_DIM);
+    ui_footer(1, 26, 38, "A : continuer");
 }
 
 static void update_result(void)
@@ -659,7 +700,7 @@ static void draw_vote_full(void)
     art_reset();
     draw_header("Vote de l’Assemblée");
     ui_window(0, 3, 40, 25);
-    // Hémicycle (20 x 9 tuiles) à droite ; PAL2 empruntée : aucun style DIM sur cet écran.
+    // Hémicycle (20 x 9 tuiles) à droite, en PAL2.
     ui_art_draw(ART_DECOR_HEMICYCLE, 19, 5);
     ui_text_draw(1, 4, law_name[last_law], UI_STYLE_HIGHLIGHT);
     ui_text_draw(1, 5, "Gr. Sièges Vote", UI_STYLE_TEXT);
@@ -700,7 +741,7 @@ static void draw_vote_full(void)
         strcat(buf, ".");
         ui_text_draw(1, 24, buf, UI_STYLE_TEXT);
     }
-    ui_text_draw(1, 26, "A : continuer", UI_STYLE_TEXT);
+    ui_footer(1, 26, 38, "A : continuer");
 }
 
 static void update_vote(void)
@@ -753,7 +794,7 @@ static void draw_assembly_full(void)
     cat_num(buf, sim_bloc_seats(c));
     strcat(buf, sim_has_majority(c) ? " (majorité)" : " (relative)");
     ui_text_draw(1, 22, buf, sim_has_majority(c) ? UI_STYLE_TEXT : UI_STYLE_ALERT);
-    ui_text_draw(1, 26, "B : retour", UI_STYLE_DIM);
+    ui_footer(1, 26, 38, "B : retour");
 }
 
 static void update_assembly(void)

@@ -3,9 +3,12 @@
 #include "audio/sfx.h"
 #include "ui/screen.h"
 #include "ui/input.h"
-#include "ui/ui.h"
+#include "ui/ui_internal.h"
+#include "ui/ui_art.h"
 
 #define NO_SCREEN 0xFF
+
+static bool fading_out;
 
 static const Screen *screens[SCREEN_COUNT];
 static u8 current = NO_SCREEN;
@@ -42,6 +45,9 @@ static void switch_screen(void)
         screens[current]->exit();
     if (ui_msgbox_is_open())
         ui_msgbox_close();
+    // Après le fondu au noir : illustrations libérées, palettes de l'interface rechargées.
+    ui_art_close();
+    ui_palettes_reset();
     ui_clear();
     current = pending;
     pending = NO_SCREEN;
@@ -62,8 +68,26 @@ void screen_run(ScreenId first)
     while (TRUE) {
         const Screen *s;
 
-        if (pending != NO_SCREEN)
+        if (pending != NO_SCREEN) {
+            // Fondu au noir non bloquant (musique et bruitages continuent), puis
+            // nouvel écran préparé affichage coupé, puis fondu d'apparition
+            // (lancé par ui_frame_end à la fin de cette image).
+            if (!fading_out && current != NO_SCREEN) {
+                ui_fade_out_start();
+                fading_out = TRUE;
+            }
+            if (fading_out && ui_fade_busy()) {
+                input_update();
+                sfx_update();
+                music_update();
+                SYS_doVBlankProcess();
+                ticks += input_frame_ticks();
+                continue;
+            }
+            fading_out = FALSE;
+            ui_transition_hide();
             switch_screen();
+        }
         input_update();
         s = screens[current];
         if (s && s->update)
@@ -73,6 +97,7 @@ void screen_run(ScreenId first)
             s->draw();
         sfx_update();
         music_update();
+        ui_frame_end();
         SYS_doVBlankProcess();
         ticks += input_frame_ticks();
     }
