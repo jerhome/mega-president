@@ -346,8 +346,31 @@ TEXT_KEYS_V2 = (
     + [("TXT_TOUR_MOIS", 1, 12)]
 )
 TEXT_KEYS += TEXT_KEYS_V2
+
+# V4 : électorats, budget détaillé, Sénat/cohabitation budgétaires, 5e thème, sauvegarde ancienne
+TEXT_KEYS_V4 = (
+    [("TXT_ELEC_%d_%s" % (i, k), 1, w) for i in range(5)
+     for k, w in (("COURT", 12), ("LONG", 24), ("ABR", 3), ("QUI", 38), ("HAUT", 38), ("BAS", 38))]
+    + [("TXT_BL_%d_NOM" % i, 1, 18) for i in range(6)]
+    + [("TXT_BL_%d_LONG" % i, 1, 38) for i in range(6)]
+    + [("TXT_BL_%d_CRAN_%d" % (i, c), 1, 22) for i in range(6) for c in range(5)]
+    + [("TXT_BL_%d_AIDE" % i, 2, 38) for i in range(6)]
+    + [("TXT_PRE_%d" % i, 1, 14) for i in range(4)]
+    + [("TXT_BUD_PERSO", 1, 20), ("TXT_BUD_PERSO_DESC", 2, 38), ("TXT_BUD_TITRE_GOUV", 1, 24),
+       ("TXT_BUD_AIDE_PRE", 2, 38),
+       ("TXT_BUDJ_ADOPTE", 3, 38), ("TXT_BUDJ_493", 3, 38), ("TXT_BUDJ_RECONDUIT", 3, 38),
+       ("TXT_BUDJ_INSINCERE", 3, 38), ("TXT_BUDJ_PRIME_RISQUE", 3, 38),
+       ("TXT_BUDJ_SENAT_AMENDE", 3, 38), ("TXT_SENAT_LECDEF_AIDE", 3, 38),
+       ("TXT_SENAT_LECDEF_CONFIRME", 2, 38), ("TXT_BUDJ_LECDEF", 3, 38),
+       ("TXT_SENAT_LECDEF_REFUSE", 2, 38),
+       ("TXT_COHAB_PLAN_GAUCHE", 3, 38), ("TXT_COHAB_PLAN_CENTRE", 3, 38),
+       ("TXT_COHAB_PLAN_DROITE", 3, 38), ("TXT_COHAB_DEFENSE", 2, 38), ("TXT_COHAB_DEFENSE_AIDE", 3, 38),
+       ("TXT_THEME_SANTE", 1, 24), ("TXT_THEME_SANTE_DESC", 2, 38),
+       ("TXT_SAVE_ANCIENNE", 3, 38)]
+)
+TEXT_KEYS += TEXT_KEYS_V4
 V2_KEYS = set(k for k, _, _ in TEXT_KEYS_V2)
-TEXT_FILES = ("textes.md", "textes_v2.md")
+TEXT_FILES = ("textes.md", "textes_v2.md", "textes_v4.md")
 warnings = []
 
 

@@ -97,4 +97,108 @@ const char *const txt[TXT_COUNT] = {
     "Novembre", // TXT_MOIS_11
     "Décembre", // TXT_MOIS_12
     "Mois", // TXT_TOUR_MOIS
+    "Populaires", // TXT_ELEC_0_COURT
+    "Classes populaires", // TXT_ELEC_0_LONG
+    "Pop", // TXT_ELEC_0_ABR
+    "Ouvriers et employés actifs.", // TXT_ELEC_0_QUI
+    "Les classes populaires respirent.", // TXT_ELEC_0_HAUT
+    "Les classes populaires fulminent.", // TXT_ELEC_0_BAS
+    "Moyennes", // TXT_ELEC_1_COURT
+    "Classes moyennes", // TXT_ELEC_1_LONG
+    "Moy", // TXT_ELEC_1_ABR
+    "Intermédiaires, artisans, paysans.", // TXT_ELEC_1_QUI
+    "Les classes moyennes sourient enfin.", // TXT_ELEC_1_HAUT
+    "Les classes moyennes serrent les dents", // TXT_ELEC_1_BAS
+    "Cadres", // TXT_ELEC_2_COURT
+    "Cadres", // TXT_ELEC_2_LONG
+    "Cad", // TXT_ELEC_2_ABR
+    "Cadres, libéraux, chefs d'entreprise.", // TXT_ELEC_2_QUI
+    "Les cadres approuvent, sans effusion.", // TXT_ELEC_2_HAUT
+    "Les cadres soupirent, l'air ailleurs.", // TXT_ELEC_2_BAS
+    "Retraités", // TXT_ELEC_3_COURT
+    "Retraités", // TXT_ELEC_3_LONG
+    "Ret", // TXT_ELEC_3_ABR
+    "Retraités, quel que soit leur métier.", // TXT_ELEC_3_QUI
+    "Les retraités sont rassurés.", // TXT_ELEC_3_HAUT
+    "Les retraités craignent pour leur sort", // TXT_ELEC_3_BAS
+    "Jeunes", // TXT_ELEC_4_COURT
+    "Jeunes", // TXT_ELEC_4_LONG
+    "Jeu", // TXT_ELEC_4_ABR
+    "18-29 ans : études, jobs, chômage.", // TXT_ELEC_4_QUI
+    "Les jeunes y croient, c'est rare.", // TXT_ELEC_4_HAUT
+    "Les jeunes haussent les épaules.", // TXT_ELEC_4_BAS
+    "Social, retraites", // TXT_BL_0_NOM
+    "Éducation, rech.", // TXT_BL_1_NOM
+    "Sécurité, défense", // TXT_BL_2_NOM
+    "Transition, rés.", // TXT_BL_3_NOM
+    "Impôts ménages", // TXT_BL_4_NOM
+    "Impôts entreprises", // TXT_BL_5_NOM
+    "Social et retraites", // TXT_BL_0_LONG
+    "Éducation et recherche", // TXT_BL_1_LONG
+    "Sécurité et défense", // TXT_BL_2_LONG
+    "Transition et réseaux", // TXT_BL_3_LONG
+    "Impôts des ménages", // TXT_BL_4_LONG
+    "Impôts des entreprises et du capital", // TXT_BL_5_LONG
+    "Coupe franche", // TXT_BL_0_CRAN_0
+    "Gel des pensions", // TXT_BL_0_CRAN_1
+    "Reconduit", // TXT_BL_0_CRAN_2
+    "Pensions revalorisées", // TXT_BL_0_CRAN_3
+    "Hausse forte", // TXT_BL_0_CRAN_4
+    "Coupe franche", // TXT_BL_1_CRAN_0
+    "Postes gelés", // TXT_BL_1_CRAN_1
+    "Reconduit", // TXT_BL_1_CRAN_2
+    "Moyens en hausse", // TXT_BL_1_CRAN_3
+    "Hausse forte", // TXT_BL_1_CRAN_4
+    "Coupe franche", // TXT_BL_2_CRAN_0
+    "Effectifs réduits", // TXT_BL_2_CRAN_1
+    "Reconduit", // TXT_BL_2_CRAN_2
+    "Effectifs en hausse", // TXT_BL_2_CRAN_3
+    "Hausse forte", // TXT_BL_2_CRAN_4
+    "Coupe franche", // TXT_BL_3_CRAN_0
+    "Chantiers étalés", // TXT_BL_3_CRAN_1
+    "Reconduit", // TXT_BL_3_CRAN_2
+    "Chantiers en plus", // TXT_BL_3_CRAN_3
+    "Hausse forte", // TXT_BL_3_CRAN_4
+    "Coupe franche", // TXT_BL_4_CRAN_0
+    "Baisse", // TXT_BL_4_CRAN_1
+    "Inchangés", // TXT_BL_4_CRAN_2
+    "Hausse", // TXT_BL_4_CRAN_3
+    "Hausse forte", // TXT_BL_4_CRAN_4
+    "Coupe franche", // TXT_BL_5_CRAN_0
+    "Baisse", // TXT_BL_5_CRAN_1
+    "Inchangés", // TXT_BL_5_CRAN_2
+    "Hausse", // TXT_BL_5_CRAN_3
+    "Hausse forte", // TXT_BL_5_CRAN_4
+    "Santé, pensions, minima sociaux. Plaît\naux retraités et aux populaires.", // TXT_BL_0_AIDE
+    "École, université, recherche. Les\njeunes adorent, la croissance suivra.", // TXT_BL_1_AIDE
+    "Police, justice, armées. Rassure les\nretraités. Réservé à l'Élysée.", // TXT_BL_2_AIDE
+    "Énergie, trains, réseaux. Soutient la\ncroissance et l'écologie, coûte cher.", // TXT_BL_3_AIDE
+    "Revenu, TVA, CSG. Toute hausse fâche\ntout le monde, les cadres en tête.", // TXT_BL_4_AIDE
+    "Sociétés, capital. Une hausse rapporte\nmais pèse sur la croissance.", // TXT_BL_5_AIDE
+    "Rigueur", // TXT_PRE_0
+    "Équilibre", // TXT_PRE_1
+    "Relance", // TXT_PRE_2
+    "Personnalisé", // TXT_PRE_3
+    "Budget personnalisé", // TXT_BUD_PERSO
+    "Votre plan, ligne par ligne. Bercy\nrelit, l'opposition surligne.", // TXT_BUD_PERSO_DESC
+    "Budget du gouvernement", // TXT_BUD_TITRE_GOUV
+    "Gauche/droite : préréglage. Haut/bas :\nune ligne. Modifier une ligne = perso.", // TXT_BUD_AIDE_PRE
+    "Budget adopté après des nuits\nd'amendements. Chaque ministère garde\nce qu'il peut, et crie ce qu'il perd.", // TXT_BUDJ_ADOPTE
+    "Budget passé par le 49.3, sans vote.\nIl s'applique tel quel, mais la\ndéfiance de l'Assemblée grimpe.", // TXT_BUDJ_493
+    "Pas de budget voté : on reconduit en\nservices votés. Les dépenses reculent\nd'un cran, les impôts ne bougent pas.", // TXT_BUDJ_RECONDUIT
+    "Budget jugé insincère : le déficit\ndépasse les bornes. Les oppositions\ncrient au trompe-l'œil comptable.", // TXT_BUDJ_INSINCERE
+    "Prime de risque : la dette inquiète\nles marchés. Les taux montent, la\ncroissance en paie le prix.", // TXT_BUDJ_PRIME_RISQUE
+    "Le Sénat amende le budget : une ligne\nrecule d'un cran vers ses vues. La\nnavette est un sport de combat.", // TXT_BUDJ_SENAT_AMENDE
+    "Lecture définitive : l'Assemblée a le\ndernier mot et rétablit votre plan.\nCoût : 1 point de capital politique.", // TXT_SENAT_LECDEF_AIDE
+    "Demander la lecture définitive ?\nCoût : 1 CP.", // TXT_SENAT_LECDEF_CONFIRME
+    "Lecture définitive : l'Assemblée a le\ndernier mot. Votre plan est rétabli,\nle Sénat range ses crayons.", // TXT_BUDJ_LECDEF
+    "Pas assez de CP pour la lecture\ndéfinitive : le Sénat l'emporte.", // TXT_SENAT_LECDEF_REFUSE
+    "Le Premier ministre impose un plan\nsocial et de relance : dépenses en\nhausse, impôts des entreprises aussi.", // TXT_COHAB_PLAN_GAUCHE
+    "Le Premier ministre impose un budget\nde reconduction : rien ne bouge, tout\nle monde râle, c'est le centre.", // TXT_COHAB_PLAN_CENTRE
+    "Le Premier ministre impose un budget\nd'économies : moins de dépenses,\nmoins d'impôts des entreprises.", // TXT_COHAB_PLAN_DROITE
+    "Défense : seule ligne qui vous reste,\nà un cran près du plan du PM.", // TXT_COHAB_DEFENSE
+    "Domaine réservé : sécurité et défense.\nUn cran de plus ou de moins, sans CP.\nLes autres lignes sont grisées.", // TXT_COHAB_DEFENSE_AIDE
+    "Santé et retraites", // TXT_THEME_SANTE
+    "Hôpital, pensions, EHPAD. Cible les\nretraités, un peu les autres.", // TXT_THEME_SANTE_DESC
+    "Partie d'une ancienne version : elle\ndort au grenier, impossible de la\nreprendre. Une nouvelle partie ?", // TXT_SAVE_ANCIENNE
 };
