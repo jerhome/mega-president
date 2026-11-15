@@ -65,30 +65,198 @@ static const MusNote t_perc[] = {
     END
 };
 
-// ----------------------------------------------------------------- MUS_GAME
-// Ré mineur, lent (unité = croche, 480 ms), 8 mesures = ~31 s. Volume bas.
-static const MusNote g_mel[] = {
-    NT(kF,4,4), NT(kA,4,2), NT(kG,4,2),
-    NT(kF,4,4), NT(kD,4,4),
-    NT(kG,4,3), NT(kBb,4,1), NT(kA,4,4),
-    NT(kE,4,2), NT(kG,4,2), NT(kA,4,4),
-    NT(kD,5,4), NT(kC,5,2), NT(kA,4,2),
-    NT(kBb,4,4), NT(kA,4,2), NT(kF,4,2),
-    NT(kG,4,2), NT(kE,4,2), NT(kCs,5,2), NT(kE,5,2),
-    NT(kD,5,4), NT(kA,4,2), R(2),
-    END
+// ------------------------------------------------------- MUS_YEAR1 à MUS_YEAR5
+// Un thème par année du mandat (tableaux générés puis figés, 2 octets par note).
+// 1 : sol majeur, allegretto, fanfare en arpège montant (état de grâce) ; contretemps de bruit.
+// 2 : fa majeur, basse en notes répétées et caisse « horloge » (mise au travail).
+// 3 : mi mineur, seconde mineure et syncopes (mi-mandat tendu).
+// 4 : la mineur, lent, ligne descendante, simple battement (doute, usure).
+// 5 : ré majeur, marche qui monte d'un ton toutes les 8 mesures, roulements (vers l'élection).
+static const MusNote y1_mel[] = {
+    NT(kG,4,2), NT(kB,4,2), NT(kD,5,4), NT(kB,4,2), NT(kG,4,2), NT(kD,5,4), NT(kA,4,2),
+    NT(kC,5,1), NT(kD,5,1), NT(kFs,5,4), NT(kE,5,2), NT(kD,5,2), NT(kA,4,4), NT(kG,4,2),
+    NT(kB,4,2), NT(kE,5,4), NT(kE,5,3), NT(kD,5,1), NT(kC,5,4), NT(kB,4,2), NT(kD,5,2),
+    NT(kA,4,2), NT(kFs,4,2), NT(kD,5,6), R(2), NT(kG,5,2), NT(kD,5,2), NT(kB,4,2), NT(kG,4,2),
+    NT(kE,5,2), NT(kG,5,2), NT(kB,4,2), NT(kG,4,2), NT(kC,5,2), NT(kE,5,2), NT(kG,5,4),
+    NT(kFs,5,2), NT(kA,5,2), NT(kD,5,4), NT(kG,5,4), NT(kB,4,2), NT(kD,5,2), NT(kE,5,2),
+    NT(kC,5,2), NT(kG,4,2), NT(kC,5,2), NT(kD,5,2), NT(kFs,5,2), NT(kA,5,2), NT(kFs,5,2),
+    NT(kG,5,6), R(2), END
 };
-static const MusNote g_bass[] = {
-    NT(kD,3,4), NT(kA,3,4),
-    NT(kBb,2,4), NT(kF,3,4),
-    NT(kG,3,4), NT(kD,4,4),
-    NT(kA,2,4), NT(kE,3,4),
-    NT(kD,3,4), NT(kA,3,4),
-    NT(kBb,2,4), NT(kF,3,4),
-    NT(kA,2,4), NT(kE,3,4),
-    NT(kD,3,6), R(2),
-    END
+static const MusNote y1_bass[] = {
+    NT(kG,3,2), NT(kD,4,2), NT(kG,3,2), NT(kD,4,2), NT(kG,3,2), NT(kD,4,2), NT(kG,3,2),
+    NT(kD,4,2), NT(kD,3,2), NT(kA,3,2), NT(kD,3,2), NT(kA,3,2), NT(kD,3,2), NT(kA,3,2),
+    NT(kD,3,2), NT(kA,3,2), NT(kE,3,2), NT(kB,3,2), NT(kE,3,2), NT(kB,3,2), NT(kC,3,2),
+    NT(kG,3,2), NT(kC,3,2), NT(kG,3,2), NT(kD,3,2), NT(kA,3,2), NT(kD,3,2), NT(kA,3,2),
+    NT(kD,3,2), NT(kA,3,2), NT(kD,3,2), NT(kA,3,2), NT(kG,3,2), NT(kD,4,2), NT(kG,3,2),
+    NT(kD,4,2), NT(kE,3,2), NT(kB,3,2), NT(kE,3,2), NT(kB,3,2), NT(kC,3,2), NT(kG,3,2),
+    NT(kC,3,2), NT(kG,3,2), NT(kD,3,2), NT(kA,3,2), NT(kD,3,2), NT(kA,3,2), NT(kG,3,2),
+    NT(kD,4,2), NT(kG,3,2), NT(kD,4,2), NT(kC,3,2), NT(kG,3,2), NT(kC,3,2), NT(kG,3,2),
+    NT(kD,3,2), NT(kA,3,2), NT(kD,3,2), NT(kA,3,2), NT(kG,3,2), NT(kD,4,2), NT(kG,3,2),
+    NT(kD,4,2), END
 };
+static const MusNote y1_perc[] = {
+    R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1),
+    HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1),
+    R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1),
+    HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1),
+    R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1),
+    HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1),
+    R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1),
+    HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1),
+    R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1),
+    HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), END
+};
+static const MusNote y2_mel[] = {
+    NT(kA,4,1), NT(kA,4,1), NT(kA,4,2), NT(kC,5,2), NT(kA,4,2), NT(kA,4,1), NT(kA,4,1),
+    NT(kA,4,2), NT(kG,4,2), NT(kF,4,2), NT(kBb,4,1), NT(kBb,4,1), NT(kBb,4,2), NT(kD,5,2),
+    NT(kBb,4,2), NT(kBb,4,1), NT(kBb,4,1), NT(kBb,4,2), NT(kA,4,2), NT(kF,4,2), NT(kG,4,1),
+    NT(kG,4,1), NT(kG,4,2), NT(kBb,4,2), NT(kD,5,2), NT(kC,5,1), NT(kC,5,1), NT(kC,5,2),
+    NT(kE,5,2), NT(kG,4,2), NT(kA,4,2), NT(kC,5,2), NT(kF,5,4), NT(kE,5,2), NT(kD,5,2),
+    NT(kC,5,2), NT(kA,4,2), NT(kD,5,1), NT(kD,5,1), NT(kD,5,2), NT(kF,5,2), NT(kD,5,2),
+    NT(kD,5,1), NT(kD,5,1), NT(kD,5,2), NT(kBb,4,2), NT(kG,4,2), NT(kE,5,1), NT(kE,5,1),
+    NT(kE,5,2), NT(kG,5,2), NT(kE,5,2), NT(kC,5,2), NT(kE,5,2), NT(kG,5,2), NT(kE,5,2),
+    NT(kF,5,2), NT(kA,5,2), NT(kC,6,4), NT(kD,5,2), NT(kF,5,2), NT(kBb,5,4), NT(kG,5,2),
+    NT(kE,5,2), NT(kD,5,2), NT(kC,5,2), NT(kF,5,6), R(2), END
+};
+static const MusNote y2_bass[] = {
+    NT(kF,3,1), NT(kF,3,1), NT(kF,3,1), NT(kF,3,1), NT(kF,3,1), NT(kF,3,1), NT(kC,4,1),
+    NT(kF,3,1), NT(kF,3,1), NT(kF,3,1), NT(kF,3,1), NT(kF,3,1), NT(kF,3,1), NT(kF,3,1),
+    NT(kC,4,1), NT(kF,3,1), NT(kBb,2,1), NT(kBb,2,1), NT(kBb,2,1), NT(kBb,2,1), NT(kBb,2,1),
+    NT(kBb,2,1), NT(kF,3,1), NT(kBb,2,1), NT(kBb,2,1), NT(kBb,2,1), NT(kBb,2,1), NT(kBb,2,1),
+    NT(kBb,2,1), NT(kBb,2,1), NT(kF,3,1), NT(kBb,2,1), NT(kG,3,1), NT(kG,3,1), NT(kG,3,1),
+    NT(kG,3,1), NT(kG,3,1), NT(kG,3,1), NT(kD,4,1), NT(kG,3,1), NT(kC,3,1), NT(kC,3,1),
+    NT(kC,3,1), NT(kC,3,1), NT(kC,3,1), NT(kC,3,1), NT(kG,3,1), NT(kC,3,1), NT(kF,3,1),
+    NT(kF,3,1), NT(kF,3,1), NT(kF,3,1), NT(kF,3,1), NT(kF,3,1), NT(kC,4,1), NT(kF,3,1),
+    NT(kF,3,1), NT(kF,3,1), NT(kF,3,1), NT(kF,3,1), NT(kF,3,1), NT(kF,3,1), NT(kC,4,1),
+    NT(kF,3,1), NT(kD,3,1), NT(kD,3,1), NT(kD,3,1), NT(kD,3,1), NT(kD,3,1), NT(kD,3,1),
+    NT(kA,3,1), NT(kD,3,1), NT(kG,3,1), NT(kG,3,1), NT(kG,3,1), NT(kG,3,1), NT(kG,3,1),
+    NT(kG,3,1), NT(kD,4,1), NT(kG,3,1), NT(kC,3,1), NT(kC,3,1), NT(kC,3,1), NT(kC,3,1),
+    NT(kC,3,1), NT(kC,3,1), NT(kG,3,1), NT(kC,3,1), NT(kC,3,1), NT(kC,3,1), NT(kC,3,1),
+    NT(kC,3,1), NT(kC,3,1), NT(kC,3,1), NT(kG,3,1), NT(kC,3,1), NT(kF,3,1), NT(kF,3,1),
+    NT(kF,3,1), NT(kF,3,1), NT(kF,3,1), NT(kF,3,1), NT(kC,4,1), NT(kF,3,1), NT(kBb,2,1),
+    NT(kBb,2,1), NT(kBb,2,1), NT(kBb,2,1), NT(kBb,2,1), NT(kBb,2,1), NT(kF,3,1), NT(kBb,2,1),
+    NT(kC,3,1), NT(kC,3,1), NT(kC,3,1), NT(kC,3,1), NT(kC,3,1), NT(kC,3,1), NT(kG,3,1),
+    NT(kC,3,1), NT(kF,3,1), NT(kF,3,1), NT(kF,3,1), NT(kF,3,1), NT(kF,3,1), NT(kF,3,1),
+    NT(kC,4,1), NT(kF,3,1), END
+};
+static const MusNote y2_perc[] = {
+    HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1),
+    R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1),
+    HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1),
+    R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1),
+    HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1),
+    R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1),
+    HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1),
+    R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1),
+    HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1),
+    R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), END
+};
+static const MusNote y3_mel[] = {
+    NT(kE,5,3), NT(kF,5,1), NT(kE,5,2), NT(kB,4,2), NT(kE,5,3), NT(kF,5,1), NT(kE,5,2),
+    NT(kBb,4,2), NT(kF,5,3), NT(kG,5,1), NT(kF,5,2), NT(kC,5,2), NT(kE,5,2), NT(kD,5,2),
+    NT(kB,4,4), NT(kA,4,3), NT(kB,4,1), NT(kC,5,2), NT(kE,5,2), NT(kC,5,3), NT(kB,4,1),
+    NT(kA,4,2), NT(kE,5,2), NT(kDs,5,3), NT(kE,5,1), NT(kFs,5,2), NT(kDs,5,2), NT(kB,4,4), R(4),
+    NT(kE,5,2), NT(kG,5,2), NT(kB,5,4), NT(kA,5,2), NT(kG,5,2), NT(kE,5,4), NT(kG,5,3),
+    NT(kE,5,1), NT(kC,5,2), NT(kE,5,2), NT(kDs,5,2), NT(kFs,5,2), NT(kB,5,4), NT(kA,5,3),
+    NT(kG,5,1), NT(kF,5,2), NT(kE,5,2), NT(kF,5,3), NT(kE,5,1), NT(kC,5,2), NT(kA,4,2),
+    NT(kDs,5,2), NT(kFs,5,2), NT(kA,5,2), NT(kFs,5,2), NT(kB,5,2), R(2), NT(kB,4,1), NT(kB,4,1),
+    NT(kB,4,2), END
+};
+static const MusNote y3_bass[] = {
+    NT(kE,3,3), R(1), NT(kE,3,1), R(1), NT(kE,3,2), NT(kE,3,3), R(1), NT(kE,3,1), R(1),
+    NT(kE,3,2), NT(kF,3,3), R(1), NT(kF,3,1), R(1), NT(kF,3,2), NT(kE,3,3), R(1), NT(kE,3,1),
+    R(1), NT(kE,3,2), NT(kA,3,3), R(1), NT(kA,3,1), R(1), NT(kA,3,2), NT(kA,3,3), R(1),
+    NT(kA,3,1), R(1), NT(kA,3,2), NT(kB,2,3), R(1), NT(kB,2,1), R(1), NT(kB,2,2), NT(kB,2,3),
+    R(1), NT(kB,2,1), R(1), NT(kB,2,2), NT(kE,3,3), R(1), NT(kE,3,1), R(1), NT(kE,3,2),
+    NT(kE,3,3), R(1), NT(kE,3,1), R(1), NT(kE,3,2), NT(kC,3,3), R(1), NT(kC,3,1), R(1),
+    NT(kC,3,2), NT(kB,2,3), R(1), NT(kB,2,1), R(1), NT(kB,2,2), NT(kA,3,3), R(1), NT(kA,3,1),
+    R(1), NT(kA,3,2), NT(kF,3,3), R(1), NT(kF,3,1), R(1), NT(kF,3,2), NT(kB,2,3), R(1),
+    NT(kB,2,1), R(1), NT(kB,2,2), NT(kB,2,3), R(1), NT(kB,2,1), R(1), NT(kB,2,2), END
+};
+static const MusNote y3_perc[] = {
+    R(1), HIT(1), R(2), HIT(1), R(1), HIT(1), R(1), R(1), HIT(1), R(2), HIT(1), R(1), HIT(1),
+    R(1), R(1), HIT(1), R(2), HIT(1), R(1), HIT(1), R(1), R(1), HIT(1), R(2), HIT(1), R(1),
+    HIT(1), R(1), R(1), HIT(1), R(2), HIT(1), R(1), HIT(1), R(1), R(1), HIT(1), R(2), HIT(1),
+    R(1), HIT(1), R(1), R(1), HIT(1), R(2), HIT(1), R(1), HIT(1), R(1), R(1), HIT(1), R(2),
+    HIT(1), R(1), HIT(1), R(1), R(1), HIT(1), R(2), HIT(1), R(1), HIT(1), R(1), R(1), HIT(1),
+    R(2), HIT(1), R(1), HIT(1), R(1), R(1), HIT(1), R(2), HIT(1), R(1), HIT(1), R(1), R(1),
+    HIT(1), R(2), HIT(1), R(1), HIT(1), R(1), R(1), HIT(1), R(2), HIT(1), R(1), HIT(1), R(1),
+    R(1), HIT(1), R(2), HIT(1), R(1), HIT(1), R(1), R(1), HIT(1), R(2), HIT(1), R(1), HIT(1),
+    R(1), R(1), HIT(1), R(2), HIT(1), R(1), HIT(1), R(1), END
+};
+static const MusNote y4_mel[] = {
+    NT(kE,5,4), NT(kD,5,2), NT(kC,5,2), NT(kC,5,4), NT(kA,4,2), NT(kF,4,2), NT(kD,5,4),
+    NT(kC,5,2), NT(kA,4,2), NT(kB,4,3), NT(kGs,4,1), NT(kE,4,4), NT(kA,4,2), NT(kC,5,2),
+    NT(kE,5,4), NT(kF,5,4), NT(kE,5,2), NT(kC,5,2), NT(kD,5,4), NT(kB,4,2), NT(kGs,4,2),
+    NT(kA,4,6), R(2), END
+};
+static const MusNote y4_bass[] = {
+    NT(kA,2,4), NT(kE,3,4), NT(kF,3,4), NT(kC,4,4), NT(kD,3,4), NT(kA,3,4), NT(kE,3,4),
+    NT(kB,3,4), NT(kA,2,4), NT(kE,3,4), NT(kF,3,4), NT(kC,4,4), NT(kD,3,4), NT(kA,3,4),
+    NT(kA,2,4), NT(kE,3,4), END
+};
+static const MusNote y4_perc[] = {
+    HIT(1), R(1), HIT(1), R(5), HIT(1), R(1), HIT(1), R(5), HIT(1), R(1), HIT(1), R(5), HIT(1),
+    R(1), HIT(1), R(5), HIT(1), R(1), HIT(1), R(5), HIT(1), R(1), HIT(1), R(5), HIT(1), R(1),
+    HIT(1), R(5), HIT(1), R(1), HIT(1), R(5), END
+};
+static const MusNote y5_mel[] = {
+    NT(kD,5,2), NT(kD,5,1), NT(kD,5,1), NT(kFs,5,2), NT(kA,5,2), NT(kA,5,2), NT(kG,5,1),
+    NT(kFs,5,1), NT(kE,5,4), NT(kFs,5,2), NT(kFs,5,1), NT(kFs,5,1), NT(kD,5,2), NT(kB,4,2),
+    NT(kB,4,2), NT(kD,5,2), NT(kG,5,4), NT(kFs,5,2), NT(kA,5,2), NT(kD,6,4), NT(kB,5,2),
+    NT(kG,5,2), NT(kD,5,2), NT(kB,4,2), NT(kE,5,2), NT(kA,5,2), NT(kCs,6,2), NT(kA,5,2),
+    NT(kA,5,6), R(2), NT(kE,5,2), NT(kE,5,1), NT(kE,5,1), NT(kGs,5,2), NT(kB,5,2), NT(kB,5,2),
+    NT(kA,5,1), NT(kGs,5,1), NT(kFs,5,4), NT(kGs,5,2), NT(kGs,5,1), NT(kGs,5,1), NT(kE,5,2),
+    NT(kCs,5,2), NT(kCs,5,2), NT(kE,5,2), NT(kA,5,4), NT(kGs,5,2), NT(kB,5,2), NT(kE,6,4),
+    NT(kCs,6,2), NT(kA,5,2), NT(kE,5,2), NT(kCs,5,2), NT(kFs,5,2), NT(kB,5,2), NT(kDs,6,2),
+    NT(kB,5,2), NT(kB,5,6), R(2), NT(kFs,5,2), NT(kFs,5,1), NT(kFs,5,1), NT(kBb,5,2), NT(kCs,6,2),
+    NT(kCs,6,2), NT(kB,5,1), NT(kBb,5,1), NT(kGs,5,4), NT(kBb,5,2), NT(kBb,5,1), NT(kBb,5,1),
+    NT(kFs,5,2), NT(kDs,5,2), NT(kDs,5,2), NT(kFs,5,2), NT(kB,5,4), NT(kBb,5,2), NT(kCs,6,2),
+    NT(kFs,6,4), NT(kDs,6,2), NT(kB,5,2), NT(kFs,5,2), NT(kDs,5,2), NT(kGs,5,2), NT(kCs,6,2),
+    NT(kF,6,2), NT(kCs,6,2), NT(kCs,6,6), R(2), END
+};
+static const MusNote y5_bass[] = {
+    NT(kD,3,2), NT(kD,3,1), NT(kA,3,1), NT(kD,3,2), NT(kD,3,1), NT(kA,3,1), NT(kA,2,2),
+    NT(kA,2,1), NT(kE,3,1), NT(kA,2,2), NT(kA,2,1), NT(kE,3,1), NT(kB,2,2), NT(kB,2,1),
+    NT(kFs,3,1), NT(kB,2,2), NT(kB,2,1), NT(kFs,3,1), NT(kG,2,2), NT(kG,2,1), NT(kD,3,1),
+    NT(kG,2,2), NT(kG,2,1), NT(kD,3,1), NT(kD,3,2), NT(kD,3,1), NT(kA,3,1), NT(kD,3,2),
+    NT(kD,3,1), NT(kA,3,1), NT(kG,2,2), NT(kG,2,1), NT(kD,3,1), NT(kG,2,2), NT(kG,2,1),
+    NT(kD,3,1), NT(kA,2,2), NT(kA,2,1), NT(kE,3,1), NT(kA,2,2), NT(kA,2,1), NT(kE,3,1),
+    NT(kA,2,2), NT(kA,2,1), NT(kE,3,1), NT(kA,2,2), NT(kA,2,1), NT(kE,3,1), NT(kE,3,2),
+    NT(kE,3,1), NT(kB,3,1), NT(kE,3,2), NT(kE,3,1), NT(kB,3,1), NT(kB,2,2), NT(kB,2,1),
+    NT(kFs,3,1), NT(kB,2,2), NT(kB,2,1), NT(kFs,3,1), NT(kCs,3,2), NT(kCs,3,1), NT(kGs,3,1),
+    NT(kCs,3,2), NT(kCs,3,1), NT(kGs,3,1), NT(kA,2,2), NT(kA,2,1), NT(kE,3,1), NT(kA,2,2),
+    NT(kA,2,1), NT(kE,3,1), NT(kE,3,2), NT(kE,3,1), NT(kB,3,1), NT(kE,3,2), NT(kE,3,1),
+    NT(kB,3,1), NT(kA,2,2), NT(kA,2,1), NT(kE,3,1), NT(kA,2,2), NT(kA,2,1), NT(kE,3,1),
+    NT(kB,2,2), NT(kB,2,1), NT(kFs,3,1), NT(kB,2,2), NT(kB,2,1), NT(kFs,3,1), NT(kB,2,2),
+    NT(kB,2,1), NT(kFs,3,1), NT(kB,2,2), NT(kB,2,1), NT(kFs,3,1), NT(kFs,3,2), NT(kFs,3,1),
+    NT(kCs,4,1), NT(kFs,3,2), NT(kFs,3,1), NT(kCs,4,1), NT(kCs,3,2), NT(kCs,3,1), NT(kGs,3,1),
+    NT(kCs,3,2), NT(kCs,3,1), NT(kGs,3,1), NT(kDs,3,2), NT(kDs,3,1), NT(kBb,3,1), NT(kDs,3,2),
+    NT(kDs,3,1), NT(kBb,3,1), NT(kB,2,2), NT(kB,2,1), NT(kFs,3,1), NT(kB,2,2), NT(kB,2,1),
+    NT(kFs,3,1), NT(kFs,3,2), NT(kFs,3,1), NT(kCs,4,1), NT(kFs,3,2), NT(kFs,3,1), NT(kCs,4,1),
+    NT(kB,2,2), NT(kB,2,1), NT(kFs,3,1), NT(kB,2,2), NT(kB,2,1), NT(kFs,3,1), NT(kCs,3,2),
+    NT(kCs,3,1), NT(kGs,3,1), NT(kCs,3,2), NT(kCs,3,1), NT(kGs,3,1), NT(kCs,3,2), NT(kCs,3,1),
+    NT(kGs,3,1), NT(kCs,3,2), NT(kCs,3,1), NT(kGs,3,1), END
+};
+static const MusNote y5_perc[] = {
+    HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), HIT(1), HIT(1), R(1), HIT(1), R(1), HIT(1),
+    R(1), HIT(1), HIT(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), HIT(1), HIT(1), R(1),
+    HIT(1), R(1), HIT(1), R(1), HIT(1), HIT(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1),
+    HIT(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), HIT(1), HIT(1), R(1), HIT(1), R(1),
+    HIT(1), R(1), HIT(1), HIT(1), HIT(1), HIT(1), HIT(1), HIT(1), HIT(1), HIT(1), HIT(1), HIT(1),
+    HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), HIT(1), HIT(1), R(1), HIT(1), R(1), HIT(1),
+    R(1), HIT(1), HIT(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), HIT(1), HIT(1), R(1),
+    HIT(1), R(1), HIT(1), R(1), HIT(1), HIT(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1),
+    HIT(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), HIT(1), HIT(1), R(1), HIT(1), R(1),
+    HIT(1), R(1), HIT(1), HIT(1), HIT(1), HIT(1), HIT(1), HIT(1), HIT(1), HIT(1), HIT(1), HIT(1),
+    HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), HIT(1), HIT(1), R(1), HIT(1), R(1), HIT(1),
+    R(1), HIT(1), HIT(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), HIT(1), HIT(1), R(1),
+    HIT(1), R(1), HIT(1), R(1), HIT(1), HIT(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1),
+    HIT(1), HIT(1), R(1), HIT(1), R(1), HIT(1), R(1), HIT(1), HIT(1), HIT(1), R(1), HIT(1), R(1),
+    HIT(1), R(1), HIT(1), HIT(1), HIT(1), HIT(1), HIT(1), HIT(1), HIT(1), HIT(1), HIT(1), HIT(1), END
+};
+
+
 
 // ------------------------------------------------------------- MUS_ELECTION
 // Mesures 1-4 : pédale de mi, seconde mineure ; 5-8 : montée chromatique et
@@ -134,7 +302,11 @@ static const MusNote e_perc[] = {
 
 static const MusSong s_songs[MUS_COUNT] = {
     { 250, { { t_mel, 6, 0 }, { t_bass, 8, 0 }, { t_perc, 12, 4 } } },
-    { 480, { { g_mel, 9, 0 }, { g_bass, 11, 0 }, { NULL, 15, 0 } } },
+    { 200, { { y1_mel, 8, 0 }, { y1_bass, 10, 0 }, { y1_perc, 13, 3 } } },
+    { 230, { { y2_mel, 8, 0 }, { y2_bass, 10, 12 }, { y2_perc, 13, 2 } } },
+    { 210, { { y3_mel, 8, 0 }, { y3_bass, 10, 14 }, { y3_perc, 12, 3 } } },
+    { 450, { { y4_mel, 9, 0 }, { y4_bass, 11, 0 }, { y4_perc, 13, 5 } } },
+    { 160, { { y5_mel, 7, 0 }, { y5_bass, 9, 10 }, { y5_perc, 11, 3 } } },
     { 200, { { e_mel, 6, 0 }, { e_bass, 8, 12 }, { e_perc, 12, 4 } } },
 };
 
@@ -231,6 +403,12 @@ void music_update(void)
             start_note(t);
         }
     }
+}
+
+void music_play_year(u8 year)
+{
+    // Mandat de 5 ans : le 2nd mandat reprend les mêmes 5 thèmes. Sans effet si le thème joue déjà.
+    music_play((MusicId)(MUS_YEAR1 + year % 5));
 }
 
 void music_set_enabled(bool on)
