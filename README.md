@@ -24,6 +24,17 @@ make test   # tests du cœur de simulation sur PC
 make check  # tests + ROM + budgets mémoire
 ```
 
+## Pourquoi « Mega » Président
+
+Le nom est un double clin d'œil :
+
+- **la console** : *Mega* comme Megadrive. La série est prévue sur d'autres plateformes,
+  avec un nom qui grandit à chaque fois : **Super Président** sur Nintendo (Super Nintendo),
+  puis **Giga Président** sur PC et Mac ;
+- **le régime** : c'est un pied de nez au pouvoir démesuré que la Ve République donne à son
+  président. Plus la machine est grosse, plus le président l'est aussi… et plus les
+  contre-pouvoirs rapetissent.
+
 ## Univers
 
 Tous les partis, personnalités et événements du jeu sont **fictifs**.

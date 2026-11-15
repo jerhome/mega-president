@@ -113,10 +113,12 @@ static void draw_entry(void)
     u8 i;
     u16 x;
 
-    ui_text_center(0, 1, UI_COLS, "NOUVEAU RECORD !", UI_STYLE_HIGHLIGHT);
-    ui_text_center(0, 3, UI_COLS, tab_names[tab], UI_STYLE_DIM);
-    x = 14 + ui_text_draw(14, 6, "Score : ", UI_STYLE_TEXT);
+    ui_window_title(0, 0, 40, 28, "Nouveau record !", FALSE);
+    ui_text_center(0, 4, UI_COLS, tab_names[tab], UI_STYLE_DIM);
+    x = 14 + ui_text_draw(14, 6, "Score : ", UI_STYLE_DIM);
+    ui_icon_draw(12, 6, UI_ICON_CP);
     ui_number_draw(x, 6, off_score[tab], 0, UI_STYLE_HIGHLIGHT);
+    ui_separator(8, 8, 24);
     ui_text_center(0, 10, UI_COLS, "Vos initiales", UI_STYLE_TEXT);
     for (i = 0; i < 3; i++) {
         buf[0] = ini[i];
@@ -126,9 +128,8 @@ static void draw_entry(void)
             ui_icon_draw(17 + i * 2, 14, UI_ICON_ARROW_DOWN);
         }
     }
-    ui_text_center(0, 21, UI_COLS, "Haut/Bas : lettre", UI_STYLE_DIM);
-    ui_text_center(0, 22, UI_COLS, "Gauche/Droite : position", UI_STYLE_DIM);
-    ui_text_center(0, 24, UI_COLS, "A : valider", UI_STYLE_DIM);
+    ui_text_center(0, 22, UI_COLS, "Haut/Bas : lettre   Gauche/Droite : position", UI_STYLE_DIM);
+    ui_footer(1, 26, 38, "A : valider");
 }
 
 static void draw_view(void)
@@ -139,15 +140,15 @@ static void draw_view(void)
     u8 i;
     u16 x;
 
-    ui_text_center(0, 1, UI_COLS, "MEILLEURS SCORES", UI_STYLE_HIGHLIGHT);
-    ui_text_center(0, 3, UI_COLS, tab_names[tab], UI_STYLE_TEXT);
-    ui_text_draw(1, 3, "<", UI_STYLE_DIM);
-    ui_text_draw(38, 3, ">", UI_STYLE_DIM);
-    ui_text_draw(4, 4, "Rang  Nom   Score  Orient.   Année", UI_STYLE_DIM);
+    ui_window_title(0, 0, 40, 28, "Meilleurs scores", FALSE);
+    ui_text_center(0, 4, UI_COLS, tab_names[tab], UI_STYLE_HIGHLIGHT);
+    ui_text_draw(2, 4, "←", UI_STYLE_DIM);
+    ui_text_draw(37, 4, "→", UI_STYLE_DIM);
+    ui_text_draw(4, 5, "Rang  Nom   Score  Orient.   Année", UI_STYLE_DIM);
 
     for (i = 0; i < SCORES_COUNT; i++) {
         const ScoreEntry *e = &t->e[i];
-        u16 y = 6 + i * 2;
+        u16 y = 7 + i * 2;
         UiStyle st = (hilite[tab] == (s8)i) ? UI_STYLE_HIGHLIGHT : UI_STYLE_TEXT;
 
         ui_format_number(buf, i + 1, 0);
@@ -158,6 +159,7 @@ static void draw_view(void)
             continue;
         }
         ui_text_draw(x, y, buf, st);
+        if (i == 0) ui_icon_draw(2, y, UI_ICON_CP);
         line[0] = e->ini[0]; line[1] = e->ini[1]; line[2] = e->ini[2]; line[3] = 0;
         ui_text_draw(11, y, line, st);
         ui_format_number(buf, e->score, 0);
@@ -166,7 +168,7 @@ static void draw_view(void)
         ui_format_number(buf, e->year, 0);
         ui_text_draw(33, y, buf, st);
     }
-    ui_text_center(0, 26, UI_COLS, "Gauche/Droite : tableau   A : retour", UI_STYLE_DIM);
+    ui_footer(1, 26, 38, "Gauche/Droite : tableau   A : retour");
 }
 
 static void scores_draw(void)
@@ -175,7 +177,6 @@ static void scores_draw(void)
         return;
     dirty = FALSE;
     ui_clear();
-    ui_window(0, 0, 40, 28);
     if (phase == PH_ENTRY)
         draw_entry();
     else

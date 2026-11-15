@@ -39,14 +39,16 @@ static void cat_num(char *dst, s32 v, u16 dec)
 static void draw_header(void)
 {
     char buf[16];
-    ui_window(0, 0, 40, 3);
-    ui_text_draw(1, 1, txt[TXT_REF_TITRE], UI_STYLE_HIGHLIGHT);
+    u16 n;
+    ui_banner(0, 0, 40, txt[TXT_REF_TITRE], TRUE);
     buf[0] = 0;
-    strcat(buf, "CP ");
     cat_num(buf, g_game.country.cp, 0);
     strcat(buf, "/");
     cat_num(buf, CP_MAX, 0);
-    ui_text_draw(38 - ui_text_len(buf), 1, buf, UI_STYLE_TEXT);
+    n = ui_text_len(buf);
+    ui_text_right(39, 1, " CP", UI_STYLE_DIM);
+    ui_text_right(36, 1, buf, UI_STYLE_TEXT);
+    ui_icon_draw(34 - n, 1, UI_ICON_CP);
 }
 
 static void refresh_disabled(void)
@@ -76,7 +78,7 @@ static void gauge_row(u16 y, const char *label, s16 yes)
 {
     char buf[14];
     u16 n;
-    ui_text_draw_n(1, y, label, 12, 12, UI_STYLE_TEXT);
+    ui_text_draw_n(1, y, label, 12, 12, UI_STYLE_DIM);
     ui_gauge_draw(13, y, 16, yes, 1000, yes >= 500 ? UI_GAUGE_POSITIVE : UI_GAUGE_NEGATIVE);
     buf[0] = 0;
     cat_num(buf, yes, 1);
@@ -191,7 +193,7 @@ static void ref_update(void)
 static void draw_result(void)
 {
     char buf[UI_LINE_BUF];
-    ui_text_draw_n(1, 4, law_name[chosen], 38, 0, UI_STYLE_HIGHLIGHT);
+    ui_text_center(1, 4, 38, law_name[chosen], UI_STYLE_HIGHLIGHT);
     ui_text_wrap(1, 6, 38, 3, txt[res.adopted ? TXT_REF_OUI : TXT_REF_NON],
                  res.adopted ? UI_STYLE_TEXT : UI_STYLE_ALERT);
     ui_text_draw(1, 10, txt[TXT_REF_LABEL_OUI], UI_STYLE_TEXT);
@@ -202,17 +204,20 @@ static void draw_result(void)
     ui_gauge_draw(10, 11, 20, 1000 - res.yes, 1000, UI_GAUGE_NEGATIVE);
     buf[0] = 0; cat_num(buf, 1000 - res.yes, 1); strcat(buf, " %");
     ui_text_draw(38 - ui_text_len(buf), 11, buf, UI_STYLE_ALERT);
-    ui_text_draw(1, 13, "OUI par électorat", UI_STYLE_DIM);
+    ui_text_draw(1, 13, "OUI par électorat", UI_STYLE_HIGHLIGHT);
+    ui_separator(19, 13, 20);
     for (u16 e = 0; e < ELEC_COUNT; e++)
         gauge_row(14 + e, elec_names[e], res.yes_elec[e]);
     buf[0] = 0;
     strcat(buf, "Popularité : ");
-    cat_num(buf, pop_before, 1); strcat(buf, " % -> "); cat_num(buf, pop_after, 1); strcat(buf, " %");
-    ui_text_draw(1, 19, buf, res.adopted ? UI_STYLE_TEXT : UI_STYLE_ALERT);
+    cat_num(buf, pop_before, 1); strcat(buf, " % → "); cat_num(buf, pop_after, 1); strcat(buf, " %");
+    ui_icon_draw(1, 19, UI_ICON_POPULARITY);
+    ui_text_draw(3, 19, buf, res.adopted ? UI_STYLE_TEXT : UI_STYLE_ALERT);
     buf[0] = 0;
     strcat(buf, "Défiance : ");
-    cat_num(buf, def_before, 0); strcat(buf, " -> "); cat_num(buf, def_after, 0);
-    ui_text_draw(1, 20, buf, res.adopted ? UI_STYLE_TEXT : UI_STYLE_ALERT);
+    cat_num(buf, def_before, 0); strcat(buf, " → "); cat_num(buf, def_after, 0);
+    ui_icon_draw(1, 20, UI_ICON_DEFIANCE);
+    ui_text_draw(3, 20, buf, res.adopted ? UI_STYLE_TEXT : UI_STYLE_ALERT);
 }
 
 static void ref_draw(void)
@@ -226,17 +231,22 @@ static void ref_draw(void)
         case P_PICK:
             refresh_disabled();
             ui_list_draw(&list);
-            ui_text_draw(1, 26, "A : choisir   B : retour", UI_STYLE_DIM);
+            ui_separator(1, 9, 38);
+            ui_footer(1, 26, 38, "A : choisir   B : retour");
             detail_dirty = TRUE;
             break;
         case P_SUSPENSE:
-            ui_text_wrap(1, 8, 38, 4, txt[TXT_REF_ANNONCE], UI_STYLE_TEXT);
-            ui_art_draw(ART_DECOR_URNE, 16, 14);   // PAL2 : pas de style DIM dans cette phase
-            ui_text_draw(1, 26, "A : passer", UI_STYLE_TEXT);
+            // La chaîne d'info annonce le dépouillement ; l'urne (PAL3) sous le texte.
+            ui_medallion(29, 4, UI_PORTRAIT_W, UI_PORTRAIT_H);
+            ui_gueule_draw(GUEULE_JOUR_CHAINE_INFO, EXPR_NEUTRE, 29, 4, PAL2);
+            ui_text_draw(1, 5, "Édition spéciale", UI_STYLE_HIGHLIGHT);
+            ui_text_wrap(1, 7, 27, 5, txt[TXT_REF_ANNONCE], UI_STYLE_TEXT);
+            ui_art_draw_pal(ART_DECOR_URNE, 10, 14, PAL3);
+            ui_footer(1, 26, 38, "A : passer");
             break;
         case P_RESULT:
             draw_result();
-            ui_text_draw(1, 26, "A : continuer", UI_STYLE_DIM);
+            ui_footer(1, 26, 38, "A : continuer");
             break;
         default:
             break;
