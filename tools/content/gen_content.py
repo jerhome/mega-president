@@ -65,6 +65,9 @@ def uniq(seq):
 
 
 EFF_NAMES = [n for n in uniq(enum_names("effects.h", "EFF_")) if n not in ("EFF_NONE", "EFF_COUNT")]
+# V4 : POP_CADRES est le nouveau nom de POP_AISEES (même clé C) ; POP_RETRAITES et
+# POP_JEUNES sont de vraies clés (effects.h, en fin d'énumération).
+EFF_ALIASES = {"EFF_POP_CADRES": "EFF_POP_AISEES"}
 LAW_NAMES = [n for n in uniq(enum_names("laws.h", "LOI_")) if n != "LOI_COUNT"]
 CAND_NAMES = [n for n in uniq(enum_names("election.h", "CAND_"))
               if n not in ("CAND_POOL_COUNT", "CAND_JOUEUR")]
@@ -98,6 +101,8 @@ def parse_effects(where, text):
             err(where, "effet illisible : « %s »" % part)
             continue
         key, val = m.group(1), int(m.group(2))
+        if "EFF_" + key in EFF_ALIASES:
+            key = EFF_ALIASES["EFF_" + key][4:]
         if "EFF_" + key not in EFF_NAMES:
             err(where, "clé d'effet inconnue : %s" % key)
             continue

@@ -39,7 +39,9 @@ Un effet est un couple (clé, valeur) exprimé en **unités lisibles** dans le c
 | Clé | Unité dans le contenu | Exemple |
 |---|---|---|
 | `POP_POPULAIRES`, `POP_MOYENNES`, `POP_AISEES` | points de % d'opinion | `POP_AISEES -3` |
-| `POP_TOUS` | points de % appliqués aux 3 électorats | `POP_TOUS +2` |
+| `POP_TOUS` | points de % appliqués aux électorats (3 en V0-V3, 5 depuis la V4) | `POP_TOUS +2` |
+| `POP_RETRAITES`, `POP_JEUNES` | V4 : points de % d'opinion des retraités / des jeunes | `POP_RETRAITES -5` |
+| `POP_CADRES` | V4 : alias de `POP_AISEES` (même clé) | `POP_CADRES -3` |
 | `CROISSANCE` | dixièmes de point | `CROISSANCE +2` = +0,2 % |
 | `CHOMAGE` | dixièmes de point | `CHOMAGE -3` = −0,3 % |
 | `DETTE` | demi-points de PIB (V1) | `DETTE +2` = +1 point |

@@ -53,7 +53,7 @@ enum {
 };
 
 #define LAW_MAX_EFFECTS    6
-#define LAW_MAX_IMMEDIATE  3
+#define LAW_MAX_IMMEDIATE  4   // V4 : 5 électorats
 
 typedef struct {
     u8 id;
