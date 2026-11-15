@@ -4,7 +4,7 @@
 #include "gfx_ui.h"
 #include "gfx_art.h"
 
-#define ART_SLOTS 16  // illustrations différentes affichées en même temps, au plus
+#define ART_SLOTS 24  // jeux de tuiles chargés en même temps (illustrations, gueules, expressions), au plus
 
 // Même ordre que l'enum ArtId (et que res/gfx_art.res).
 static const Image *const art_images[ART_COUNT] = {
@@ -20,7 +20,7 @@ static const Image *const art_images[ART_COUNT] = {
 };
 
 // Tuiles déjà chargées (réutilisées si la même illustration est redessinée).
-static u8 slot_id[ART_SLOTS];
+static u16 slot_id[ART_SLOTS];   // ArtId, ou ART_COUNT + clé de gueule
 static u16 slot_tile[ART_SLOTS];
 static u8 slot_count;
 static u16 next_tile;            // première tuile libre (0 : zone non initialisée)
@@ -55,14 +55,22 @@ static bool same_palette(const u16 *a, const u16 *b)
     return TRUE;
 }
 
-// Renvoie la première tuile en VRAM de l'illustration (chargée au besoin), ou 0.
-static u16 load_tiles(ArtId id)
+static void use_palette(u16 pal, const u16 *data)
 {
-    const TileSet *ts = art_images[id]->tileset;
+    if (!same_palette(pal_loaded[pal], data)) {
+        PAL_setPalette(pal, data, DMA);
+        pal_loaded[pal] = data;
+    }
+}
+
+// Renvoie la première tuile en VRAM du jeu de tuiles (chargé au besoin), ou 0.
+// key : identifiant unique du jeu (ArtId, ou ART_COUNT + clé de gueule).
+static u16 load_tileset(u16 key, const TileSet *ts)
+{
     u16 i, t;
 
     for (i = 0; i < slot_count; i++)
-        if (slot_id[i] == id)
+        if (slot_id[i] == key)
             return slot_tile[i];
     if (next_tile == 0)
         next_tile = art_base();
@@ -71,7 +79,7 @@ static u16 load_tiles(ArtId id)
     t = next_tile;
     VDP_loadTileSet(ts, t, DMA);
     next_tile += ts->numTile;
-    slot_id[slot_count] = id;
+    slot_id[slot_count] = key;
     slot_tile[slot_count] = t;
     slot_count++;
     return t;
@@ -87,13 +95,10 @@ bool ui_art_draw_pal(ArtId id, u16 x, u16 y, u16 pal)
     if (pal == PAL0 || pal > PAL3)
         pal = PAL2;
     img = art_images[id];
-    t = load_tiles(id);
+    t = load_tileset(id, img->tileset);
     if (t == 0)
         return FALSE;
-    if (!same_palette(pal_loaded[pal], img->palette->data)) {
-        PAL_setPalette(pal, img->palette->data, DMA);
-        pal_loaded[pal] = img->palette->data;
-    }
+    use_palette(pal, img->palette->data);
     VDP_setTileMapEx(BG_B, img->tilemap, UI_ATTR(pal, t), x, y, 0, 0,
                      img->tilemap->w, img->tilemap->h, CPU);
     return TRUE;
@@ -126,4 +131,78 @@ void ui_art_close(void)
     }
     slot_count = 0;
     next_tile = 0;
+}
+
+// --- Gueules V3 ------------------------------------------------------------------
+
+typedef struct {
+    const Image *base;                 // portrait neutre (GUEULE_W x GUEULE_H tuiles)
+    const Image *expr[EXPR_COUNT - 1]; // patchs content, furieux, gêné
+    u8 px, py, pw, ph;                 // rectangle des patchs dans le portrait (tuiles)
+} GueuleDef;
+
+#define UI_ART_GUEULES_TABLE
+#include "ui/ui_art_gueules.h"
+
+static u16 gueule_key(GueuleId id, Expr e)
+{
+    return ART_COUNT + (u16)id * EXPR_COUNT + e;
+}
+
+static u16 gueule_pal(u16 pal)
+{
+    return (pal == PAL3) ? PAL3 : PAL2;   // contrat V3 : PAL0/PAL1 réservées à l'interface
+}
+
+bool ui_gueule_expr(GueuleId id, Expr e, u16 x, u16 y, u16 pal)
+{
+    const GueuleDef *g;
+    const Image *img;
+    u16 t;
+
+    if (id >= GUEULE_COUNT || e >= EXPR_COUNT)
+        return FALSE;
+    g = &gueule_defs[id];
+    pal = gueule_pal(pal);
+    if (e == EXPR_NEUTRE) {   // retour au neutre : sous-rectangle du portrait de base
+        img = g->base;
+        t = load_tileset(gueule_key(id, EXPR_NEUTRE), img->tileset);
+        if (t == 0)
+            return FALSE;
+        VDP_setTileMapEx(BG_B, img->tilemap, UI_ATTR(pal, t), x + g->px, y + g->py,
+                         g->px, g->py, g->pw, g->ph, CPU);
+        return TRUE;
+    }
+    img = g->expr[e - 1];
+    t = load_tileset(gueule_key(id, e), img->tileset);
+    if (t == 0)
+        return FALSE;
+    use_palette(pal, img->palette->data);
+    VDP_setTileMapEx(BG_B, img->tilemap, UI_ATTR(pal, t), x + g->px, y + g->py, 0, 0,
+                     g->pw, g->ph, CPU);
+    return TRUE;
+}
+
+bool ui_gueule_draw(GueuleId id, Expr e, u16 x, u16 y, u16 pal)
+{
+    const Image *img;
+    u16 t;
+
+    if (id >= GUEULE_COUNT || e >= EXPR_COUNT)
+        return FALSE;
+    pal = gueule_pal(pal);
+    img = gueule_defs[id].base;
+    t = load_tileset(gueule_key(id, EXPR_NEUTRE), img->tileset);
+    if (t == 0)
+        return FALSE;
+    use_palette(pal, img->palette->data);
+    VDP_setTileMapEx(BG_B, img->tilemap, UI_ATTR(pal, t), x, y, 0, 0, GUEULE_W, GUEULE_H, CPU);
+    if (e != EXPR_NEUTRE)
+        return ui_gueule_expr(id, e, x, y, pal);
+    return TRUE;
+}
+
+void ui_gueule_erase(u16 x, u16 y)
+{
+    VDP_clearTileMapRect(BG_B, x, y, GUEULE_W, GUEULE_H);
 }

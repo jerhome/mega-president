@@ -93,8 +93,33 @@ bool ui_art_draw_pal(ArtId id, u16 x, u16 y, u16 pal);
 // Efface (plan B) le rectangle occupé par l'illustration placée en x, y.
 void ui_art_erase(ArtId id, u16 x, u16 y);
 // Restaure les palettes empruntées (styles normaux) et libère la VRAM des
-// illustrations. Les tuiles restent à l'écran : effacer avant (ui_clear,
-// ui_art_erase) pour éviter un affichage aux mauvaises couleurs.
+// illustrations (gueules comprises). Les tuiles restent à l'écran : effacer avant
+// (ui_clear, ui_art_erase, ui_gueule_erase) pour éviter un affichage aux mauvaises couleurs.
 void ui_art_close(void);
+
+// --- Gueules V3 (tâches 3.07 à 3.09) -------------------------------------------
+// Portraits caricaturaux 10 x 12 tuiles (80 x 96 px), une palette de 15 couleurs
+// PROPRE à chaque personnage : deux gueules à l'écran = deux lignes (PAL2 et PAL3).
+// Chaque gueule a 4 expressions ; changer d'expression ne redessine qu'un petit
+// rectangle de tuiles autour du visage (tuiles d'expression chargées à la demande).
+#include "ui/ui_art_gueules.h"   // GueuleId (généré par tools/art/make_art.py)
+
+typedef enum {
+    EXPR_NEUTRE = 0,
+    EXPR_CONTENT,
+    EXPR_FURIEUX,
+    EXPR_GENE,
+    EXPR_COUNT
+} Expr;
+
+// Dessine la gueule id avec l'expression e, coin haut gauche (x, y) en tuiles, sur
+// le plan B, palette dans la ligne pal (PAL2 ou PAL3 ; PAL0/PAL1 refusées -> PAL2).
+// Renvoie FALSE si id invalide ou VRAM des illustrations pleine.
+bool ui_gueule_draw(GueuleId id, Expr e, u16 x, u16 y, u16 pal);
+// Change l'expression d'une gueule déjà dessinée en (x, y) avec la même ligne pal :
+// ne réécrit que le rectangle du visage.
+bool ui_gueule_expr(GueuleId id, Expr e, u16 x, u16 y, u16 pal);
+// Efface (plan B) le rectangle de la gueule placée en x, y.
+void ui_gueule_erase(u16 x, u16 y);
 
 #endif

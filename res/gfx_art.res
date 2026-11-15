@@ -75,3 +75,18 @@ IMAGE art_decor_urne         "gfx/art_decor_urne.png" NONE ALL
 
 // Décor
 IMAGE art_decor_journal      "gfx/art_decor_journal.png" NONE ALL
+
+// Gueules V3 (80 x 96, une palette par personnage) : portrait neutre, puis un
+// patch par expression (content, furieux, gêné) à poser par-dessus (tools/art/g_*.py).
+IMAGE gueule_pres_gauche             "gfx/gueule_pres_gauche.png" NONE ALL
+IMAGE gueule_pres_gauche_content     "gfx/gueule_pres_gauche_content.png" NONE ALL
+IMAGE gueule_pres_gauche_furieux     "gfx/gueule_pres_gauche_furieux.png" NONE ALL
+IMAGE gueule_pres_gauche_gene        "gfx/gueule_pres_gauche_gene.png" NONE ALL
+IMAGE gueule_min_interieur           "gfx/gueule_min_interieur.png" NONE ALL
+IMAGE gueule_min_interieur_content   "gfx/gueule_min_interieur_content.png" NONE ALL
+IMAGE gueule_min_interieur_furieux   "gfx/gueule_min_interieur_furieux.png" NONE ALL
+IMAGE gueule_min_interieur_gene      "gfx/gueule_min_interieur_gene.png" NONE ALL
+IMAGE gueule_chef_utl                "gfx/gueule_chef_utl.png" NONE ALL
+IMAGE gueule_chef_utl_content        "gfx/gueule_chef_utl_content.png" NONE ALL
+IMAGE gueule_chef_utl_furieux        "gfx/gueule_chef_utl_furieux.png" NONE ALL
+IMAGE gueule_chef_utl_gene           "gfx/gueule_chef_utl_gene.png" NONE ALL
