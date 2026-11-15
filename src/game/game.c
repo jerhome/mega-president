@@ -229,3 +229,96 @@ void game_turn_label(u8 turn, char *buf)
         strcat(buf, " / 20");
     }
 }
+
+#ifdef MP_DEBUG_SCREEN
+// ROM de démonstration seulement (captures d'écran, docs/CHARTE_V3.md § 9) :
+// prépare un état de partie et saute directement à l'écran voulu.
+//   1 campagne puis élection gagnée, 2 campagne puis élection perdue,
+//   3 budget, 4 référendum, 5 remaniement, 6 destitution,
+//   7 fin : destitution, 8 fin : défaite, 9 fin : victoire (deux mandats),
+//   10 élection perdue au 1er tour, 11 titre, 12 tableau de bord,
+//   13 / 15 événement (texte long / court), 14 meilleurs scores remplis.
+static void dbg_opinion(Country *c, s16 v)
+{
+    for (u8 e = 0; e < ELEC_COUNT; e++)
+        c->opinion[e] = v;
+}
+
+void game_debug_jump(void)
+{
+    Country *c;
+    u8 k = MP_DEBUG_SCREEN;
+
+    game_new(k == 9 ? ORIENT_DROITE : (k == 6 ? ORIENT_CENTRE : ORIENT_GAUCHE),
+             PM_RASSEMBLEUR, 0, 4, 1234);
+    c = &g_game.country;
+    c->cp = 12;
+    switch (k) {
+    case 1: case 2: case 8: case 10:
+        c->turn = sim_mandate_turns(c);
+        dbg_opinion(c, k == 1 ? 620 : (k == 10 ? 120 : (k == 2 ? 470 : 380)));
+        if (k == 8) {
+            c->unemployment += 120;
+            c->debt += 85;
+            c->pillars[PIL_SOCIAL] -= 60;
+            c->pillars[PIL_ECOLOGIE] += 45;
+            game_run_election();
+            screen_change(SCREEN_END);
+        } else {
+            screen_change(SCREEN_CAMPAIGN);
+        }
+        break;
+    case 11:   // écran titre normal (choix du PM au script)
+        screen_change(SCREEN_TITLE);
+        break;
+    case 12:   // tableau de bord (Assemblée, carte, intervention télévisée au script)
+        c->turn = 2;
+        screen_change(SCREEN_GAME);
+        break;
+    case 13: case 15:   // événement au texte long (13) ou court (15)
+        g_game.event = (k == 13) ? 1 : 2;
+        screen_change(SCREEN_EVENT);
+        break;
+    case 14:   // meilleurs scores, 10 noms (remplis par scr_scores.c)
+        screen_change(SCREEN_SCORES);
+        break;
+    case 3:
+        c->turn = 3;   // le budget se vote au 4e trimestre
+        screen_change(SCREEN_BUDGET);
+        break;
+    case 4:
+        screen_change(SCREEN_REFERENDUM);
+        break;
+    case 5:
+        c->turn = 6;
+        screen_change(SCREEN_RESHUFFLE);
+        break;
+    case 6: case 7:
+        c->turn = 9;
+        c->gauges[JAUGE_SCANDALE] = 88;
+        c->gauges[JAUGE_DEFIANCE] = 81;
+        dbg_opinion(c, 230);
+        for (u8 g = 0; g < GRP_COUNT; g++)
+            if (g != c->player_group)
+                c->relation[g] = 20;
+        c->impeach = IMPEACH_DEFENSE;
+        if (k == 7) {
+            c->status = STATUS_DESTITUE;
+            screen_change(SCREEN_END);
+        } else {
+            screen_change(SCREEN_IMPEACH);
+        }
+        break;
+    default:   // 9 : réélu, puis fin du 2nd mandat
+        c->turn = sim_mandate_turns(c);
+        dbg_opinion(c, 650);
+        game_run_election();
+        sim_start_second_mandate(c, &g_game.legislatives);
+        c->turn = sim_mandate_turns(c);
+        c->unemployment -= 150;
+        c->pillars[PIL_TECHNOLOGIE] += 120;
+        screen_change(SCREEN_END);
+        break;
+    }
+}
+#endif
