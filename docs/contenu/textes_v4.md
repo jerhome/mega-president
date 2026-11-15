@@ -303,20 +303,20 @@ Les autres lignes sont grisées.
 # ---- Campagne : 5e thème
 
 ## TXT_THEME_EMPLOI_DESC
-Salaires, chômage, apprentissage.
-Cible les classes populaires et moyennes.
+Chômage, salaires, apprentissage.
+Cible jeunes et classes populaires.
 
 ## TXT_THEME_SECURITE_DESC
-Police, justice, frontières. Cible les
-retraités et les classes moyennes.
+Police, justice, tranquillité. Parle
+surtout aux retraités. Képis inclus.
 
 ## TXT_THEME_POUVOIR_ACHAT_DESC
-Prix, salaires, carburants. Cible les
-classes populaires et moyennes.
+Prix, carburant, chèque et caddie.
+Cible populaires et classes moyennes.
 
 ## TXT_THEME_ECOLOGIE_DESC
-Climat, transports, énergie. Cible les
-jeunes et les cadres.
+Climat, transports, sobriété. Cible
+jeunes et cadres. Venez à vélo.
 
 ## TXT_THEME_SANTE
 Santé et retraites
