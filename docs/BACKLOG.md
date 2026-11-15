@@ -243,7 +243,7 @@ Spécification validée : [SPEC_V4.md](SPEC_V4.md). Développement sur la branch
 | 4.11 | Écran budget détaillé (6 lignes × 5 crans, préréglage, aperçu en direct, vote / 49.3, cohabitation, Sénat) | 5 h |  |
 | 4.12 | Sauvegarde : `GAMESAVE_VERSION` = 2, message à l'écran titre, test de non-régression | 1 h | 🔄 partie simulation faite, message de l'écran titre à faire |
 | 4.13 | Joueurs automatiques : préréglages, variantes optimiseur, extrême et austère, statistiques par électorat | 3 h | ✅ |
-| 4.14 | Équilibrage V4 (cibles de §3.4, 20 et 60 tours) | 5 h | 🔄 |
+| 4.14 | Équilibrage V4 (cibles de §3.4, 20 et 60 tours) | 5 h | ✅ |
 | 4.15 | Documentation : REGLES (V4), SIM, DECISIONS, BACKLOG | 1,5 h |  |
 | 4.16 | Contrôle qualité : `make check`, budgets RAM et ROM, BlastEm PAL et NTSC, 38 colonnes, deux mandats, cohabitation forcée, sauvegarde | 2 h |  |
 | 4.17 | Jalon : test console du joueur, étiquette git, release | 1 h |  |
