@@ -114,4 +114,31 @@ bool ui_gueule_expr(GueuleId id, Expr e, u16 x, u16 y, u16 pal);
 // Efface (plan B) le rectangle de la gueule placée en x, y.
 void ui_gueule_erase(u16 x, u16 y);
 
+// --- Visages animés (tâche 3.18, sans son) -------------------------------------
+// La DERNIÈRE gueule dessinée par ui_gueule_draw s'anime seule (une seule à la fois) :
+// clignements irréguliers (100-130 ms toutes les 2,5 à 6 s, parfois doubles), regard
+// de côté (0,8 à 1,5 s toutes les 8 à 15 s, expressions neutre et content), et
+// changement d'expression (ui_gueule_expr) masqué par un clignement de 80 ms.
+// Rien pendant les fondus ni sous une boîte de message ; cadences en millisecondes
+// (identiques en PAL et en NTSC) ; aléa propre, jamais celui de la simulation.
+// L'animation s'arrête d'elle-même si le visage est recouvert (fenêtre, ui_clear,
+// ui_gueule_erase, autre illustration) ou à ui_art_close.
+//
+// Le personnage parle pendant ms millisecondes (bouche irrégulière, 90 à 160 ms par
+// image) ; arrêt net à la fin ou à l'appui sur A, B, C ou START ; 0 = se tait.
+// À appeler APRÈS ui_gueule_draw (qui remet la bouche au repos).
+void ui_gueule_talk(u16 ms);
+// Durée de parole conseillée pour une réplique (≈ 45 ms par caractère, 0,6 à 4 s).
+u16 ui_gueule_talk_ms(const char *text);
+// Remet le visage au repos et arrête l'animation (la gueule reste affichée).
+void ui_gueule_anim_stop(void);
+// Boucle des écrans (screen.c) : une fois par image.
+void ui_gueule_anim_update(void);
+// Réglage « Visages » (Options) : FALSE fige les visages sur l'image de base de leur
+// expression (les changements d'expression restent, sans clignement) ; TRUE les relance.
+void ui_gueule_anim_enable(bool on);
+// Couche d'interface : le rectangle (x, y, w, h) du plan B va être redessiné ;
+// arrête l'animation s'il recouvre les yeux ou la bouche.
+void ui_gueule_anim_cover(u16 x, u16 y, u16 w, u16 h);
+
 #endif

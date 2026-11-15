@@ -248,8 +248,10 @@ static void draw_politics(void)
             for (u8 g = 0; g < GRP_COUNT; g++)
                 if (sim_in_bloc(c, g)) before += r->senate_before[g];
             y = rubric(y, "Sénat");
+            if (after < before)   // perte : le titre en rouge, le corps reste en ivoire (revue DA P2-3)
+                ui_text_draw(1, y - 1, "Sénat", UI_STYLE_ALERT);
             y = para(y, txt[after >= before ? TXT_SENAT_RENOUVELE_GAIN : TXT_SENAT_RENOUVELE_PERTE],
-                     after >= before ? UI_STYLE_TEXT : UI_STYLE_ALERT);
+                     UI_STYLE_TEXT);
             buf[0] = 0;
             strcat(buf, "Sénat, bloc présidentiel : ");
             cat_num(buf, before, 0);
@@ -278,6 +280,7 @@ static void draw_politics(void)
         }
         ui_medallion(29, 14, UI_PORTRAIT_W, UI_PORTRAIT_H);
         ui_gueule_draw(id, e, 29, 14, PAL2);
+        ui_gueule_talk(2400);   // l'éditorialiste (ou le président du Sénat) commente la page
         ui_text_right(28, 25, id == GUEULE_SENAT_PRESIDENT ? "Le président du Sénat" : "L’éditorialiste",
                       UI_STYLE_DIM);
     }

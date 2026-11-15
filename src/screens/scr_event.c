@@ -54,9 +54,8 @@ static void event_update(void)
 }
 
 // Mise en page (charte V3) :
-//  0-15  fenêtre à bandeau (titre) : texte à gauche (28 colonnes), médaillon à
-//        droite (x 29-38, y 3-14 : emplacement 8 x 10 tuiles pour un portrait
-//        ou la vignette 8 x 6, centrée)
+//  0-15  fenêtre à bandeau (titre) : texte à gauche (27 colonnes), vignette 8 x 6
+//        à droite (x 30-37), cadre doré posé sur l'image, centrée sur le texte
 //  16-27 fenêtre à bandeau : choix, puis décision et journal
 #define TEXT_W   27
 #define MED_X    29
@@ -91,10 +90,22 @@ static void event_draw(void)
         u16 w, h;
         art_reset();
         ui_window_title(0, 0, 40, LOW_Y, evt_title[evt], FALSE);
-        ui_text_wrap(1, 4, TEXT_W, 10, flatten(evt_text[evt]), UI_STYLE_TEXT);
-        ui_medallion(MED_X, MED_Y, MED_W, MED_H);
-        ui_art_size(art, &w, &h);
-        ui_art_draw_pal(art, MED_X + 1 + (MED_W - 2 - w) / 2, MED_Y + 1 + (MED_H - 2 - h) / 2, PAL3);
+        {
+            // Le cadre épouse la vignette (8 x 6) : posé sur l'image elle-même,
+            // centré sur la colonne de droite et sur le bloc de texte.
+            const char *t = flatten(evt_text[evt]);
+            u16 lines = ui_text_count_lines(TEXT_W, t), ax, ay;
+            if (lines > 10)
+                lines = 10;
+            ui_text_wrap(1, 4, TEXT_W, 10, t, UI_STYLE_TEXT);
+            ui_art_size(art, &w, &h);
+            ax = MED_X + (MED_W - w) / 2;
+            ay = (lines > h) ? 4 + (lines - h) / 2 : 4;
+            if (ay + h > MED_Y + MED_H)
+                ay = MED_Y + MED_H - h;
+            ui_medallion(ax, ay, w, h);
+            ui_art_draw_pal(art, ax, ay, PAL3);
+        }
         draw_lower("Que décidez-vous ?");
         ui_list_draw(&choice_list);
         ui_footer(1, 26, 38, "Haut/Bas : choisir   A : valider");

@@ -56,9 +56,9 @@ static const u8 ui_frame_pal[UI_T_COUNT] = {
 #define UI_GAUGE_TILE(set, part, k) ((set) * 27 + (part) * 9 + (k))
 
 // Icônes (ui_icons.png) : ligne de palette de chaque icône.
-#define UI_ICON_COUNT 32
+#define UI_ICON_COUNT 37
 static const u8 ui_icon_pal[UI_ICON_COUNT] = {
-    1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0
+    1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0
 };
 
 #endif

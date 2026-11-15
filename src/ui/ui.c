@@ -2,6 +2,8 @@
 // icônes, fondus (charte V3 : docs/CHARTE_V3.md).
 #include "ui/ui_internal.h"
 #include "ui/input.h"
+#include "ui/ui_art.h"
+#include "ui/ui_map.h"
 #include "gfx_ui.h"
 
 u16 ui_tile_font, ui_tile_frame, ui_tile_gauge, ui_tile_icons;
@@ -18,11 +20,56 @@ static u16 pal_target[64];
 static u16 pal_from[64];
 static u16 anim_ticks;     // 1/300 s, pour le curseur animé
 static u8 cursor_frame;
+static u8 fade_speed;      // réglage « Transitions » : 0 douces, 1 rapides, 2 aucune
+static bool colorblind;    // réglage « Couleurs » : daltonisme
 
+// Durée d'un fondu en images selon le réglage (moitié en « Rapides »).
 static u16 ms_frames(u16 ms)
 {
-    u16 f = (u16)((u32)ms * (IS_PAL_SYSTEM ? 50 : 60) / 1000);
+    u16 f;
+    if (fade_speed == 1)
+        ms /= 2;
+    f = (u16)((u32)ms * (IS_PAL_SYSTEM ? 50 : 60) / 1000);
     return f ? f : 1;
+}
+
+void ui_set_fade_speed(u8 s)
+{
+    fade_speed = s > 2 ? 2 : s;
+}
+
+// Daltonisme : jauge A et flèches favorables (PAL0 6-7) en turquoise au lieu du vert.
+#define CB_COL6 RGB3_3_3_TO_VDPCOLOR(0, 4, 6)
+#define CB_COL7 RGB3_3_3_TO_VDPCOLOR(3, 7, 7)
+
+static void colorblind_apply(void)
+{
+    u16 c[2];
+    if (colorblind) {
+        c[0] = CB_COL6;
+        c[1] = CB_COL7;
+    } else {
+        c[0] = pal_ui_text.data[6];
+        c[1] = pal_ui_text.data[7];
+    }
+    PAL_setColors(6, c, 2, DMA);
+    // Fondu en cours vers les anciennes couleurs : sa cible change aussi.
+    pal_target[6] = c[0];
+    pal_target[7] = c[1];
+}
+
+void ui_set_colorblind(bool on)
+{
+    colorblind = on;
+    colorblind_apply();
+    ui_map_set_colorblind(on);
+}
+
+void ui_soft_replay(void)
+{
+    if (fade_speed == 2 || fx != FX_NONE)
+        return;
+    soft_req = TRUE;
 }
 
 void ui_soft_cancel(void)
@@ -32,9 +79,14 @@ void ui_soft_cancel(void)
 
 void ui_fade_out_start(void)
 {
+    ui_gueule_anim_stop();   // visage au repos avant le fondu au noir
     soft_req = FALSE;
     if (PAL_isDoingFade())
         PAL_interruptFade();
+    if (fade_speed == 2) {   // « Aucune » : changement d'écran sans fondu
+        fx = FX_NONE;
+        return;
+    }
     PAL_fadeOut(0, 63, ms_frames(UI_FADE_OUT_MS), TRUE);
     fx = FX_OUT;
     input_block(INPUT_BLOCK_DISCARD);
@@ -45,12 +97,19 @@ bool ui_fade_busy(void)
     return PAL_isDoingFade();
 }
 
+bool ui_anim_allowed(void)
+{
+    return fx == FX_NONE && !soft_req && !PAL_isDoingFade();
+}
+
 void ui_palettes_reset(void)
 {
     PAL_setPalette(PAL0, pal_ui_text.data, DMA);
     PAL_setPalette(PAL1, pal_ui_highlight.data, DMA);
     PAL_setPalette(PAL2, pal_ui_dim.data, DMA);
     PAL_setPalette(PAL3, pal_ui_alert.data, DMA);
+    if (colorblind)
+        colorblind_apply();
 }
 
 void ui_transition_hide(void)
@@ -65,6 +124,14 @@ void ui_transition_hide(void)
 
 void ui_transition_show(void)
 {
+    if (fade_speed == 2) {   // « Aucune » : l'écran apparaît d'un coup, déjà dessiné
+        VDP_setBackgroundColor(0);
+        VDP_setEnable(TRUE);
+        fx = FX_NONE;
+        input_block(INPUT_BLOCK_OFF);
+        soft_req = FALSE;
+        return;
+    }
     // Palettes voulues par le nouvel écran (écrites en CRAM par init / draw).
     PAL_getColors(0, pal_target, 64);
     PAL_setColors(0, palette_black, 64, CPU);
@@ -121,7 +188,7 @@ void ui_frame_end(void)
     }
     if (soft_req) {
         soft_req = FALSE;
-        if (fx == FX_NONE)
+        if (fx == FX_NONE && fade_speed != 2)
             soft_start();
     }
 
@@ -185,6 +252,7 @@ void ui_bg_rect(u16 x, u16 y, u16 w, u16 h)
         w = UI_COLS - x;
     if (y + h > UI_ROWS)
         h = UI_ROWS - y;
+    ui_gueule_anim_cover(x, y, w, h);
     for (j = 0; j < h; j++)
         VDP_fillTileMapRect(BG_B, ui_bg_attr(y + j), x, y + j, w, 1);
 }
@@ -209,6 +277,7 @@ static void deco_row(u16 x, u16 y, u16 w, u16 tl, u16 tm, u16 tr)
 {
     if (w == 0)
         return;
+    ui_gueule_anim_cover(x, y, w, 1);
     if (w == 1) {
         VDP_setTileMapXY(BG_B, UI_FRAME_ATTR(tm), x, y);
         return;
@@ -224,6 +293,7 @@ static void window_body(u16 x, u16 y0, u16 w, u16 y_bottom)
 {
     if (y_bottom > y0) {
         u16 n = y_bottom - y0;
+        ui_gueule_anim_cover(x, y0, w, n);
         VDP_fillTileMapRect(BG_B, UI_FRAME_ATTR(UI_T_WIN_L), x, y0, 1, n);
         if (w > 2)
             VDP_fillTileMapRect(BG_B, UI_FRAME_ATTR(UI_T_WIN_C), x + 1, y0, w - 2, n);
@@ -301,6 +371,7 @@ void ui_medallion(u16 x, u16 y, u16 w, u16 h)
         return;
     // Fond du portrait (plan B, recouvert par l'illustration) et cadre doré sur le
     // bord du rectangle (plan A : seules les marges des tuiles sont opaques).
+    ui_gueule_anim_cover(x, y, w, h);
     VDP_fillTileMapRect(BG_B, UI_FRAME_ATTR(UI_T_PF_C), x, y, w, h);
     VDP_clearTileMapRect(BG_A, x, y, w, h);
     ring_row(x, y, w, UI_T_PF_TL, UI_T_PF_T, UI_T_PF_TR);
@@ -318,8 +389,10 @@ void ui_select_bar(u16 x, u16 y, u16 w)
 
 void ui_select_bar_clear(u16 x, u16 y, u16 w)
 {
-    if (w)
+    if (w) {
+        ui_gueule_anim_cover(x, y, w, 1);
         VDP_fillTileMapRect(BG_B, UI_FRAME_ATTR(UI_T_WIN_C), x, y, w, 1);
+    }
 }
 
 // --- Aide des boutons ----------------------------------------------------------------

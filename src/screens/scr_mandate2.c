@@ -54,10 +54,7 @@ static void mandate2_draw(void)
         ui_gueule_draw(GUEULE_PM(c->pm), l->won ? EXPR_CONTENT : EXPR_GENE, 29, 3, PAL2);
         name = txt[TXT_PM_TECHNOCRATE_NOM + 2 * c->pm];
     }
-    ui_text_center(28, 15, 12, name, cohab ? UI_STYLE_ALERT : UI_STYLE_HIGHLIGHT);
-    ui_text_center(28, 16, 12, "Premier ministre", UI_STYLE_DIM);
-
-    ui_text_wrap(1, 4, 27, 4, txt[TXT_SECOND_MANDAT], UI_STYLE_TEXT);
+    ui_text_flow(1, 4, 27, 4, txt[TXT_SECOND_MANDAT], UI_STYLE_TEXT);
 
     // Sièges par groupe, avant et après.
     ui_text_draw(1, 9, "Groupe", UI_STYLE_DIM);
@@ -77,21 +74,30 @@ static void mandate2_draw(void)
         ui_text_right(28, y, buf, l->seats_after[g] >= l->seats_before[g] ? st : UI_STYLE_ALERT);
     }
 
+    // Premier ministre (le nom ne tient pas sous la gueule : pleine largeur).
+    ui_icon_draw(1, 16, UI_ICON_PERSON);
+    ui_text_draw(3, 16, "Premier ministre", UI_STYLE_DIM);
+    ui_text_right(39, 16, name, cohab ? UI_STYLE_ALERT : UI_STYLE_HIGHLIGHT);
+
+    ui_icon_draw(1, 18, UI_ICON_ASSEMBLY);
+    ui_text_draw(3, 18, "Bloc présidentiel", UI_STYLE_DIM);
     buf[0] = 0;
-    strcat(buf, "Bloc présidentiel : ");
     cat_n(buf, l->bloc_before);
     strcat(buf, " → ");
     cat_n(buf, l->bloc_after);
-    ui_text_draw(1, 18, buf, UI_STYLE_TEXT);
-    ui_text_right(39, 18, l->majority ? "majorité absolue" : "majorité relative",
-                  l->majority ? UI_STYLE_HIGHLIGHT : UI_STYLE_ALERT);
+    strcat(buf, " sièges");
+    ui_text_right(39, 18, buf, UI_STYLE_TEXT);
     ui_hemi_majority(1, 19, 38, l->bloc_after, SEATS_TOTAL, SEATS_MAJORITY);
+    ui_text_right(39, 21, l->majority ? "Majorité absolue" : "Majorité relative",
+                  l->majority ? UI_STYLE_HIGHLIGHT : UI_STYLE_ALERT);
 
-    ui_text_wrap(1, 22, 38, 2, txt[l->won ? TXT_LEGISLATIVES_GAGNEES : TXT_LEGISLATIVES_PERDUES],
-                 UI_STYLE_TEXT);
+    // Début ou fin de cohabitation : ce texte remplace celui des législatives.
     if (l->cohab_started || l->cohab_ended)
-        ui_text_wrap(1, 24, 38, 2, txt[l->cohab_started ? TXT_COHAB_DEBUT : TXT_COHAB_FIN],
+        ui_text_wrap(1, 22, 38, 3, txt[l->cohab_started ? TXT_COHAB_DEBUT : TXT_COHAB_FIN],
                      l->cohab_started ? UI_STYLE_ALERT : UI_STYLE_HIGHLIGHT);
+    else
+        ui_text_wrap(1, 22, 38, 3, txt[l->won ? TXT_LEGISLATIVES_GAGNEES : TXT_LEGISLATIVES_PERDUES],
+                     UI_STYLE_TEXT);
     ui_footer(1, 26, 38, "A : commencer le second mandat");
 }
 

@@ -18,6 +18,21 @@ WHITE = [(5, 5, 6), (7, 7, 7)]
 
 # --- Laurent Delmas, président MJM ---------------------------------------------------------
 
+def _ting(cv):
+    """Éclat de dentifrice sur le sourire (DA : caricature du sourire de publicité)."""
+    sx, sy = CX + 5, 57
+    for d in range(-3, 4):
+        cv.put(sx + d, sy, ("white", 1))
+        cv.put(sx, sy + d, ("white", 1))
+    for d in (-1, 1):
+        cv.put(sx + d, sy + d, ("white", 1))
+        cv.put(sx + d, sy - d, ("white", 1))
+    cv.put(sx - 4, sy, INK)
+    cv.put(sx + 4, sy, INK)
+    cv.put(sx, sy - 4, INK)
+    cv.put(sx, sy + 4, INK)
+
+
 def pres_centre():
     """Laurent Delmas : visage en rectangle étroit, front haut, raie nette, sourire
     de publicité aux dents parfaites, sourcils fins, costume ajusté, cravate bleue."""
@@ -51,17 +66,21 @@ def pres_centre():
         nostrils(cv, 50, 2)
         for s in (-1, 1):
             T.fold(cv, (CX + s * 5, 51), (CX + s * 9, 55), (CX + s * 9, 59))
+        if e in ("neutre", "content"):   # fossettes
+            cv.put(CX - 9, 58, INK)
+            cv.put(CX + 9, 58, INK)
 
     face(P, eye_y=40, eye_dx=7, eye_w=8, brow_y=33, brow_w=10, brow_thick=1, brow_arch=1.5, taper=False,
          eyes={"furieux": {"open_": 0.95, "tilt": 0, "right": {"open_": 0.35, "tilt": 1.5}},
                "neutre": {"open_": 0.85}},
          brows={"furieux": ((0, 0), (2, -1)), "content": (-1, -1)},
          mouth_y=58,
-         mouths={"neutre": {"kind": "grin", "w": 11, "open_": 1.6, "curve": 1.5, "under": False},
-                 "content": {"kind": "smile", "w": 15, "open_": 3, "curve": 2.5},
+         mouths={"neutre": {"kind": "grin", "w": 15, "open_": 2.2, "curve": 2.2, "under": False},
+                 "content": {"kind": "grin", "w": 17, "open_": 3, "curve": 3},
                  "furieux": {"kind": "grin", "w": 13, "open_": 1.6, "curve": 1.0, "under": False},
                  "gene": {"kind": "grit", "w": 11, "curve": 0}},
-         extras={"furieux": lambda cv: (T.wrinkle(cv, [(CX + 13, 37), (CX + 15, 36)], INK),
+         extras={"neutre": _ting, "content": _ting,
+                 "furieux": lambda cv: (T.wrinkle(cv, [(CX + 13, 37), (CX + 15, 36)], INK),
                                         T.wrinkle(cv, [(CX + 13, 43), (CX + 15, 44)], INK)),
                  "gene": sweat_at(CX + 13, 20)})
     return P
@@ -287,6 +306,10 @@ def pm_reformateur():
                 cv.fill(line(x0, y0 + 1, x1, y1 + 1), ("hair", 1))
 
     def teeth(cv, mx, my, m):   # dents de lapin
+        if T.ANIM in ("talk1", "talk2"):   # bouche qui parle : les dents pendent dans l'ouverture
+            cv.grid(int(mx) - 1, my + 1, ["ww", "ws"] if T.ANIM == "talk2" else ["ww"],
+                    {"w": ("white", 1), "s": ("white", 0)})
+            return
         cv.grid(int(mx) - 2, my + 1, ["kwwk", "kwwk", ".kk."], {"k": INK, "w": ("white", 1)})
 
     face(P, eye_y=41, eye_dx=7, eye_w=9, eye_h=4.5, iris_r=2.0, bags=2, brow_y=33, brow_w=10, brow_thick=2,
@@ -344,13 +367,17 @@ def cohab_gauche():
             T.wrinkle(cv, [(CX + s * 15, 40), (CX + s * 17, 42)])
         T.wrinkle(cv, [(CX - 9, 26), (CX + 9, 26)])
         T.wrinkle(cv, [(CX - 7, 29), (CX + 7, 29)])
+        for sx in (-1, 1):   # créoles (DA : la lire comme une femme au premier coup d'œil)
+            ox = CX + sx * 19
+            cv.grid(ox - 2, 46, [".kk.", "k..k", "k..k", ".kk."], {"k": ("scarf", 1)})
 
+    lips = lambda cv, mx, my, m: lipstick(cv, mx, my, m, ("scarf", 0), ("scarf", 0))
     face(P, eye_y=38, eye_dx=8, eye_w=8, iris_r=1.6, lid=2, brow_y=32, brow_w=11, brow_thick=2,
-         brow_arch=1, brow_key=("hair", 0), taper=False, bags=1,
+         brow_arch=1, brow_key=("hair", 0), taper=False, bags=1, lashes=True,
          eyes={"neutre": {"open_": 0.75}},
          brows={"neutre": (2, 0)},
          mouth_y=57,
-         mouths={"neutre": {"kind": "line", "w": 11, "curve": -0.6},
+         mouths={"neutre": {"kind": "line", "w": 11, "curve": -0.6, "lips": lips},
                  "content": {"kind": "smile", "w": 14, "open_": 3.5, "curve": 2, "tongue": ("scarf", 1)},
                  "furieux": {"kind": "shout", "w": 12, "open_": 4, "tongue": ("scarf", 1)},
                  "gene": {"kind": "smirk", "w": 9, "curve": -1}},

@@ -24,6 +24,7 @@ int main(bool hard)
     screen_register(SCREEN_REFERENDUM, &scr_referendum);
     screen_register(SCREEN_RESHUFFLE, &scr_reshuffle);
     screen_register(SCREEN_MAP, &scr_map);
+    screen_register(SCREEN_OPTIONS, &scr_options);
     screen_run(SCREEN_TITLE);
     return 0;
 }

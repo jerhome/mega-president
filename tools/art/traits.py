@@ -11,6 +11,11 @@ from raster import line, polyline, poly
 
 INK = ("ink", 0)
 
+# Image d'animation en cours de rendu (tâche 3.18, visages animés) : None (expression
+# telle quelle), "blink" (yeux fermés), "look" (iris sur le côté), "talk1" (bouche
+# mi-ouverte), "talk2" (bouche ouverte). Positionné par make_art.py autour de P.render().
+ANIM = None
+
 
 def sk(t):
     return ("skin", t)
@@ -26,6 +31,11 @@ def eye(cv, cx, cy, w=9, h=4.0, side=-1, open_=1.0, tilt=0.0, raise_=0.0, look=0
     tilt > 0 : coin intérieur abaissé (colère) ; < 0 : relevé (inquiétude).
     raise_ : paupière inférieure remontée (sourire). droop : paupière lourde (coin
     extérieur tombant). bags : cernes (0, 1, 2 lignes)."""
+    if ANIM == "look":   # regard qui s'échappe : vers la droite, ou retour au centre
+        look = look - 2 if look > 0 else look + (2 if w >= 7 else 1)
+    if ANIM == "blink" and not closed_smile:
+        _closed_eye(cv, cx, cy, w, h, side, lashes, lid, bags, raise_, tilt)
+        return
     x0 = cx - w / 2.0
     top = {}
     bot = {}
@@ -114,6 +124,42 @@ def eye(cv, cx, cy, w=9, h=4.0, side=-1, open_=1.0, tilt=0.0, raise_=0.0, look=0
                 cv.put(x, y, sk(1 if b == 0 else 1))
 
 
+def _closed_eye(cv, cx, cy, w, h, side, lashes, lid, bags, raise_, tilt=0.0):
+    """Œil fermé (clignement) : paupière supérieure baissée, arc d'encre vers le bas.
+    La pente de l'expression est gardée à moitié (DA § 8) : un furieux qui cligne reste
+    furieux, un gêné reste inquiet, au lieu de paraître apaisé pendant 120 ms."""
+    x0 = cx - w / 2.0
+    pts = []
+    for i in range(w):
+        t = (i + 0.5) / w
+        tin = t if side < 0 else 1 - t
+        s = math.sin(math.pi * t) ** 0.8
+        pts.append((x0 + i + 0.5, cy + 0.5 + h * 0.3 * s - raise_ * 0.3 * s + tilt * 0.5 * (tin - 0.5) * 2))
+    m = cv.stroke([(a, math.floor(b + 0.5)) for a, b in pts], INK)
+    if lid >= 2:
+        cv.stroke([(a, math.floor(b + 0.5) - 1) for a, b in pts[1:-1]], INK)
+    # paupière baissée : ombre douce au-dessus du trait (peau seulement)
+    for i in range(1, w - 1):
+        x = int(math.floor(x0 + i + 0.5))
+        y = int(math.floor(pts[i][1] + 0.5)) - (2 if lid >= 2 else 1)
+        k = cv.get(x, y)
+        if k and k[0] == "skin" and (x, y) not in m:
+            cv.put(x, y, sk(1))
+    # coin extérieur et cils
+    ox = int(math.floor(x0 + 0.5)) if side < 0 else int(math.floor(x0 + w - 0.5))
+    oy = int(math.floor(pts[0 if side < 0 else w - 1][1] + 0.5))
+    if lashes:
+        cv.put(ox + (-1 if side < 0 else 1), oy + 1, INK)
+        cv.put(ox + (1 if side < 0 else -1), oy + 2, INK)
+    for b in range(bags):
+        for i in range(1 + b, w - 1 - b):
+            x = int(math.floor(x0 + i + 0.5))
+            y = int(math.ceil(cy + h * 0.55 * math.sin(math.pi * (i + 0.5) / w) ** 0.7)) + 2 + b * 2
+            k = cv.get(x, y)
+            if k and k[0] == "skin":
+                cv.put(x, y, sk(1))
+
+
 def brow(cv, cx, cy, w=10, side=-1, inner_dy=0.0, outer_dy=0.0, arch=1.5, thick=2,
          key=INK, key2=None, taper=True):
     """Sourcil : de l'intérieur (près du nez) vers l'extérieur.
@@ -146,6 +192,8 @@ def mouth(cv, cx, cy, w=12, kind="line", curve=0.0, open_=4, teeth=True, lip=Non
           lip_sh=None, inner=("ink", 0), tongue=None, skew=0.0, under=True, upper=None):
     """Bouche centrée en (cx, cy). kind : line, smile, grin, shout, grit, wavy, smirk, pout.
     curve > 0 : coins relevés."""
+    if ANIM in ("talk1", "talk2"):
+        kind, w, curve, open_, teeth, tongue = _talk(ANIM == "talk2", kind, w, curve, open_)
     hw = w / 2.0
     L = (cx - hw, cy - curve + skew)
     R = (cx + hw, cy - curve - skew)
@@ -262,6 +310,28 @@ def mouth(cv, cx, cy, w=12, kind="line", curve=0.0, open_=4, teeth=True, lip=Non
     # fossettes aux coins
     for (x, y), s in ((L, -1), (R, 1)):
         cv.put(int(math.floor(x)) + s, int(math.floor(y)) - (1 if curve > 0 else 0), sk(1))
+
+
+def _talk(wide, kind, w, curve, open_):
+    """Bouche qui parle : mi-ouverte (wide False) ou ouverte, à partir de la bouche de
+    l'expression. Renvoie (kind, w, curve, open_, teeth, tongue)."""
+    if kind in ("smile", "grin"):
+        # Bouche déjà grande ouverte : on la referme à moitié, puis on l'ouvre encore.
+        # Bouche peu ouverte (sourire de publicité, présentatrice) : les deux images
+        # l'ouvrent davantage, sinon « parole 1 » ne se distingue pas de l'expression (DA, § 8).
+        if open_ >= 2.6:
+            o = open_ + 1.3 if wide else open_ * 0.5
+        else:
+            o = open_ + 2.0 if wide else open_ + 0.9
+        return kind, w, curve, o, True, None
+    if kind == "shout":
+        o = open_ * 1.25 if wide else max(1.3, open_ * 0.55)
+        return "shout", w, curve, o, True, None
+    if kind == "grit":
+        return "shout", w * 0.9, 0, (2.4 if wide else 1.4), True, None
+    # bouches fermées (line, wavy, smirk, pout) : petite ouverture ovale
+    c = max(-1.0, min(1.0, curve)) * 0.5
+    return "smile", max(6, w * 0.85), c, (2.0 if wide else 1.2), wide, None
 
 
 # --- rides, gouttes ----------------------------------------------------------------

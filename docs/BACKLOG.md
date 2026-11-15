@@ -205,22 +205,50 @@ On passe tout son temps dans les écrans : ils doivent être superbes. Personnag
 | 3.07 | Générateur de portraits V3 : grand format, 15 couleurs, éclairage, caricature marquée, 2-3 expressions | 8 h | ✅ Validé par le joueur (15/11) |
 | 3.08 | Gueules des 14 personnages existants (présidents, PM, cohabitation, candidats) | 12 h | ✅ |
 | 3.09 | Nouvelles gueules : ministres, chefs de parti, journalistes, président du Sénat… | 12 h | ✅ |
-| 3.16 | Écran de démarrage redessiné dans le style décalé des gueules (bon enfant, drôle, pointe d'humour de gauche) | 3 h | 🔄 |
+| 3.16 | Écran de démarrage redessiné dans le style décalé des gueules (bon enfant, drôle, pointe d'humour de gauche) | 3 h | ✅ |
 | 3.17 | Vignettes d'événement et décors redessinés dans le style V3 ; hémicycle dynamique (sièges colorés, vote en direct) ; passe sur tout ce qui fait « cheap » | 8 h | ✅ |
+| 3.18 | **Visages animés sans son**, à la Dune : clignements irréguliers, regard qui s'échappe, changement d'expression masqué par un clignement, bouche qui bouge sur les répliques ; une seule gueule animée à la fois (consigne DA, REVUE_DA_V3 § 6) | 8 h | ✅ relu par la DA (4 retouches) |
+| 3.19 | **Écran Options** soigné (avancé de la V4 à la demande du joueur) : son, affichage, jeu, données ; accès depuis le titre et le menu de jeu ; réglages mémorisés en SRAM. Conception DA (docs/SPEC_OPTIONS.md), puis md-dev ; le réglage des voix servira en V4 | 9,5 h | ✅ (relecture DA à faire) |
 | 3.10 | Intégration des portraits et expressions dans les écrans | 3 h | ✅ |
 
 ### Musique (agent `md-dev` son)
 | # | Tâche | Durée | État |
 |---|---|---|---|
 | 3.11 | Passage à la puce FM (YM2612) via XGM2 : outil de composition en code → VGM → XGM2, instruments (basses, nappes, pianos électriques), voix « For sure ! » et bruitages compatibles | 10 h | ✅ |
-| 3.12 | Musiques chill : titre, 5 années, élection | 10 h | 🔄 |
-| 3.13 | Un thème par écran avec un petit cachet lié à ce qu'on voit (journal, Assemblée, carte, budget, référendum, remaniement, destitution, campagne, fin, scores, aide) | 14 h | 🔄 |
-| 3.14 | Intégration : musique par écran, enchaînements | 3 h | 🔄 |
+| 3.12 | Musiques chill : titre, 5 années, élection | 10 h | ✅ |
+| 3.13 | Un thème par écran avec un petit cachet lié à ce qu'on voit (journal, Assemblée, carte, budget, référendum, remaniement, destitution, campagne, fin, scores, aide) | 14 h | ✅ |
+| 3.14 | Intégration : musique par écran, enchaînements | 3 h | ✅ |
 
 ### Jalon V3
 | # | Tâche | Durée | État |
 |---|---|---|---|
-| 3.15 | Budgets ROM/RAM/VRAM, PAL et NTSC, test console du joueur, release | 5 h | |
+| 3.15 | Budgets ROM/RAM/VRAM, PAL et NTSC, test console du joueur, release | 5 h | 🔄 ROM v3.0 prête, test console du joueur en attente |
+
+## V4 — 5 électorats et budget détaillé (≈ 50 h)
+
+Spécification validée : [SPEC_V4.md](SPEC_V4.md). Développement sur la branche `v4-dev`, fusionnée dans main après la sortie de la V3.
+
+| # | Tâche | Durée | État |
+|---|---|---|---|
+| 4.01 | Arbitrage des questions ouvertes et mise à jour de la spec | 0,5 h | ✅ |
+| 4.02 | Cœur 5 électorats : enum, `elec_weight`, tables d'opinion, popularité, opinion de départ, `sim_core_opinion` (législatives, Sénat), référendum, thèmes, clés `EFF_POP_RETRAITES/JEUNES`, tests unitaires | 4 h | ✅ |
+| 4.03 | Régions à 5 poids | 1 h | ✅ |
+| 4.04 | Générateur de contenu : nouvelles clés, alias `POP_CADRES`, `LAW_MAX_IMMEDIATE` = 4, contrôle des limites | 1 h | ✅ |
+| 4.05 | Passe sur les 40 lois (effets immédiats sur 5 électorats) | 3 h | ✅ |
+| 4.06 | Passe sur environ 50 événements et 6 nouveaux événements (retraités, jeunes) | 4 h | ✅ |
+| 4.07 | Écrans électorats : ligne du tableau de bord avec tendances, écran détail (C), référendum et campagne à 5 lignes, aide | 3 h |  |
+| 4.08 | Cœur budget détaillé : `budget_lvl[6]`, tables, multiplicateur, préréglages, reconduction par services votés, garde-fous, orientation de vote, 49.3, aperçus, tests | 5 h | ✅ |
+| 4.09 | Budget en cohabitation (plan du PM, ligne défense) et amendement du Sénat (lecture définitive à 1 CP), comptes rendus | 2,5 h | ✅ |
+| 4.10 | Textes : noms des lignes, aide C, phrases du journal (reconduction, Sénat, budget du PM), phrases de l'écran électorats | 1,5 h | ✅ |
+| 4.11 | Écran budget détaillé (6 lignes × 5 crans, préréglage, aperçu en direct, vote / 49.3, cohabitation, Sénat) | 5 h |  |
+| 4.12 | Sauvegarde : `GAMESAVE_VERSION` = 2, message à l'écran titre, test de non-régression | 1 h | 🔄 partie simulation faite, message de l'écran titre à faire |
+| 4.13 | Joueurs automatiques : préréglages, variantes optimiseur, extrême et austère, statistiques par électorat | 3 h | ✅ |
+| 4.14 | Équilibrage V4 (cibles de §3.4, 20 et 60 tours) | 5 h | ✅ |
+| 4.15 | Documentation : REGLES (V4), SIM, DECISIONS, BACKLOG | 1,5 h |  |
+| 4.16 | Contrôle qualité : `make check`, budgets RAM et ROM, BlastEm PAL et NTSC, 38 colonnes, deux mandats, cohabitation forcée, sauvegarde | 2 h |  |
+| 4.17 | Jalon : test console du joueur, étiquette git, release | 1 h |  |
+| 4.18 | **Voix « charabia » des personnages** (à la Sims) : **2 syllabes très accueillantes** par réplique, timbre propre à chaque personnage, lèvres synchronisées puis seuls les yeux bougent ; **voix désactivables** dans les options (choix du joueur, 15/11 ; détail DA : REVUE_DA_V3 § 7) | 10 h | |
+| 4.20 | Écran événement : réplique du ministre concerné (gueule + charabia) à la phase « Votre décision » (avis DA, REVUE_DA_V3 § 8.3) | 3 h | |
 
 ## Questions ouvertes
 

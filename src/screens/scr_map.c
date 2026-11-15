@@ -8,6 +8,7 @@
 #include "ui/ui.h"
 #include "ui/ui_art.h"
 #include "ui/ui_map.h"
+#include "save/settings.h"
 #include "ui/input.h"
 #include "game/game.h"
 #include "sim/regions.h"
@@ -46,10 +47,17 @@ static void map_init(void)
     ui_map_draw(MAP_X, MAP_Y);
     paint_regions();
     ui_map_highlight(sel);
-    ui_text_draw(PANEL_X, 18, "Jaune : moyenne", UI_STYLE_HIGHLIGHT);
-    ui_text_draw(PANEL_X, 19, "Rouge : faible", UI_STYLE_ALERT);
-    ui_text_draw(PANEL_X, 20, "Vert : forte", UI_STYLE_TEXT);
+    // Légende : une pastille de la couleur de la carte, puis son sens (écart à la
+    // moyenne nationale : un tiers de ± 10 points pour chaque teinte).
     ui_separator(PANEL_X, 17, PANEL_W);
+    // Légende : en daltonisme, la carte passe au bleu (celui de la jauge neutre).
+    ui_gauge_draw(PANEL_X, 18, 2, 1, 1, settings_get(SET_COLORS) ? UI_GAUGE_NEUTRAL : UI_GAUGE_POSITIVE);
+    ui_text_draw(PANEL_X + 3, 18, "Forte", UI_STYLE_TEXT);
+    ui_gauge_draw(PANEL_X, 19, 2, 1, 1, UI_GAUGE_GOLD);
+    ui_text_draw(PANEL_X + 3, 19, "Moyenne", UI_STYLE_TEXT);
+    ui_gauge_draw(PANEL_X, 20, 2, 1, 1, UI_GAUGE_NEGATIVE);
+    ui_text_draw(PANEL_X + 3, 20, "Faible", UI_STYLE_TEXT);
+    ui_text_draw(PANEL_X, 22, "Blanc : choisie", UI_STYLE_TEXT);
     ui_footer(1, 26, 38, "Gauche/Droite : région   B : retour");
 }
 

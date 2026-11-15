@@ -18,19 +18,20 @@ static const SfxSample s_sounds[SFX_COUNT] = {
 static u8 s_id;
 static u16 s_left_ms;      // temps restant estimé (on n'interroge pas le Z80 : voir voice.c)
 static u16 s_frame_ms;
-static bool s_enabled;
+static u8 s_mode;          // SFX_MODE_*
 
 void sfx_init(void)
 {
     Z80_loadDriver(Z80_DRIVER_XGM2, TRUE);
     s_left_ms = 0;
-    s_enabled = TRUE;
+    s_mode = SFX_MODE_ALL;
     s_frame_ms = IS_PAL_SYSTEM ? 20 : 17;
 }
 
 void sfx_play(SfxId id)
 {
-    if (!s_enabled || id >= SFX_COUNT) return;
+    if (s_mode == SFX_MODE_OFF || id >= SFX_COUNT) return;
+    if (s_mode == SFX_MODE_ESSENTIAL && (id == SFX_MOVE || id == SFX_OK || id == SFX_CANCEL)) return;
     // Une élection en cours n'est pas coupée par le simple déplacement du curseur.
     if (s_left_ms && id == SFX_MOVE && (s_id == SFX_ELECTION_WIN || s_id == SFX_ELECTION_LOSE)) return;
     s_id = (u8)id;
@@ -45,11 +46,16 @@ void sfx_update(void)
     else s_left_ms = 0;
 }
 
-void sfx_set_enabled(bool on)
+void sfx_set_mode(u8 mode)
 {
-    s_enabled = on;
-    if (!on) {
+    s_mode = mode > SFX_MODE_OFF ? SFX_MODE_OFF : mode;
+    if (s_mode == SFX_MODE_OFF && s_left_ms) {
         XGM2_stopPCM(SOUND_PCM_CH2);
         s_left_ms = 0;
     }
+}
+
+void sfx_set_enabled(bool on)
+{
+    sfx_set_mode(on ? SFX_MODE_ALL : SFX_MODE_OFF);
 }

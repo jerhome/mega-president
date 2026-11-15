@@ -99,6 +99,10 @@ flèches de tendance colorées (hausse/baisse favorable ou non).
 | Apparition douce après un redessin (`ui_clear`) | 150 ms | fondu depuis le tiers de la luminosité |
 | Curseur animé | 4 × 100 ms | la tuile du curseur est recopiée depuis `ts_ui_cursor` |
 | Dépliement de la boîte de message | 3 images | la fenêtre grandit vers le haut, puis le texte |
+| Visage animé : clignement | 100-130 ms toutes les 2,5 à 6 s (double 1 fois sur 6) | `ui_art.c` : rectangle des yeux réécrit (dernière gueule dessinée seulement) |
+| Visage animé : regard de côté | 0,8 à 1,5 s toutes les 8 à 15 s | neutre et content seulement |
+| Visage animé : parole | 90 à 160 ms par image | `ui_gueule_talk(ms)` : TV, 49.3, référendum, destitution, journal |
+| Changement d'expression | clignement de 80 ms | `ui_gueule_expr` sur la gueule animée |
 
 Pendant les fondus, la manette est bloquée : les appuis pendant le fondu au noir sont
 ignorés, ceux de l'apparition sont rendus à la fin (`input_block`). Les fondus

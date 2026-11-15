@@ -201,11 +201,11 @@ static void draw_detail(void)
     VoteResult v;
 
     ui_clear_rect(1, 8, 27, 8);
-    ui_clear_rect(1, 16, 38, 4);
+    ui_clear_rect(1, 16, 38, 5);
     // La ministre de l'Économie juge le budget : ravie de la rigueur, gênée par le déficit.
     ui_gueule_expr(GUEULE_MIN_ECONOMIE, def < 0 ? EXPR_CONTENT : (def > 0 ? EXPR_GENE : EXPR_NEUTRE),
                    29, 4, PAL2);
-    ui_text_wrap(1, 8, 27, 3, txt[TXT_BUD_RIGUEUR_DESC + b], UI_STYLE_TEXT);
+    ui_text_flow(1, 8, 27, 3, txt[TXT_BUD_RIGUEUR_DESC + b], UI_STYLE_TEXT);
 
     buf[0] = 0;
     cat_signed(buf, def, 1);
@@ -218,6 +218,7 @@ static void draw_detail(void)
     buf[0] = 0;
     cat_signed(buf, tn, 0);
     bud_row(14, UI_ICON_TENSION, "Tension", buf, tn > 0 ? UI_STYLE_ALERT : UI_STYLE_TEXT);
+    // Opinion par électorat : pleine largeur, sous la gueule (26 cases ne suffisent pas).
     buf[0] = 0;
     strcat(buf, "Pop ");
     cat_signed(buf, sim_budget_opinion(b, ELEC_POPULAIRES), 1);
@@ -225,8 +226,9 @@ static void draw_detail(void)
     cat_signed(buf, sim_budget_opinion(b, ELEC_MOYENNES), 1);
     strcat(buf, " Ais ");
     cat_signed(buf, sim_budget_opinion(b, ELEC_AISEES), 1);
-    ui_icon_draw(1, 15, UI_ICON_SOCIAL);
-    ui_text_draw_n(3, 15, buf, 26, 0, UI_STYLE_TEXT);
+    ui_icon_draw(1, 16, UI_ICON_SOCIAL);
+    ui_text_draw(3, 16, "Opinion", UI_STYLE_DIM);
+    ui_text_right(39, 16, buf, UI_STYLE_TEXT);
 
     sim_budget_preview(c, b, &v);
     buf[0] = 0;
@@ -234,10 +236,10 @@ static void draw_detail(void)
     cat_num(buf, v.votes_pour, 0);
     strcat(buf, " voix sur ");
     cat_num(buf, SEATS_TOTAL, 0);
-    ui_icon_draw(1, 17, UI_ICON_ASSEMBLY);
-    ui_text_draw(3, 17, buf, UI_STYLE_TEXT);
-    ui_gauge_draw(1, 18, 38, v.votes_pour, SEATS_TOTAL, v.adopted ? UI_GAUGE_POSITIVE : UI_GAUGE_NEGATIVE);
-    ui_text_draw(3, 19, v.adopted ? "Adopté si vous le soumettez" : "Rejeté si vous le soumettez",
+    ui_icon_draw(1, 18, UI_ICON_ASSEMBLY);
+    ui_text_draw(3, 18, buf, UI_STYLE_TEXT);
+    ui_gauge_draw(1, 19, 38, v.votes_pour, SEATS_TOTAL, v.adopted ? UI_GAUGE_POSITIVE : UI_GAUGE_NEGATIVE);
+    ui_text_draw(3, 20, v.adopted ? "Adopté si vous le soumettez" : "Rejeté si vous le soumettez",
                  v.adopted ? UI_STYLE_TEXT : UI_STYLE_ALERT);
 }
 
@@ -245,7 +247,7 @@ static void draw_zone(void)
 {
     char buf[UI_LINE_BUF];
 
-    ui_clear_rect(1, 20, 38, 7);
+    ui_clear_rect(1, 21, 38, 6);
     ui_select_bar_clear(1, 21, 37);
     ui_select_bar_clear(1, 22, 37);
     ui_select_bar_clear(1, 23, 37);
@@ -263,12 +265,19 @@ static void draw_zone(void)
             strcat(buf, "). Défiance en hausse.");
             ui_text_wrap(1, 24, 38, 2, buf, UI_STYLE_ALERT);
             ui_text_draw(1, 26, "Sans budget : reconduction (équilibre)", UI_STYLE_DIM);
-        } else if (err_cp) {
-            ui_text_draw(1, 25, "Capital politique insuffisant", UI_STYLE_ALERT);
+        } else {
+            if (err_cp)
+                ui_text_draw(1, 24, "Capital politique insuffisant", UI_STYLE_ALERT);
+            ui_footer(1, 26, 38, "A : valider   B : retour");
         }
     } else {
-        ui_icon_draw(9, 21, UI_ICON_CHECK);
-        ui_text_center(1, 21, 38, forced ? "BUDGET ADOPTÉ PAR 49.3" : "BUDGET ADOPTÉ", UI_STYLE_HIGHLIGHT);
+        ui_clear_rect(1, 20, 38, 1);   // « Adopté si vous le soumettez » : c'est fait
+        {   // coche juste avant le titre centré
+            const char *t = forced ? "BUDGET ADOPTÉ PAR 49.3" : "BUDGET ADOPTÉ";
+            u16 n = ui_text_len(t);
+            ui_text_center(2, 21, 37, t, UI_STYLE_HIGHLIGHT);
+            ui_icon_draw(2 + (37 - n) / 2 - 2, 21, UI_ICON_CHECK);
+        }
         ui_text_wrap(1, 22, 38, 3, txt[forced ? TXT_BUDGET_493 : TXT_BUDGET_ADOPTE], UI_STYLE_TEXT);
         ui_footer(1, 26, 38, "A : continuer");
     }

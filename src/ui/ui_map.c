@@ -1,6 +1,7 @@
 // Mega Président — carte de France : seul fichier à toucher VDP/PAL pour la carte.
 #include "ui/ui_internal.h"
 #include "ui/ui_map.h"
+#include "ui/ui_art.h"
 #include "gfx_ui.h"
 #include "gfx_map.h"
 
@@ -19,6 +20,12 @@ static u16 region_color[REGION_COUNT];   // couleur courante (hors clignotement)
 static u8 selected = REGION_NONE;
 static u8 blink;
 static bool map_open;
+static bool colorblind;
+
+void ui_map_set_colorblind(bool on)
+{
+    colorblind = on;
+}
 
 static void apply(u8 region, u16 color)
 {
@@ -30,6 +37,7 @@ void ui_map_draw(u16 x, u16 y)
     u16 i;
     u16 base = ui_tile_icons + ts_ui_icons.numTile;   // juste après les tuiles de ui.c
 
+    ui_gueule_anim_cover(0, 0, 64, 32);   // la carte réutilise la VRAM des illustrations
     VDP_loadTileSet(&ts_map_france, base, DMA);
     PAL_setPalette(MAP_PAL, pal_map.data, DMA);
     for (i = 0; i < REGION_COUNT; i++)
@@ -61,7 +69,7 @@ void ui_map_clear_region(u8 region)
 void ui_map_set_region_level(u8 region, s16 value, s16 min, s16 max)
 {
     s32 t;   // 0..255
-    u16 r, g, color;
+    u16 color;
 
     if (region >= REGION_COUNT)
         return;
@@ -72,16 +80,15 @@ void ui_map_set_region_level(u8 region, s16 value, s16 min, s16 max)
     else
         t = ((s32)(value - min) * 255) / (max - min);
 
+    // Trois teintes franches, celles que nomme la légende de la carte (revue DA P1-5) :
+    // rouge (7,2,1) sous la moyenne, jaune (7,6,1) autour, vert (1,6,1) au-dessus.
     // Valeurs 0..7 par composante (VDP : 3 bits, 0x0BGR avec bits pairs).
-    // rouge (7,1,1) -> jaune (7,6,1) -> vert (1,6,1)
-    if (t < 128) {
-        r = 7;
-        g = 1 + (u16)((t * 5) / 128);
-    } else {
-        g = 6;
-        r = 7 - (u16)(((t - 128) * 6) / 127);
-    }
-    color = (u16)((r << 1) | (g << 5) | (1 << 9));
+    if (t < 85)
+        color = colorblind ? UI_MAP_LOW_CB : UI_MAP_LOW;
+    else if (t > 170)
+        color = colorblind ? UI_MAP_HIGH_CB : UI_MAP_HIGH;
+    else
+        color = UI_MAP_MID;
     region_color[region] = color;
     if (region != selected)
         apply(region, color);

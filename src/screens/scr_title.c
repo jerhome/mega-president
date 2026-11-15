@@ -13,6 +13,7 @@
 #include "save/sram.h"
 #include "ui/ui_art.h"
 #include "screens/evt_art.h"
+#include "screens/scr_options.h"
 
 enum { PH_PRESS = 0, PH_ORIENT, PH_PM, PH_DIFF, PH_DUREE };
 
@@ -21,7 +22,7 @@ enum { D_ALL = 1, D_LIST = 2, D_DESC = 4 };
 #define LIST_Y 18       // sous le titre de la phase (ligne 17), dans la fenêtre du bas (16-27)
 #define WIN_Y  16       // l illustration occupe les lignes 0 à 15
 #define PORTRAIT_X 29   // gueule 10 x 12 sur l illustration (PAL3 ; le titre est en PAL2)
-#define PORTRAIT_Y 2
+#define PORTRAIT_Y 4   // rangées 4-15 : le bas du médaillon touche la fenêtre (rangée 16)
 
 static const char *const orient_items[ORIENT_COUNT] = {
     "Gauche — RSV", "Centre — MJM", "Droite — UTL"
@@ -42,7 +43,17 @@ static u32 seed_acc;
 static u32 press_ms;
 static u8 has_save;
 static UiList list;
-static bool music_wait;   // musique différée jusqu'à la fin de la voix
+
+// Menu d'accueil (3.19) : les raccourcis START, B et C restent valables sur toutes les lignes.
+enum { HOME_NEW = 0, HOME_CONTINUE, HOME_SCORES, HOME_OPTIONS, HOME_COUNT };
+static const char *const home_items[HOME_COUNT] = {
+    "Nouvelle partie", "Continuer la partie", "Meilleurs scores", "Options"
+};
+#define HOME_X 9        // liste x9-30, barre x9-29, pastilles des raccourcis en x30
+#define HOME_Y 20
+#define HOME_W 22
+static UiList home;
+static u8 home_sel;
 
 // Groupe du parti du joueur selon l'orientation (contrat §4).
 static u8 group_of(u8 orient)
@@ -80,16 +91,26 @@ static void title_init(void)
         }
     }
 #endif
+#ifdef MP_DEBUG_SCREEN
+    {   // ROM de démonstration seulement : saut direct à l'écran à capturer.
+        static bool done;
+        if (!done) {
+            done = TRUE;
+            game_debug_jump();
+            return;
+        }
+    }
+#endif
     phase = PH_PRESS;
     dirty = D_ALL;
     blink_on = FALSE;
     seed_acc = 0;
     press_ms = 0;
     has_save = game_has_save();
+    // Retour des options : barre sur « Options » ; sinon « Nouvelle partie » (A garde son effet).
+    home_sel = options_take_return() ? HOME_OPTIONS : HOME_NEW;
     // Voix « For sure ! » une seule fois par allumage ; la musique suit juste après.
-    music_wait = voice_play_intro_once();
-    if (!music_wait)
-        music_play(MUS_TITLE);
+    voice_play_intro_once();   // la musique du titre (screen.c) attend la fin de la voix
     duree_items[0] = txt[TXT_DUREE_20];
     duree_items[1] = txt[TXT_DUREE_60];
     pm_items[PM_TECHNOCRATE] = txt[TXT_PM_TECHNOCRATE_NOM];
@@ -158,22 +179,43 @@ static void title_update(void)
 {
     u16 p = input_pressed();
 
-    if (music_wait && !voice_busy()) {
-        music_wait = FALSE;
-        music_play(MUS_TITLE);
-    }
 
     // Entropie : compteur d'images et durée d'attente.
     seed_acc = seed_acc * 1103515245UL + 12345UL + input_frame_ticks() + input_held();
 
     if (phase == PH_PRESS) {
-        if (p & INPUT_C) {
+        u8 act = 0xFF;
+        if (p & INPUT_C)
+            act = HOME_SCORES;
+        else if (p & INPUT_B)
+            act = has_save ? HOME_CONTINUE : 0xFF;
+        else if (p & INPUT_START)
+            act = HOME_NEW;
+        else {
+            switch (ui_list_update(&home)) {
+            case UI_LIST_MOVED:
+                home_sel = home.sel;
+                dirty |= D_LIST;
+                break;
+            case UI_LIST_CHOSEN:
+                act = home.sel;
+                break;
+            default:
+                break;
+            }
+        }
+        if (act == HOME_SCORES) {
             screen_change(SCREEN_SCORES);
-        } else if ((p & INPUT_B) && has_save) {
-            if (!game_continue())
+        } else if (act == HOME_CONTINUE) {
+            if (!game_continue()) {
                 has_save = 0;
-        } else if (p & (INPUT_START | INPUT_OK)) {
+                dirty = D_ALL;
+            }
+        } else if (act == HOME_OPTIONS) {
+            options_open(SCREEN_TITLE);
+        } else if (act == HOME_NEW) {
             press_ms = screen_time_ms();
+            home_sel = HOME_NEW;
             go_phase(PH_ORIENT);
         }
         return;
@@ -224,8 +266,10 @@ static void title_draw(void)
         if (phase == PH_PRESS) {
             ui_text_center(0, 17, UI_COLS, taglines[tagline][0], UI_STYLE_HIGHLIGHT);
             ui_text_center(0, 18, UI_COLS, taglines[tagline][1], UI_STYLE_TEXT);
-            ui_footer(1, 22, UI_TEXT_COLS, has_save ? "B : continuer la partie   C : meilleurs scores"
-                                                    : "C : meilleurs scores");
+            ui_list_init(&home, HOME_X, HOME_Y, HOME_W, HOME_COUNT, home_items, HOME_COUNT);
+            ui_list_set_disabled(&home, HOME_CONTINUE, !has_save);
+            home.sel = home_sel;
+            dirty |= D_LIST;
             // Pied de page, séparé des actions par une ligne vide et un filet.
             ui_separator(1, 24, UI_TEXT_COLS);
             ui_text_center(0, 25, UI_COLS, GAME_AUTHOR " - " GAME_VERSION, UI_STYLE_DIM);
@@ -245,14 +289,21 @@ static void title_draw(void)
     }
 
     if (phase == PH_PRESS) {
-        // Clignotement toutes les 500 ms, quelle que soit la fréquence.
+        // Clignotement toutes les 500 ms, quelle que soit la fréquence : pastille START seule.
         bool on = ((screen_time_ms() / 500) & 1) == 0;
+        if (dirty & D_LIST) {
+            ui_list_draw(&home);   // efface la colonne des pastilles : on les repose
+            ui_icon_draw(HOME_X + HOME_W - 1, HOME_Y + HOME_CONTINUE, UI_ICON_BTN_B);
+            ui_icon_draw(HOME_X + HOME_W - 1, HOME_Y + HOME_SCORES, UI_ICON_BTN_C);
+            blink_on = !on;
+            dirty &= (u8)~D_LIST;
+        }
         if (on != blink_on) {
             blink_on = on;
             if (on)
-                ui_footer(1, 20, UI_TEXT_COLS, "START : nouvelle partie");
+                ui_icon_draw(HOME_X + HOME_W - 1, HOME_Y + HOME_NEW, UI_ICON_BTN_START);
             else
-                ui_clear_rect(1, 20, UI_TEXT_COLS, 1);
+                ui_clear_rect(HOME_X + HOME_W - 1, HOME_Y + HOME_NEW, 1, 1);
         }
         return;
     }

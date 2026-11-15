@@ -6,7 +6,8 @@ Le joueur parle français : documents, textes du jeu et rapports en français.
 ## Documents de référence
 - `docs/REGLES.md` : règles validées (V1 et V2 distinguées).
 - `docs/BACKLOG.md` : tâches V0, V1 et V2. Marquer ✅ (fait) ou 🔄 (en cours) dans la ligne de la tâche ; `python3 tools/progress.py` calcule l'avancement.
-- `docs/AGENTS.md` : agents `md-dev`, `qa-rom`, `redacteur` (`.claude/agents/`), en Sonnet. **3 agents simultanés au maximum** ; un 4e temporaire si gain de temps, avec notification mobile (PushNotification). Opus ponctuellement si gros gain, en prévenant aussi.
+- `docs/A_VALIDER.md` : décisions importantes en attente d'accord du joueur (mode retrait).
+- `docs/AGENTS.md` : agents `md-dev`, `qa-rom`, `redacteur`, `directeur-artistique` (Opus, décisions graphiques et relecture visuelle avant le joueur), `vannes` (Opus, relecture et écriture de l'humour) (`.claude/agents/`), en Sonnet. **3 agents simultanés au maximum** ; un 4e temporaire si gain de temps, avec notification mobile (PushNotification). Opus ponctuellement si gros gain, en prévenant aussi.
 
 ## Commandes
 | Commande | Effet |
@@ -36,7 +37,7 @@ Arrêter l'émulateur avec `pkill -x blastem` (jamais `pkill -f`, qui tue le she
 - Fonctionner en PAL et en NTSC ; le jeu ne dépend jamais du nombre d'images par seconde.
 
 ## Contenu
-Ton sérieux et réaliste, avec parfois une pointe d'humour de gauche. **Partis, personnalités, entreprises et médias exclusivement fictifs.**
+Ton sérieux et réaliste, avec une pointe d'humour de gauche : plus loin que l'humour à la Ron Gilbert, en frisant l'esprit Radio Nova (décalé, irrévérencieux), avec subtilité. **Partis, personnalités, entreprises et médias exclusivement fictifs.**
 
 ## Git
 - Dépôt public `github.com/jerhome/mega-president`, push en HTTPS via `gh` (compte `jerhome`).
