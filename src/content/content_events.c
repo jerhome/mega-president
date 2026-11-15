@@ -49,6 +49,12 @@ const char *const evt_title[EVT_COUNT] = {
     "Scandale d'espionnage", // EVT_ESPIONNAGE
     "Panne géante d'électricité", // EVT_PANNE_ELECTRIQUE
     "Marée noire", // EVT_MAREE_NOIRE
+    "Le gel des pensions", // EVT_PENSIONS
+    "Scandale en maison de retraite", // EVT_EHPAD
+    "Fracture numérique", // EVT_FRACTURE_NUM
+    "L'algorithme du bac", // EVT_AFFECTATION
+    "Les jeunes sans emploi", // EVT_CHOMAGE_JEUNES
+    "La marche pour le climat", // EVT_MARCHE_CLIMAT
 };
 
 const char *const evt_text[EVT_COUNT] = {
@@ -97,6 +103,12 @@ const char *const evt_text[EVT_COUNT] = {
     "Des journalistes révèlent qu'un\nservice de renseignement a surveillé\ndes opposants et des reporters.\nLe ministre jure ignorer tout. Les\nmicros, eux, n'ont rien dit.", // EVT_ESPIONNAGE
     "Un incident sur le réseau plonge le\nquart du pays dans le noir. Métros\nbloqués, feux éteints, ascenseurs\nhabités. Au bout de six heures,\nles bougies sont en rupture de stock.", // EVT_PANNE_ELECTRIQUE
     "Un pétrolier s'échoue au large de la\nBretagne. Les plages se couvrent de\nmazout, les bénévoles de gants jaunes.\nL'armateur, basé dans un paradis\nfiscal, promet de « suivre ça ».", // EVT_MAREE_NOIRE
+    "Bercy propose de geler les pensions\npour « un an, peut-être deux ». Le\nConseil des retraités rappelle qu'il\nvote, lui, à chaque élection. Le\nministre du Budget parle d'« effort\npartagé », surtout par les autres.", // EVT_PENSIONS
+    "Un livre-enquête révèle des repas à\n1,80 euro et des soins chronométrés\ndans les résidences du groupe\nSérénia-Vie, filiale d'Omnicorp\nFrance. Chaîne Info 24 ouvre son\njournal avec les photos.", // EVT_EHPAD
+    "Les impôts, la carte vitale et les\nbillets de train ne se gèrent plus\nqu'en ligne. Des milliers de seniors\nfont la queue au guichet de la mairie\npour imprimer un code que le site\nleur a envoyé par SMS.", // EVT_FRACTURE_NUM
+    "La plateforme d'affectation Admission+\npublie ses résultats : 60 000\nbacheliers sur liste d'attente, dont\nbeaucoup en position 11 482. Les\nlycéens découvrent la patience, et\nles parents la hotline.", // EVT_AFFECTATION
+    "Un jeune actif sur cinq est au\nchômage, et les stages non payés\ns'allongent. Le Syndicat des\nétudiants parle de « génération\nsacrifiée », l'UPE de « génération\nà former ».", // EVT_CHOMAGE_JEUNES
+    "Cent mille jeunes défilent de\nBastille à République, pancartes en\ncarton recyclé : « Vous aurez 40\ndegrés, nous aurons des dettes ». Les\nretraités trouvent le slogan\nplutôt bien tourné.", // EVT_MARCHE_CLIMAT
 };
 
 const char *const evt_choice[EVT_COUNT][EVENT_MAX_CHOICES] = {
@@ -145,6 +157,12 @@ const char *const evt_choice[EVT_COUNT][EVENT_MAX_CHOICES] = {
     { "Ouvrir une enquête", "Invoquer le secret défense", "Réformer le renseignement" }, // EVT_ESPIONNAGE
     { "Plan de sécurisation du réseau", "Blâmer l'opérateur", "Miser sur la sobriété" }, // EVT_PANNE_ELECTRIQUE
     { "Faire payer l'armateur", "Financer le nettoyage", "Minimiser l'accident" }, // EVT_MAREE_NOIRE
+    { "Geler les pensions", "Indexer sur l'inflation", "Geler seulement les plus hautes" }, // EVT_PENSIONS
+    { "Plan grand âge", "Contrôles et sanctions", "Laisser le groupe s'expliquer" }, // EVT_EHPAD
+    { "Un guichet humain par canton", "Formation au numérique", "Tout dématérialiser" }, // EVT_FRACTURE_NUM
+    { "Ouvrir des places", "Rendre l'algorithme public", "Défendre le système" }, // EVT_AFFECTATION
+    { "Contrat d'insertion jeunes", "Alléger les charges", "Compter sur la reprise" }, // EVT_CHOMAGE_JEUNES
+    { "Recevoir les organisateurs", "Annoncer un plan climat", "Saluer l'engagement" }, // EVT_MARCHE_CLIMAT
 };
 
 const char *const evt_journal[EVT_COUNT][EVENT_MAX_CHOICES] = {
@@ -193,4 +211,10 @@ const char *const evt_journal[EVT_COUNT][EVENT_MAX_CHOICES] = {
     { "Enquête ouverte sur les services.\nLes dossiers sont dans les tiroirs.", "Secret défense invoqué. Il est\nbien gardé, y compris des juges.", "Contrôle des services renforcé.\nLes micros seront déclarés." }, // EVT_ESPIONNAGE
     { "Réseau renforcé : des lignes neuves.\nLa lumière a un prix.", "L'opérateur est sermonné. Il\npromet de rallumer, c'est déjà ça.", "Sobriété prônée. Les citoyens\néteignent, le président sourit." }, // EVT_PANNE_ELECTRIQUE
     { "L'armateur est sommé de payer. Ses\navocats ont déjà une réponse.", "L'État finance le nettoyage. Les\nplages sont nettes, les caisses moins.", "« Rien de grave. » Les mouettes\nne sont pas de cet avis." }, // EVT_MAREE_NOIRE
+    { "Pensions gelées : les retraités\ncomptent, eux aussi, les centimes.", "Pensions indexées. Les jeunes\npaieront, ils l'ont bien compris.", "Seules les grosses pensions gèlent.\nElles ont déjà de bons gants." }, // EVT_PENSIONS
+    { "Un plan grand âge est annoncé. Les\ncouloirs auront aussi des rampes.", "Inspections surprises : le menu\ns'améliore d'un euro vingt.", "Le groupe « regrette ». Les familles\naussi, mais avec moins de communiqués." }, // EVT_EHPAD
+    { "Des guichets humains rouvrent. On y\ntrouve même des chaises.", "Les jeunes initient leurs aînés.\nLe mot de passe reste « 1234 ».", "Tout est en ligne. Les aînés aussi,\ndans la file d'attente." }, // EVT_FRACTURE_NUM
+    { "Des places s'ouvrent à l'université.\nIl manque encore des amphis.", "Le code est publié. Personne ne\nl'a lu, mais c'est rassurant.", "« Le système fonctionne. » La liste\nd'attente, aussi." }, // EVT_AFFECTATION
+    { "Un contrat d'insertion est lancé.\nLes jeunes y voient un premier CDD.", "Charges allégées pour embaucher les\njeunes. Les embauches, elles, tardent.", "« La reprise viendra. » Les jeunes\nn'ont pas dit à quelle date." }, // EVT_CHOMAGE_JEUNES
+    { "Les organisateurs sont reçus à\nl'Élysée, gourdes à la main.", "Plan climat annoncé. Les objectifs\nsont pour 2035. Les fonds, eux, non.", "Le président « salue l'engagement ».\nIl n'a pas dit lequel." }, // EVT_MARCHE_CLIMAT
 };

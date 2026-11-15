@@ -61,7 +61,7 @@ Choix 1 : Plan d'économies
   Journal : Plan d'économies annoncé. Les
     ministères ressortent les ciseaux.
 Choix 2 : Taxer les niches fiscales
-  Effets : DETTE -2, ECONOMIE -2, POP_AISEES -3, POP_POPULAIRES +1, POP_TOUS +1
+  Effets : DETTE -2, ECONOMIE -2, POP_CADRES -3, POP_POPULAIRES +1, POP_TOUS +1
   Journal : Les niches fiscales rabotées. Les
     lobbies sortent leurs avocats.
 Choix 3 : Contester le rapport
@@ -80,7 +80,7 @@ Texte : Une agence de notation abaisse la
   précise qu'elle « n'a rien de
   personnel ».
 Choix 1 : Rassurer les marchés
-  Effets : ECONOMIE +2, DETTE -1, POP_AISEES +2, POP_POPULAIRES -2, POP_TOUS +1
+  Effets : ECONOMIE +2, DETTE -1, POP_CADRES +2, POP_POPULAIRES -2, POP_TOUS +1, POP_RETRAITES +1
   Journal : Le président rassure les marchés.
     Les marchés prennent des notes.
 Choix 2 : Dénoncer les agences
@@ -102,15 +102,15 @@ Texte : Le sommet mondial sur le climat
   des avions privés. Noémie Vasseur
   est venue à vélo cargo, forcément.
 Choix 1 : Porter un accord ambitieux
-  Effets : ECOLOGIE +4, ECONOMIE -2, POP_AISEES -2, POP_MOYENNES +1, POP_TOUS +1, INTERNATIONAL +4
+  Effets : ECOLOGIE +4, ECONOMIE -2, POP_CADRES -2, POP_MOYENNES +1, POP_TOUS +1, INTERNATIONAL +4
   Journal : Accord ambitieux porté par Paris.
     Les industriels demandent un délai.
 Choix 2 : Un accord a minima
-  Effets : ECOLOGIE +1, POP_TOUS +1, CP +1, INTERNATIONAL +1
+  Effets : ECOLOGIE +1, POP_TOUS +1, CP +1, INTERNATIONAL +1, POP_JEUNES +1
   Journal : Accord a minima signé. Chacun
     repart avec sa conclusion.
 Choix 3 : Défendre l'industrie d'abord
-  Effets : ECONOMIE +3, ECOLOGIE -3, TENSION +2, POP_AISEES +1, INTERNATIONAL -3
+  Effets : ECONOMIE +3, ECOLOGIE -3, TENSION +2, POP_CADRES +1, INTERNATIONAL -3, POP_JEUNES -3
   Journal : La France défend ses usines. Le
     climat verra plus tard.
 
@@ -124,7 +124,7 @@ Texte : Un chercheur français reçoit le prix
   crédits « enfin renouvelés ». Les
   ministres se bousculent sur la photo.
 Choix 1 : Annoncer un plan recherche
-  Effets : TECHNOLOGIE +4, DETTE +2, POP_MOYENNES +2, POP_TOUS +1, INTERNATIONAL +2
+  Effets : TECHNOLOGIE +4, DETTE +2, POP_MOYENNES +2, POP_TOUS +1, INTERNATIONAL +2, POP_JEUNES +1
   Journal : Plan recherche annoncé. Le Nobel
     sourit, les labos comptent.
 Choix 2 : Fêter sans dépenser
@@ -146,15 +146,15 @@ Texte : Une bronchiolite sature les
   Les soignants lancent l'alerte,
   les parents, eux, l'ont déjà donnée.
 Choix 1 : Plan d'urgence pour l'enfance
-  Effets : SOCIAL +3, DETTE +2, POP_POPULAIRES +2, TENSION -2, POP_TOUS +1
+  Effets : SOCIAL +3, DETTE +2, POP_POPULAIRES +2, TENSION -2, POP_TOUS +1, POP_JEUNES +1
   Journal : Lits et postes en pédiatrie. Les
     parents respirent, Bercy tousse.
 Choix 2 : Réquisitionner des cliniques
-  Effets : SOCIAL +2, ECONOMIE -2, POP_MOYENNES +1, POP_AISEES -2, POP_TOUS +1
+  Effets : SOCIAL +2, ECONOMIE -2, POP_MOYENNES +1, POP_CADRES -2, POP_TOUS +1
   Journal : Les cliniques privées réquisitionnées.
     Elles sortent le stylo rouge.
 Choix 3 : Miser sur la télémédecine
-  Effets : TECHNOLOGIE +2, SOCIAL -2, POP_POPULAIRES -3, TENSION +3
+  Effets : TECHNOLOGIE +2, SOCIAL -2, POP_POPULAIRES -3, TENSION +3, POP_RETRAITES -2
   Journal : Un écran pour les bronchiolites.
     Le thermomètre reste manuel.
 
@@ -168,11 +168,11 @@ Texte : Quarante classes rurales vont fermer
   les parents occupent les cours de
   récréation. Les vaches regardent.
 Choix 1 : Geler les fermetures
-  Effets : SOCIAL +2, DETTE +2, POP_POPULAIRES +2, TENSION -3, POP_TOUS +1
+  Effets : SOCIAL +2, DETTE +2, POP_POPULAIRES +2, TENSION -3, POP_TOUS +1, POP_RETRAITES +2
   Journal : Fermetures gelées. Les écharpes
     des maires reprennent leur cou.
 Choix 2 : Regrouper les écoles
-  Effets : ECONOMIE +1, DETTE -1, POP_POPULAIRES -3, TENSION +3, POP_TOUS +1
+  Effets : ECONOMIE +1, DETTE -1, POP_POPULAIRES -3, TENSION +3, POP_TOUS +1, POP_RETRAITES -2
   Journal : Écoles regroupées, cars scolaires
     en plus. Le village se vide un peu.
 Choix 3 : Un plan pour les territoires
@@ -190,11 +190,11 @@ Texte : Le grand festival d'été d'Avignon-les-
   de jouer devant les préfectures.
   Le théâtre vit, mais sous perfusion.
 Choix 1 : Sauver le festival
-  Effets : SOCIAL +1, DETTE +1, POP_MOYENNES +2, POP_AISEES -1, POP_TOUS +1
+  Effets : SOCIAL +1, DETTE +1, POP_MOYENNES +2, POP_CADRES -1, POP_TOUS +1, POP_JEUNES +3
   Journal : Festival sauvé. Le public applaudit,
     la Cour des comptes soupire.
 Choix 2 : Le laisser trouver des mécènes
-  Effets : ECONOMIE +1, POP_AISEES +1, POP_MOYENNES -2, TENSION +2, POP_TOUS +1
+  Effets : ECONOMIE +1, POP_CADRES +1, POP_MOYENNES -2, TENSION +2, POP_TOUS +1, POP_JEUNES -3
   Journal : Le festival cherche un mécène.
     Omnicorp propose un logo géant.
 Choix 3 : Lancer un fonds pour la culture
@@ -212,15 +212,15 @@ Texte : Les lycéens bloquent leurs
   slogans au feutre. Les parents
   hésitent entre fierté et inquiétude.
 Choix 1 : Retirer la réforme
-  Effets : TENSION -5, POP_POPULAIRES +2, ECONOMIE -1, REL_PARTI -2, POP_TOUS +1
+  Effets : TENSION -5, POP_POPULAIRES +2, ECONOMIE -1, REL_PARTI -2, POP_TOUS +1, POP_JEUNES +4
   Journal : Réforme retirée. Les poubelles
     retrouvent leur trottoir.
 Choix 2 : Ouvrir une concertation
-  Effets : TENSION -2, SOCIAL +1, CP -1, POP_TOUS +1
+  Effets : TENSION -2, SOCIAL +1, CP -1, POP_TOUS +1, POP_JEUNES +2
   Journal : Concertation lancée. Les lycéens
     exigent un ordre du jour clair.
 Choix 3 : Faire évacuer les lycées
-  Effets : SECURITE +1, TENSION +5, SCANDALE +2, POP_MOYENNES +1
+  Effets : SECURITE +1, TENSION +5, SCANDALE +2, POP_MOYENNES +1, POP_JEUNES -4, POP_RETRAITES +2
   Journal : Lycées évacués. Les images tournent
     en boucle, les cortèges grossissent.
 
@@ -234,11 +234,11 @@ Texte : Les contrôleurs aériens cessent le
   à des gares de campagne. Les valises
   tournent, les avions restent au sol.
 Choix 1 : Négocier les effectifs
-  Effets : SOCIAL +2, DETTE +2, TENSION -3, POP_AISEES -1, POP_TOUS +1
+  Effets : SOCIAL +2, DETTE +2, TENSION -3, POP_CADRES -1, POP_TOUS +1
   Journal : Contrôleurs recrutés. Les avions
     reprennent l'air, Bercy ses calculs.
 Choix 2 : Réquisitionner les contrôleurs
-  Effets : SECURITE +1, ECONOMIE +2, TENSION +5, POP_POPULAIRES -2, POP_TOUS +1
+  Effets : SECURITE +1, ECONOMIE +2, TENSION +5, POP_POPULAIRES -2, POP_TOUS +1, POP_RETRAITES +1
   Journal : Contrôleurs réquisitionnés. Ils
     contrôlent, mais pas de bon cœur.
 Choix 3 : Laisser pourrir le conflit
@@ -256,7 +256,7 @@ Texte : Des cortèges réclament une VIe
   renouvelable. Camille Rouvière parle
   de « Constitution à rénover ».
 Choix 1 : Convoquer une convention
-  Effets : DEFIANCE -4, TENSION -3, CP -2, POP_POPULAIRES +2, POP_TOUS +1
+  Effets : DEFIANCE -4, TENSION -3, CP -2, POP_POPULAIRES +2, POP_TOUS +1, POP_JEUNES +2
   Journal : Convention citoyenne annoncée.
     Cent cinquante tirés au sort.
 Choix 2 : Réformer à la marge
@@ -300,7 +300,7 @@ Texte : Un incident sur le réseau plonge le
   habités. Au bout de six heures,
   les bougies sont en rupture de stock.
 Choix 1 : Plan de sécurisation du réseau
-  Effets : TECHNOLOGIE +2, SECURITE +2, DETTE +3, POP_MOYENNES +1, POP_TOUS +1
+  Effets : TECHNOLOGIE +2, SECURITE +2, DETTE +3, POP_MOYENNES +1, POP_TOUS +1, POP_RETRAITES +2
   Journal : Réseau renforcé : des lignes neuves.
     La lumière a un prix.
 Choix 2 : Blâmer l'opérateur
@@ -308,7 +308,7 @@ Choix 2 : Blâmer l'opérateur
   Journal : L'opérateur est sermonné. Il
     promet de rallumer, c'est déjà ça.
 Choix 3 : Miser sur la sobriété
-  Effets : ECOLOGIE +3, TENSION +2, POP_MOYENNES -2, CROISSANCE -1
+  Effets : ECOLOGIE +3, TENSION +2, POP_MOYENNES -2, CROISSANCE -1, POP_RETRAITES -3, POP_JEUNES +1
   Journal : Sobriété prônée. Les citoyens
     éteignent, le président sourit.
 
@@ -322,7 +322,7 @@ Texte : Un pétrolier s'échoue au large de la
   L'armateur, basé dans un paradis
   fiscal, promet de « suivre ça ».
 Choix 1 : Faire payer l'armateur
-  Effets : ECOLOGIE +3, ECONOMIE -1, POP_POPULAIRES +2, POP_AISEES -1, POP_TOUS +1
+  Effets : ECOLOGIE +3, ECONOMIE -1, POP_POPULAIRES +2, POP_CADRES -1, POP_TOUS +1, POP_JEUNES +2
   Journal : L'armateur est sommé de payer. Ses
     avocats ont déjà une réponse.
 Choix 2 : Financer le nettoyage
@@ -330,6 +330,6 @@ Choix 2 : Financer le nettoyage
   Journal : L'État finance le nettoyage. Les
     plages sont nettes, les caisses moins.
 Choix 3 : Minimiser l'accident
-  Effets : ECOLOGIE -3, SCANDALE +3, POP_MOYENNES -3, ECONOMIE +1
+  Effets : ECOLOGIE -3, SCANDALE +3, POP_MOYENNES -3, ECONOMIE +1, POP_JEUNES -3
   Journal : « Rien de grave. » Les mouettes
     ne sont pas de cet avis.

@@ -328,3 +328,17 @@ Détail V4 (actif, 20 tours) : facile 75 / 75 / 66 %, normal 58 / 56 / 51 %, dif
 **Variantes de budget** (normal ; réélection gauche / centre / droite) : *optimiseur* (glouton par coordonnées sur la popularité prévue, plans adoptables) 58 / 85 / 87 % ; *extrême* (dépenses +2, impôts −2, 49.3 chaque année) 55 / 83 / 77 %, dette 127-141 % ; *austère* (tout à −2) 4 / 24 / 65 %. Cible de SPEC_V4 §3.4 (au plus 5 points au-dessus du joueur actif) **non atteinte** : le joueur actif ne joue qu'avec les préréglages, et l'optimiseur le dépasse de 30 points au centre et à droite. Garde-fou de test provisoire : +45 points. Le calage (tâche 4.14) devra agir sur l'économie (conséquences d'une dette qui monte : prime de risque sur la dette seule, rappel des piliers, `k_s`), pas seulement sur les tables du budget : doubler `k_s` fait passer l'optimiseur à 38 / 63 / 64 % mais rapproche aussi les préréglages entre eux.
 
 **Sénat** : 1 % des budgets des parties automatiques sont amendés (le bloc présidentiel a presque toujours la majorité au Sénat, sauf en difficile).
+
+## V4 : passe de contenu sur 5 électorats (tâches 4.05 et 4.06)
+
+- **Lois** : 37 des 40 lois reçoivent des effets immédiats sur les retraités et/ou les jeunes (les trois autres, référendum citoyen, proportionnelle et moins de parlementaires, agissent sur `POP_TOUS`). Toutes les clés `POP_AISEES` deviennent `POP_CADRES` (même clé C). Plafond `LAW_MAX_IMMEDIATE` = 4 respecté : quand une loi dépassait, l'effet le moins marquant est sorti (police : cadres +1 retiré ; immigration, uniformes, peines planchers : cadres +1 ou populaires +1 retiré). Cas particulier de la réforme des retraites : populaires −4, moyennes −2, **retraités −5** et tension +8 ; le « jeunes +1 » de SPEC_V4 §1.4 n'a pas de place (4 effets maximum) et pèse peu (12 % × 1).
+- **Événements** : 37 événements existants gagnent des effets `POP_RETRAITES` / `POP_JEUNES` (limite de 6 effets par choix) ; `POP_AISEES` devient `POP_CADRES` partout. 6 événements nouveaux dans `docs/contenu/evenements_v4.md` : `EVT_PENSIONS` (gel des pensions), `EVT_EHPAD` (scandale en maison de retraite), `EVT_FRACTURE_NUM` (fracture numérique des seniors), `EVT_AFFECTATION` (algorithme d'affectation post-bac), `EVT_CHOMAGE_JEUNES`, `EVT_MARCHE_CLIMAT`. Total : 51 événements (limite 64).
+- **Recalage** : la nouvelle passe fait gagner 2 à 3 points de réélection à l'ensemble (les retraités et les jeunes reçoivent désormais les effets que 3 électorats absorbaient seuls). `OPN_BASE` 342 → **339**.
+
+| Réélection du joueur actif (800 graines) | Facile | Normal | Difficile |
+|---|---|---|---|
+| Avant la passe (`OPN_BASE` = 342) | 72 % | 55 % | 24 % |
+| Passe de contenu sans recalage | 74 % | 58 % | 26 % |
+| **Passe de contenu, `OPN_BASE` = 339** | **72 %** | **56 %** | **25 %** |
+
+Détail (gauche / centre / droite) : facile 76 / 76 / 66, normal 59 / 58 / 50, difficile 26 / 28 / 22 ; écart entre orientations ≤ 10 points. Popularité finale par électorat (actif, normal, gauche) : Pop 49,5 / Moy 46,9 / Cad 41,8 / Ret 45,3 / Jeu 50,7. Préréglages fixes (centre, normal) : rigueur 42 %, équilibre 71 %, relance 93 % de réélection (dominance du budget inchangée, voir tâche 4.14).

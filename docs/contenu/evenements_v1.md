@@ -13,7 +13,7 @@ Texte : Les nappes phréatiques sont à sec
   et le préfet interdit d'arroser les
   pelouses. Le maïs, lui, s'est rendu.
 Choix 1 : Restrictions d'eau strictes
-  Effets : ECOLOGIE +3, TENSION +3, POP_MOYENNES -2
+  Effets : ECOLOGIE +3, TENSION +3, POP_MOYENNES -2, POP_RETRAITES -1, POP_JEUNES +1
   Journal : Eau rationnée : on se lave vite,
     on arrose peu, on râle beaucoup.
 Choix 2 : Aide d'urgence aux exploitants
@@ -21,7 +21,7 @@ Choix 2 : Aide d'urgence aux exploitants
   Journal : Chèque pour les champs. Les nappes
     n'ont pas reçu de virement.
 Choix 3 : Lancer un plan de l'eau
-  Effets : ECOLOGIE +3, DETTE +2, POP_POPULAIRES +1
+  Effets : ECOLOGIE +3, DETTE +2, POP_POPULAIRES +1, POP_JEUNES +1
   Journal : Plan de l'eau : des tuyaux neufs,
     des promesses pour dans dix ans.
 
@@ -35,15 +35,15 @@ Texte : Une étude internationale classe les
   du Matin parle de « déclassement »,
   les enseignants de « moyens ».
 Choix 1 : Plan de revalorisation
-  Effets : SOCIAL +3, DETTE +2, POP_POPULAIRES +2
+  Effets : SOCIAL +3, DETTE +2, POP_POPULAIRES +2, POP_JEUNES +2
   Journal : Les profs seront mieux payés.
     Les élèves, eux, auront cours.
 Choix 2 : Évaluations et soutien ciblé
-  Effets : TECHNOLOGIE +2, POP_MOYENNES +2, POP_POPULAIRES -2
+  Effets : TECHNOLOGIE +2, POP_MOYENNES +2, POP_POPULAIRES -2, POP_JEUNES -2
   Journal : Plus d'évaluations pour mieux
     mesurer. Les cartables s'alourdissent.
 Choix 3 : Dénoncer un classement biaisé
-  Effets : POP_MOYENNES -2, SCANDALE +3, INTERNATIONAL -2
+  Effets : POP_MOYENNES -2, SCANDALE +3, INTERNATIONAL -2, POP_JEUNES -1
   Journal : Le président critique le classement.
     Le thermomètre est accusé de fièvre.
 
@@ -61,11 +61,11 @@ Choix 1 : Soigner l'accueil à tout prix
   Journal : Fête réussie, addition salée.
     Le chiffre officiel reste à venir.
 Choix 2 : Un événement sobre
-  Effets : ECOLOGIE +2, DETTE -1, POP_MOYENNES -1
+  Effets : ECOLOGIE +2, DETTE -1, POP_MOYENNES -1, POP_JEUNES +1
   Journal : Des Jeux sans fard : moins de
     paillettes, moins de gaspillage.
 Choix 3 : Réserver des places aux écoles
-  Effets : SOCIAL +2, POP_POPULAIRES +3, DETTE +1
+  Effets : SOCIAL +2, POP_POPULAIRES +3, DETTE +1, POP_JEUNES +2
   Journal : Des tribunes pour les écoliers.
     Les VIP se serrent un peu.
 
@@ -88,7 +88,7 @@ Choix 2 : Réformer la procédure
   Journal : La procédure est simplifiée.
     Les avocats la trouvent compliquée.
 Choix 3 : Promettre une loi de moyens
-  Effets : SCANDALE -2, POP_POPULAIRES +1, POP_AISEES -1
+  Effets : SCANDALE -2, POP_POPULAIRES +1, POP_CADRES -1
   Journal : Loi de programmation promise. Les
     magistrats attendent le décret.
 
@@ -102,7 +102,7 @@ Texte : Un archipel d'outre-mer proteste
   Barrages sur les routes, rayons
   vides et élus qui montent à Paris.
 Choix 1 : Bouclier prix local
-  Effets : SOCIAL +2, DETTE +2, TENSION -4, POP_POPULAIRES +2
+  Effets : SOCIAL +2, DETTE +2, TENSION -4, POP_POPULAIRES +2, POP_JEUNES +1
   Journal : Les prix sont encadrés là-bas.
     Les supermarchés négocient leur marge.
 Choix 2 : Plan de développement
@@ -110,7 +110,7 @@ Choix 2 : Plan de développement
   Journal : Plan de développement : des routes,
     des ports, des promesses durables.
 Choix 3 : Une mission d'enquête
-  Effets : TENSION +3, SCANDALE +2, POP_AISEES +1
+  Effets : TENSION +3, SCANDALE +2, POP_CADRES +1
   Journal : Mission d'enquête envoyée. Les
     barrages, eux, restent sur place.
 
@@ -124,15 +124,15 @@ Texte : Les prix de l'alimentation ont
   la grande distribution jure ne pas
   y être pour grand-chose.
 Choix 1 : Chèque alimentaire
-  Effets : POP_POPULAIRES +3, DETTE +2, SOCIAL +1
+  Effets : POP_POPULAIRES +3, DETTE +2, SOCIAL +1, POP_RETRAITES +2, POP_JEUNES +1
   Journal : Chèque alimentaire : le caddie
     respire un peu, la dette moins.
 Choix 2 : Plafonner les marges
-  Effets : POP_POPULAIRES +2, POP_AISEES -2, ECONOMIE -2, TENSION -2
+  Effets : POP_POPULAIRES +2, POP_CADRES -2, ECONOMIE -2, TENSION -2, POP_RETRAITES +1
   Journal : Marges plafonnées. La distribution
     découvre le mot « solidarité ».
 Choix 3 : Faire confiance aux filières
-  Effets : ECONOMIE +2, POP_POPULAIRES -3, TENSION +3
+  Effets : ECONOMIE +2, POP_POPULAIRES -3, TENSION +3, POP_RETRAITES -3, POP_JEUNES -1
   Journal : « La concurrence jouera. » Le
     panier moyen aussi, à la baisse.
 
@@ -146,7 +146,7 @@ Texte : Un incident dans un collège relance
   claires, les familles de l'apaisement.
   Tout le monde invoque la République.
 Choix 1 : Circulaire de fermeté
-  Effets : SECURITE +2, TENSION +2, POP_MOYENNES +2, POP_POPULAIRES -2
+  Effets : SECURITE +2, TENSION +2, POP_MOYENNES +2, POP_POPULAIRES -2, POP_RETRAITES +2, POP_JEUNES -2
   Journal : Circulaire de fermeté : les
     règles sont claires. Les esprits, non.
 Choix 2 : Médiation et formation
@@ -168,15 +168,15 @@ Texte : Un faux document circule en ligne :
   Quinze millions de vues avant midi.
   Le démenti en fera dix mille.
 Choix 1 : Démentir sans attendre
-  Effets : DEFIANCE -4, POP_MOYENNES +1, TENSION -2
+  Effets : DEFIANCE -4, POP_MOYENNES +1, TENSION -2, POP_RETRAITES +1
   Journal : Démenti officiel dans l'heure. La
     rumeur, elle, a déjà fait le tour.
 Choix 2 : Loi sur les plateformes
-  Effets : DEFIANCE -2, TECHNOLOGIE -2, POP_AISEES -2, SECURITE +1
+  Effets : DEFIANCE -2, TECHNOLOGIE -2, POP_CADRES -2, SECURITE +1
   Journal : Les plateformes sommées de réagir.
     Elles promettent un « dialogue ».
 Choix 3 : Ignorer, la rumeur passera
-  Effets : DEFIANCE +4, SCANDALE +2
+  Effets : DEFIANCE +4, SCANDALE +2, POP_RETRAITES -1
   Journal : Le président laisse dire. Les
     internautes, eux, ne se gênent pas.
 
@@ -190,7 +190,7 @@ Texte : Un entrepôt de produits chimiques
   Les riverains veulent des réponses,
   l'exploitant des avocats.
 Choix 1 : Enquête et sanctions
-  Effets : ECOLOGIE +3, SECURITE +1, ECONOMIE -2, POP_AISEES -2
+  Effets : ECOLOGIE +3, SECURITE +1, ECONOMIE -2, POP_CADRES -2, POP_JEUNES +1
   Journal : L'exploitant est sanctionné. Le
     nuage s'est dissipé, pas la colère.
 Choix 2 : Plan de contrôle des sites
@@ -212,15 +212,15 @@ Texte : Des milliers de lycéens et d'étudiants
   banderoles inventives, abstention.
   Les sondeurs sont aux aguets.
 Choix 1 : Recevoir leurs représentants
-  Effets : POP_TOUS +1, TENSION -3, SCANDALE -1
+  Effets : POP_TOUS +1, TENSION -3, SCANDALE -1, POP_JEUNES +4
   Journal : Les jeunes à l'Élysée. Les canapés
     n'en reviennent pas.
 Choix 2 : Un plan jeunesse
-  Effets : SOCIAL +3, CHOMAGE -2, DETTE +3, POP_POPULAIRES +2
+  Effets : SOCIAL +3, CHOMAGE -2, DETTE +3, POP_POPULAIRES +2, POP_JEUNES +5, POP_RETRAITES -1
   Journal : Plan jeunesse : bourses, emploi et
     logement. L'addition viendra après.
 Choix 3 : Ne rien céder
-  Effets : TENSION +4, POP_MOYENNES +1, POP_POPULAIRES -3
+  Effets : TENSION +4, POP_MOYENNES +1, POP_POPULAIRES -3, POP_JEUNES -5, POP_RETRAITES +1
   Journal : Pas de concession. Les cortèges
     reviendront, plus nombreux.
 

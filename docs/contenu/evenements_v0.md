@@ -12,11 +12,11 @@ Texte : Quarante degrés à Lyon, les rivières
   Info 24 titre « Il fait chaud ».
   Les agriculteurs réclament de l'aide.
 Choix 1 : Plan d'urgence canicule
-  Effets : SOCIAL +3, DETTE +2, POP_POPULAIRES +2
+  Effets : SOCIAL +3, DETTE +2, POP_POPULAIRES +2, POP_RETRAITES +3
   Journal : Canicule : l'État brumise
     La facture fait bouillir Bercy.
 Choix 2 : Appeler à la sobriété
-  Effets : ECOLOGIE +3, POP_MOYENNES -2, POP_POPULAIRES -2
+  Effets : ECOLOGIE +3, POP_MOYENNES -2, POP_POPULAIRES -2, POP_RETRAITES -2
   Journal : Le président conseille de boire.
     On attendait autre chose.
 Choix 3 : Aider surtout les agriculteurs
@@ -35,15 +35,15 @@ Texte : L'UST appelle à la grève générale :
   Les cortèges : nombreux pour les
   syndicats, rares pour la préfecture.
 Choix 1 : Ouvrir des négociations
-  Effets : SOCIAL +4, TENSION -10, DETTE +2, POP_AISEES -3
+  Effets : SOCIAL +4, TENSION -10, DETTE +2, POP_CADRES -3
   Journal : Le président reçoit les syndicats.
     Le patronat boude le buffet.
 Choix 2 : Tenir bon
-  Effets : TENSION +5, ECONOMIE +2, POP_POPULAIRES -4
+  Effets : TENSION +5, ECONOMIE +2, POP_POPULAIRES -4, POP_RETRAITES +1
   Journal : Pas de recul : la rue gronde,
     les marchés applaudissent.
 Choix 3 : Réquisitionner les raffineries
-  Effets : TENSION +3, SECURITE +2, POP_MOYENNES +2, POP_POPULAIRES -3
+  Effets : TENSION +3, SECURITE +2, POP_MOYENNES +2, POP_POPULAIRES -3, POP_JEUNES -1
   Journal : Raffineries réquisitionnées : pleins
     faits, esprits pas calmés.
 
@@ -57,15 +57,15 @@ Texte : Une banque d'affaires étrangère
   réclamaient moins d'État appellent
   l'État à l'aide.
 Choix 1 : Garantir les dépôts
-  Effets : ECONOMIE +3, DETTE +4, POP_AISEES +2, POP_POPULAIRES -2
+  Effets : ECONOMIE +3, DETTE +4, POP_CADRES +2, POP_POPULAIRES -2, POP_RETRAITES +1
   Journal : L'État vole au secours des banques.
     La liberté d'entreprise, version État.
 Choix 2 : Laisser le marché se purger
-  Effets : ECONOMIE -3, CHOMAGE +3, POP_AISEES -3
+  Effets : ECONOMIE -3, CHOMAGE +3, POP_CADRES -3, POP_RETRAITES -2, POP_JEUNES -2
   Journal : L'État ne bouge pas : la main
     invisible ne rend pas la monnaie.
 Choix 3 : Taxer les profits bancaires
-  Effets : DETTE -2, POP_POPULAIRES +3, POP_AISEES -4, CROISSANCE -1
+  Effets : DETTE -2, POP_POPULAIRES +3, POP_CADRES -4, CROISSANCE -1
   Journal : Taxe sur les banques : elles
     menacent de déménager, comme toujours.
 
@@ -103,15 +103,15 @@ Texte : Après une bavure, des quartiers
   d'urgence, l'UGR une enquête
   indépendante.
 Choix 1 : Déployer les forces de l'ordre
-  Effets : SECURITE +3, TENSION -5, POP_POPULAIRES -3, REL_G5 +4
+  Effets : SECURITE +3, TENSION -5, POP_POPULAIRES -3, REL_G5 +4, POP_RETRAITES +2, POP_JEUNES -3
   Journal : Calme rétabli à coups de boucliers.
     Les causes sont restées sur place.
 Choix 2 : Lancer une enquête indépendante
-  Effets : SOCIAL +2, TENSION -3, SECURITE -2, POP_MOYENNES -3
+  Effets : SOCIAL +2, TENSION -3, SECURITE -2, POP_MOYENNES -3, POP_JEUNES +1
   Journal : Enquête indépendante : la justice
     avance, la droite aboie.
 Choix 3 : Plan de rattrapage des quartiers
-  Effets : SOCIAL +3, DETTE +3, POP_POPULAIRES +2, POP_MOYENNES -2
+  Effets : SOCIAL +3, DETTE +3, POP_POPULAIRES +2, POP_MOYENNES -2, POP_JEUNES +2, POP_RETRAITES -2
   Journal : Un énième plan pour les quartiers.
     On croise les doigts.
 
@@ -126,15 +126,15 @@ Texte : Omnicorp France annonce la fermeture
   agile des actifs ». Les actionnaires
   se disent « peinés ».
 Choix 1 : Nationaliser temporairement
-  Effets : CHOMAGE -2, DETTE +3, POP_POPULAIRES +3, POP_AISEES -3
+  Effets : CHOMAGE -2, DETTE +3, POP_POPULAIRES +3, POP_CADRES -3, POP_JEUNES +1
   Journal : L'État reprend l'usine. Omnicorp,
     elle, garde ses dividendes.
 Choix 2 : Négocier un plan social
-  Effets : SOCIAL +2, DETTE +1, TENSION -2, POP_AISEES -1
+  Effets : SOCIAL +2, DETTE +1, TENSION -2, POP_CADRES -1
   Journal : Plan social signé : 800 familles
     sans pot de départ.
 Choix 3 : Ne pas intervenir
-  Effets : CHOMAGE +2, ECONOMIE +2, POP_POPULAIRES -3, TENSION +3
+  Effets : CHOMAGE +2, ECONOMIE +2, POP_POPULAIRES -3, TENSION +3, POP_JEUNES -2
   Journal : L'État s'abstient. Omnicorp se dit
     « sensible au dialogue ».
 
@@ -149,11 +149,11 @@ Texte : Un laboratoire public annonce un
   qu'ils sont payés au SMIC de la
   recherche.
 Choix 1 : Financer le laboratoire
-  Effets : TECHNOLOGIE +4, DETTE +2, POP_MOYENNES +2
+  Effets : TECHNOLOGIE +4, DETTE +2, POP_MOYENNES +2, POP_JEUNES +2
   Journal : Fonds publics pour la découverte.
     Les chercheurs n'y croient pas.
 Choix 2 : Céder le brevet à un industriel
-  Effets : ECONOMIE +3, CROISSANCE +1, POP_AISEES +2, POP_POPULAIRES -2
+  Effets : ECONOMIE +3, CROISSANCE +1, POP_CADRES +2, POP_POPULAIRES -2
   Journal : Brevet vendu à Omnicorp : la science
     est publique, les profits moins.
 Choix 3 : Laisser faire le labo
@@ -172,11 +172,11 @@ Texte : Une usine chimique déverse des
   L'exploitant évoque « un incident
   technique ».
 Choix 1 : Sanctions et dépollution
-  Effets : ECOLOGIE +4, DETTE +1, ECONOMIE -2, POP_AISEES -2
+  Effets : ECOLOGIE +4, DETTE +1, ECONOMIE -2, POP_CADRES -2, POP_JEUNES +1
   Journal : L'usine paie la dépollution.
     Elle trouve ça peu agile.
 Choix 2 : Amende symbolique
-  Effets : ECONOMIE +2, ECOLOGIE -3, POP_MOYENNES -3
+  Effets : ECONOMIE +2, ECOLOGIE -3, POP_MOYENNES -3, POP_JEUNES -2
   Journal : Amende minime : le fleuve garde
     le pH de la facture.
 Choix 3 : Création d'une agence de contrôle
@@ -194,11 +194,11 @@ Texte : Le Quotidien du Matin révèle un
   et assouplissement fiscal. Le ministre
   assure avoir « payé son homard ».
 Choix 1 : Soutenir le ministre
-  Effets : SCANDALE +5, POP_MOYENNES -2, REL_PARTI +3
+  Effets : SCANDALE +5, POP_MOYENNES -2, REL_PARTI +3, POP_JEUNES -2, POP_RETRAITES -1
   Journal : Le président défend son ministre.
     Le homard a bon dos.
 Choix 2 : Limoger le ministre
-  Effets : SCANDALE -3, CP -1, POP_POPULAIRES +2, POP_AISEES -2
+  Effets : SCANDALE -3, CP -1, POP_POPULAIRES +2, POP_CADRES -2, POP_JEUNES +1
   Journal : Ministre limogé : l'UPE y voit un
     excès de zèle, le peuple un geste.
 Choix 3 : Promettre une loi sur le lobbying
@@ -220,11 +220,11 @@ Choix 1 : S'excuser publiquement
   Journal : Le président s'excuse, tête basse.
     Chaîne Info 24 diffuse quand même.
 Choix 2 : Tout nier en bloc
-  Effets : SCANDALE +4, POP_MOYENNES -2, POP_POPULAIRES -2
+  Effets : SCANDALE +4, POP_MOYENNES -2, POP_POPULAIRES -2, POP_JEUNES -1
   Journal : « Sorti de son contexte » : Internet
     a retrouvé le contexte.
 Choix 3 : Retourner l'affaire en blague
-  Effets : POP_MOYENNES +2, POP_AISEES -2, SCANDALE +2
+  Effets : POP_MOYENNES +2, POP_CADRES -2, SCANDALE +2
   Journal : Le président plaisante de sa gaffe.
     Les communicants prient en silence.
 

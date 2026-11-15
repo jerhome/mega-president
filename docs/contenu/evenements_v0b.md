@@ -14,15 +14,15 @@ Texte : Les urgences débordent, les brancards
   soignants, eux, comptent leurs
   heures supplémentaires.
 Choix 1 : Plan blanc et recrutements
-  Effets : SOCIAL +3, DETTE +3, POP_POPULAIRES +2, ECONOMIE -1
+  Effets : SOCIAL +3, DETTE +3, POP_POPULAIRES +2, ECONOMIE -1, POP_RETRAITES +3
   Journal : Plan blanc déclenché : l'hôpital
     respire, les comptes toussent.
 Choix 2 : Campagne de vaccination
-  Effets : SOCIAL +1, DETTE +1, POP_MOYENNES -1, CP -1
+  Effets : SOCIAL +1, DETTE +1, POP_MOYENNES -1, CP -1, POP_RETRAITES +1
   Journal : Tous vaccinés ! Reste à trouver
     des infirmières pour piquer.
 Choix 3 : Compter sur le système
-  Effets : SOCIAL -3, POP_POPULAIRES -4, TENSION +3
+  Effets : SOCIAL -3, POP_POPULAIRES -4, TENSION +3, POP_RETRAITES -5
   Journal : « Le système tient. » Les
     brancards, moins.
 
@@ -36,15 +36,15 @@ Texte : Classes surchargées, postes vacants,
   parents jonglent, les élèves
   applaudissent discrètement.
 Choix 1 : Revaloriser les salaires
-  Effets : SOCIAL +3, DETTE +3, TENSION -4, POP_AISEES -2
+  Effets : SOCIAL +3, DETTE +3, TENSION -4, POP_CADRES -2, POP_JEUNES +2
   Journal : Les profs augmentés. Bercy cherche
     la craie de rechange.
 Choix 2 : Promettre des postes plus tard
-  Effets : TENSION +3, CP -1, POP_MOYENNES -2
+  Effets : TENSION +3, CP -1, POP_MOYENNES -2, POP_JEUNES -2
   Journal : Des postes « à la rentrée »,
     promis pour la 4e fois.
 Choix 3 : Imposer un service minimum
-  Effets : TENSION +5, SECURITE +1, POP_MOYENNES +2, SOCIAL -2
+  Effets : TENSION +5, SECURITE +1, POP_MOYENNES +2, SOCIAL -2, POP_JEUNES -1, POP_RETRAITES +1
   Journal : Service minimum : l'école garde
     la porte, pas les élèves.
 
@@ -80,7 +80,7 @@ Texte : Des pirates paralysent les serveurs
   réclamée en monnaie virtuelle. Le mot
   de passe d'un ministère était 1234.
 Choix 1 : Investir dans la cybersécurité
-  Effets : TECHNOLOGIE +3, SECURITE +2, DETTE +3, POP_MOYENNES -1
+  Effets : TECHNOLOGIE +3, SECURITE +2, DETTE +3, POP_MOYENNES -1, POP_JEUNES +1
   Journal : Budget cyber en hausse : le mot de
     passe 1234 est enfin interdit.
 Choix 2 : Refuser de payer la rançon
@@ -88,7 +88,7 @@ Choix 2 : Refuser de payer la rançon
   Journal : Pas de rançon : les services
     attendront, la fierté aussi.
 Choix 3 : Payer discrètement
-  Effets : SCANDALE +5, DETTE +1, POP_AISEES -1, CP -1
+  Effets : SCANDALE +5, DETTE +1, POP_CADRES -1, CP -1
   Journal : Rançon payée en cachette. Chaîne
     Info 24 l'a su avant le trésorier.
 
@@ -102,7 +102,7 @@ Texte : Le géant du numérique Omnicorp
   transférer ses serveurs et ses 2 000
   emplois si l'on touche à son régime.
 Choix 1 : Taxer les géants du web
-  Effets : DETTE -3, POP_POPULAIRES +3, TECHNOLOGIE -2, CROISSANCE -1
+  Effets : DETTE -3, POP_POPULAIRES +3, TECHNOLOGIE -2, CROISSANCE -1, POP_JEUNES +2
   Journal : Taxe sur le numérique : Omnicorp
     Cloud découvre le mot « impôt ».
 Choix 2 : Négocier un accord
@@ -110,7 +110,7 @@ Choix 2 : Négocier un accord
   Journal : Accord discret avec le géant : on
     ne dira pas le montant.
 Choix 3 : Ne rien changer
-  Effets : TECHNOLOGIE +2, POP_AISEES +2, POP_POPULAIRES -4, SCANDALE +2
+  Effets : TECHNOLOGIE +2, POP_CADRES +2, POP_POPULAIRES -4, SCANDALE +2, POP_JEUNES -2
   Journal : Le géant reste, et ses impôts
     restent à l'étranger.
 
@@ -124,15 +124,15 @@ Texte : Loyers en hausse, files de cent
   promoteurs promettent de construire
   « dès que ce sera rentable ».
 Choix 1 : Encadrer les loyers
-  Effets : SOCIAL +3, ECONOMIE -2, POP_POPULAIRES +3, POP_AISEES -3
+  Effets : SOCIAL +3, ECONOMIE -2, POP_POPULAIRES +3, POP_CADRES -3, POP_JEUNES +3, POP_RETRAITES -1
   Journal : Loyers encadrés : les bailleurs
     découvrent l'inflation des autres.
 Choix 2 : Plan de construction massif
-  Effets : SOCIAL +2, DETTE +4, CHOMAGE -1, ECOLOGIE -2
+  Effets : SOCIAL +2, DETTE +4, CHOMAGE -1, ECOLOGIE -2, POP_JEUNES +2
   Journal : 300 000 logements promis. Les
     grues, elles, demandent un permis.
 Choix 3 : Défiscaliser l'investissement
-  Effets : ECONOMIE +2, SOCIAL -3, POP_AISEES +2, POP_POPULAIRES -4
+  Effets : ECONOMIE +2, SOCIAL -3, POP_CADRES +2, POP_POPULAIRES -4, POP_JEUNES -3, POP_RETRAITES +1
   Journal : Avantage fiscal aux bailleurs : le
     loyer, lui, ne baisse pas.
 
@@ -151,11 +151,11 @@ Choix 1 : Céder sur les salaires
   Journal : La CFN repart : les billets aussi,
     en hausse.
 Choix 2 : Maintenir la réforme
-  Effets : ECONOMIE +2, TENSION +5, POP_POPULAIRES -3
+  Effets : ECONOMIE +2, TENSION +5, POP_POPULAIRES -3, POP_JEUNES -1
   Journal : Réforme maintenue : les quais
     sont pleins, les trains moins.
 Choix 3 : Réquisitionner les cheminots
-  Effets : SECURITE +1, TENSION +6, POP_POPULAIRES -3, CP -1
+  Effets : SECURITE +1, TENSION +6, POP_POPULAIRES -3, CP -1, POP_RETRAITES +1
   Journal : Cheminots réquisitionnés : les
     trains partent, la colère reste.
 
@@ -192,11 +192,11 @@ Texte : Un pays voisin saisit nos chalutiers
   rapatriés. La LSO réclame des
   représailles.
 Choix 1 : Répondre fermement
-  Effets : SECURITE +2, ECONOMIE -2, POP_MOYENNES +2, REL_G5 +3, INTERNATIONAL -3
+  Effets : SECURITE +2, ECONOMIE -2, POP_MOYENNES +2, REL_G5 +3, INTERNATIONAL -3, POP_RETRAITES +2
   Journal : Fermeté face au voisin : les
     chalutiers, eux, restent à quai.
 Choix 2 : Négocier discrètement
-  Effets : ECONOMIE +1, CP -1, POP_MOYENNES -3, REL_G5 -3, INTERNATIONAL +3
+  Effets : ECONOMIE +1, CP -1, POP_MOYENNES -3, REL_G5 -3, INTERNATIONAL +3, POP_RETRAITES -2
   Journal : Négociations secrètes : tout se
     sait, surtout les concessions.
 Choix 3 : Saisir l'Union européenne
@@ -214,15 +214,15 @@ Texte : Le prix de gros de l'électricité
   le four. Le fournisseur public
   parle de « tension sur le réseau ».
 Choix 1 : Bouclier tarifaire
-  Effets : POP_POPULAIRES +3, POP_MOYENNES +2, DETTE +4, ECOLOGIE -1
+  Effets : POP_POPULAIRES +3, POP_MOYENNES +2, DETTE +4, ECOLOGIE -1, POP_RETRAITES +2, POP_JEUNES +1
   Journal : Bouclier sur l'électricité : la
     facture est gelée, la dette chauffe.
 Choix 2 : Aide ciblée aux ménages
-  Effets : SOCIAL +2, DETTE +2, POP_MOYENNES -2, POP_AISEES -1
+  Effets : SOCIAL +2, DETTE +2, POP_MOYENNES -2, POP_CADRES -1
   Journal : Chèque énergie ciblé : pour les
     pauvres, un joli courrier.
 Choix 3 : Laisser jouer le marché
-  Effets : ECONOMIE +1, ECOLOGIE +1, TENSION +4, POP_POPULAIRES -5
+  Effets : ECONOMIE +1, ECOLOGIE +1, TENSION +4, POP_POPULAIRES -5, POP_RETRAITES -2, POP_JEUNES -1
   Journal : Factures libres : les ménages
     s'éclairent à la bougie.
 

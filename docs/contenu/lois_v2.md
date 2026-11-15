@@ -13,7 +13,7 @@ Description :
   dividendes découvrent la solidarité.
 Journal si adoptée : Superprofits : la taxe tombe
 Journal si rejetée : Superprofits : les bilans respirent
-Effets suggérés : DETTE -3, POP_POPULAIRES +3, POP_AISEES -3, ECONOMIE -2, REL_PARTI +2, Coût CP 4, Délai 2
+Effets suggérés : DETTE -3, ECONOMIE -2, POP_POPULAIRES +3, POP_CADRES -3, POP_RETRAITES +1, REL_PARTI +2, Coût CP 4, Délai 2
 
 ## LOI_SEMAINE4J
 Orientation : -60
@@ -25,7 +25,7 @@ Description :
   un sujet de négociation nationale.
 Journal si adoptée : Semaine de 4 jours : vendredi chômé
 Journal si rejetée : Semaine de 4 jours : on rouvre lundi
-Effets suggérés : POP_POPULAIRES +4, POP_MOYENNES +1, CROISSANCE -2, CHOMAGE -2, SOCIAL +3, Coût CP 5, Délai 3
+Effets suggérés : CROISSANCE -2, CHOMAGE -2, SOCIAL +3, POP_POPULAIRES +4, POP_MOYENNES +1, POP_JEUNES +2, Coût CP 5, Délai 3
 
 ## LOI_CANTINE
 Orientation : -35
@@ -37,7 +37,7 @@ Description :
   ligne budgétaire très surveillée.
 Journal si adoptée : Cantine gratuite : purée offerte
 Journal si rejetée : Cantine : le repas reste payant
-Effets suggérés : POP_POPULAIRES +3, POP_MOYENNES +2, SOCIAL +3, DETTE +2, Coût CP 3, Délai 2
+Effets suggérés : SOCIAL +3, DETTE +2, POP_POPULAIRES +3, POP_MOYENNES +2, POP_JEUNES +1, Coût CP 3, Délai 2
 
 ## LOI_VOLS_COURTS
 Orientation : -45
@@ -49,7 +49,7 @@ Description :
   apprennent à voyager en wagon.
 Journal si adoptée : Vols courts : cap sur le rail
 Journal si rejetée : Vols courts : l'avion reste roi
-Effets suggérés : ECOLOGIE +4, ECONOMIE -1, POP_AISEES -2, POP_MOYENNES +1, REL_PARTI +2, Coût CP 3, Délai 2
+Effets suggérés : ECOLOGIE +4, ECONOMIE -1, POP_CADRES -2, POP_MOYENNES +1, POP_JEUNES +2, REL_PARTI +2, Coût CP 3, Délai 2
 
 ## LOI_DESERTS_MED
 Orientation : -25
@@ -61,7 +61,7 @@ Description :
   docteur se rapproche du patient.
 Journal si adoptée : Déserts médicaux : des docteurs
 Journal si rejetée : Déserts médicaux : la salle d'attente
-Effets suggérés : SOCIAL +3, POP_POPULAIRES +2, POP_MOYENNES +2, TENSION -2, DETTE +1, Coût CP 3, Délai 3
+Effets suggérés : SOCIAL +3, DETTE +1, TENSION -2, POP_POPULAIRES +2, POP_MOYENNES +2, POP_RETRAITES +3, Coût CP 3, Délai 3
 
 ## LOI_RIC
 Orientation : -30
@@ -97,7 +97,7 @@ Description :
   internationale entre dans le budget.
 Journal si adoptée : Aide au développement : cap sur 0,7 %
 Journal si rejetée : Aide au développement : on rogne
-Effets suggérés : DETTE +2, DEFIANCE -2, POP_POPULAIRES +1, POP_AISEES -1, REL_PARTI +2, Coût CP 3, Délai 2
+Effets suggérés : DETTE +2, DEFIANCE -2, POP_POPULAIRES +1, POP_CADRES -1, POP_JEUNES +1, REL_PARTI +2, Coût CP 3, Délai 2
 
 ## LOI_POLICE_PROX
 Orientation : -30
@@ -109,7 +109,7 @@ Description :
   retrouve un visage connu.
 Journal si adoptée : Proximité : retour du gardien de paix
 Journal si rejetée : Police de proximité : pas de budget
-Effets suggérés : SECURITE +2, TENSION -4, POP_POPULAIRES +2, DETTE +1, Coût CP 3, Délai 3
+Effets suggérés : SECURITE +2, DETTE +1, TENSION -4, POP_POPULAIRES +2, POP_RETRAITES +1, Coût CP 3, Délai 3
 
 ## LOI_ENCADREMENT
 Orientation : -40
@@ -121,7 +121,7 @@ Description :
   rédigent des romans plus courts.
 Journal si adoptée : Loyers encadrés : le plafond tient
 Journal si rejetée : Loyers : la hausse continue
-Effets suggérés : POP_POPULAIRES +3, POP_MOYENNES +1, POP_AISEES -2, ECONOMIE -1, SOCIAL +2, Coût CP 3, Délai 2
+Effets suggérés : ECONOMIE -1, SOCIAL +2, POP_POPULAIRES +3, POP_MOYENNES +1, POP_CADRES -2, POP_JEUNES +3, Coût CP 3, Délai 2
 
 ## LOI_BIO_CANTINE
 Orientation : -25
@@ -133,7 +133,7 @@ Description :
   champs sourient, les rendements non.
 Journal si adoptée : Bio : les champs changent de couleur
 Journal si rejetée : Bio : le pesticide garde sa place
-Effets suggérés : ECOLOGIE +3, SOCIAL +1, POP_MOYENNES +1, DETTE +1, REL_PARTI +1, Coût CP 3, Délai 3
+Effets suggérés : ECOLOGIE +3, SOCIAL +1, DETTE +1, POP_MOYENNES +1, POP_JEUNES +2, REL_PARTI +1, Coût CP 3, Délai 3
 
 ## LOI_CULTURE
 Orientation : -20
@@ -145,7 +145,7 @@ Description :
   théâtres. Molière est ravi.
 Journal si adoptée : Pass culture : place aux spectacles
 Journal si rejetée : Pass culture : rideau sur le projet
-Effets suggérés : POP_MOYENNES +2, POP_POPULAIRES +1, TECHNOLOGIE +1, DETTE +1, Coût CP 2, Délai 2
+Effets suggérés : TECHNOLOGIE +1, DETTE +1, POP_MOYENNES +2, POP_POPULAIRES +1, POP_JEUNES +3, Coût CP 2, Délai 2
 
 ## LOI_FLAT_TAX
 Orientation : +60
@@ -157,7 +157,7 @@ Description :
   uns, inquiète les autres.
 Journal si adoptée : Flat tax : un taux pour les gouverner
 Journal si rejetée : Flat tax : le barème reste complexe
-Effets suggérés : ECONOMIE +3, CROISSANCE +2, DETTE +2, POP_AISEES +3, POP_POPULAIRES -3, Coût CP 4, Délai 2
+Effets suggérés : ECONOMIE +3, CROISSANCE +2, DETTE +2, POP_CADRES +3, POP_POPULAIRES -3, POP_JEUNES -1, Coût CP 4, Délai 2
 
 ## LOI_LICENCIEMENT
 Orientation : +55
@@ -169,7 +169,7 @@ Description :
   embauchent, les syndicats défilent.
 Journal si adoptée : Licenciement assoupli : on embauche ?
 Journal si rejetée : Licenciement : le code reste épais
-Effets suggérés : CHOMAGE -3, CROISSANCE +2, POP_POPULAIRES -3, POP_AISEES +2, TENSION +4, Coût CP 5, Délai 3
+Effets suggérés : CHOMAGE -3, CROISSANCE +2, TENSION +4, POP_POPULAIRES -3, POP_CADRES +2, POP_JEUNES -2, Coût CP 5, Délai 3
 
 ## LOI_UNIFORME
 Orientation : +40
@@ -181,7 +181,7 @@ Description :
   est enfin clos.
 Journal si adoptée : Uniforme : tout le monde en bleu
 Journal si rejetée : Uniforme : le style reste libre
-Effets suggérés : POP_MOYENNES +2, POP_AISEES +1, TENSION +2, SOCIAL -1, REL_PARTI +1, Coût CP 2, Délai 1
+Effets suggérés : SOCIAL -1, TENSION +2, POP_MOYENNES +2, POP_RETRAITES +2, POP_JEUNES -1, REL_PARTI +1, Coût CP 2, Délai 1
 
 ## LOI_VIDEO
 Orientation : +60
@@ -193,7 +193,7 @@ Description :
   filmé sous tous les angles.
 Journal si adoptée : Vidéo : tous sous l'objectif
 Journal si rejetée : Vidéo : les caméras attendent
-Effets suggérés : SECURITE +3, TENSION +3, DEFIANCE +2, POP_AISEES +2, DETTE +1, Coût CP 3, Délai 2
+Effets suggérés : SECURITE +3, DEFIANCE +2, DETTE +1, TENSION +3, POP_CADRES +2, POP_RETRAITES +2, POP_JEUNES -2, Coût CP 3, Délai 2
 
 ## LOI_PARLEMENTAIRES
 Orientation : +35
@@ -217,7 +217,7 @@ Description :
   facture aussi.
 Journal si adoptée : Armées : le budget monte en grade
 Journal si rejetée : Armées : la programmation est reportée
-Effets suggérés : SECURITE +3, TECHNOLOGIE +2, DETTE +3, POP_AISEES +1, REL_PARTI +2, Coût CP 4, Délai 4
+Effets suggérés : SECURITE +3, TECHNOLOGIE +2, DETTE +3, POP_CADRES +1, POP_RETRAITES +1, REL_PARTI +2, Coût CP 4, Délai 4
 
 ## LOI_SERVICE_MIL
 Orientation : +55
@@ -229,7 +229,7 @@ Description :
   retour, le réveil sonne à six h.
 Journal si adoptée : Service national : retour du sac à dos
 Journal si rejetée : Service national : on respire
-Effets suggérés : SECURITE +2, SOCIAL +1, POP_MOYENNES +1, POP_POPULAIRES -1, DETTE +2, Coût CP 5, Délai 4
+Effets suggérés : SECURITE +2, SOCIAL +1, DETTE +2, POP_MOYENNES +1, POP_RETRAITES +3, POP_POPULAIRES -1, POP_JEUNES -4, Coût CP 5, Délai 4
 
 ## LOI_ALLIANCE
 Orientation : +30
@@ -241,7 +241,7 @@ Description :
   La diplomatie parle bas, en kaki.
 Journal si adoptée : Alliance : on resserre les rangs
 Journal si rejetée : Alliance : on garde nos distances
-Effets suggérés : SECURITE +2, DEFIANCE +1, ECONOMIE +1, POP_AISEES +1, REL_PARTI +1, Coût CP 3, Délai 2
+Effets suggérés : SECURITE +2, DEFIANCE +1, ECONOMIE +1, POP_CADRES +1, POP_RETRAITES +1, REL_PARTI +1, Coût CP 3, Délai 2
 
 ## LOI_EXPORT_ARMES
 Orientation : +45
@@ -253,7 +253,7 @@ Description :
   commerciale applaudit, on tousse.
 Journal si adoptée : Armes : les contrats décollent
 Journal si rejetée : Armes : les exportations sont gelées
-Effets suggérés : ECONOMIE +2, CROISSANCE +1, DEFIANCE +2, POP_POPULAIRES -1, DETTE -1, Coût CP 3, Délai 2
+Effets suggérés : ECONOMIE +2, CROISSANCE +1, DEFIANCE +2, DETTE -1, POP_POPULAIRES -1, POP_JEUNES -1, Coût CP 3, Délai 2
 
 ## LOI_AGRI_PRODUCT
 Orientation : +35
@@ -265,7 +265,7 @@ Description :
   Le rendement est roi, la haie part.
 Journal si adoptée : Agriculture : les normes se desserrent
 Journal si rejetée : Agriculture : les normes restent
-Effets suggérés : ECONOMIE +2, CROISSANCE +1, ECOLOGIE -3, POP_MOYENNES +1, TENSION +1, Coût CP 3, Délai 2
+Effets suggérés : ECONOMIE +2, CROISSANCE +1, ECOLOGIE -3, TENSION +1, POP_MOYENNES +1, POP_JEUNES -1, Coût CP 3, Délai 2
 
 ## LOI_CARBONE
 Orientation : -5
@@ -277,7 +277,7 @@ Description :
   La pompe devient pédagogue.
 Journal si adoptée : Taxe carbone : la pompe se paie
 Journal si rejetée : Taxe carbone : le plein reste bas
-Effets suggérés : ECOLOGIE +3, DETTE -1, POP_POPULAIRES -2, POP_AISEES -1, TENSION +3, Coût CP 4, Délai 2
+Effets suggérés : ECOLOGIE +3, DETTE -1, TENSION +3, POP_POPULAIRES -2, POP_CADRES -1, POP_JEUNES +2, Coût CP 4, Délai 2
 
 ## LOI_CYBER
 Orientation : +10
@@ -289,7 +289,7 @@ Description :
   passe '1234' est enfin interdit.
 Journal si adoptée : Cybersécurité : le pare-feu national
 Journal si rejetée : Cybersécurité : les pirates ravis
-Effets suggérés : TECHNOLOGIE +3, SECURITE +1, DETTE +1, POP_MOYENNES +1, Coût CP 2, Délai 2
+Effets suggérés : TECHNOLOGIE +3, SECURITE +1, DETTE +1, POP_MOYENNES +1, POP_JEUNES +1, POP_RETRAITES +1, Coût CP 2, Délai 2
 
 ## LOI_PEINES_PLANCHERS
 Orientation : +65
@@ -301,4 +301,4 @@ Description :
   liberté en moins, cellules en plus.
 Journal si adoptée : Peines planchers : barème durci
 Journal si rejetée : Peines planchers : la balance penche
-Effets suggérés : SECURITE +3, TENSION +3, POP_AISEES +2, POP_POPULAIRES +1, DETTE +1, REL_PARTI +1, Coût CP 4, Délai 2
+Effets suggérés : SECURITE +3, DETTE +1, TENSION +3, POP_CADRES +2, POP_RETRAITES +2, POP_JEUNES -2, REL_PARTI +1, Coût CP 4, Délai 2
