@@ -192,11 +192,11 @@ On passe tout son temps dans les écrans : ils doivent être superbes. Personnag
 ### Interface (agent `md-dev` interface)
 | # | Tâche | Durée | État |
 |---|---|---|---|
-| 3.01 | Charte graphique : palettes PAL0/PAL1, couleurs de texte, cadres, ombres, dégradés ; document `docs/CHARTE_V3.md` | 6 h | 🔄 |
-| 3.02 | Nouvelles tuiles d'interface : cadres arrondis et ombrés, jauges, icônes, séparateurs, fonds texturés | 8 h | 🔄 |
-| 3.03 | Police retravaillée (lisibilité, accents, styles) | 4 h | 🔄 |
-| 3.04 | Animations : fondus entre écrans, curseur animé, apparition des fenêtres | 4 h | 🔄 |
-| 3.05 | Refonte : tableau de bord, journal, événement | 8 h | 🔄 |
+| 3.01 | Charte graphique : palettes PAL0/PAL1, couleurs de texte, cadres, ombres, dégradés ; document `docs/CHARTE_V3.md` | 6 h | ✅ |
+| 3.02 | Nouvelles tuiles d'interface : cadres arrondis et ombrés, jauges, icônes, séparateurs, fonds texturés | 8 h | ✅ |
+| 3.03 | Police retravaillée (lisibilité, accents, styles) | 4 h | ✅ |
+| 3.04 | Animations : fondus entre écrans, curseur animé, apparition des fenêtres | 4 h | ✅ |
+| 3.05 | Refonte : tableau de bord, journal, événement | 8 h | ✅ |
 | 3.06 | Refonte des 12 autres écrans (titre, élection, campagne, budget, référendum, remaniement, destitution, carte, fin, scores, aide, 2nd mandat) | 10 h | 🔄 |
 
 ### Gueules (agent `md-dev` illustrations)
@@ -206,7 +206,8 @@ On passe tout son temps dans les écrans : ils doivent être superbes. Personnag
 | 3.08 | Gueules des 14 personnages existants (présidents, PM, cohabitation, candidats) | 12 h | ✅ |
 | 3.09 | Nouvelles gueules : ministres, chefs de parti, journalistes, président du Sénat… | 12 h | ✅ |
 | 3.16 | Écran de démarrage redessiné dans le style décalé des gueules (bon enfant, drôle, pointe d'humour de gauche) | 3 h | 🔄 |
-| 3.10 | Intégration des portraits et expressions dans les écrans | 3 h | |
+| 3.17 | Vignettes d'événement et décors redessinés dans le style V3 ; hémicycle dynamique (sièges colorés, vote en direct) ; passe sur tout ce qui fait « cheap » | 8 h | 🔄 |
+| 3.10 | Intégration des portraits et expressions dans les écrans | 3 h | 🔄 |
 
 ### Musique (agent `md-dev` son)
 | # | Tâche | Durée | État |
