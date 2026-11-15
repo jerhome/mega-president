@@ -220,7 +220,7 @@ On passe tout son temps dans les écrans : ils doivent être superbes. Personnag
 ### Jalon V3
 | # | Tâche | Durée | État |
 |---|---|---|---|
-| 3.15 | Budgets ROM/RAM/VRAM, PAL et NTSC, test console du joueur, release | 5 h | |
+| 3.15 | Budgets ROM/RAM/VRAM, PAL et NTSC, test console du joueur, release | 5 h | 🔄 contrôle visuel des 8 écrans non capturés en cours |
 
 ## Questions ouvertes
 
