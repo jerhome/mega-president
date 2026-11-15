@@ -25,6 +25,9 @@ static const BudLine bud_line[BUD_LINES] = {
 // Multiplicateur asymétrique des crans -2..+2 (puis division par 2) : rendement
 // décroissant en hausse, coupe franche très coûteuse.
 static const s8 bud_mult[5] = { -5, -2, 0, 2, 3 };
+// Impôts : asymétrie inversée (une forte hausse fait très mal, une baisse rapporte
+// peu), sinon baisser les impôts serait toujours dominant (équilibrage V4).
+static const s8 bud_mult_tax[5] = { -3, -2, 0, 2, 5 };
 
 // Sérieux budgétaire : sensibilité de chaque électorat au déficit (x deficit / 10).
 static const u8 bud_k_serious[ELEC_COUNT] = { 0, 3, 10, 6, 0 };
@@ -129,12 +132,16 @@ s16 sim_plan_tension(const BudgetPlan *p)
 }
 
 // Valeur d'un cran multipliée par 2 (le /2 est fait par l'appelant).
-static s32 asym(s8 lvl, s32 v) { return (s32)bud_mult[lvl_ok(lvl) - BUD_LVL_MIN] * v; }
+static s32 asym(u8 line, s8 lvl, s32 v)
+{
+    const s8 *m = line >= BUD_IMPOT_MENAGES ? bud_mult_tax : bud_mult;
+    return (s32)m[lvl_ok(lvl) - BUD_LVL_MIN] * v;
+}
 
 s16 sim_budget_line_opinion(u8 line, s8 lvl, u8 e)
 {
     if (line >= BUD_LINES || e >= ELEC_COUNT) return 0;
-    return (s16)(asym(lvl, bud_line[line].opinion[e]) / 2);
+    return (s16)(asym(line, lvl, bud_line[line].opinion[e]) / 2);
 }
 
 s16 sim_plan_opinion(const BudgetPlan *p, u8 e)
@@ -142,7 +149,7 @@ s16 sim_plan_opinion(const BudgetPlan *p, u8 e)
     s32 t = 0;
     u8 i;
     if (e >= ELEC_COUNT) return 0;
-    for (i = 0; i < BUD_LINES; i++) t += asym(p->lvl[i], bud_line[i].opinion[e]);
+    for (i = 0; i < BUD_LINES; i++) t += asym(i, p->lvl[i], bud_line[i].opinion[e]);
     t /= 2;
     t -= (s32)sim_plan_deficit(p) * bud_k_serious[e] / 10;   // sérieux budgétaire
     return (s16)t;
@@ -153,7 +160,7 @@ s16 sim_plan_pillar(const BudgetPlan *p, u8 pil)
     s32 t = 0;
     u8 i;
     if (pil >= PIL_TOTAL) return 0;
-    for (i = 0; i < BUD_LINES; i++) t += asym(p->lvl[i], bud_line[i].pillar[pil]);
+    for (i = 0; i < BUD_LINES; i++) t += asym(i, p->lvl[i], bud_line[i].pillar[pil]);
     return (s16)(t / 2);
 }
 

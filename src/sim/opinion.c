@@ -1,7 +1,7 @@
 #include "sim/sim.h"
 
 // Opinion par électorat (tâche 2.4). Constantes : docs/SIM.md.
-#define OPN_BASE        336
+#define OPN_BASE        342
 #define OPN_NOISE       8
 #define OPN_NOISE_M     5    // aléa par tour à 12 tours/an
 #define SCANDAL_K       12   // -1,2 point d'opinion cible par 10 points de scandale
