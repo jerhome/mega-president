@@ -654,6 +654,7 @@ static void draw_result_full(void)
         ui_text_draw(1, 5, res_tv_ok ? "Succès d’audience" : "Le flop", res_tv_ok ? UI_STYLE_HIGHLIGHT : UI_STYLE_ALERT);
         ui_separator(1, 6, 27);
         ui_text_wrap(1, 7, 27, 7, txt[res_tv_ok ? TXT_TV_SUCCES : TXT_TV_FLOP], UI_STYLE_TEXT);
+        ui_gueule_talk(ui_gueule_talk_ms(txt[res_tv_ok ? TXT_TV_SUCCES : TXT_TV_FLOP]));
         ui_icon_draw(1, 18, UI_ICON_POPULARITY);
         ui_text_draw(3, 18, "Popularité", UI_STYLE_DIM);
         buf[0] = 0;
@@ -670,6 +671,7 @@ static void draw_result_full(void)
         ui_gueule_draw(GUEULE_JOUR_EDITORIALISTE, EXPR_FURIEUX, 29, 4, PAL2);
         ui_text_wrap(1, 5, 27, 2, law_name[last_law], UI_STYLE_HIGHLIGHT);
         ui_text_wrap(1, 8, 27, 5, txt[TXT_493_UTILISE], UI_STYLE_TEXT);
+        ui_gueule_talk(ui_gueule_talk_ms(txt[TXT_493_UTILISE]));
         ui_icon_draw(1, 17, UI_ICON_NEWS);
         ui_text_draw(3, 17, "Le Quotidien du Matin", UI_STYLE_DIM);
         ui_text_wrap(3, 18, 36, 2, law_journal_ok[last_law], UI_STYLE_TEXT);

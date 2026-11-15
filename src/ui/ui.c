@@ -2,6 +2,7 @@
 // icônes, fondus (charte V3 : docs/CHARTE_V3.md).
 #include "ui/ui_internal.h"
 #include "ui/input.h"
+#include "ui/ui_art.h"
 #include "gfx_ui.h"
 
 u16 ui_tile_font, ui_tile_frame, ui_tile_gauge, ui_tile_icons;
@@ -32,6 +33,7 @@ void ui_soft_cancel(void)
 
 void ui_fade_out_start(void)
 {
+    ui_gueule_anim_stop();   // visage au repos avant le fondu au noir
     soft_req = FALSE;
     if (PAL_isDoingFade())
         PAL_interruptFade();
@@ -43,6 +45,11 @@ void ui_fade_out_start(void)
 bool ui_fade_busy(void)
 {
     return PAL_isDoingFade();
+}
+
+bool ui_anim_allowed(void)
+{
+    return fx == FX_NONE && !soft_req && !PAL_isDoingFade();
 }
 
 void ui_palettes_reset(void)
@@ -185,6 +192,7 @@ void ui_bg_rect(u16 x, u16 y, u16 w, u16 h)
         w = UI_COLS - x;
     if (y + h > UI_ROWS)
         h = UI_ROWS - y;
+    ui_gueule_anim_cover(x, y, w, h);
     for (j = 0; j < h; j++)
         VDP_fillTileMapRect(BG_B, ui_bg_attr(y + j), x, y + j, w, 1);
 }
@@ -209,6 +217,7 @@ static void deco_row(u16 x, u16 y, u16 w, u16 tl, u16 tm, u16 tr)
 {
     if (w == 0)
         return;
+    ui_gueule_anim_cover(x, y, w, 1);
     if (w == 1) {
         VDP_setTileMapXY(BG_B, UI_FRAME_ATTR(tm), x, y);
         return;
@@ -224,6 +233,7 @@ static void window_body(u16 x, u16 y0, u16 w, u16 y_bottom)
 {
     if (y_bottom > y0) {
         u16 n = y_bottom - y0;
+        ui_gueule_anim_cover(x, y0, w, n);
         VDP_fillTileMapRect(BG_B, UI_FRAME_ATTR(UI_T_WIN_L), x, y0, 1, n);
         if (w > 2)
             VDP_fillTileMapRect(BG_B, UI_FRAME_ATTR(UI_T_WIN_C), x + 1, y0, w - 2, n);
@@ -301,6 +311,7 @@ void ui_medallion(u16 x, u16 y, u16 w, u16 h)
         return;
     // Fond du portrait (plan B, recouvert par l'illustration) et cadre doré sur le
     // bord du rectangle (plan A : seules les marges des tuiles sont opaques).
+    ui_gueule_anim_cover(x, y, w, h);
     VDP_fillTileMapRect(BG_B, UI_FRAME_ATTR(UI_T_PF_C), x, y, w, h);
     VDP_clearTileMapRect(BG_A, x, y, w, h);
     ring_row(x, y, w, UI_T_PF_TL, UI_T_PF_T, UI_T_PF_TR);
@@ -318,8 +329,10 @@ void ui_select_bar(u16 x, u16 y, u16 w)
 
 void ui_select_bar_clear(u16 x, u16 y, u16 w)
 {
-    if (w)
+    if (w) {
+        ui_gueule_anim_cover(x, y, w, 1);
         VDP_fillTileMapRect(BG_B, UI_FRAME_ATTR(UI_T_WIN_C), x, y, w, 1);
+    }
 }
 
 // --- Aide des boutons ----------------------------------------------------------------

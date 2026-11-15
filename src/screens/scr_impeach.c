@@ -295,6 +295,7 @@ static void impeach_draw(void)
             ui_art_draw_pal(ART_DECOR_HEMICYCLE, 4, 10, PAL3);
             ui_medallion(29, 9, UI_PORTRAIT_W, UI_PORTRAIT_H);
             ui_gueule_draw(GUEULE_SENAT_PRESIDENT, EXPR_FURIEUX, 29, 9, PAL2);
+            ui_gueule_talk(ui_gueule_talk_ms(txt[TXT_DESTITUTION_PROCEDURE]));
             buf[0] = 0;
             strcat(buf, "Scandale ");
             cat_num(buf, g_game.country.gauges[JAUGE_SCANDALE]);
