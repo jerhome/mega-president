@@ -23,9 +23,9 @@ void voice_set_enabled(bool on)
     }
 }
 
+// Le pilote XGM2 est chargé une fois pour toutes par sfx_init / music_init (jamais rechargé ici).
 static bool voice_start(void)
 {
-    Z80_loadDriver(Z80_DRIVER_XGM2, TRUE);
     if (!XGM2_playPCMEx(snd_forsure, sizeof(snd_forsure), SOUND_PCM_CH3, VOICE_PRIO, FALSE, FALSE))
         return FALSE;
     s_end = getTick() + VOICE_TICKS;

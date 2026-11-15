@@ -34,8 +34,8 @@ Souveraineté
 Le gouvernement fait adopter une loi :
 
 ## TXT_COHAB_BUDGET_GOUV
-Le Premier ministre impose son budget,
-sans vous demander votre avis :
+Matignon impose son budget. Votre avis
+a été noté, puis classé :
 
 ## TXT_COHAB_PM_GAUCHE_NOM
 Sophie Carrel

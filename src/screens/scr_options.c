@@ -48,12 +48,12 @@ static const char *const *const val_text[SET_COUNT] = {
 // Aides (ivoire) et répliques de l'huissier (gris bleuté), 38 colonnes au plus.
 static const char *const row_help[R_COUNT] = {
     "Volume de la musique, effet immédiat.",
-    "Essentiels : sans les clics de menu, avec les sons qui informent.",
-    "« For sure ! » quand la console s'allume.",
+    "Essentiels : sans les clics de menu.",
+    "« For sure ! » et l’huissier parlant.",
     "Clignements et regards des portraits.",
     "Durée des fondus entre les écrans.",
     "Carte et jauges lisibles par tous.",
-    "Vide les deux classements (1er mandat et 10 ans).",
+    "Vide les deux classements de scores.",
     "Supprime le mandat sauvegardé.",
     "Remet le son et l'affichage comme au premier jour."
 };
@@ -431,7 +431,7 @@ static void change_value(u8 v)
     switch (id) {
     case SET_MUSIC:  break;                          // la musique est l'exemple
     case SET_SFX:    sfx_play(SFX_OK); break;        // après l'application : rien en « Aucun »
-    case SET_VOICE:  if (v) voice_preview(); else sfx_play(SFX_MOVE); break;
+    case SET_VOICE:  if (v) ui_gueule_say(900); else sfx_play(SFX_MOVE); break;   // l'huissier répond
     case SET_FADES:  sfx_play(SFX_MOVE); ui_soft_replay(); break;
     default:         sfx_play(SFX_MOVE); break;
     }

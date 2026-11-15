@@ -10,7 +10,7 @@
 //
 // Mise en page (x 1-27 à gauche du portrait x 29-38, y 4-15) :
 //   4 préréglage | 6-11 les 6 lignes | 13-15 détail de la ligne sélectionnée
-//  16-22 effets du plan (déficit, croissance, opinion par électorat, vote)
+//  17-20 effets du plan (déficit, croissance, opinion), 21 vote, 22 séparateur
 //  23-25 alertes ou actions | 26 aide des boutons
 
 #include "audio/sfx.h"
@@ -35,7 +35,7 @@ typedef enum { P_EDIT, P_ACTION, P_RESULT, P_HELP } Phase;
 #define Y_PRESET 4
 #define Y_LINE0  6
 #define Y_INFO   13
-#define Y_EFFECT 16
+#define Y_EFFECT 17
 #define Y_ZONE   23
 
 static Mode mode;
@@ -142,8 +142,10 @@ static void draw_rows(void)
         strcat(buf, txt[TXT_COHAB_PM_GAUCHE_NOM + sim_cohab_camp(c)]);
         ui_text_center(1, Y_PRESET, LEFT_W, buf, UI_STYLE_ALERT);
     } else {
-        ui_icon_draw(2, Y_PRESET, UI_ICON_ARROW_LEFT);
-        ui_icon_draw(LEFT_W - 1, Y_PRESET, UI_ICON_ARROW_RIGHT);
+        if (mode == B_NORMAL) {   // réglable seulement hors mode Sénat
+            ui_icon_draw(2, Y_PRESET, UI_ICON_ARROW_LEFT);
+            ui_icon_draw(LEFT_W - 1, Y_PRESET, UI_ICON_ARROW_RIGHT);
+        }
         ui_text_center(4, Y_PRESET, LEFT_W - 6, txt[TXT_PRE_0 + preset_now()],
                        mode == B_SENAT ? UI_STYLE_DIM : UI_STYLE_HIGHLIGHT);
     }
@@ -155,14 +157,14 @@ static void draw_rows(void)
         UiStyle st = (focus == i + 1) ? UI_STYLE_HIGHLIGHT
                      : (line_editable(i) ? UI_STYLE_TEXT : UI_STYLE_DIM);
         if (mode == B_SENAT && sim_budget_amended_line(c) == i + 1) st = UI_STYLE_ALERT;
-        ui_text_draw_n(2, y, bl_nom(i), 18, 18, st);
-        ui_gauge_draw(20, y, 5, (s16)(l + 2), 4, l == 0 ? UI_GAUGE_NEUTRAL : UI_GAUGE_GOLD);
+        ui_text_draw_n(1, y, bl_nom(i), 17, 17, st);
+        ui_gauge_draw(19, y, 5, (s16)(l + 2), 4, l == 0 ? UI_GAUGE_NEUTRAL : UI_GAUGE_GOLD);
         buf[0] = 0;
         cat_signed(buf, l, 0);
-        ui_text_right(28, y, buf, l == 0 ? UI_STYLE_DIM : st);
+        ui_text_right(27, y, buf, l == 0 ? UI_STYLE_DIM : st);
         if (focus == i + 1 && line_editable(i)) {   // la ligne se règle avec gauche / droite
-            ui_icon_draw(25, y, UI_ICON_ARROW_LEFT);
-            ui_icon_draw(28, y, UI_ICON_ARROW_RIGHT);
+            ui_icon_draw(24, y, UI_ICON_ARROW_LEFT);
+            ui_icon_draw(27, y, UI_ICON_ARROW_RIGHT);
         }
     }
     ui_separator(1, 12, LEFT_W);
@@ -228,7 +230,7 @@ static void draw_effect(void)
     s32 pop = 0;
     u8 e;
 
-    ui_clear_rect(1, Y_EFFECT, 38, 7);
+    ui_clear_rect(1, Y_EFFECT, 38, 4);
     for (e = 0; e < ELEC_COUNT; e++) pop += (s32)elec_weight[e] * sim_plan_opinion(&plan, e);
     pop /= 100;
     ui_text_draw(1, Y_EFFECT, "Effets du plan", UI_STYLE_HIGHLIGHT);
@@ -251,39 +253,32 @@ static void draw_effect(void)
     strcat(buf, " pt");
     ui_text_right(39, Y_EFFECT + 1, buf, gr < 0 ? UI_STYLE_ALERT : UI_STYLE_TEXT);
 
-    // Opinion par électorat, en points : mesures, coût du déficit, total.
-    ui_text_draw(1, Y_EFFECT + 2, "Opinion", UI_STYLE_DIM);
-    for (e = 0; e < ELEC_COUNT; e++)
-        ui_text_right(14 + e * 5 + 5, Y_EFFECT + 2, elec_txt(e, ET_ABR), UI_STYLE_DIM);
-    ui_text_draw(1, Y_EFFECT + 3, "Mesures", UI_STYLE_DIM);
-    ui_text_draw(1, Y_EFFECT + 4, "Marchés", UI_STYLE_DIM);
-    ui_text_draw(1, Y_EFFECT + 5, "Total", UI_STYLE_TEXT);
+    // Opinion par électorat, en points : le total seulement (mesures + marchés).
+    ui_text_draw(1, Y_EFFECT + 3, "Opinion", UI_STYLE_TEXT);
     for (e = 0; e < ELEC_COUNT; e++) {
-        s32 lines = 0, tot = sim_plan_opinion(&plan, e);
-        for (u8 i = 0; i < BUD_LINES; i++) lines += sim_budget_line_opinion(i, plan.lvl[i], e);
-        opinion_cell(Y_EFFECT + 3, e, lines, FALSE);
-        opinion_cell(Y_EFFECT + 4, e, tot - lines, FALSE);
-        opinion_cell(Y_EFFECT + 5, e, tot, TRUE);
+        ui_text_right(14 + e * 5 + 5, Y_EFFECT + 2, elec_txt(e, ET_ABR), UI_STYLE_DIM);
+        opinion_cell(Y_EFFECT + 3, e, sim_plan_opinion(&plan, e), TRUE);
     }
 }
 
-// Aperçu du vote de l'Assemblée (modes NORMAL) à la suite des effets, y 22.
+// Aperçu du vote de l'Assemblée (mode NORMAL) à la suite des effets, y 21.
 static void draw_vote_preview(void)
 {
     const Country *c = &g_game.country;
     VoteResult v;
     char buf[UI_LINE_BUF];
 
-    ui_clear_rect(1, 22, 38, 1);
+    ui_clear_rect(1, 21, 38, 1);
+    ui_separator(1, 22, 38);
     if (mode != B_NORMAL) return;
     sim_budget_plan_preview(c, &plan, &v);
-    ui_icon_draw(1, 22, UI_ICON_ASSEMBLY);
-    ui_gauge_draw(3, 22, 18, v.votes_pour, SEATS_TOTAL, v.adopted ? UI_GAUGE_POSITIVE : UI_GAUGE_NEGATIVE);
+    ui_icon_draw(1, 21, UI_ICON_ASSEMBLY);
+    ui_gauge_draw(3, 21, 18, v.votes_pour, SEATS_TOTAL, v.adopted ? UI_GAUGE_POSITIVE : UI_GAUGE_NEGATIVE);
     buf[0] = 0;
     cat_num(buf, v.votes_pour, 0);
     strcat(buf, " voix : ");
     strcat(buf, v.adopted ? "adopté" : "rejeté");
-    ui_text_right(39, 22, buf, v.adopted ? UI_STYLE_TEXT : UI_STYLE_ALERT);
+    ui_text_right(39, 21, buf, v.adopted ? UI_STYLE_TEXT : UI_STYLE_ALERT);
 }
 
 // Alertes en bas de l'écran pendant le réglage : ce que le plan déclenche.
@@ -392,18 +387,18 @@ static void draw_zone(void)
         action_list.bar_sel = 0xFF;
         ui_list_draw(&action_list);
         if (mode == B_SENAT) {
-            ui_clear_rect(1, 22, 38, 1);
-            ui_icon_draw(1, 22, UI_ICON_CROSS);
+            ui_clear_rect(1, 21, 38, 1);
+            ui_icon_draw(1, 21, UI_ICON_CROSS);
             buf[0] = 0;
             strcat(buf, "Amendement : ");
             strcat(buf, bl_nom((u8)(sim_budget_amended_line(c) - 1)));
-            ui_text_draw_n(3, 22, buf, 36, 0, UI_STYLE_ALERT);
+            ui_text_draw_n(3, 21, buf, 36, 0, UI_STYLE_ALERT);
             if (c->cp < BUDGET_SENATE_CP)
                 ui_text_wrap(1, Y_ZONE + 2, 38, 2, txt[TXT_SENAT_LECDEF_REFUSE], UI_STYLE_ALERT);
             else
                 ui_text_wrap(1, Y_ZONE + 2, 38, 1, txt[TXT_SENAT_LECDEF_CONFIRME], UI_STYLE_DIM);
         } else {
-            if (rejected || err_cp) ui_clear_rect(1, 22, 38, 1);
+            if (rejected || err_cp) ui_clear_rect(1, 21, 38, 1);
             if (rejected) {
                 buf[0] = 0;
                 strcat(buf, "Rejeté : ");
@@ -411,22 +406,22 @@ static void draw_zone(void)
                 strcat(buf, " voix sur ");
                 cat_num(buf, SEATS_MAJORITY, 0);
                 strcat(buf, " requises. Défiance +3.");
-                ui_text_draw_n(1, 22, buf, 38, 0, UI_STYLE_ALERT);
+                ui_text_draw_n(1, 21, buf, 38, 0, UI_STYLE_ALERT);
             } else if (err_cp) {
-                ui_text_draw(1, 22, "Capital politique insuffisant", UI_STYLE_ALERT);
+                ui_text_draw(1, 21, "Capital politique insuffisant", UI_STYLE_ALERT);
             }
         }
         ui_footer(1, 26, 38, "A : valider   B : retour");
     } else {   // résultat
         const char *t, *body;
-        ui_clear_rect(1, 22, 38, 1);
+        ui_clear_rect(1, 21, 38, 1);
         if (lecdef_done) { t = "PLAN RÉTABLI"; body = txt[TXT_BUDJ_LECDEF]; }
         else if (forced) { t = "BUDGET ADOPTÉ PAR 49.3"; body = txt[TXT_BUDJ_493]; }
         else { t = "BUDGET ADOPTÉ"; body = txt[TXT_BUDJ_ADOPTE]; }
         {
             u16 n = ui_text_len(t);
-            ui_text_center(2, 22, 37, t, UI_STYLE_HIGHLIGHT);
-            ui_icon_draw(2 + (37 - n) / 2 - 2, 22, UI_ICON_CHECK);
+            ui_text_center(2, 21, 37, t, UI_STYLE_HIGHLIGHT);
+            ui_icon_draw(2 + (37 - n) / 2 - 2, 21, UI_ICON_CHECK);
         }
         ui_text_wrap(1, Y_ZONE, 38, 3, body, UI_STYLE_TEXT);
         ui_footer(1, 26, 38, "A : continuer");
@@ -638,7 +633,7 @@ static void update_action(void)
         break;
     case UI_LIST_CANCELLED:
         phase = P_EDIT;
-        d_zone = TRUE;
+        d_zone = d_effect = TRUE;
         break;
     case UI_LIST_CHOSEN:
         if (mode == B_SENAT) {
@@ -652,7 +647,7 @@ static void update_action(void)
             leave();   // reconduction en fin d'année
         } else {
             phase = P_EDIT;
-            d_zone = TRUE;
+            d_zone = d_effect = TRUE;
         }
         break;
     default:

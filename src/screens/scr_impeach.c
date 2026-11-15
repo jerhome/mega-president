@@ -227,7 +227,7 @@ static void draw_top(void)
     ui_gauge_draw(1, 11, 38, sv, SENATE_SEATS,
                   sv >= SENATE_IMPEACH_MAJORITY ? UI_GAUGE_NEGATIVE : UI_GAUGE_POSITIVE);
     ui_icon_draw(1, 12, pass ? UI_ICON_CROSS : UI_ICON_CHECK);
-    ui_text_draw(3, 12, pass ? "Les deux chambres : vous seriez destitué" : "Au moins une chambre vous sauve",
+    ui_text_draw(3, 12, pass ? "Deux chambres : vous êtes destitué" : "Au moins une chambre vous sauve",
                  pass ? UI_STYLE_ALERT : UI_STYLE_TEXT);
 }
 

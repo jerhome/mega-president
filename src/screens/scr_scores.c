@@ -138,7 +138,7 @@ static void draw_entry(void)
             ui_icon_draw(17 + i * 2, 14, UI_ICON_ARROW_DOWN);
         }
     }
-    ui_text_center(0, 22, UI_COLS, "Haut/Bas : lettre   Gauche/Droite : position", UI_STYLE_DIM);
+    ui_text_center(0, 22, UI_COLS, "Haut/Bas : lettre   G/D : position", UI_STYLE_DIM);
     ui_footer(1, 26, 38, "A : valider");
 }
 

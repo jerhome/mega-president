@@ -88,7 +88,7 @@ Transition, rés.
 ## TXT_BL_4_NOM
 Impôts ménages
 ## TXT_BL_5_NOM
-Impôts entreprises
+Impôts sociétés
 
 ## TXT_BL_0_LONG
 Social et retraites
@@ -277,23 +277,23 @@ définitive : le Sénat l'emporte.
 # ---- Cohabitation
 
 ## TXT_COHAB_PLAN_GAUCHE
-Le Premier ministre impose un plan
-social et de relance : dépenses en
-hausse, impôts des entreprises aussi.
+Matignon impose un plan social et de
+relance : dépenses en hausse, et les
+entreprises passent à la caisse.
 
 ## TXT_COHAB_PLAN_CENTRE
-Le Premier ministre impose un budget
-de reconduction : rien ne bouge, tout
-le monde râle, c'est le centre.
+Matignon impose un budget de
+reconduction : rien ne bouge et tout
+le monde râle. L'équilibre, quoi.
 
 ## TXT_COHAB_PLAN_DROITE
-Le Premier ministre impose un budget
-d'économies : moins de dépenses,
-moins d'impôts des entreprises.
+Matignon impose la rigueur : moins de
+dépenses, moins d'impôts pour les
+entreprises. Ça ruissellera, promis.
 
 ## TXT_COHAB_DEFENSE
 Défense : seule ligne qui vous reste,
-à un cran près du plan du PM.
+à un cran près de celle de Matignon.
 
 ## TXT_COHAB_DEFENSE_AIDE
 Domaine réservé : sécurité et défense.
@@ -301,6 +301,22 @@ Un cran de plus ou de moins, sans CP.
 Les autres lignes sont grisées.
 
 # ---- Campagne : 5e thème
+
+## TXT_THEME_EMPLOI_DESC
+Chômage, salaires, apprentissage.
+Jeunes et populaires. Promis, juré.
+
+## TXT_THEME_SECURITE_DESC
+Police, justice, tranquillité. Parle
+surtout aux retraités. Képis inclus.
+
+## TXT_THEME_POUVOIR_ACHAT_DESC
+Prix, plein, caddie, fins de mois.
+Cible populaires et classes moyennes.
+
+## TXT_THEME_ECOLOGIE_DESC
+Climat, transports, sobriété. Cible
+jeunes et cadres. Garez le SUV loin.
 
 ## TXT_THEME_SANTE
 Santé et retraites

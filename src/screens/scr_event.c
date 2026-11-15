@@ -2,6 +2,7 @@
 
 #include "audio/sfx.h"
 #include <genesis.h>
+#include <string.h>
 #include "screens.h"
 #include "ui/ui.h"
 #include "ui/input.h"
@@ -9,6 +10,8 @@
 #include "content/content_events.h"
 #include "screens/evt_art.h"
 #include "ui/ui_art.h"
+#include "content/content_repliques.h"
+#include "scr_txt.h"
 
 
 typedef enum { P_CHOOSE, P_JOURNAL } Phase;
@@ -75,6 +78,22 @@ static const char *flatten(const char *src)
     return flat;
 }
 
+// Personnage qui réagit (0..5 ministres, REP_PM le Premier ministre) et sa réplique.
+static u8 persona(void)
+{
+    GueuleId g = evt_minister(evt);
+    return (g >= GUEULE_MIN_ECONOMIE && g < GUEULE_MIN_ECONOMIE + REP_PM)
+               ? (u8)(g - GUEULE_MIN_ECONOMIE) : REP_PM;
+}
+
+static const char *replique(void)
+{
+    Expr m = evt_mood(evt, chosen);
+    u8 h = m == EXPR_CONTENT ? REP_CONTENT : m == EXPR_GENE ? REP_GENE
+           : m == EXPR_FURIEUX ? REP_FURIEUX : REP_NEUTRE;
+    return rep_texte[persona()][h];
+}
+
 static void draw_lower(const char *title)
 {
     ui_window_title(0, LOW_Y, 40, UI_ROWS - LOW_Y, title, TRUE);
@@ -96,7 +115,7 @@ static void draw_upper(bool minister)
         // Un seul visage animé : la gueule du ministre prend la place de la vignette.
         ui_medallion(MED_X, MED_Y, MED_W, MED_H);
         ui_gueule_draw(evt_minister(evt), evt_mood(evt, chosen), MED_X, MED_Y, PAL3);
-        ui_gueule_say(ui_gueule_talk_ms(flatten(evt_journal[evt][chosen])));
+        ui_gueule_say(ui_gueule_talk_ms(replique()));   // la bouche suit la réplique, jamais le journal
         return;
     }
     // Le cadre épouse la vignette (8 x 6) : posé sur l'image elle-même,
@@ -124,9 +143,24 @@ static void event_draw(void)
         // Le ministre concerné réagit en haut ; le bas montre la décision et l'écho dans la presse.
         draw_upper(TRUE);
         draw_lower("Votre décision");
-        ui_icon_draw(1, 20, UI_ICON_CHECK);
-        ui_text_draw_n(3, 20, evt_choice[evt][chosen], 36, 0, UI_STYLE_HIGHLIGHT);
-        ui_separator(1, 21, 38);
+        ui_icon_draw(1, 19, UI_ICON_CHECK);
+        ui_text_draw_n(3, 19, evt_choice[evt][chosen], 36, 0, UI_STYLE_HIGHLIGHT);
+        {
+            u8 p = persona();
+            u16 x = 3 + ui_text_draw_n(3, 20, rep_nom[p], 36, 0, UI_STYLE_HIGHLIGHT);
+            if (rep_fonction[p][0]) {
+                x += ui_text_draw(x, 20, ", ", UI_STYLE_DIM);
+                ui_text_draw_n(x, 20, rep_fonction[p], 38 - x, 0, UI_STYLE_DIM);
+            }
+            {
+                char q[48];
+                q[0] = 0;
+                strcat(q, "« ");
+                strcat(q, replique());
+                strcat(q, " »");
+                ui_text_draw_n(3, 21, q, 36, 0, UI_STYLE_TEXT);
+            }
+        }
         ui_icon_draw(1, 22, UI_ICON_NEWS);
         ui_text_draw(3, 22, "Le Quotidien du Matin", UI_STYLE_DIM);
         ui_text_wrap(3, 23, 36, 3, flatten(evt_journal[evt][chosen]), UI_STYLE_TEXT);
