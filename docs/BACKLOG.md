@@ -164,6 +164,20 @@ La V0 n'est pas un prototype jetable : c'est une première tranche de la V1. Les
 | 2.14 | ✅ Équilibrage V2 | 5 h | 71/55/25 % ; 60 tours à ±5 points ; passif < 10 % |
 | 2.15 | ✅ Mode 60 tours (reporté de la V1, tâche 1.01) | 3 h |
 
+## V2.1 — Correctifs après le premier test sur console (15/11)
+
+Retour du joueur sur Evergenesis : bonne impression générale, premier mandat non terminé à cause d'un plantage. Les autres remarques du joueur seront ajoutées ici.
+
+| # | Tâche | Durée | État |
+|---|---|---|---|
+| 2.1.1 | **Plantage au passage à la 4e année** (« Offset 360200, Hint 020446 »). 0x020446 se trouve dans `MEM_pack` (tas de SGDK), sur la lecture d'un en-tête de bloc : le tas est probablement corrompu, soit par un débordement de pile, soit par un dépassement de tampon. Étapes : reproduire avec une ROM de debug et une partie automatique jusqu'à l'année 4, journaliser `MEM_getFree` (KLog) et la profondeur de pile, chercher qui appelle `MEM_alloc` ou `MEM_pack` pendant le jeu (piste : `VDP_setPlaneSize` dans `ui.c` recharge la police et appelle `MEM_pack`), puis corriger et ajouter un test de non-régression | 4 h | |
+| 2.1.2 | **Lois déjà adoptées repérables** : coche ✓ devant une loi adoptée et marque « en cours » pour une loi votée mais pas encore appliquée. Aujourd'hui, une loi adoptée est seulement grisée, comme une loi trop chère. Vérifier aussi la confusion possible entre « Cantine gratuite » et « Agriculture bio », dont la description parle des cantines, et renommer cette dernière si besoin | 1 h | |
+| 2.1.3 | **Capital politique plus lisible** : le rythme actuel est voulu (1 à 3 CP par trimestre, aucun apport lié au budget). En mode 60 tours, l'apport ne tombe que tous les 3 mois, d'où l'impression que les CP ne se rechargent pas. Afficher « +X CP » au rapport et « prochain apport dans N mois » au tableau de bord ; augmenter le gain si le ressenti ne change pas | 1 h | |
+| 2.1.4 | **Une musique par année du mandat** (5 thèmes, 5 ambiances), pour varier et donner une signature sonore à chaque année | 4 h | |
+| 2.1.5 | **Voix digitalisée « For sure ! »** sur l'écran d'accueil uniquement, au démarrage : voix de synthèse générée par nos soins (pas d'imitation d'une vraie voix), échantillon PCM joué par le Z80. Vérifier qu'elle se mélange bien à la musique PSG et contrôler la taille de la ROM | 2 h | |
+| 2.1.6 | Autres remarques du joueur (à venir) | — | |
+| 2.1.7 | Nouveau test sur console : deux mandats complets | 1 h | |
+
 ## Questions ouvertes
 
 - ~~Licence du dépôt public~~ → MIT.
