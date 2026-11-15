@@ -27,13 +27,13 @@ s16 g_report_snap[9];
 u8 g_budget_seen;
 
 typedef enum { M_MENU, M_LAWS, M_VOTE, M_ASSEMBLY, M_CONFIRM, M_RESULT } Mode;
-typedef enum { C_FORCE, C_DISSOLVE } ConfirmKind;
+typedef enum { C_FORCE, C_DISSOLVE, C_QUIT } ConfirmKind;
 typedef enum { R_TV, R_FORCE, R_DISSOLVE } ResultKind;
 // Actions du menu principal
 typedef enum { A_LAW, A_FORCE, A_TV, A_ASSEMBLY, A_MAP, A_REFERENDUM, A_RESHUFFLE, A_DISSOLVE, A_BUDGET,
-               A_END } Action;
+               A_END, A_QUIT } Action;
 
-#define MENU_MAX 10
+#define MENU_MAX 12
 
 static Mode mode;
 static Mode prev_mode;
@@ -234,6 +234,7 @@ static void menu_build(void)
         menu_items[n++] = budget_blocking() ? "Fin du mois (budget d’abord)" : "Fin du mois";
     else
         menu_items[n++] = budget_blocking() ? "Fin du trimestre (budget d’abord)" : "Fin du trimestre";
+    menu_act[n] = A_QUIT;     menu_items[n++] = "Menu principal (partie sauvegardée)";
     menu_n = n;
     ui_list_init(&menu_list, 1, 21, 38, 6, menu_items, n);
     menu_list.disabled = dis;
@@ -348,6 +349,14 @@ static void update_menu(void)
         case A_BUDGET:
             screen_change(SCREEN_BUDGET);
             break;
+        case A_QUIT: {
+            static const char *const ch[2] = { "Menu principal", "Annuler" };
+            start_confirm(C_QUIT, "Revenir au menu principal ?",
+                          "La partie est sauvegardée telle quelle. Sur l’écran d’accueil : "
+                          "B pour la reprendre, START pour une nouvelle partie "
+                          "(qui remplacera la sauvegarde).", ch);
+            break;
+        }
         default: {
             const Country *c = &g_game.country;
             if (budget_blocking()) {
@@ -536,7 +545,9 @@ static void update_confirm(void)
         set_mode(prev_mode);
         return;
     }
-    if (confirm_kind == C_FORCE) {
+    if (confirm_kind == C_QUIT) {
+        game_save_and_quit();
+    } else if (confirm_kind == C_FORCE) {
         if (sim_force_law(&g_game.country, last_law) == LAW_OK) {
             law_mask_set(&g_game.laws_tried, last_law);
             law_mask_set(&g_game.laws_adopted, last_law);

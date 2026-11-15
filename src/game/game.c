@@ -145,6 +145,12 @@ u8 game_continue(void)
     return 1;
 }
 
+void game_save_and_quit(void)
+{
+    sram_game_save(&g_game);   // état exact du trimestre en cours (CP dépensés compris)
+    screen_change(SCREEN_TITLE);
+}
+
 u8 game_has_save(void)
 {
     return sram_game_exists();

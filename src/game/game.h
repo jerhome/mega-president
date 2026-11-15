@@ -68,6 +68,7 @@ void game_mandate2_done(void);
 
 // Partie sauvegardée (SRAM) : sauvegarde automatique au début de chaque trimestre.
 u8   game_has_save(void);      // 1 si une partie en cours est sauvegardée
+void game_save_and_quit(void);  // sauvegarde l’état courant et revient à l’écran d’accueil
 u8   game_continue(void);      // recharge la partie et va au tableau de bord (0 si échec)
 
 // Fin de partie

@@ -178,7 +178,8 @@ Retour du joueur sur Evergenesis : bonne impression générale, premier mandat n
 | 2.1.6 | Autres remarques du joueur | — | ✅ Aucune autre remarque (15/11) |
 | 2.1.8 | **Voix « For sure ! » inaudible** (2e retour console) : le pilote Z80 était déchargé dès la 1re image, car `SND_PCM_isPlaying()` répondait « arrêté » avant que le Z80 ait pris la commande. Attente fondée sur la durée de l'échantillon (`getTick`), vérifiée sur le canal DAC de BlastEm (`-y`) | 0,5 h | ✅ |
 | 2.1.9 | **Pied de page de l'écran d'accueil** : nom de l'auteur, version (`src/version.h`) et « Développé avec Claude ». À garder dans les versions suivantes | 0,5 h | ✅ |
-| 2.1.7 | Nouveau test sur console : deux mandats complets | 1 h | 🔄 Voix, pied de page et musiques par année, liste des lois (✓ et …) OK (15/11) |
+| 2.1.10 | **Retour au menu principal en cours de partie** : dernière ligne du menu de jeu, avec confirmation ; sauvegarde l'état exact (CP dépensés compris), puis écran d'accueil (B : reprendre, START : nouvelle partie) | 0,5 h | ✅ |
+| 2.1.7 | Nouveau test sur console : deux mandats complets | 1 h | 🔄 Voix, pied de page et musiques par année, liste des lois (✓ et …), passage à la 4e année (sans plantage, jusqu'au trimestre 20), élection et passage au 2nd mandat OK (15/11) |
 
 ## Questions ouvertes
 
