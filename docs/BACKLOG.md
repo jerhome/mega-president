@@ -174,7 +174,7 @@ Retour du joueur sur Evergenesis : bonne impression générale, premier mandat n
 | 2.1.2 | **Lois déjà adoptées repérables** : coche ✓ devant une loi adoptée et marque « en cours » pour une loi votée mais pas encore appliquée. Aujourd'hui, une loi adoptée est seulement grisée, comme une loi trop chère. Vérifier aussi la confusion possible entre « Cantine gratuite » et « Agriculture bio », dont la description parle des cantines, et renommer cette dernière si besoin | 1 h | ✅ |
 | 2.1.3 | **Capital politique plus lisible** : le rythme actuel est voulu (1 à 3 CP par trimestre, aucun apport lié au budget). En mode 60 tours, l'apport ne tombe que tous les 3 mois, d'où l'impression que les CP ne se rechargent pas. Afficher « +X CP » au rapport et « prochain apport dans N mois » au tableau de bord ; augmenter le gain si le ressenti ne change pas | 1 h | ✅ |
 | 2.1.4 | **Une musique par année du mandat** (5 thèmes, 5 ambiances), pour varier et donner une signature sonore à chaque année | 4 h | ✅ |
-| 2.1.5 | **Voix digitalisée « For sure ! »** sur l'écran d'accueil uniquement, au démarrage : voix de synthèse générée par nos soins (pas d'imitation d'une vraie voix), échantillon PCM joué par le Z80. Vérifier qu'elle se mélange bien à la musique PSG et contrôler la taille de la ROM | 2 h | 🔄 |
+| 2.1.5 | **Voix digitalisée « For sure ! »** sur l'écran d'accueil uniquement, au démarrage : voix de synthèse générée par nos soins (pas d'imitation d'une vraie voix), échantillon PCM joué par le Z80. Vérifier qu'elle se mélange bien à la musique PSG et contrôler la taille de la ROM | 2 h | ✅ |
 | 2.1.6 | Autres remarques du joueur (à venir) | — | |
 | 2.1.7 | Nouveau test sur console : deux mandats complets | 1 h | |
 
