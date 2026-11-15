@@ -70,6 +70,11 @@ typedef enum {
     UI_ICON_DOWN_BAD,        // baisse défavorable (rouge)
     UI_ICON_UP_BAD,          // hausse défavorable (rouge)
     UI_ICON_DOWN_GOOD,       // baisse favorable (verte)
+    UI_ICON_ARROW_LEFT,      // réglage : valeur précédente (or)
+    UI_ICON_ARROW_RIGHT,     // réglage : valeur suivante (or)
+    UI_ICON_NOTE,            // croche (rubrique Son)
+    UI_ICON_EYE,             // œil (rubrique Affichage)
+    UI_ICON_CART,            // cartouche (rubrique Données)
     UI_ICON_LAST
 } UiIcon;
 

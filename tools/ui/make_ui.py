@@ -493,6 +493,13 @@ ICONS = [
     ("DOWN_BAD", 1, ["...dd...", "...dek..", "...dek..", "ddddeeek", ".ddeeek.", "..ddek..", "...ek...", "....k..."]),
     ("UP_BAD", 1, ["...d....", "..dde...", ".dddee..", "ddddeeek", "..dek...", "..dek...", "..dek...", "...k...."]),
     ("DOWN_GOOD", 0, ["...Gg...", "...Ggk..", "...Ggk..", "GGGgggk.", ".GGggk..", "..Ggk...", "...gk...", "....k..."]),
+    # Écran Options (3.19) : flèches de réglage (or), croche (son), œil (affichage),
+    # cartouche Megadrive (données).
+    ("ARROW_LEFT", 1, ["........", ".....w..", "....wi..", "...wwi..", "..wwii..", "...wiik.", "....iik.", ".....ik."]),
+    ("ARROW_RIGHT", 1, ["........", "..w.....", "..wi....", "..wwi...", "..wwii..", "..wiik..", "..iik...", "..ik...."]),
+    ("NOTE", 0, ["....ww..", "....wiw.", "....w.iw", "....w..k", "....w...", ".wwiw...", "wwiiik..", ".iikk..."]),
+    ("EYE", 0, ["........", "..iiii..", ".iwbbwi.", "iwbkkbwi", "iwbkkbwi", ".iwbbwik", "..iiiik.", "...kkk.."]),
+    ("CART", 0, [".eeeeee.", "eddddddk", "edwwwwdk", "edwbbwdk", "edwwwwdk", "eddddddk", "ekekekek", ".kkkkkk."]),
 ]
 
 

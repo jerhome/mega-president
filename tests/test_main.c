@@ -12,6 +12,7 @@ void test_save(void);
 void test_content(void);
 void test_gamesave(void);
 void test_regions(void);
+void test_settings(void);
 
 int main(void)
 {
@@ -25,6 +26,7 @@ int main(void)
     test_content();
     test_gamesave();
     test_regions();
+    test_settings();
     printf("%d vérification(s), %d échec(s)\n", test_checks, test_failures);
     return test_failures ? 1 : 0;
 }
