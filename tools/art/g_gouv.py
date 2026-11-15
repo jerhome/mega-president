@@ -90,7 +90,7 @@ def min_sante():
     P = P_({
         "bg": [(5, 6, 6)],
         "skin": [(3, 1, 1), (5, 3, 3), (7, 5, 4), (7, 6, 6)],
-        "hair": [(3, 3, 2), (5, 5, 3), (6, 6, 5)],
+        "hair": [(3, 3, 3), (5, 5, 4), (7, 6, 5)],   # gris-blond (DA : plus de kaki « casque »)
         "suit": [(1, 2, 3), (2, 3, 4), (3, 4, 5)],
         "white": [(5, 5, 6), (7, 7, 7)],
         "bag": [(4, 2, 4)],
@@ -115,8 +115,9 @@ def min_sante():
     def tex(cv, e):
         comb(cv, hr, [[(CX - 14, 30), (CX - 6, 20), (CX + 6, 18), (CX + 15, 28)]], ("hair", 0))
         curl_marks(cv, bun, [(CX + 14, 50, 5)], hi=("hair", 2))
-        cv.fill(line(CX + 9, 42, CX + 20, 54), ("acc", 0))          # stylo dans le chignon
-        cv.put(CX + 9, 42, INK)
+        cv.fill(line(CX + 17, 47, CX + 25, 39), ("acc", 0))         # stylo planté dans le chignon
+        cv.fill(line(CX + 18, 47, CX + 26, 39), INK)
+        cv.put(CX + 25, 38, INK)
         # lunettes relevées sur le front
         for sx in (-1, 1):
             m = ellipse(CX + sx * 7, 23, 5, 3.5)
@@ -158,7 +159,7 @@ def min_education():
         "bg": [(6, 5, 4)],
         "skin": [(3, 1, 1), (5, 3, 3), (7, 5, 4), (7, 6, 5)],
         "hair": [(3, 3, 3), (5, 5, 5), (7, 7, 7)],
-        "suit": [(2, 2, 1), (3, 3, 2), (4, 4, 3)],
+        "suit": [(2, 1, 0), (3, 2, 1), (5, 3, 1)],   # velours côtelé marron (DA)
         "white": [(5, 5, 5), (7, 7, 7)],
         "scarf": [(4, 0, 1), (6, 1, 1)],
         "iris": [(1, 2, 3)],

@@ -190,15 +190,15 @@ def chef_utl():
         "bg": [(5, 4, 3)],
         "skin": [(3, 1, 1), (5, 3, 2), (7, 5, 4), (7, 6, 6)],
         "hair": [(3, 3, 4), (5, 5, 6), (7, 7, 7)],
-        "suit": [(1, 1, 2), (2, 2, 3), (3, 3, 4)],
+        "suit": [(1, 1, 1), (2, 2, 2), (4, 3, 3)],   # anthracite à rayures (DA)
         "white": [(5, 5, 6), (7, 7, 7)],
-        "tie": [(4, 0, 1), (6, 1, 2)],
+        "tie": [(3, 0, 3), (5, 1, 4)],               # cravate prune (DA)
         "iris": [(1, 3, 4)],
     })
     hb = P.layer("hair", cast=(1, 2), gain=1.2)
     hb.ell(CX + 8, 28, 15, 16, h=8)            # volume derrière
     neck(P, w=12, top=60, bottom=78)
-    bust(P, top=76, wide=28, tie="tie", vw=5, vdepth=11)
+    jacket = bust(P, top=76, wide=28, tie="tie", vw=5, vdepth=11)
     head = P.layer("skin", cast=(1, 3))
     head.ell(CX, 36, 14, 20, h=12)
     head.ell(CX, 54, 10, 15, h=10)
@@ -230,6 +230,10 @@ def chef_utl():
         cv.put(CX + 3, 58, INK)
         T.wrinkle(cv, [(CX + 1, 68), (CX + 1, 70)])        # fossette du menton
         cv.grid(CX + 16, 84, ["..k.k.", ".kwkwk", "kwwwwk", "kkkkkk"], {"k": INK, "w": ("white", 1)})
+        for y in range(76, 96):   # fines rayures claires
+            for x in range(1, 80, 4):
+                if cv.owner_is(x, y, jacket) and cv.get(x, y)[0] == "suit":
+                    cv.put(x, y, ("suit", 2))
 
     @P.draw
     def face(cv, e):
