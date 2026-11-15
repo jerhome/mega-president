@@ -83,7 +83,7 @@ Les événements sont appliqués **avant** par l'appelant. Une partie terminée 
 ### Opinion (par électorat)
 
 ```
-34,2 + affinité(orientation, électorat)               (OPN_BASE = 342)
+34,2 + affinité(orientation, électorat)               (OPN_BASE = 396 depuis la tâche 4.14)
  − (u − 7,5) × k_u      k_u : Pop 5, Moy 4, Cad 3, Ret 3, Jeu 6
  + (g − 1,1) × k_g      k_g : Pop 1, Moy 2, Cad 4, Ret 1, Jeu 2
  + 0,4 × moyenne pondérée des (pilier − 50)
@@ -325,7 +325,7 @@ Détail V4 (actif, 20 tours) : facile 75 / 75 / 66 %, normal 58 / 56 / 51 %, dif
 
 **Préréglage fixe toute la partie** (normal, centre) : Rigueur 41,6 % de popularité, dette 114,6 %, réélection 39 % ; Équilibre 46,4 % / 118,3 % / 68 % ; Relance 50,5 % / 121,3 % / 91 %. La relance l'emportait déjà en V2 (mesure sur le code V2 : rigueur 55 %, équilibre 72 %, relance 94 % sur 400 graines) : le déficit coûte peu, car la consolidation spontanée (`DEBT_CONSOL`) et l'inflation plafonnent la dette, et les piliers n'ont aucun rappel vers 50.
 
-**Variantes de budget** (normal ; réélection gauche / centre / droite) : *optimiseur* (glouton par coordonnées sur la popularité prévue, plans adoptables) 58 / 85 / 87 % ; *extrême* (dépenses +2, impôts −2, 49.3 chaque année) 55 / 83 / 77 %, dette 127-141 % ; *austère* (tout à −2) 4 / 24 / 65 %. Cible de SPEC_V4 §3.4 (au plus 5 points au-dessus du joueur actif) **non atteinte** : le joueur actif ne joue qu'avec les préréglages, et l'optimiseur le dépasse de 30 points au centre et à droite. Garde-fou de test provisoire : +45 points. Le calage (tâche 4.14) devra agir sur l'économie (conséquences d'une dette qui monte : prime de risque sur la dette seule, rappel des piliers, `k_s`), pas seulement sur les tables du budget : doubler `k_s` fait passer l'optimiseur à 38 / 63 / 64 % mais rapproche aussi les préréglages entre eux.
+**Variantes de budget** (normal ; réélection gauche / centre / droite) : *optimiseur* (glouton par coordonnées sur la popularité prévue, plans adoptables) 58 / 85 / 87 % ; *extrême* (dépenses +2, impôts −2, 49.3 chaque année) 55 / 83 / 77 %, dette 127-141 % ; *austère* (tout à −2) 4 / 24 / 65 %. Cible de SPEC_V4 §3.4 (au plus 5 points au-dessus du joueur actif) **non atteinte** : le joueur actif ne joue qu'avec les préréglages, et l'optimiseur le dépasse de 30 points au centre et à droite. Garde-fou provisoire +45 points remplacé en 4.14 par +15 (voir la section « calage »). Le calage (tâche 4.14) devra agir sur l'économie (conséquences d'une dette qui monte : prime de risque sur la dette seule, rappel des piliers, `k_s`), pas seulement sur les tables du budget : doubler `k_s` fait passer l'optimiseur à 38 / 63 / 64 % mais rapproche aussi les préréglages entre eux.
 
 **Sénat** : 1 % des budgets des parties automatiques sont amendés (le bloc présidentiel a presque toujours la majorité au Sénat, sauf en difficile).
 
@@ -342,3 +342,38 @@ Détail V4 (actif, 20 tours) : facile 75 / 75 / 66 %, normal 58 / 56 / 51 %, dif
 | **Passe de contenu, `OPN_BASE` = 339** | **72 %** | **56 %** | **25 %** |
 
 Détail (gauche / centre / droite) : facile 76 / 76 / 66, normal 59 / 58 / 50, difficile 26 / 28 / 22 ; écart entre orientations ≤ 10 points. Popularité finale par électorat (actif, normal, gauche) : Pop 49,5 / Moy 46,9 / Cad 41,8 / Ret 45,3 / Jeu 50,7. Préréglages fixes (centre, normal) : rigueur 42 %, équilibre 71 %, relance 93 % de réélection (dominance du budget inchangée, voir tâche 4.14).
+
+## V4 : calage de l'équilibre du budget détaillé (tâche 4.14)
+
+**Problème** : la relance dominait (préréglage fixe, centre, normal : rigueur 41 %, équilibre 69 %, relance 93 % de réélection) et l'optimiseur dépassait le joueur actif de 30 points au centre et à droite. La dette ne coûtait presque rien (+7 points entre rigueur et relance sur 5 ans, plafonnée par `DEBT_CONSOL`) et les piliers, sans rappel, s'accumulaient sans limite.
+
+**Leviers retenus** (entiers, tous lisibles) :
+
+| Levier | Où | Valeur | Effet |
+|---|---|---|---|
+| **Défiance des marchés** : coût convexe du déficit du plan | `budget.c`, `MARKET_DIV` (dans `sim_plan_opinion`, donc visible à l'aperçu du budget) | opinion −= déficit² / 7 (déficit en dixièmes de point de PIB), pour tous les électorats | Relance (+1,2 point) : −2,1 points ; plan « tout à +2 » (≈ +5 points) : effondrement. Rend l'optimiseur raisonnable : il retombe sur `+1 +1 +1 −1 −1 +2`. |
+| **Rappel des piliers vers 50** | `budget.c`, `PILLAR_RECALL` (`budget_quarter_update`) | 1/12 de l'écart par trimestre (zone morte de 11 dixièmes) | Un plan constant atteint un palier (au plus ≈ +4 à +5 points de pilier) au lieu de s'accumuler : l'écart rigueur / relance en popularité passe de 8,6 à 4,6 points. |
+| **Coût de la dette creusée** | `opinion.c`, `DEBT_OPN_REF`, `DEBT_OPN_DIV` | au-delà de +3 points de dette depuis le début du mandat : opinion −= excès² / 800 (dixièmes) | Progressif et relatif à la difficulté (Difficile démarre à 120 %). Pèse peu à 20 tours (la dette bouge peu), mais punit les plans durablement déficitaires. |
+| **Plafond de dette assoupli** | `economy.c`, `DEBT_CONSOL` | 20 → 120 (−1 point de déficit par an pour 120 points de dette au-delà de 110 %) | La dette n'est plus bornée par la consolidation spontanée : « extrême » monte à 144 % au lieu de ≈ 135 %. |
+| Recalage de l'opinion | `opinion.c` | `OPN_BASE` 339 → 396 ; ligne gauche des affinités +17, ligne droite −6 | Compensent la perte de popularité due aux nouveaux coûts, ramènent l'écart entre orientations à 6 points et le joueur passif à droite sous 5 %. |
+
+Écartés : doubler `k_s` (rapproche les préréglages entre eux), prime de risque sur la seule dette (trop faible à 5 ans), effet retard de l'inflation (l'inflation est une constante, un état supplémentaire changerait `Country` et la sauvegarde pour un effet de l'ordre du bruit). Le malus « budget insincère » (vote) est inchangé.
+
+Joueur automatique « actif » : seuils de dérive de dette de `bot_budget` relevés (gauche : relance tant que la dette a dérivé de moins de 8 points, droite 6, centre 12) car les anciens seuils (6 / 3 / 6 points) faisaient basculer le centre sur la rigueur dans un cas sur deux.
+
+**Tableau de dominance** (normal, réélection gauche / centre / droite, 800 graines) :
+
+| Joueur | Avant | Après |
+|---|---|---|
+| Actif | 59 / 58 / 50 | 53 / 59 / 56 |
+| Optimiseur | 62 / 86 / 88 (+3 / +28 / +38) | 47 / 62 / 67 (−6 / +3 / +11) |
+| Extrême | 55 / 82 / 78 | 0 / 0 / 10 |
+| Austère | 5 / 24 / 65 | 15 / 27 / 61 |
+| Passif | < 1 % | 3 / 4 / 5 (max 4,6) |
+| Préréglage fixe, centre : rigueur / équilibre / relance | 41 / 69 / 93 | 39 / 62 / 73 |
+
+L'optimiseur n'est plus au-dessus du joueur actif de plus de 11 points ; la relance fixe est à +14 du joueur actif (centre) au lieu de +35. Dette finale (normal, centre) : rigueur 115,9 %, équilibre 120,1 %, relance 123,4 %, extrême 139 %. Popularité directe des préréglages à l'aperçu : rigueur −0,9 point, relance −1,3 point (le gain de la relance vient de la croissance et des piliers, avec un coût de marchés immédiat).
+
+**Réélection du joueur actif** (20 tours) : facile 74 / 76 / 71 %, normal 53 / 59 / 56 %, difficile 20 / 27 / 22 % (gauche / centre / droite) ; moyennes 73 / 56 / 23 % ; écart entre orientations ≤ 6 points ; destitution 0 %. Mode 60 tours : popularité, chômage et dette à ±1 point, réélection plus haute de 0 à 8 points (aléa moins bruité à 12 tours par an) : tolérance du test portée à 9 points.
+
+**Tests** : le garde-fou provisoire « +45 points » est remplacé par la cible finale : optimiseur, extrême, austère et chaque préréglage fixe ≤ joueur actif + 15 points ; joueur passif < 5 %.

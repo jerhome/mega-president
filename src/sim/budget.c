@@ -46,6 +46,8 @@ static const s8 bud_cohab[ORIENT_COUNT][BUD_LINES] = {
     { -1, 0, 1, -1, 0, -1 },   // droite
 };
 
+#define PILLAR_RECALL 12        // V4.14 : rappel des piliers vers 50 (1/32 de l'écart par trimestre)
+#define MARKET_DIV 7            // V4.14 : malus (dixièmes) = déficit² / 16, déficit en dixièmes de point de PIB
 #define INSINCERE_DEFICIT 15    // au-delà (1,5 point), le budget est « insincère »
 
 static s8 lvl_ok(s8 l) { return (s8)(l < BUD_LVL_MIN ? BUD_LVL_MIN : (l > BUD_LVL_MAX ? BUD_LVL_MAX : l)); }
@@ -152,6 +154,10 @@ s16 sim_plan_opinion(const BudgetPlan *p, u8 e)
     for (i = 0; i < BUD_LINES; i++) t += asym(i, p->lvl[i], bud_line[i].opinion[e]);
     t /= 2;
     t -= (s32)sim_plan_deficit(p) * bud_k_serious[e] / 10;   // sérieux budgétaire
+    {   // V4.14 : défiance des marchés, coût convexe du déficit (tous les électorats)
+        s32 d = sim_plan_deficit(p);
+        if (d > 0) t -= d * d / MARKET_DIV;
+    }
     return (s16)t;
 }
 
@@ -369,6 +375,7 @@ void budget_quarter_update(Country *c)
     u8 i;
     sim_budget_current_plan(c, &p);
     for (i = 0; i < PIL_TOTAL; i++)
-        c->pillars[i] = sim_clamp((s32)c->pillars[i] + sim_plan_pillar(&p, i),
+        c->pillars[i] = sim_clamp((s32)c->pillars[i] + sim_plan_pillar(&p, i)
+                                  + (500 - (s32)c->pillars[i]) / PILLAR_RECALL,
                                   PILLAR_MIN, PILLAR_MAX);
 }
