@@ -13,7 +13,7 @@
 | **V1 — Jeu complet simplifié** | Règles V1 complètes, 2 mandats, destitution, high scores, bruitages | ≈ 50 h | ≈ 88 h |
 | **V2 — Version enrichie** | Carte des régions, pixel art, musique, institutions complètes | ≈ 70 h, plus la réalisation du pixel art | ≈ 160 h |
 | **V3 — Le beau** | Interface moderne, gueules mémorables, musique FM « chill » par écran | ≈ 117 h | ≈ 290 h |
-| **V5** | 5 électorats (ex-2.09), budget détaillé (ex-2.10) | à estimer | |
+| **V4** | 5 électorats (ex-2.09), budget détaillé (ex-2.10) | à estimer | |
 
 La V0 n'est pas un prototype jetable : c'est une première tranche de la V1. Les durées détaillées ci-dessous sont plus précises que l'estimation donnée oralement (≈ 30 h pour la V0 et ≈ 80 h pour la V1).
 
@@ -158,8 +158,8 @@ La V0 n'est pas un prototype jetable : c'est une première tranche de la V1. Les
 | 2.06 | ✅ Référendum | 2 h |
 | 2.07 | ✅ Remaniement et ministres un par un | 4 h |
 | 2.08 | ✅ 6e pilier, Rayonnement international : diplomatie, Union européenne, sommets | 5 h |
-| 2.09 | ⏭️ Reporté (V3) — remplacé par la popularité par région (13 régions, carte) | 2 h |
-| 2.10 | ⏭️ Reporté (V3) — le budget en un choix suffit | 3 h |
+| 2.09 | ⏭️ Reporté (V4) — remplacé par la popularité par région (13 régions, carte) | 2 h |
+| 2.10 | ⏭️ Reporté (V4) — le budget en un choix suffit | 3 h |
 | 2.11 | ✅ Plus de 100 événements au total | 12 h |
 | 2.12 | ✅ Plus de 40 lois au total | 5 h |
 | 2.13 | ✅ Sauvegarde d'une partie en cours | 3 h |
