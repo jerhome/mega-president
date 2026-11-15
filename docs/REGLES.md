@@ -53,16 +53,22 @@ Une même décision plaît rarement à tout le monde : une réforme peut plaire 
 
 C'est la ressource principale.
 
-- **Gain** : 3 CP par trimestre, plus un bonus de popularité et un bonus de majorité. Le stock est plafonné à 15.
-- **Dépenses en V1** :
+- **Départ** : 5 CP en facile, 4 en normal, 3 en difficile.
+- **Gain** : 1 CP par trimestre, +1 si la popularité atteint 50 %, +1 avec la majorité absolue, soit 1 à 3 CP. Le stock est plafonné à 15. *(Réglage du 14/11 : la base était de 3 CP, trop abondante.)*
+- **Moment du gain** : à la fin du trimestre, affiché dans le rapport. En mode 60 tours (1 tour = 1 mois), il tombe tous les 3 mois ; les autres mois rapportent 0. Le tableau de bord indique le prochain apport (« +2 CP/tour », « +2 CP dans 2 mois »).
+- **Dépenses** :
 
 | Action | Coût |
 |---|---|
-| Proposer une loi | 2 à 6 CP |
-| 49.3 | 4 CP |
+| Proposer une loi | 2 à 6 CP (1 de moins avec le PM Réformateur) |
+| Forcer une loi (49.3) | coût de la loi + 4 CP |
+| Budget au 49.3 | 4 CP |
 | Intervention télévisée (popularité +) | 2 CP |
+| Référendum (V2) | 6 CP |
+| Remaniement (V2) | 3 CP |
+| Défense contre la destitution : discours / négociation | 2 / 3 CP |
 
-- **Ajouts V2** : voyage diplomatique, remaniement, référendum.
+Un CP dépensé pour une loi rejetée est perdu. Les événements peuvent aussi en faire gagner ou perdre.
 
 ## 6. Les lois
 
