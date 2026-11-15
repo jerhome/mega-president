@@ -177,8 +177,11 @@ static void set_expr(u8 e)
     ui_gueule_expr(GUEULE_HUISSIER, (Expr)e, MED_X, MED_Y, PAL2);
 }
 
+static bool greet;   // le huissier lance un mot à l'entrée de l'écran (charabia 4.18)
+
 static void options_init(void)
 {
+    greet = TRUE;
     cur = R_MUSIC;
     confirm = CF_NONE;
     expr = EXPR_NEUTRE;
@@ -298,6 +301,10 @@ static void options_draw(void)
 {
     if (dirty_all) {
         draw_all();
+        if (greet) {
+            greet = FALSE;
+            ui_gueule_say(900);
+        }
         dirty_all = dirty_rows = dirty_help = FALSE;
         return;
     }

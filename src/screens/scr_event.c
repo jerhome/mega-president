@@ -96,7 +96,7 @@ static void draw_upper(bool minister)
         // Un seul visage animé : la gueule du ministre prend la place de la vignette.
         ui_medallion(MED_X, MED_Y, MED_W, MED_H);
         ui_gueule_draw(evt_minister(evt), evt_mood(evt, chosen), MED_X, MED_Y, PAL3);
-        ui_gueule_talk(ui_gueule_talk_ms(flatten(evt_journal[evt][chosen])));
+        ui_gueule_say(ui_gueule_talk_ms(flatten(evt_journal[evt][chosen])));
         return;
     }
     // Le cadre épouse la vignette (8 x 6) : posé sur l'image elle-même,

@@ -128,6 +128,11 @@ void ui_gueule_erase(u16 x, u16 y);
 // image) ; arrêt net à la fin ou à l'appui sur A, B, C ou START ; 0 = se tait.
 // À appeler APRÈS ui_gueule_draw (qui remet la bouche au repos).
 void ui_gueule_talk(u16 ms);
+// Le personnage dit une réplique (charabia, 4.18) : 2 syllabes avec la voix de la dernière
+// gueule dessinée, bouche synchronisée sur le son (fermée sur une labiale, peu ouverte sur
+// une voyelle fermée), puis repos : seuls les yeux bougent. Voix coupée dans les Options :
+// bouche muette pendant ms millisecondes, comme ui_gueule_talk. À appeler après ui_gueule_draw.
+void ui_gueule_say(u16 ms);
 // Durée de parole conseillée pour une réplique (≈ 45 ms par caractère, 0,6 à 4 s).
 u16 ui_gueule_talk_ms(const char *text);
 // Remet le visage au repos et arrête l'animation (la gueule reste affichée).

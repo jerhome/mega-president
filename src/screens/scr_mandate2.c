@@ -54,6 +54,7 @@ static void mandate2_draw(void)
         ui_gueule_draw(GUEULE_PM(c->pm), l->won ? EXPR_CONTENT : EXPR_GENE, 29, 3, PAL2);
         name = txt[TXT_PM_TECHNOCRATE_NOM + 2 * c->pm];
     }
+    ui_gueule_say(ui_gueule_talk_ms(txt[TXT_SECOND_MANDAT]));
     ui_text_flow(1, 4, 27, 4, txt[TXT_SECOND_MANDAT], UI_STYLE_TEXT);
 
     // Sièges par groupe, avant et après.
