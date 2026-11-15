@@ -121,7 +121,7 @@ void sim_senate_renew(Country *c, u16 *before)
     s32 w[GRP_COUNT];
     u16 keep[GRP_COUNT], add[GRP_COUNT], pool = SENATE_SEATS;
     Rng noise;
-    s32 score = (3 * (s32)sim_popularity(c) + c->opinion[c->orientation]) / 4;
+    s32 score = (3 * (s32)sim_popularity(c) + sim_core_opinion(c)) / 4;
     u8 g;
 
     // Aléa tiré d'un générateur dérivé : le flux de c->rng n'est pas consommé.

@@ -26,7 +26,7 @@ enum {
 
 // Profil fixe d'une région (ROM).
 typedef struct {
-    u8 weight[ELEC_COUNT];   // poids des 3 électorats (somme = 100)
+    u8 weight[ELEC_COUNT];   // poids des 5 électorats (somme = 100)
     u8 sens[PIL_TOTAL];      // sensibilité aux piliers (0-9, référence 3)
     u8 sens_unemp;           // sensibilité au chômage (0-9, référence 3)
     u16 pop_share;           // population, en dizaines de milliers d'habitants

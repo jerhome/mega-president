@@ -30,8 +30,17 @@ typedef enum {
     EFF_REL_G4,
     EFF_REL_G5,
     EFF_REL_PARTI,       // relation avec le parti du joueur (G2, G3 ou G4)
+    EFF_POP_RETRAITES,   // V4 : ajoutées en fin de liste (aucune renumérotation)
+    EFF_POP_JEUNES,
     EFF_COUNT
 } EffectKey;
+
+// V4 : POP_CADRES est le nouveau nom de POP_AISEES (même clé).
+#define EFF_POP_CADRES EFF_POP_AISEES
+
+// Électorat visé par une clé POP_* d'un seul électorat (ELEC_*), ou ELEC_COUNT
+// pour les autres clés (dont EFF_POP_TOUS).
+u8 sim_effect_elec(u8 key);
 
 // Applique un effet (unités lisibles) : conversion en unités internes et bornage.
 void sim_apply_effect(Country *c, u8 key, s8 value);

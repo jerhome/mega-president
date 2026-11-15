@@ -19,6 +19,7 @@ u8 sim_cohab_camp(const Country *c)
     return ORIENT_DROITE;
 }
 
+// Préréglage le plus proche du plan du PM (descriptif ; le plan exact est sim_cohab_plan).
 u8 sim_cohab_budget(const Country *c)
 {
     switch (sim_cohab_camp(c)) {
@@ -41,6 +42,7 @@ void cohab_start(Country *c)
     c->pm_prev = c->pm;
     c->pm = PM_OPPOSITION;
     c->cohab = 1;
+    c->cohab_def_adj = 0;
     if (c->cohabitations < 255) c->cohabitations++;
 }
 

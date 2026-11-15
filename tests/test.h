@@ -21,4 +21,7 @@ extern int test_checks;
                __FILE__, __LINE__, #a, #b, _a, _b); } \
 } while (0)
 
+// Fixe l'opinion des électorats (nombre d'électorats quelconque).
+#define SET_OPN(c, v) do { int _e; for (_e = 0; _e < ELEC_COUNT; _e++) (c).opinion[_e] = (s16)(v); } while (0)
+
 #endif

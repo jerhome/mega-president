@@ -20,7 +20,7 @@ static int v1_in_bounds(const Country *c)
     ok &= c->debt >= DEBT_MIN && c->debt <= DEBT_MAX;
     ok &= c->cp <= CP_MAX;
     ok &= c->n_pending <= SIM_MAX_PENDING;
-    ok &= c->budget < BUDGET_COUNT;
+    ok &= c->budget <= BUDGET_PERSO;
     ok &= c->status < STATUS_COUNT;
     return ok;
 }
@@ -162,6 +162,14 @@ static void test_v1_493_tv(void)
     CHECK(flops > 75);
 }
 
+// Met un préréglage en vigueur sans passer par le vote.
+static void set_preset(Country *c, u8 preset)
+{
+    BudgetPlan p;
+    sim_budget_preset_plan(preset, &p);
+    budget_set_current(c, &p);
+}
+
 static void test_v1_budget(void)
 {
     Country c, r, l;
@@ -196,16 +204,23 @@ static void test_v1_budget(void)
     CHECK_EQ(rep.budget_reconduit, 0);
     CHECK_EQ(c.budget, BUDGET_RIGUEUR);   // en vigueur toute l'année suivante
 
-    // Reconduction : aucune décision => équilibre
+    // Reconduction : aucune décision => les dépenses reculent d'un cran vers 0,
+    // les impôts ne changent pas (Rigueur : Soc -1, Trans -1, Ménages +1)
     for (i = 0; i < 3; i++) sim_end_turn(&c, 0);
     CHECK(sim_budget_due(&c));
     sim_end_turn(&c, &rep);
     CHECK_EQ(rep.budget_reconduit, 1);
-    CHECK_EQ(c.budget, BUDGET_EQUILIBRE);
+    CHECK_EQ(c.budget_lvl[BUD_SOCIAL], 0);
+    CHECK_EQ(c.budget_lvl[BUD_TRANSITION], 0);
+    CHECK_EQ(c.budget_lvl[BUD_IMPOT_MENAGES], 1);
+    CHECK_EQ(c.budget, BUDGET_PERSO);
+    // une seconde reconduction ne touche plus rien (dépenses à 0)
+    for (i = 0; i < 4; i++) sim_end_turn(&c, 0);
+    CHECK_EQ(c.budget_lvl[BUD_IMPOT_MENAGES], 1);
 
     // Effets : sur 2 ans, la rigueur réduit la dette et le social par rapport à la relance
-    sim_init(&r, ORIENT_CENTRE, 77, 4); r.budget = BUDGET_RIGUEUR;
-    sim_init(&l, ORIENT_CENTRE, 77, 4); l.budget = BUDGET_RELANCE;
+    sim_init(&r, ORIENT_CENTRE, 77, 4); set_preset(&r, BUDGET_RIGUEUR);
+    sim_init(&l, ORIENT_CENTRE, 77, 4); set_preset(&l, BUDGET_RELANCE);
     for (i = 0; i < 8; i++) {
         r.budget_done = l.budget_done = 1;
         sim_end_turn(&r, 0); sim_end_turn(&l, 0);
@@ -270,11 +285,11 @@ static void test_v1_dissolution(void)
     for (seed = 1; seed <= 100; seed++) {
         Country a;
         sim_init(&a, (u8)(seed % 3), seed, 4);
-        a.opinion[0] = a.opinion[1] = a.opinion[2] = 600;
+        SET_OPN(a, 600);
         sim_legislatives(&a, &lr); hi += lr.bloc_after;
         CHECK(v1_in_bounds(&a));
         sim_init(&a, (u8)(seed % 3), seed, 4);
-        a.opinion[0] = a.opinion[1] = a.opinion[2] = 280;
+        SET_OPN(a, 280);
         sim_legislatives(&a, &lr); lo += lr.bloc_after;
         CHECK(v1_in_bounds(&a));
     }

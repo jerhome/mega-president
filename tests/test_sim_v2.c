@@ -279,6 +279,22 @@ static void test_cohabitation(void)
     // Budget décidé par le Premier ministre selon son camp.
     CHECK(sim_cohab_budget(&c) == BUDGET_RELANCE || sim_cohab_budget(&c) == BUDGET_RIGUEUR);
     CHECK_EQ(sim_cohab_budget(&c), sim_cohab_camp(&c) == ORIENT_GAUCHE ? BUDGET_RELANCE : BUDGET_RIGUEUR);
+    {
+        // V4 : plan exact du Premier ministre (gauche +1 +1 0 +1 0 +1, droite -1 0 +1 -1 0 -1)
+        BudgetPlan pm;
+        sim_cohab_plan(&c, &pm);
+        if (sim_cohab_camp(&c) == ORIENT_GAUCHE) {
+            CHECK(pm.lvl[BUD_SOCIAL] == 1 && pm.lvl[BUD_SECURITE] == 0 && pm.lvl[BUD_IMPOT_ENTREPRISES] == 1);
+        } else {
+            CHECK(pm.lvl[BUD_SOCIAL] == -1 && pm.lvl[BUD_SECURITE] == 1 && pm.lvl[BUD_IMPOT_ENTREPRISES] == -1);
+        }
+        // le président garde la ligne Sécurité et défense, à ± 1 cran
+        sim_cohab_set_defense(&c, 1);
+        { BudgetPlan q; sim_cohab_plan(&c, &q); CHECK_EQ(q.lvl[BUD_SECURITE], pm.lvl[BUD_SECURITE] + 1); }
+        sim_cohab_set_defense(&c, -5);
+        { BudgetPlan q; sim_cohab_plan(&c, &q); CHECK_EQ(q.lvl[BUD_SECURITE], pm.lvl[BUD_SECURITE] - 1); }
+        sim_cohab_set_defense(&c, 0);
+    }
 
     // Le référendum reste possible sur une loi non souveraine.
     c.cp = 15;
@@ -300,7 +316,13 @@ static void test_cohabitation(void)
                 if (sim_law_sovereign((u8)(r.gov_law - 1))) sov_gov++;
                 CHECK(law_is_adopted(&c, (u8)(r.gov_law - 1)));
             }
-            if (r.budget_gov) { budgets++; CHECK_EQ(c.budget, sim_cohab_budget(&c)); }
+            if (r.budget_gov) {
+                BudgetPlan pm;
+                int k;
+                budgets++;
+                sim_cohab_plan(&c, &pm);
+                for (k = 0; k < BUD_LINES; k++) CHECK_EQ(c.budget_lvl[k], pm.lvl[k]);
+            }
             CHECK(!r.budget_reconduit || !r.budget_gov);
             if (sim_mandate_over(&c)) break;
         }
@@ -343,7 +365,7 @@ static void test_cohabitation(void)
         b.cohab = 1;
         b.pm = PM_OPPOSITION;
         a.growth = b.growth = 300;
-        a.budget = b.budget = BUDGET_RELANCE;
+        { BudgetPlan rp; sim_budget_preset_plan(BUDGET_RELANCE, &rp); budget_set_current(&a, &rp); budget_set_current(&b, &rp); }
         CHECK_EQ(sim_opinion_target(&a, ELEC_MOYENNES) >= COHAB_OPINION_REF, 1);
         CHECK_EQ(sim_opinion_target(&a, ELEC_MOYENNES), sim_opinion_target(&b, ELEC_MOYENNES));
     }

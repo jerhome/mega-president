@@ -16,30 +16,35 @@
 #define TENSION_REF     20
 #define GRACE_PER_YEAR  80   // érosion de l'état de grâce (dixièmes de % par an)
 
-// Affinité de l'électorat avec l'orientation du joueur.
+// Affinité de l'électorat avec l'orientation du joueur (V4 : 5 électorats,
+// ordre Pop Moy Cad Ret Jeu ; docs/SPEC_V4.md §1.2).
 static const s8 orient_affinity[ORIENT_COUNT][ELEC_COUNT] = {
-    {  30,  0, -40 },   // gauche
-    { -15, 15,   5 },   // centre
-    { -40,  0,  40 },   // droite
+    {  30,   0, -30, -10,  30 },   // gauche
+    { -20,  10,  15,  15, -20 },   // centre
+    { -40,   0,  40,  10, -35 },   // droite
 };
 
 // Sensibilité au chômage et à la croissance (dixièmes de % par point, / 10).
-static const u8 k_unemp[ELEC_COUNT]  = { 5, 4, 3 };
-static const u8 k_growth[ELEC_COUNT] = { 1, 2, 3 };
+static const u8 k_unemp[ELEC_COUNT]  = { 5, 4, 3, 3, 6 };
+static const u8 k_growth[ELEC_COUNT] = { 1, 2, 4, 1, 2 };
 
 // Poids des piliers par électorat (somme = 16).
 static const u8 pillar_weight[ELEC_COUNT][PIL_TOTAL] = {
-    // Soc Éco Tech Écol Séc Intl (V2 : poids faible, hors somme de 16)
-    {  6,  3,  1,  2,  4,  1 },   // populaires
-    {  3,  4,  2,  3,  4,  1 },   // moyennes
-    {  1,  7,  3,  2,  3,  2 },   // aisées
+    // Soc Éco Tech Écol Séc Intl (poids faible, hors somme de 16)
+    {  6,  3,  1,  2,  4,  1 },   // classes populaires
+    {  3,  4,  2,  3,  4,  1 },   // classes moyennes
+    {  1,  6,  4,  3,  2,  2 },   // cadres
+    {  5,  3,  0,  1,  7,  1 },   // retraités
+    {  4,  2,  3,  6,  1,  1 },   // jeunes
 };
 
 s16 sim_opinion_target(const Country *c, u8 e)
 {
     s32 t = OPN_BASE + orient_affinity[c->orientation][e];
     s32 pil = 0;
+    BudgetPlan plan;
     u8 i;
+    sim_budget_current_plan(c, &plan);
 
     t -= ((s32)c->unemployment - UNEMP_REF) * k_unemp[e] / 10;
     t += ((s32)c->growth - GROWTH_REF) * k_growth[e] / 10;
@@ -55,7 +60,7 @@ s16 sim_opinion_target(const Country *c, u8 e)
     t -= (s32)c->gauges[JAUGE_SCANDALE] * SCANDAL_K / 10;
     if (c->gauges[JAUGE_DEFIANCE] > DEFIANCE_FREE)
         t -= ((s32)c->gauges[JAUGE_DEFIANCE] - DEFIANCE_FREE) / 2;
-    t += sim_budget_opinion(c->budget, e);
+    t += sim_plan_opinion(&plan, e);
     if (c->pm == PM_TECHNOCRATE) t -= TECHNO_POP;
     if (c->mandate > 0)
         t -= WEAR_BASE + (s32)WEAR_SPAN * c->turn / sim_mandate_turns(c);

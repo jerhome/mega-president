@@ -18,7 +18,7 @@
 
 #include "sim/sim_types.h"
 
-#define GAMESAVE_VERSION 1
+#define GAMESAVE_VERSION 2   // V4 : disposition de Game modifiée, pas de migration
 #define GAMESAVE_HEADER  10
 
 // Écrit l'en-tête + les données dans out (GAMESAVE_HEADER + size octets).

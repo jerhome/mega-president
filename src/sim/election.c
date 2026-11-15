@@ -56,7 +56,11 @@ s16 sim_campaign_popularity(const Country *c)
     u8 e;
     for (e = 0; e < ELEC_COUNT; e++)
         o[e] = (s32)c->opinion[e] + sim_theme_bonus(c, c->theme, e);
-    return sim_clamp((4 * o[0] + 4 * o[1] + 2 * o[2] + 5) / 10, 0, 1000);
+    {
+        s32 tot = 0;
+        for (e = 0; e < ELEC_COUNT; e++) tot += (s32)elec_weight[e] * o[e];
+        return sim_clamp((tot + 50) / 100, 0, 1000);
+    }
 }
 
 void sim_election(Country *c, ElectionResult *out)

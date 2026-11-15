@@ -8,34 +8,34 @@ typedef char reg_count_check[(REG_END == REG_COUNT) ? 1 : -1];
 #define UNEMP_REF    750
 #define GAP_MAX      100
 
-// Poids électorats (Pop Moy Ais) | piliers (Soc Éco Tech Écol Séc Intl) | chômage | habitants (x10 000)
+// Poids électorats (Pop Moy Cad Ret Jeu, V4) | piliers (Soc Éco Tech Écol Séc Intl) | chômage | habitants (x10 000)
 const RegionProfile region_profiles[REG_COUNT] = {
     // Hauts-de-France : ouvrière, industrielle, très sensible au chômage
-    { { 50, 38, 12 }, { 6, 2, 0, 0, 2, 0 }, 6, 600 },
+    { { 32, 22, 8, 24, 14 }, { 6, 2, 0, 0, 2, 0 }, 6, 600 },
     // Normandie : ports, nucléaire, agriculture
-    { { 42, 42, 16 }, { 3, 3, 0, 2, 1, 2 }, 3, 330 },
+    { { 28, 22, 9, 30, 11 }, { 3, 3, 0, 2, 1, 2 }, 3, 330 },
     // Île-de-France : classes aisées, technologie, ouverture internationale
-    { { 25, 40, 35 }, { 1, 4, 6, 2, 3, 5 }, 2, 1240 },
+    { { 18, 22, 26, 18, 16 }, { 1, 4, 6, 2, 3, 5 }, 2, 1240 },
     // Grand Est : frontières, industrie, Europe
-    { { 46, 40, 14 }, { 4, 4, 1, 0, 4, 4 }, 4, 560 },
+    { { 30, 23, 9, 26, 12 }, { 4, 4, 1, 0, 4, 4 }, 4, 560 },
     // Bretagne : agriculture, mer, écologie
-    { { 38, 46, 16 }, { 2, 2, 2, 6, 0, 1 }, 2, 340 },
+    { { 24, 24, 10, 31, 11 }, { 2, 2, 2, 6, 0, 1 }, 2, 340 },
     // Pays de la Loire : agriculture et PME
-    { { 38, 45, 17 }, { 2, 3, 2, 4, 1, 1 }, 2, 390 },
+    { { 25, 24, 10, 29, 12 }, { 2, 3, 2, 4, 1, 1 }, 2, 390 },
     // Centre-Val de Loire : rural, nucléaire, services publics
-    { { 42, 43, 15 }, { 3, 2, 1, 4, 2, 1 }, 3, 260 },
+    { { 27, 23, 9, 30, 11 }, { 3, 2, 1, 4, 2, 1 }, 3, 260 },
     // Bourgogne-Franche-Comté : rural et industriel, services publics
-    { { 44, 42, 14 }, { 5, 2, 0, 3, 2, 2 }, 4, 280 },
+    { { 28, 22, 8, 31, 11 }, { 5, 2, 0, 3, 2, 2 }, 4, 280 },
     // Nouvelle-Aquitaine : rurale, viticole, écologie
-    { { 42, 42, 16 }, { 3, 2, 1, 5, 1, 1 }, 3, 610 },
+    { { 26, 22, 9, 32, 11 }, { 3, 2, 1, 5, 1, 1 }, 3, 610 },
     // Auvergne-Rhône-Alpes : industrie, économie, technologie (Lyon, Grenoble)
-    { { 36, 42, 22 }, { 2, 5, 4, 2, 2, 3 }, 3, 820 },
+    { { 24, 23, 15, 25, 13 }, { 2, 5, 4, 2, 2, 3 }, 3, 820 },
     // Occitanie : aéronautique et recherche (Toulouse), agriculture
-    { { 44, 40, 16 }, { 4, 2, 5, 3, 2, 2 }, 4, 610 },
+    { { 26, 22, 11, 28, 13 }, { 4, 2, 5, 3, 2, 2 }, 4, 610 },
     // PACA : sécurité, tourisme, retraités
-    { { 40, 38, 22 }, { 3, 4, 2, 1, 7, 2 }, 4, 520 },
+    { { 25, 21, 12, 31, 11 }, { 3, 4, 2, 1, 7, 2 }, 4, 520 },
     // Corse : insularité, sécurité, services publics
-    { { 50, 35, 15 }, { 4, 2, 0, 1, 5, 0 }, 3, 35 },
+    { { 30, 20, 8, 32, 10 }, { 4, 2, 0, 1, 5, 0 }, 3, 35 },
 };
 
 // Effets des lois adoptées sur une région (cible de l'écart, dixièmes de %).

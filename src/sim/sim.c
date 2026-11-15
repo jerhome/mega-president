@@ -1,10 +1,11 @@
 #include "sim/sim.h"
 
 // Opinion de départ par orientation (lendemain d'élection).
+// Pop, Moy, Cad, Ret, Jeu (V4, docs/SPEC_V4.md §1.2).
 static const s16 opinion_start[ORIENT_COUNT][ELEC_COUNT] = {
-    { 580, 530, 420 },   // gauche
-    { 500, 540, 500 },   // centre
-    { 460, 550, 610 },   // droite
+    { 580, 530, 400, 480, 600 },   // gauche
+    { 460, 540, 540, 560, 440 },   // centre
+    { 440, 550, 620, 600, 380 },   // droite
 };
 
 // Relation de départ selon la distance au parti du joueur (contrat §4).
@@ -115,11 +116,28 @@ void sim_init(Country *c, u8 orientation, u32 seed, u8 turns_per_year)
     sim_init_ex(c, &s);
 }
 
+// Poids électoraux (parts des suffrages exprimés, somme = 100).
+const u8 elec_weight[ELEC_COUNT] = { 26, 22, 12, 28, 12 };
+
 s16 sim_popularity(const Country *c)
 {
-    s32 p = 4 * (s32)c->opinion[ELEC_POPULAIRES] + 4 * (s32)c->opinion[ELEC_MOYENNES]
-          + 2 * (s32)c->opinion[ELEC_AISEES];
-    return (s16)((p + 5) / 10);
+    s32 p = 0;
+    u8 e;
+    for (e = 0; e < ELEC_COUNT; e++) p += (s32)elec_weight[e] * c->opinion[e];
+    return (s16)((p + 50) / 100);
+}
+
+// Opinion de l'électorat-cœur du joueur : gauche = (Pop + Jeu) / 2,
+// centre = (Moy + Ret) / 2, droite = (Cad + Ret) / 2.
+s16 sim_core_opinion(const Country *c)
+{
+    s32 a, b;
+    switch (c->orientation) {
+    case ORIENT_GAUCHE: a = c->opinion[ELEC_POPULAIRES]; b = c->opinion[ELEC_JEUNES]; break;
+    case ORIENT_DROITE: a = c->opinion[ELEC_CADRES];     b = c->opinion[ELEC_RETRAITES]; break;
+    default:            a = c->opinion[ELEC_MOYENNES];   b = c->opinion[ELEC_RETRAITES]; break;
+    }
+    return (s16)((a + b) / 2);
 }
 
 u8 sim_mandate_turns(const Country *c)
@@ -198,7 +216,7 @@ void sim_law_adopt(Country *c, u8 law_id, u8 gov)
         for (i = 0; i < law->n_immediate; i++) {
             u8 k = law->immediate[i].key;
             s8 v = law->immediate[i].value;
-            if (k >= EFF_POP_POPULAIRES && k <= EFF_POP_TOUS) v = (s8)(v / 2);
+            if (k == EFF_POP_TOUS || sim_effect_elec(k) < ELEC_COUNT) v = (s8)(v / 2);
             sim_apply_effect(c, k, v);
         }
     } else {
@@ -383,6 +401,7 @@ void sim_end_turn(Country *c, TurnReport *report)
     r->gov_law = 0;
     r->budget_gov = 0;
     r->senate_renewed = 0;
+    r->senate_amend = 0;
     if (c->status != STATUS_PLAYING) {
         r->popularity_after = r->popularity_before;
         return;
@@ -412,15 +431,9 @@ void sim_end_turn(Country *c, TurnReport *report)
     if (sim_quarter_tick(c)) r->affair = gauges_quarter(c);
     // 7. Clôture de l'année budgétaire : sans budget adopté, reconduction.
     if (year_end) {
-        if (c->cohab) {
-            // Cohabitation : le Premier ministre d'opposition décide du budget.
-            c->budget = sim_cohab_budget(c);
-            r->budget_gov = 1;
-        } else if (!c->budget_done) {
-            c->budget = BUDGET_EQUILIBRE;
-            r->budget_reconduit = 1;
-        }
-        c->budget_done = 0;
+        // Cohabitation : le plan du Premier ministre d'opposition (ligne Sécurité au
+        // président) ; sinon, sans budget adopté, reconduction par services votés.
+        r->senate_amend = budget_year_close(c, &r->budget_reconduit, &r->budget_gov);
     }
     // 8. Capital politique (par trimestre)
     if (sim_quarter_tick(c)) {
@@ -447,12 +460,13 @@ void sim_set_theme(Country *c, u8 theme)
     c->theme = theme < THEME_COUNT ? theme : THEME_NONE;
 }
 
-// Électorats sensibles à chaque thème (poids /4) : populaires, moyennes, aisées.
+// Électorats sensibles à chaque thème (poids /4) : Pop, Moy, Cad, Ret, Jeu.
 static const u8 theme_weight[THEME_COUNT][ELEC_COUNT] = {
-    { 4, 3, 1 },   // emploi
-    { 2, 3, 4 },   // sécurité
-    { 4, 4, 0 },   // pouvoir d'achat
-    { 1, 4, 3 },   // écologie
+    { 4, 3, 1, 0, 4 },   // emploi
+    { 2, 3, 2, 4, 0 },   // sécurité
+    { 4, 4, 0, 3, 2 },   // pouvoir d'achat
+    { 1, 3, 3, 0, 4 },   // écologie
+    { 2, 2, 0, 4, 0 },   // santé et retraites
 };
 
 #define THEME_BASE  20   // bonus de base (dixièmes de %) pour un électorat très sensible
@@ -469,7 +483,10 @@ static s16 theme_credibility(const Country *c, u8 theme)
         break;
     case THEME_POUVOIR_ACHAT:
         cr = ((s32)c->pillars[PIL_SOCIAL] - c->pillars_start[PIL_SOCIAL]) / 3
-           + (c->budget == BUDGET_RIGUEUR ? -10 : 0);
+           + ((c->budget_lvl[BUD_SOCIAL] < 0 || c->budget_lvl[BUD_IMPOT_MENAGES] > 0) ? -10 : 0);
+        break;
+    case THEME_SANTE_RETRAITES:
+        cr = ((s32)c->pillars[PIL_SOCIAL] - c->pillars_start[PIL_SOCIAL]) / 3;
         break;
     default:   // THEME_ECOLOGIE
         cr = ((s32)c->pillars[PIL_ECOLOGIE] - c->pillars_start[PIL_ECOLOGIE]) / 3;

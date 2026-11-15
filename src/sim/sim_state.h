@@ -22,8 +22,10 @@ static inline void law_mask_set(LawMask *m, u8 id)
 static inline void law_mask_clear(LawMask *m) { m->w[0] = 0; m->w[1] = 0; }
 static inline u8 law_mask_any(const LawMask *m) { return (u8)((m->w[0] | m->w[1]) != 0); }
 
-// Électorats
-enum { ELEC_POPULAIRES, ELEC_MOYENNES, ELEC_AISEES, ELEC_COUNT };
+// Électorats (V4 : 5 électorats, classe pour les actifs, âge pour les autres).
+// ELEC_AISEES est conservé comme alias de ELEC_CADRES (même index 2).
+enum { ELEC_POPULAIRES, ELEC_MOYENNES, ELEC_CADRES, ELEC_RETRAITES, ELEC_JEUNES, ELEC_COUNT };
+#define ELEC_AISEES ELEC_CADRES
 // Piliers (dixièmes, 0-1000)
 // PIL_COUNT = 5 : piliers « V1 » affichés par les écrans (compatibilité).
 // PIL_TOTAL = 6 : tous les piliers de la simulation (V2 : PIL_INTERNATIONAL, 2.08).
@@ -156,6 +158,12 @@ typedef struct {
     u8  gov_laws;        // lois adoptées par le gouvernement de cohabitation (statistique)
     u8  cohabitations;   // cohabitations commencées (statistique)
     s8  region_gap[REG_COUNT]; // V2 : écart de popularité de chaque région (dixièmes de %)
+
+    // --- V4 : budget détaillé ---
+    s8  budget_lvl[BUD_LINES]; // plan en vigueur : cran (-2..+2) de chaque ligne
+    u8  bud_amend_line;        // ligne amendée par le Sénat (ligne + 1), 0 = aucune
+    s8  bud_amend_from;        // cran d'origine de cette ligne (rétabli par la lecture définitive)
+    s8  cohab_def_adj;         // cohabitation : écart (-1..+1) du président sur la ligne Sécurité
 
     Rng rng;
 } Country;

@@ -47,9 +47,8 @@ void sim_legislatives(Country *c, LegislativeResult *out)
     u16 given = 0;
     u8 g;
     // Score électoral : popularité (3/4) et électorat-cœur du joueur (1/4).
-    // ELEC_* et ORIENT_* sont alignés : gauche -> populaires, centre -> moyennes,
-    // droite -> aisées.
-    s32 score = (3 * (s32)sim_popularity(c) + c->opinion[c->orientation]) / 4;
+    // V4 : électorat-cœur par sim_core_opinion (plus d'alignement ELEC/ORIENT).
+    s32 score = (3 * (s32)sim_popularity(c) + sim_core_opinion(c)) / 4;
 
     r->bloc_before = sim_bloc_seats(c);
     for (g = 0; g < GRP_COUNT; g++) {

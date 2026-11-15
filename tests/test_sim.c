@@ -56,10 +56,11 @@ static void test_popularity(void)
     Country c;
     sim_init(&c, ORIENT_CENTRE, 3, 4);
     c.opinion[0] = 500; c.opinion[1] = 300; c.opinion[2] = 1000;
-    CHECK_EQ(sim_popularity(&c), 520);   // (2000 + 1200 + 2000) / 10
-    c.opinion[0] = c.opinion[1] = c.opinion[2] = 0;
+    c.opinion[3] = 400; c.opinion[4] = 0;
+    CHECK_EQ(sim_popularity(&c), 428);   // (26 x 500 + 22 x 300 + 12 x 1000 + 28 x 400 + 0) / 100
+    SET_OPN(c, 0);
     CHECK_EQ(sim_popularity(&c), 0);
-    c.opinion[0] = c.opinion[1] = c.opinion[2] = 1000;
+    SET_OPN(c, 1000);
     CHECK_EQ(sim_popularity(&c), 1000);
 }
 
@@ -68,7 +69,7 @@ static void test_effects(void)
     Country c;
     Effect list[2] = { { EFF_ECOLOGIE, 4 }, { EFF_TENSION, 10 } };
     sim_init(&c, ORIENT_CENTRE, 5, 4);
-    c.opinion[0] = c.opinion[1] = c.opinion[2] = 400;
+    SET_OPN(c, 400);
     c.growth = 100; c.unemployment = 700; c.debt = 1000;
     c.pillars[PIL_ECOLOGIE] = 500; c.gauges[JAUGE_TENSION] = 20; c.cp = 5;
     c.relation[GRP_G4] = 50;
@@ -262,6 +263,7 @@ static void test_election(void)
         sim_init(&c, (u8)(seed % 3), seed, 4);
         c.opinion[0] = (s16)(seed * 7 % 1001);   // popularités variées
         c.opinion[1] = (s16)(seed * 13 % 1001);
+        c.opinion[3] = (s16)(seed * 17 % 1001);
         c.unemployment = (s16)(UNEMP_MIN + seed * 37 % 2000);
         sim_election(&c, &r);
         CHECK_EQ(r.cand[0], CAND_JOUEUR);
@@ -286,10 +288,10 @@ static void test_election(void)
         long lo = 0, hi = 0;
         for (seed = 1; seed <= 200; seed++) {
             sim_init(&c, ORIENT_CENTRE, seed, 4);
-            c.opinion[0] = c.opinion[1] = c.opinion[2] = 250;
+            SET_OPN(c, 250);
             sim_election(&c, &r); lo += r.round1[0];
             sim_init(&c, ORIENT_CENTRE, seed, 4);
-            c.opinion[0] = c.opinion[1] = c.opinion[2] = 550;
+            SET_OPN(c, 550);
             sim_election(&c, &r); hi += r.round1[0];
         }
         CHECK(hi > lo);
@@ -297,14 +299,14 @@ static void test_election(void)
 
     // Score de fin de mandat
     sim_init(&c, ORIENT_CENTRE, 4, 4);
-    c.opinion[0] = c.opinion[1] = c.opinion[2] = 400;
+    SET_OPN(c, 400);
     CHECK_EQ(sim_mandate_score(&c, 0), 400);
     CHECK_EQ(sim_mandate_score(&c, 1), 900);
     c.pillars[PIL_ECOLOGIE] = (s16)(c.pillars_start[PIL_ECOLOGIE] + 100);   // +10 pts
     CHECK_EQ(sim_mandate_score(&c, 0), 450);
     c.unemployment = (s16)(c.unemployment_start - 100);                     // -1 pt
     CHECK_EQ(sim_mandate_score(&c, 0), 500);
-    c.opinion[0] = c.opinion[1] = c.opinion[2] = 0;
+    SET_OPN(c, 0);
     c.debt = DEBT_MAX;
     CHECK_EQ(sim_mandate_score(&c, 0), 0);
 }

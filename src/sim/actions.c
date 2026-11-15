@@ -12,7 +12,7 @@
 #define RFD_NOISE    40    // aléa ±4 points
 
 // Orientation moyenne de chaque électorat sur l'axe -100..+100.
-static const s8 elec_orient[ELEC_COUNT] = { -40, 0, 40 };
+static const s8 elec_orient[ELEC_COUNT] = { -30, 0, 40, 20, -40 };
 
 u8 sim_referendum_check(const Country *c, u8 law_id)
 {
@@ -32,7 +32,7 @@ static s16 immediate_for(const LawDef *law, u8 e)
     u8 i;
     for (i = 0; i < law->n_immediate; i++) {
         u8 k = law->immediate[i].key;
-        if (k == EFF_POP_TOUS || k == (u8)(EFF_POP_POPULAIRES + e)) s = (s16)(s + law->immediate[i].value);
+        if (k == EFF_POP_TOUS || sim_effect_elec(k) == e) s = (s16)(s + law->immediate[i].value);
     }
     return s;
 }
@@ -48,10 +48,10 @@ static void ref_compute(const Country *c, const LawDef *law, s16 noise, RefResul
               + (s32)immediate_for(law, e) * RFD_IMM_K + trust + noise;
         out->yes_elec[e] = sim_clamp(y, 50, 950);
     }
-    // mêmes poids que la popularité : 40 % / 40 % / 20 %
-    tot = 4 * (s32)out->yes_elec[ELEC_POPULAIRES] + 4 * (s32)out->yes_elec[ELEC_MOYENNES]
-        + 2 * (s32)out->yes_elec[ELEC_AISEES];
-    out->yes = (s16)(tot / 10);
+    // mêmes poids que la popularité (elec_weight)
+    tot = 0;
+    for (e = 0; e < ELEC_COUNT; e++) tot += (s32)elec_weight[e] * out->yes_elec[e];
+    out->yes = (s16)((tot + 50) / 100);
     out->adopted = (u8)(out->yes >= 500);
 }
 

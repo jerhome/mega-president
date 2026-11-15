@@ -34,8 +34,14 @@ void sim_init_ex(Country *c, const SimSetup *setup);
 // Compatibilité V0 : sim_init_ex sans Premier ministre, difficulté Normal.
 void sim_init(Country *c, u8 orientation, u32 seed, u8 turns_per_year);
 
-// Popularité globale (dixièmes de %) : 40 % populaires, 40 % moyennes, 20 % aisées.
+// Poids électoraux en % des suffrages exprimés : Pop 26, Moy 22, Cad 12, Ret 28, Jeu 12.
+extern const u8 elec_weight[ELEC_COUNT];
+
+// Popularité globale (dixièmes de %) : moyenne des électorats pondérée par elec_weight.
 s16 sim_popularity(const Country *c);
+// Opinion de l'électorat-cœur de l'orientation du joueur (législatives, Sénat) :
+// gauche (Pop + Jeu) / 2, centre (Moy + Ret) / 2, droite (Cad + Ret) / 2.
+s16 sim_core_opinion(const Country *c);
 
 // Nombre total de tours du mandat (20 ou 60).
 u8 sim_mandate_turns(const Country *c);
@@ -110,6 +116,8 @@ typedef struct {
     u8  budget_gov;       // 1 : budget imposé par le Premier ministre d'opposition (fin d'année)
     u8  senate_renewed;   // 1 : le Sénat a été renouvelé par moitié ce tour
     u16 senate_before[GRP_COUNT]; // sièges du Sénat avant renouvellement (si senate_renewed)
+    // V4
+    u8  senate_amend;     // fin d'année : ligne du budget amendée par le Sénat et non rétablie (ligne + 1), 0 sinon
 } TurnReport;
 
 // Fin de tour, dans l'ordre : lois arrivées à maturité, budget, économie,

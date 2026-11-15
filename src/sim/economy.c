@@ -12,13 +12,21 @@
 #define INFLATION      200   // 2,00 % (croissance nominale = réelle + inflation)
 #define TENSION_BASE   20
 #define TECHNO_TREND   30    // PM Technocrate : +0,30 point de tendance
+#define RISK_DEBT      1200  // V4 : prime de risque au-delà de 120 % de dette ...
+#define RISK_DEFICIT   10    // ... pour le déficit du plan au-delà de 1 point de PIB
+#define RISK_PER_TENTH 5     // -0,05 point de croissance par dixième de déficit en trop
 
 // Tendance de croissance : base + piliers Économie et Technologie + budget + PM.
 static s16 growth_trend(const Country *c)
 {
-    s32 t = TREND_BASE + (c->pillars[PIL_ECONOMIE] - 500) / 5
+    BudgetPlan plan;
+    s32 t;
+    sim_budget_current_plan(c, &plan);
+    t = TREND_BASE + (c->pillars[PIL_ECONOMIE] - 500) / 5
           + (c->pillars[PIL_TECHNOLOGIE] - 500) / 10
-          + sim_budget_growth(c->budget);
+          + sim_plan_growth(&plan);
+    if (c->debt > RISK_DEBT && sim_plan_deficit(&plan) > RISK_DEFICIT)
+        t -= (s32)RISK_PER_TENTH * (sim_plan_deficit(&plan) - RISK_DEFICIT);
     if (c->pm == PM_TECHNOCRATE) t += TECHNO_TREND;
     return (s16)t;
 }
@@ -28,6 +36,8 @@ void sim_economy_update(Country *c)
     s16 tpy = c->turns_per_year;
     s16 noise = tpy > 4 ? GROWTH_NOISE_M : GROWTH_NOISE;
     s32 v;
+    BudgetPlan plan;
+    sim_budget_current_plan(c, &plan);
 
     // Croissance : retour vers la tendance (1/4 de l'écart par trimestre) + aléa.
     v = (s32)c->growth + sim_step((s32)growth_trend(c) - c->growth, &c->acc_growth, tpy)
@@ -44,7 +54,7 @@ void sim_economy_update(Country *c)
     // Calcul en centièmes de point, avec report du reste d'un tour à l'autre.
     {
         s32 deficit = DEFICIT_BASE + ((s32)c->unemployment - 750) / 10   // dixièmes/an
-                    + sim_budget_deficit(c->budget)
+                    + sim_plan_deficit(&plan)
                     - ((s32)c->debt - DEBT_REF) / DEBT_CONSOL;
         s32 annual = deficit * 10 - (s32)c->debt * ((s32)c->growth + INFLATION) / 1000;
         s32 acc = (s32)c->debt_acc + annual;
@@ -58,7 +68,7 @@ void sim_economy_update(Country *c)
     {
         s32 target = TENSION_BASE + ((s32)c->unemployment - 750) / 25
                    - ((s32)c->pillars[PIL_SOCIAL] - 500) / 25
-                   + sim_budget_tension(c->budget);
+                   + sim_plan_tension(&plan);
         s32 t = c->gauges[JAUGE_TENSION];
         target = sim_clamp(target, 0, GAUGE_MAX);
         t += sim_step(target - t, &c->acc_tension, tpy);

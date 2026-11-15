@@ -65,18 +65,16 @@ static void test_profiles(void)
         for (e = 0; e < ELEC_COUNT; e++) sum = (u8)(sum + p->weight[e]);
         CHECK_EQ(sum, 100);
     }
-    // Moyenne nationale des poids ≈ 40/40/20 (pondérée par la population).
+    // Moyenne nationale des poids ≈ elec_weight (26 / 22 / 12 / 28 / 12), pondérée par la population.
     {
-        s32 w[ELEC_COUNT] = { 0, 0, 0 }, pop = 0;
+        s32 w[ELEC_COUNT] = { 0, 0, 0, 0, 0 }, pop = 0;
         for (r = 0; r < REG_COUNT; r++) {
             for (e = 0; e < ELEC_COUNT; e++) w[e] += (s32)region_profiles[r].weight[e] * region_profiles[r].pop_share;
             pop += region_profiles[r].pop_share;
         }
-        printf("  poids moyens des électorats : %d / %d / %d %%\n",
-               (int)(w[0] / pop), (int)(w[1] / pop), (int)(w[2] / pop));
-        CHECK(sim_abs16((s16)(w[0] / pop - 40)) <= 2);
-        CHECK(sim_abs16((s16)(w[1] / pop - 40)) <= 2);
-        CHECK(sim_abs16((s16)(w[2] / pop - 20)) <= 2);
+        printf("  poids moyens des électorats : %d / %d / %d / %d / %d %%\n",
+               (int)(w[0] / pop), (int)(w[1] / pop), (int)(w[2] / pop), (int)(w[3] / pop), (int)(w[4] / pop));
+        for (e = 0; e < ELEC_COUNT; e++) CHECK(sim_abs16((s16)(w[e] / pop - elec_weight[e])) <= 2);
     }
 }
 

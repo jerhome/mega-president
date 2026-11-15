@@ -5,6 +5,7 @@ s16 sim_effect_scale(u8 key)
     switch (key) {
     case EFF_POP_POPULAIRES: case EFF_POP_MOYENNES:
     case EFF_POP_AISEES: case EFF_POP_TOUS:
+    case EFF_POP_RETRAITES: case EFF_POP_JEUNES:
         return 10;   // points de % -> dixièmes de %
     case EFF_CROISSANCE: case EFF_CHOMAGE:
         return 10;   // dixièmes de point -> centièmes
@@ -25,6 +26,18 @@ s16 sim_effect_scale(u8 key)
     }
 }
 
+u8 sim_effect_elec(u8 key)
+{
+    switch (key) {
+    case EFF_POP_POPULAIRES: return ELEC_POPULAIRES;
+    case EFF_POP_MOYENNES:   return ELEC_MOYENNES;
+    case EFF_POP_AISEES:     return ELEC_CADRES;
+    case EFF_POP_RETRAITES:  return ELEC_RETRAITES;
+    case EFF_POP_JEUNES:     return ELEC_JEUNES;
+    default:                 return ELEC_COUNT;
+    }
+}
+
 static void add16(s16 *p, s32 d, s16 lo, s16 hi)
 {
     *p = sim_clamp((s32)*p + d, lo, hi);
@@ -42,7 +55,8 @@ void sim_apply_effect(Country *c, u8 key, s8 value)
 
     switch (key) {
     case EFF_POP_POPULAIRES: case EFF_POP_MOYENNES: case EFF_POP_AISEES:
-        add16(&c->opinion[key - EFF_POP_POPULAIRES], d, OPINION_MIN, OPINION_MAX);
+    case EFF_POP_RETRAITES: case EFF_POP_JEUNES:
+        add16(&c->opinion[sim_effect_elec(key)], d, OPINION_MIN, OPINION_MAX);
         break;
     case EFF_POP_TOUS:
         for (i = 0; i < ELEC_COUNT; i++)
