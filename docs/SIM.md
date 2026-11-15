@@ -3,6 +3,8 @@
 > Référence pour l'équilibrage. Code : `src/sim/`. Unités internes : `docs/CONTRAT_V0.md` §2.
 > `tpy` = tours par an (4 : 20 tours ; 12 : mode 60 tours, V2 — voir « Mode 60 tours »).
 > Les variations annuelles sont ramenées au tour par `sim_step` (reste reporté d'un tour à l'autre, pas de perte par troncature).
+>
+> **Sommaire des sections V4** : « Opinion (par électorat) » (5 électorats, affinités, `OPN_BASE`) ; « Présidentielle » (5 thèmes) ; « Référendum » ; « Pilier international et régions » (5 poids) ; « Budget détaillé » (lignes, préréglages, Sénat, cohabitation) ; « V4 : mesures du simulateur » (4.13) ; « V4 : passe de contenu » (4.05, 4.06) ; « V4 : calage de l'équilibre » (4.14, valeurs finales).
 
 ## Fichiers
 
@@ -106,7 +108,7 @@ Les événements sont appliqués **avant** par l'appelant. Une partie terminée 
 
 Poids des piliers (/16, Soc/Éco/Tech/Écol/Séc ; International hors somme : 1 / 1 / 2 / 1 / 1) : Pop 6/3/1/2/4, Moy 3/4/2/3/4, Cad 1/6/4/3/2, Ret 5/3/0/1/7, Jeu 4/2/3/6/1.
 
-`OPN_BASE` = **342** (336 en V2 avec 3 électorats) : relevé de 6 dixièmes pour garder la réélection du joueur actif à ≈ 71 / 55 / 25 % (facile / normal / difficile) : les effets d'opinion immédiats des lois et des événements, non encore repassés sur 5 électorats (tâches 4.05 et 4.06), pèsent moins (ils touchent Pop et Cad, soit 38 % des suffrages au lieu de 60 %).
+`OPN_BASE` = **396** (valeur finale de la tâche 4.14 ; 336 en V2, 342 puis 339 pendant la V4 : voir « V4 : calage »). Les affinités du tableau ci-dessus sont les valeurs de base ; le calage 4.14 a ajouté +17 à la ligne gauche et −6 à la ligne droite.
 
 - **Inertie** : `opinion += (cible − opinion) / tpy` + aléa ±0,8 point.
 - **État de grâce** : +12 points au début du 1er mandat, +4 au début du 2nd, −8 par an.
@@ -133,7 +135,7 @@ Poids des piliers (/16, Soc/Éco/Tech/Écol/Séc ; International hors somme : 1 
 
 | Action | Coût |
 |---|---|
-| Loi | 3 à 6 CP (−1 avec le Réformateur) |
+| Loi | 2 à 6 CP (−1 avec le Réformateur) |
 | 49.3 sur une loi | coût de la loi + 4 CP ; une fois par année du mandat ; défiance +15, opposition −3, opinion −1 |
 | 49.3 sur le budget | 4 CP, illimité ; défiance +8, opposition −1 |
 | Intervention télévisée | 2 CP, une par tour ; échec (15 + 20 × usure) %, plafonné à 90 % ; succès +3 points d'opinion, flop −2 ; usure +1 par intervention |

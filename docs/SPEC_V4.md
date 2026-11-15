@@ -301,3 +301,11 @@ Durée calendaire estimée : environ 20 h.
 ## Décisions du joueur (15/11)
 
 Les 5 propositions sont validées telles quelles : électorats par âge et classe, budget en 6 lignes × 5 crans avec préréglages, rôle budgétaire du Sénat (amendement annulable pour 1 CP), pas de migration de sauvegarde V3 → V4 (high scores conservés), 5e thème de campagne « Santé et retraites ».
+
+## Écarts entre la spécification et le jeu (constatés le 15/11)
+
+`docs/SIM.md` décrit le jeu réel et fait foi. Les écarts suivants ont été mesurés et retenus :
+- les impôts ont une table de multiplicateurs inversée par rapport aux dépenses, sinon « impôts à −2 » dominait ;
+- l'amendement du Sénat recule la ligne à la contribution la plus négative ;
+- la prime de risque ne joue qu'au-delà d'un point de déficit ;
+- la cible de dominance retenue est « optimiseur ≤ actif + 15 points » (mesuré : +11).
