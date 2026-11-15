@@ -34,7 +34,7 @@ def eye(cv, cx, cy, w=9, h=4.0, side=-1, open_=1.0, tilt=0.0, raise_=0.0, look=0
     if ANIM == "look":   # regard qui s'échappe : vers la droite, ou retour au centre
         look = look - 2 if look > 0 else look + (2 if w >= 7 else 1)
     if ANIM == "blink" and not closed_smile:
-        _closed_eye(cv, cx, cy, w, h, side, lashes, lid, bags, raise_)
+        _closed_eye(cv, cx, cy, w, h, side, lashes, lid, bags, raise_, tilt)
         return
     x0 = cx - w / 2.0
     top = {}
@@ -124,14 +124,17 @@ def eye(cv, cx, cy, w=9, h=4.0, side=-1, open_=1.0, tilt=0.0, raise_=0.0, look=0
                 cv.put(x, y, sk(1 if b == 0 else 1))
 
 
-def _closed_eye(cv, cx, cy, w, h, side, lashes, lid, bags, raise_):
-    """Œil fermé (clignement) : paupière supérieure baissée, arc d'encre vers le bas."""
+def _closed_eye(cv, cx, cy, w, h, side, lashes, lid, bags, raise_, tilt=0.0):
+    """Œil fermé (clignement) : paupière supérieure baissée, arc d'encre vers le bas.
+    La pente de l'expression est gardée à moitié (DA § 8) : un furieux qui cligne reste
+    furieux, un gêné reste inquiet, au lieu de paraître apaisé pendant 120 ms."""
     x0 = cx - w / 2.0
     pts = []
     for i in range(w):
         t = (i + 0.5) / w
+        tin = t if side < 0 else 1 - t
         s = math.sin(math.pi * t) ** 0.8
-        pts.append((x0 + i + 0.5, cy + 0.5 + h * 0.3 * s - raise_ * 0.3 * s))
+        pts.append((x0 + i + 0.5, cy + 0.5 + h * 0.3 * s - raise_ * 0.3 * s + tilt * 0.5 * (tin - 0.5) * 2))
     m = cv.stroke([(a, math.floor(b + 0.5)) for a, b in pts], INK)
     if lid >= 2:
         cv.stroke([(a, math.floor(b + 0.5) - 1) for a, b in pts[1:-1]], INK)
@@ -313,7 +316,13 @@ def _talk(wide, kind, w, curve, open_):
     """Bouche qui parle : mi-ouverte (wide False) ou ouverte, à partir de la bouche de
     l'expression. Renvoie (kind, w, curve, open_, teeth, tongue)."""
     if kind in ("smile", "grin"):
-        o = open_ + 1.3 if wide else max(1.2, open_ * 0.5)
+        # Bouche déjà grande ouverte : on la referme à moitié, puis on l'ouvre encore.
+        # Bouche peu ouverte (sourire de publicité, présentatrice) : les deux images
+        # l'ouvrent davantage, sinon « parole 1 » ne se distingue pas de l'expression (DA, § 8).
+        if open_ >= 2.6:
+            o = open_ + 1.3 if wide else open_ * 0.5
+        else:
+            o = open_ + 2.0 if wide else open_ + 0.9
         return kind, w, curve, o, True, None
     if kind == "shout":
         o = open_ * 1.25 if wide else max(1.3, open_ * 0.55)

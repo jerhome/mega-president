@@ -306,6 +306,10 @@ def pm_reformateur():
                 cv.fill(line(x0, y0 + 1, x1, y1 + 1), ("hair", 1))
 
     def teeth(cv, mx, my, m):   # dents de lapin
+        if T.ANIM in ("talk1", "talk2"):   # bouche qui parle : les dents pendent dans l'ouverture
+            cv.grid(int(mx) - 1, my + 1, ["ww", "ws"] if T.ANIM == "talk2" else ["ww"],
+                    {"w": ("white", 1), "s": ("white", 0)})
+            return
         cv.grid(int(mx) - 2, my + 1, ["kwwk", "kwwk", ".kk."], {"k": INK, "w": ("white", 1)})
 
     face(P, eye_y=41, eye_dx=7, eye_w=9, eye_h=4.5, iris_r=2.0, bags=2, brow_y=33, brow_w=10, brow_thick=2,

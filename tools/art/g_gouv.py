@@ -15,6 +15,16 @@ WHITE = [(5, 5, 6), (7, 7, 7)]
 
 # --- Gilles Fontaine, Économie ------------------------------------------------------------
 
+def _etoiles_fontaine(cv):
+    """Étoiles dans les yeux de Fontaine content : elles suivent le regard et
+    disparaissent quand il cligne (sinon elles flottent sur la paupière, DA § 8)."""
+    if T.ANIM == "blink":
+        return
+    dx = 2 if T.ANIM == "look" else 0
+    for sx in (-1, 1):
+        cv.grid(CX + sx * 8 - 1 + dx, 37, [".y.", "yyy", ".y."], {"y": ("white", 1)})
+
+
 def min_economie():
     """Gilles Fontaine : visage de hibou derrière d'épaisses lunettes rondes, yeux énormes,
     cheveux roux clairsemés, oreilles décollées, menton fuyant, trois stylos en poche."""
@@ -76,8 +86,7 @@ def min_economie():
                  "content": {"kind": "smile", "w": 10, "open_": 2.5, "curve": 1.5},
                  "furieux": {"kind": "grit", "w": 9, "curve": -1},
                  "gene": {"kind": "wavy", "w": 7}},
-         extras={"content": lambda cv: [cv.grid(CX + sx * 8 - 1, 37, [".y.", "yyy", ".y."], {"y": ("white", 1)})
-                                        for sx in (-1, 1)],
+         extras={"content": _etoiles_fontaine,
                  "gene": sweat_at(CX + 16, 24)})
     return P
 

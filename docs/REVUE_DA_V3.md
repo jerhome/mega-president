@@ -461,3 +461,68 @@ pour les 4 expressions, si la V3 ne les a faites qu'en neutre et content, et à 
 la table des temps au lieu du texte. **Recommandation V4 : le mélange (1 syllabe par défaut,
 3 pour les moments forts), ≈ 12,5 h**, ou la syllabe seule (≈ 8 h) d'abord si la V4 est chargée :
 l'architecture (banque, file, table des temps) accepte les 3 syllabes plus tard sans rien refaire.
+
+## 8. Relecture des animations (tâche 3.18, visages animés sans son)
+
+Relu le 15/11 sur les 30 personnages : 4 expressions × (clignement, regard, parole 1, parole 2),
+agrandis ×3 à ×5, et les captures BlastEm (Lopez qui parle à la télévision, Delaunay qui cligne
+au tableau de bord). Planche avant/après (hors dépôt) : `/tmp/claude-1000/-home-jerome-claude-mega-president/0a6fa057-997b-490b-8cbe-9637ee148545/scratchpad/gueules_v3/animations_avant_apres_DA.png`
+(rangée du haut : avant ; du bas : après).
+
+**Verdict global : ✅ montrable après mes retouches.** L'intention *Dune* est tenue : c'est
+discret, la palette de chaque gueule est respectée (aucune couleur en plus) et les rectangles de
+tuiles n'ont pas grandi (en-tête `ui_art_gueules.h` inchangé, ROM 896 Ko).
+
+### 8.1 Ce qui va bien
+- ✅ **Yeux fermés** : l'arc d'encre vers le bas et l'ombre de paupière lisent bien comme
+  « paupière baissée », pas comme un sourire. Les lunettes, le monocle de Montclar, les lunettes
+  rouges de Benali et l'ombre à paupières violette de Lopez restent en place : la gueule ne
+  « saute » pas. Les expressions qui ont déjà les yeux plissés (content de Brossard, Varenne,
+  Kervella, Deschamps, Dumoulin, Mirebeau) n'ont pas de clignement : c'est juste.
+- ✅ **Regard de côté** : 2 px vers la droite, avec un reflet qui suit l'iris. C'est l'effet le plus
+  vivant pour son coût, très réussi sur les grands yeux (Fontaine, Lestrade, Lopez).
+- ✅ **Parole** : les bouches fermées (trait, moue, ondulée) s'ouvrent en petit ovale, puis en bouche
+  ouverte avec les dents du haut ; le rouge à lèvres et les barbes restent ceux du personnage.
+  La barbe de Verdier et la moustache de Marchal laissent bien voir l'ouverture.
+- ✅ **Captures** : la bouche de Lopez à l'antenne et le clignement de Delaunay sont propres,
+  sans déchet de tuile autour des rectangles.
+
+### 8.2 Corrigé par la DA (`tools/art/traits.py`, `g_pouvoir.py`, `g_gouv.py`)
+1. ❌→✅ **Clignement « apaisé »** : un furieux qui cligne perdait sa colère pendant 120 ms
+   (paupières horizontales sous des sourcils froncés), un gêné son inquiétude. Le trait de
+   l'œil fermé garde maintenant la moitié de la pente de l'expression (`_closed_eye(…, tilt)`).
+   Visible sur Saint-Aubin, Montclar et tous les « furieux » à sourcils froncés.
+2. ❌→✅ **« Parole 1 » invisible sur les bouches peu ouvertes** : Delmas, Lopez, Dumoulin
+   (sourires de publicité ou de plateau, ouverture < 2,6) refermaient à peine leur bouche :
+   4 à 8 pixels changeaient, l'œil ne voyait rien. Les deux images ouvrent maintenant davantage
+   (+0,9 puis +2,0) ; les bouches déjà grandes ouvertes gardent l'ancien principe (moitié, puis
+   +1,3).
+3. ❌→✅ **Lestrade muet** : ses dents de lapin étaient redessinées par-dessus la bouche qui parle
+   (4 pixels de différence). Quand il parle, les deux dents pendent maintenant dans l'ouverture,
+   sans contour, et la bouche s'ouvre vraiment.
+4. ❌→✅ **Étoiles de Fontaine** (content) : elles flottaient sur les paupières fermées et
+   restaient au centre quand le regard partait à droite. Elles disparaissent au clignement et
+   suivent le regard.
+
+### 8.3 Restes et avis
+- ❌ (connu, mineur) **Mi-clos de 60 ms** pour Fontaine, Lopez et Lestrade : non fait. Il adoucit
+  le clignement des très grands yeux, mais on ne le remarque qu'au ralenti. **À faire en V3.1** :
+  une 5e image `blink_half` (paupière à `open_ * 0,4`) sur les 3 gueules, environ 1 h, 12 tuiles
+  par personnage. Pas bloquant pour le test console.
+- ⚠ **Barbe de Verdier** : en parlant, la lèvre brune de l'expression neutre disparaît au profit de
+  l'ouverture sombre. C'est lisible et acceptable ; je n'y touche pas.
+- **Écran événement : faut-il une gueule qui parle ? Avis de la DA : non en V3, et pas sous cette
+  forme en V3.1.** Le texte d'un événement est la voix du **narrateur** : c'est une situation,
+  pas une réplique. Faire parler un ministre sur ce texte enfreindrait la règle du § 6 (« la
+  bouche ne bouge que sur une réplique attribuée »). La vignette (8 × 6 tuiles, PAL3) est
+  l'identité de l'événement : on la reconnaît en un coup d'œil, et la remplacer par une tête
+  appauvrirait l'écran. Les ajouter côte à côte coûterait 10 colonnes de texte (26 → 16 colonnes,
+  10 lignes, illisible pour les événements longs), ≈ 140 tuiles de VRAM et ≈ 6 h (table
+  événement → ministre de tutelle, mise en page, PAL2).
+  **Ce que je recommande à la place (V4, avec le charabia, ≈ 3 h)** : à la phase « Votre décision »,
+  une réplique **attribuée** du ministre de tutelle sous l'écho du *Quotidien* (« Fermont :
+  — Bien, Monsieur le Président. »), avec sa gueule en médaillon à la place de la vignette
+  pendant 2 s. Correspondance proposée par vignette : canicule, pollution, énergie →
+  Kervella (Écologie) ; bourse, industrie, numérique, agriculture → Fontaine (Économie) ;
+  sécurité, scandale → Fermont (Intérieur) ; santé → Varenne ; éducation → Marchal ;
+  sommet → Valcourt (Affaires étrangères) ; grève, fête → le Premier ministre en place.
