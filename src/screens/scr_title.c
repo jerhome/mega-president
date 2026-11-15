@@ -42,7 +42,6 @@ static u32 seed_acc;
 static u32 press_ms;
 static u8 has_save;
 static UiList list;
-static bool music_wait;   // musique différée jusqu'à la fin de la voix
 
 // Groupe du parti du joueur selon l'orientation (contrat §4).
 static u8 group_of(u8 orient)
@@ -87,9 +86,7 @@ static void title_init(void)
     press_ms = 0;
     has_save = game_has_save();
     // Voix « For sure ! » une seule fois par allumage ; la musique suit juste après.
-    music_wait = voice_play_intro_once();
-    if (!music_wait)
-        music_play(MUS_TITLE);
+    voice_play_intro_once();   // la musique du titre (screen.c) attend la fin de la voix
     duree_items[0] = txt[TXT_DUREE_20];
     duree_items[1] = txt[TXT_DUREE_60];
     pm_items[PM_TECHNOCRATE] = txt[TXT_PM_TECHNOCRATE_NOM];
@@ -158,10 +155,6 @@ static void title_update(void)
 {
     u16 p = input_pressed();
 
-    if (music_wait && !voice_busy()) {
-        music_wait = FALSE;
-        music_play(MUS_TITLE);
-    }
 
     // Entropie : compteur d'images et durée d'attente.
     seed_acc = seed_acc * 1103515245UL + 12345UL + input_frame_ticks() + input_held();

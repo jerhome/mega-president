@@ -1,33 +1,32 @@
 #include "audio/music.h"
 #include "audio/music_tracks.h"
 #include "snd_audio.h"
+#include "audio/voice.h"
 #include "ui/screen.h"
 
-// Pistes de la ressource XGM2 pour chaque morceau. KEEP : pas encore composé,
-// on garde le morceau en cours (aucun changement de musique).
-#define KEEP 0xFF
+// Piste de la ressource XGM2 multi-pistes pour chaque morceau.
 static const u8 s_track[MUS_COUNT] = {
     [MUS_TITLE]      = TRACK_TITLE,
     [MUS_YEAR1]      = TRACK_YEAR1,
-    [MUS_YEAR2]      = TRACK_V2_YEAR2,
-    [MUS_YEAR3]      = TRACK_V2_YEAR3,
-    [MUS_YEAR4]      = TRACK_V2_YEAR4,
-    [MUS_YEAR5]      = TRACK_V2_YEAR5,
-    [MUS_ELECTION]   = TRACK_V2_ELECTION,
+    [MUS_YEAR2]      = TRACK_YEAR2,
+    [MUS_YEAR3]      = TRACK_YEAR3,
+    [MUS_YEAR4]      = TRACK_YEAR4,
+    [MUS_YEAR5]      = TRACK_YEAR5,
+    [MUS_ELECTION]   = TRACK_ELECTION,
     [MUS_REPORT]     = TRACK_REPORT,
-    [MUS_EVENT]      = KEEP,
-    [MUS_ASSEMBLY]   = KEEP,
-    [MUS_MAP]        = KEEP,
-    [MUS_BUDGET]     = KEEP,
-    [MUS_REFERENDUM] = KEEP,
-    [MUS_RESHUFFLE]  = KEEP,
-    [MUS_IMPEACH]    = KEEP,
-    [MUS_CAMPAIGN]   = KEEP,
-    [MUS_MANDATE2]   = TRACK_YEAR1,
-    [MUS_END_WIN]    = TRACK_TITLE,
-    [MUS_END_LOSE]   = TRACK_TITLE,
-    [MUS_SCORES]     = TRACK_TITLE,
-    [MUS_HELP]       = KEEP,
+    [MUS_EVENT]      = TRACK_EVENT,
+    [MUS_ASSEMBLY]   = TRACK_ASSEMBLY,
+    [MUS_MAP]        = TRACK_MAP,
+    [MUS_BUDGET]     = TRACK_BUDGET,
+    [MUS_REFERENDUM] = TRACK_REFERENDUM,
+    [MUS_RESHUFFLE]  = TRACK_RESHUFFLE,
+    [MUS_IMPEACH]    = TRACK_IMPEACH,
+    [MUS_CAMPAIGN]   = TRACK_CAMPAIGN,
+    [MUS_MANDATE2]   = TRACK_MANDATE2,
+    [MUS_END_WIN]    = TRACK_END_WIN,
+    [MUS_END_LOSE]   = TRACK_END_LOSE,
+    [MUS_SCORES]     = TRACK_SCORES,
+    [MUS_HELP]       = TRACK_HELP,
 };
 
 // Fondus en millisecondes (convertis en images selon PAL/NTSC).
@@ -67,6 +66,10 @@ void music_init(void)
 static void request_track(u8 track)
 {
     if (track == s_playing && !s_fading) return;
+    if (s_playing == 0xFF && !s_fading && voice_busy()) {
+        s_pending = track;        // la voix « For sure ! » passe d'abord, seule
+        return;
+    }
     if (s_playing == 0xFF && !s_fading) {
         start_track(track);
         return;
@@ -82,7 +85,6 @@ void music_play(MusicId id)
 {
     if (id >= MUS_COUNT) return;
     u8 track = s_track[id];
-    if (track == KEEP) return;
     s_id = (u8)id;
     if (!s_enabled) return;   // mémorisé : joué si la musique est réactivée
     request_track(track);
@@ -130,7 +132,15 @@ void music_stop(void)
 
 void music_update(void)
 {
-    if (!s_fading) return;
+    if (!s_fading) {
+        // Morceau mis en attente pendant la voix de démarrage
+        if (s_pending != 0xFF && s_playing == 0xFF && s_enabled && !voice_busy()) {
+            u8 t = s_pending;
+            s_pending = 0xFF;
+            start_track(t);
+        }
+        return;
+    }
     if (XGM2_isProcessingFade()) return;   // fondu traité par SGDK à chaque VBlank
     s_fading = FALSE;
     s_playing = 0xFF;                      // XGM2_stop() a été appelé à la fin du fondu
