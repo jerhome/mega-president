@@ -17,7 +17,7 @@ static bool fading_out;
 static const Screen *screens[SCREEN_COUNT];
 static u8 current = NO_SCREEN;
 static u8 pending = NO_SCREEN;
-static u32 ticks;   // 1/300 s depuis l'entrée dans l'écran courant
+static u32 enter_tick;   // getTick() (1/300 s) à l'entrée dans l'écran courant
 
 #ifdef MP_DEBUG_PERF
 // Mesure de performance (ROM `make rom-perf` seulement, docs/AUDIT_V4_1.md § 5).
@@ -80,7 +80,7 @@ ScreenId screen_current(void)
 
 u32 screen_time_ms(void)
 {
-    return (ticks * 10) / 3;
+    return ((getTick() - enter_tick) * 10) / 3;
 }
 
 // Musique de l'écran (3.14) : thème de l'année pour le tableau de bord, issue de la
@@ -109,7 +109,7 @@ static void switch_screen(void)
     ui_clear();
     current = pending;
     pending = NO_SCREEN;
-    ticks = 0;
+    enter_tick = getTick();
 #ifdef MP_DEBUG_PERF
     perf_reset();
 #endif
@@ -148,7 +148,6 @@ void screen_run(ScreenId first)
                 sfx_update();
                 music_update();
                 SYS_doVBlankProcess();
-                ticks += input_frame_ticks();
                 continue;
             }
             fading_out = FALSE;
@@ -158,7 +157,7 @@ void screen_run(ScreenId first)
 #ifdef MP_DEBUG_PERF
         u32 perf_t0;
         {
-            u32 now = getTick() / input_frame_ticks();   // images écoulées
+            u32 now = getTick() / (IS_PAL_SYSTEM ? 6 : 5);   // images écoulées
             if (perf_last && now > perf_last + 1)
                 perf_lost += (u16)(now - perf_last - 1);
             perf_last = now;
@@ -187,6 +186,5 @@ void screen_run(ScreenId first)
         music_update();
         ui_frame_end();
         SYS_doVBlankProcess();
-        ticks += input_frame_ticks();
     }
 }
