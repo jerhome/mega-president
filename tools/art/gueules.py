@@ -32,6 +32,7 @@ LIGHT = tuple(v / _n for v in _L)
 
 # Seuils d'intensité (lumière . normale) par longueur de rampe (sombre -> clair)
 THRESH = {
+    1: (),
     2: (0.45,),
     3: (0.48, 0.86),
     4: (0.16, 0.52, 0.88),
@@ -318,7 +319,7 @@ class Portrait:
                 cols.append(rgb)
             index[k] = 1 + cols.index(rgb)
         if len(cols) > 15 and not strict:
-            print("ATTENTION palette %d couleurs" % len(cols))
+            print("ATTENTION palette %d couleurs" % len(cols), getattr(self, "name", ""))
             cols = cols[:15]
             index = {k: min(v, 15) for k, v in index.items()}
         elif len(cols) > 15:

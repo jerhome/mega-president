@@ -30,16 +30,16 @@ typedef enum {
     ART_TITLE = 0,
 
     // Portraits : 7 x 7 tuiles (56 x 56), palette commune.
-    ART_PRES_GAUCHE,        // le président, ordre ORIENT_* (sim_state.h)
-    ART_PRES_CENTRE,
-    ART_PRES_DROITE,
+    ART_PRES_GAUCHE,        // le président, ordre ORIENT_* (sim_state.h) : Antoine Verdier
+    ART_PRES_CENTRE,        // Laurent Delmas
+    ART_PRES_DROITE,        // Henri de Saint-Aubin
     ART_PM_TECHNOCRATE,     // Pierre Delaunay, ordre PM_* (ids_v1.h)
     ART_PM_RASSEMBLEUR,     // Marianne Deschamps
-    ART_PM_REFORMATEUR,     // Julien Maréchal
+    ART_PM_REFORMATEUR,     // Julien Lestrade
     ART_COHAB_GAUCHE,       // Sophie Carrel, PM d'opposition, ordre ORIENT_*
     ART_COHAB_CENTRE,       // Bernard Lacombe
     ART_COHAB_DROITE,       // Philippe de Montclar
-    ART_CAND_ROUSSEL,       // candidats, ordre CAND_* (election.h)
+    ART_CAND_ROUVIERE,       // candidats, ordre CAND_* (election.h)
     ART_CAND_VASSEUR,
     ART_CAND_MARCHETTI,
     ART_CAND_VALMONT,
@@ -75,7 +75,7 @@ typedef enum {
 #define ART_PRES(orient)   ((ArtId)(ART_PRES_GAUCHE + (orient)))     // ORIENT_*
 #define ART_PM(profile)    ((ArtId)(ART_PM_TECHNOCRATE + (profile))) // PM_*
 #define ART_COHAB(camp)    ((ArtId)(ART_COHAB_GAUCHE + (camp)))      // ORIENT_*
-#define ART_CAND(cand)     ((ArtId)(ART_CAND_ROUSSEL + (cand)))      // CAND_* (sauf CAND_JOUEUR)
+#define ART_CAND(cand)     ((ArtId)(ART_CAND_ROUVIERE + (cand)))      // CAND_* (sauf CAND_JOUEUR)
 
 #define ART_FIRST_PORTRAIT ART_PRES_GAUCHE
 #define ART_FIRST_EVENT    ART_EVT_GREVE

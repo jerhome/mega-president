@@ -533,7 +533,7 @@ def pm_rassembleur():
 
 
 def pm_reformateur():
-    """Julien Maréchal : jeune, pressé, banane gominée, goutte de sueur, sans cravate."""
+    """Julien Lestrade : jeune, pressé, banane gominée, goutte de sueur, sans cravate."""
     f = Face(BG, LGREY)
     f.neck(w=9, top=36, bottom=44)
     f.body(BLUE, WHITE, None, top=43, tie_kind=None, wide=24, vw=6, vdepth=8)
@@ -641,8 +641,8 @@ def cohab_droite():
     return f.c
 
 
-def cand_roussel():
-    """Camille Roussel : ancienne inspectrice du travail, coupe courte rousse, harangue."""
+def cand_rouviere():
+    """Camille Rouvière : ancienne inspectrice du travail, coupe courte rousse, harangue."""
     f = Face(BG, LGREY)
     f.neck(w=9, top=36, bottom=44)
     f.body(RED, None, None, top=44, wide=25, tie_kind=None)
@@ -789,7 +789,7 @@ PORTRAITS = [
     ("art_cohab_gauche", cohab_gauche),
     ("art_cohab_centre", cohab_centre),
     ("art_cohab_droite", cohab_droite),
-    ("art_cand_roussel", cand_roussel),       # CAND_GAUCHE_RADICALE
+    ("art_cand_rouviere", cand_rouviere),       # CAND_GAUCHE_RADICALE
     ("art_cand_vasseur", cand_vasseur),       # CAND_ECOLO
     ("art_cand_marchetti", cand_marchetti),   # CAND_CENTRE
     ("art_cand_valmont", cand_valmont),       # CAND_DROITE

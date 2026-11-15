@@ -160,9 +160,172 @@ EXP_BROW = {  # (intérieur, extérieur)
 }
 
 
+def skull(P, cy=38, rx=17, ry=21, jaw=None, chin=None, ear_y=None, ear_dx=None, ear_r=(3.5, 6),
+          sockets=(8, 3), cheeks=None, cast=(1, 3), gain=1.0, cx=CX, mat="skin"):
+    """Tête standard : crâne (ellipsoïde), mâchoire (rx, ry, cy), menton (rx, ry, cy),
+    oreilles, orbites creusées (dx, profondeur) au niveau des yeux, pommettes (dx, y, r)."""
+    head = P.layer(mat, cast=cast, gain=gain)
+    head.ell(cx, cy, rx, ry, h=min(rx, ry) - 2)
+    if jaw:
+        head.ell(cx, jaw[2], jaw[0], jaw[1], h=min(jaw[0], jaw[1]))
+    if chin:
+        head.ell(cx, chin[2], chin[0], chin[1], h=min(chin[0], chin[1]))
+    if ear_dx:
+        head.ell(cx - ear_dx, ear_y, ear_r[0], ear_r[1], h=3)
+        head.ell(cx + ear_dx, ear_y, ear_r[0], ear_r[1], h=3)
+    if sockets:
+        dx, depth = sockets
+        y = (ear_y - 3) if ear_y else cy - 1
+        head.ell(cx - dx, y, 5.5, 3, h=depth, mode="sub")
+        head.ell(cx + dx, y, 5.5, 3, h=depth, mode="sub")
+    if cheeks:
+        dx, y, r = cheeks
+        head.ell(cx - dx, y, r, r * 0.85, h=2.5, mode="add")
+        head.ell(cx + dx, y, r, r * 0.85, h=2.5, mode="add")
+    return head
+
+
+def hair(P, mask, h=4, r=3, cast=(1, 2), gain=1.3, mat="hair", smooth=1, ink=True, dome=None):
+    """Chevelure : masque gonflé ; dome = (cx, cy, rx, ry, h) ajoute un volume arrondi
+    (calotte) pour que le dessus de la tête prenne la lumière comme une sphère."""
+    l = P.layer(mat, cast=cast, gain=gain, smooth=smooth, ink=ink)
+    l.shape(mask, h=h, r=r)
+    if dome:
+        dx, dy, rx, ry, dh = dome
+        l.ell(dx, dy, rx, ry, h=dh, mode="add")
+    return l
+
+
+def nose_layer(P, cast=(1, 1), dirs="rdl"):
+    return P.layer("skin", ink="shadow", cast=cast, ink_dirs=dirs)
+
+
+def nostrils(cv, y, dx=3, cx=CX):
+    cv.put(cx - dx, y, INK)
+    cv.put(cx + dx - 1, y, INK)
+
+
+def checks(cv, layer, period=6, key_steps=1):
+    """Chemise à carreaux : lignes et colonnes assombries."""
+    for y in range(H):
+        for x in range(W):
+            if cv.owner_is(x, y, layer) and (x % period in (0, 1) or y % period in (0, 1)):
+                k = cv.get(x, y)
+                if k[0] != "ink":
+                    d = key_steps + (1 if (x % period in (0, 1) and y % period in (0, 1)) else 0)
+                    cv.put(x, y, (k[0], max(0, k[1] - d)))
+
+
+def dots(cv, layer, period=4, key=("white", 1)):
+    for y in range(H):
+        for x in range(W):
+            if cv.owner_is(x, y, layer) and x % period == 0 and y % period == (x // period) % 2 * 2:
+                if cv.get(x, y)[0] != "ink":
+                    cv.put(x, y, key)
+
+
+def face(P, eye_y=37, eye_dx=8, eye_w=8, eye_h=4, iris_r=1.8, lid=1, lashes=False, bags=0,
+         droop=0.0, lidfold=True, eyes=None, brow_y=None, brow_dx=None, brow_w=11, brow_thick=3,
+         brow_key=("hair", 0), brow_arch=2.0, taper=True, brows=None, mouth_y=56, mouths=None,
+         extras=None, glasses=None, cx=CX, look=None, iris=("iris", 0)):
+    """Traits standard du visage selon l'expression.
+    eyes : expr -> dict de paramètres de T.eye (open_, tilt, raise_, look, closed_smile...)
+    brows : expr -> (intérieur, extérieur) ou ((g_int, g_ext), (d_int, d_ext))
+    mouths : expr -> dict de paramètres de T.mouth (kind, w, curve, open_...), dx/dy relatifs
+    extras : expr -> fonction(cv) (sueur, veine, rougeur...)
+    glasses : fonction(cv, e) dessinée après les yeux."""
+    brow_y = eye_y - 8 if brow_y is None else brow_y
+    brow_dx = eye_dx + 1 if brow_dx is None else brow_dx
+
+    def draw(cv, e):
+        ep = {"open_": EXP_EYE[e][0], "tilt": EXP_EYE[e][1], "raise_": EXP_EYE[e][2],
+              "look": 2 if e == "gene" else 0}
+        if eyes and e in eyes:
+            ep.update(eyes[e])
+        for s in (-1, 1):
+            q = dict(ep)
+            right = q.pop("right", {})   # surcharge pour l'œil droit (asymétrie)
+            if s == 1:
+                q.update(right)
+            T.eye(cv, cx + s * eye_dx, eye_y, w=eye_w, h=eye_h, side=s, iris_r=iris_r, lid=lid,
+                  lashes=lashes, bags=bags, droop=q.pop("droop", droop), lidfold=lidfold, iris=iris, **q)
+        b = (brows or {}).get(e, EXP_BROW[e])
+        if isinstance(b[0], tuple):
+            bl, br = b
+        else:
+            bl = br = b
+        for s, (idy, ody) in ((-1, bl), (1, br)) if brow_w else ():
+            T.brow(cv, cx + s * brow_dx, brow_y, w=brow_w, side=s, inner_dy=idy, outer_dy=ody,
+                   arch=brow_arch, thick=brow_thick, key=brow_key, taper=taper)
+        if glasses:
+            glasses(cv, e)
+        m = dict((mouths or {}).get(e, {}))
+        if not m:
+            m = {"neutre": {"kind": "line", "curve": 0.5}, "content": {"kind": "smile", "open_": 3},
+                 "furieux": {"kind": "shout", "open_": 3.5}, "gene": {"kind": "wavy"}}[e]
+        mx = cx + m.pop("dx", 0)
+        my = mouth_y + m.pop("dy", 0)
+        m.setdefault("w", 11)
+        lips = m.pop("lips", None)
+        T.mouth(cv, mx, my, **m)
+        if lips:
+            lips(cv, mx, my, m)
+        if extras and e in extras:
+            extras[e](cv)
+    P.draw(draw)
+    return draw
+
+
+def lipstick(cv, mx, my, m, key=("acc", 0), key2=("acc", 1)):
+    """Lèvres colorées autour d'une bouche fermée ou ouverte."""
+    w = m.get("w", 10)
+    hw = w / 2.0
+    for x in range(int(mx - hw + 2), int(mx + hw - 1)):
+        for (y, k) in ((my - 1, key), (my + 1, key2), (my + 2, key)):
+            c = cv.get(x, y)
+            if c and c[0] == "skin":
+                cv.put(x, y, k)
+
+
+def sweat_at(x, y):
+    return lambda cv: T.sweat(cv, x, y)
+
+
+def vein_at(x, y, key=("acc", 0)):
+    return lambda cv: T.vein(cv, x, y, key)
+
+
+def blush_at(y, dx=11, w=4):
+    def f(cv):
+        for s in (-1, 1):
+            T.blush(cv, CX + s * dx - 2, y, w=w)
+    return f
+
+
+def both(*fs):
+    def f(cv):
+        for g in fs:
+            g(cv)
+    return f
+
+
 def registry():
     import g_demo
-    return list(g_demo.ALL)
+    import g_pouvoir
+    import g_candidats
+    import g_gouv
+    import g_divers
+    order = ["pres_gauche", "pres_centre", "pres_droite", "pm_technocrate", "pm_rassembleur",
+             "pm_reformateur", "cohab_gauche", "cohab_centre", "cohab_droite",
+             "cand_gauche_radicale", "cand_ecolo", "cand_centre", "cand_droite", "cand_nationaliste",
+             "min_economie", "min_interieur", "min_sante", "min_education", "min_ecologie",
+             "min_affaires_etr", "chef_ugr", "chef_rsv", "chef_mjm", "chef_utl", "chef_lso",
+             "jour_chaine_info", "jour_editorialiste", "senat_president", "synd_ust", "patron_upe"]
+    found = {}
+    for mod in (g_demo, g_pouvoir, g_candidats, g_gouv, g_divers):
+        for name, fn in mod.ALL:
+            found[name] = fn
+    return [(n, found[n]) for n in order if n in found]
 
 
 def __getattr__(name):
