@@ -80,37 +80,49 @@ static void draw_lower(const char *title)
     ui_window_title(0, LOW_Y, 40, UI_ROWS - LOW_Y, title, TRUE);
 }
 
+// Haut de l'écran : titre, texte et, à droite, la vignette (choix) ou le ministre
+// concerné dans un médaillon 10 x 12 (décision).
+static void draw_upper(bool minister)
+{
+    ArtId art = evt_art(evt);
+    const char *t = flatten(evt_text[evt]);
+    u16 w, h, lines = ui_text_count_lines(TEXT_W, t), ax, ay;
+    art_reset();
+    ui_window_title(0, 0, 40, LOW_Y, evt_title[evt], FALSE);
+    if (lines > 10)
+        lines = 10;
+    ui_text_wrap(1, 4, TEXT_W, 10, t, UI_STYLE_TEXT);
+    if (minister) {
+        // Un seul visage animé : la gueule du ministre prend la place de la vignette.
+        ui_medallion(MED_X, MED_Y, MED_W, MED_H);
+        ui_gueule_draw(evt_minister(evt), evt_mood(evt, chosen), MED_X, MED_Y, PAL3);
+        ui_gueule_talk(ui_gueule_talk_ms(flatten(evt_journal[evt][chosen])));
+        return;
+    }
+    // Le cadre épouse la vignette (8 x 6) : posé sur l'image elle-même,
+    // centré sur la colonne de droite et sur le bloc de texte.
+    ui_art_size(art, &w, &h);
+    ax = MED_X + (MED_W - w) / 2;
+    ay = (lines > h) ? 4 + (lines - h) / 2 : 4;
+    if (ay + h > MED_Y + MED_H)
+        ay = MED_Y + MED_H - h;
+    ui_medallion(ax, ay, w, h);
+    ui_art_draw_pal(art, ax, ay, PAL3);
+}
+
 static void event_draw(void)
 {
     if (!dirty) return;
     dirty = FALSE;
 
     if (phase == P_CHOOSE) {
-        ArtId art = evt_art(evt);
-        u16 w, h;
-        art_reset();
-        ui_window_title(0, 0, 40, LOW_Y, evt_title[evt], FALSE);
-        {
-            // Le cadre épouse la vignette (8 x 6) : posé sur l'image elle-même,
-            // centré sur la colonne de droite et sur le bloc de texte.
-            const char *t = flatten(evt_text[evt]);
-            u16 lines = ui_text_count_lines(TEXT_W, t), ax, ay;
-            if (lines > 10)
-                lines = 10;
-            ui_text_wrap(1, 4, TEXT_W, 10, t, UI_STYLE_TEXT);
-            ui_art_size(art, &w, &h);
-            ax = MED_X + (MED_W - w) / 2;
-            ay = (lines > h) ? 4 + (lines - h) / 2 : 4;
-            if (ay + h > MED_Y + MED_H)
-                ay = MED_Y + MED_H - h;
-            ui_medallion(ax, ay, w, h);
-            ui_art_draw_pal(art, ax, ay, PAL3);
-        }
+        draw_upper(FALSE);
         draw_lower("Que décidez-vous ?");
         ui_list_draw(&choice_list);
         ui_footer(1, 26, 38, "Haut/Bas : choisir   A : valider");
     } else {
-        // Le haut reste affiché ; le bas montre la décision et l'écho dans la presse.
+        // Le ministre concerné réagit en haut ; le bas montre la décision et l'écho dans la presse.
+        draw_upper(TRUE);
         draw_lower("Votre décision");
         ui_icon_draw(1, 20, UI_ICON_CHECK);
         ui_text_draw_n(3, 20, evt_choice[evt][chosen], 36, 0, UI_STYLE_HIGHLIGHT);
