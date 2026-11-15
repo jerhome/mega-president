@@ -1,6 +1,9 @@
 #include "audio/voice.h"
 #include "snd_audio.h"
 #include "audio/voice_chb_data.h"
+#include "ui/ui_art_gueules.h"   // GUEULE_COUNT seulement (la table est sous garde)
+
+_Static_assert(CHB_COUNT == GUEULE_COUNT, "banques du charabia : une par gueule (tools/voice/charabia.py)");
 
 // Durée de l'échantillon en ticks (1/300 s), plus une marge : on n'interroge
 // pas le Z80 juste après le lancement (il n'a pas encore pris la commande en

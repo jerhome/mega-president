@@ -6,6 +6,7 @@ Format strict ; clés d'effets du contrat §3 uniquement.
 Condition : aucune
 Probabilité : moyenne
 Titre : Canicule sur le pays
+Vignette : canicule
 Texte : Quarante degrés à Lyon, les rivières
   s'assèchent et les maisons de retraite
   manquent de ventilateurs. Chaîne
@@ -28,6 +29,7 @@ Choix 3 : Aider surtout les agriculteurs
 Condition : TENSION > 70
 Probabilité : forte
 Titre : Grève générale
+Vignette : greve
 Texte : L'UST appelle à la grève générale :
   trains à l'arrêt, écoles fermées,
   raffineries bloquées. La FDS propose
@@ -51,6 +53,7 @@ Choix 3 : Réquisitionner les raffineries
 Condition : aucune
 Probabilité : faible
 Titre : Secousse sur les marchés
+Vignette : bourse
 Texte : Une banque d'affaires étrangère
   vacille et la Bourse de Paris perd
   6 % en une séance. Les mêmes qui
@@ -73,6 +76,7 @@ Choix 3 : Taxer les profits bancaires
 Condition : aucune
 Probabilité : moyenne
 Titre : Sommet européen
+Vignette : sommet
 Texte : Les chefs d'État se réunissent à
   Bruxelles pour une nuit de négociation
   sur le budget commun. Le café est
@@ -96,6 +100,7 @@ Choix 3 : Proposer un plan climat commun
 Condition : TENSION > 50
 Probabilité : moyenne
 Titre : Nuits d'émeutes
+Vignette : securite
 Texte : Après une bavure, des quartiers
   s'embrasent. Voitures brûlées,
   vitrines brisées, appels au calme sur
@@ -119,6 +124,7 @@ Choix 3 : Plan de rattrapage des quartiers
 Condition : aucune
 Probabilité : forte
 Titre : Fermeture de l'usine
+Vignette : industrie
 Texte : Omnicorp France annonce la fermeture
   de son usine de Montbrison : 800
   emplois supprimés, et un communiqué
@@ -142,6 +148,7 @@ Choix 3 : Ne pas intervenir
 Condition : aucune
 Probabilité : faible
 Titre : Percée scientifique
+Vignette : fete
 Texte : Un laboratoire public annonce un
   procédé de stockage d'énergie
   révolutionnaire. Les investisseurs
@@ -164,6 +171,7 @@ Choix 3 : Laisser faire le labo
 Condition : aucune
 Probabilité : moyenne
 Titre : Rivière polluée
+Vignette : pollution
 Texte : Une usine chimique déverse des
   produits toxiques dans un fleuve.
   Poissons morts, eau du robinet
@@ -187,6 +195,7 @@ Choix 3 : Création d'une agence de contrôle
 Condition : aucune
 Probabilité : moyenne
 Titre : Le dîner qui fait jaser
+Vignette : scandale
 Texte : Le Quotidien du Matin révèle un
   dîner discret entre un ministre et les
   dirigeants de l'UPE. Au menu : turbot
@@ -209,6 +218,7 @@ Choix 3 : Promettre une loi sur le lobbying
 Condition : aucune
 Probabilité : forte
 Titre : Gaffe à la télévision
+Vignette : scandale
 Texte : Le président est surpris par un
   micro ouvert en disant quelque chose
   qui ne se dit pas. Chaîne Info 24

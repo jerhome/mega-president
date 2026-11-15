@@ -525,6 +525,8 @@ void sim_start_second_mandate(Country *c, LegislativeResult *out)
     c->reshuffle_year = 0;
     c->grace_pm = 0;
     law_mask_clear(&c->laws_adopted);   // le catalogue redevient disponible au 2nd mandat
+    // Les lois encore en attente s'appliqueront normalement, mais ne pourront pas être reproposées.
+    for (i = 0; i < c->n_pending; i++) law_mask_set(&c->laws_adopted, c->pending[i].law);
     sim_legislatives(c, out);
 }
 

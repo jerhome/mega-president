@@ -7,6 +7,7 @@ Tendance globale : légèrement défavorable au joueur.
 Condition : aucune
 Probabilité : moyenne
 Titre : Épidémie de grippe
+Vignette : sante
 Texte : Les urgences débordent, les brancards
   s'alignent dans les couloirs. Le
   ministère recommande « de ne pas
@@ -30,6 +31,7 @@ Choix 3 : Compter sur le système
 Condition : aucune
 Probabilité : moyenne
 Titre : Grève des enseignants
+Vignette : education
 Texte : Classes surchargées, postes vacants,
   salaires gelés : l'UST et la FDS
   appellent à fermer les écoles. Les
@@ -52,6 +54,7 @@ Choix 3 : Imposer un service minimum
 Condition : aucune
 Probabilité : moyenne
 Titre : Crise du lait
+Vignette : agriculture
 Texte : Les éleveurs déversent leur lait
   devant les préfectures : le prix
   payé ne couvre plus les coûts. La
@@ -74,6 +77,7 @@ Choix 3 : Laisser jouer le marché
 Condition : TECHNOLOGIE < 40
 Probabilité : moyenne
 Titre : Cyberattaque contre l'État
+Vignette : numerique
 Texte : Des pirates paralysent les serveurs
   d'hôpitaux et de mairies. Les
   dossiers sont chiffrés, la rançon
@@ -96,6 +100,7 @@ Choix 3 : Payer discrètement
 Condition : aucune
 Probabilité : faible
 Titre : Le géant et ses impôts
+Vignette : numerique
 Texte : Le géant du numérique Omnicorp
   Cloud paie moins d'impôts qu'une
   boulangerie de quartier. Il menace de
@@ -118,6 +123,7 @@ Choix 3 : Ne rien changer
 Condition : aucune
 Probabilité : forte
 Titre : Crise du logement
+Vignette : greve
 Texte : Loyers en hausse, files de cent
   candidats pour dix mètres carrés,
   tentes sur les trottoirs. Les
@@ -140,6 +146,7 @@ Choix 3 : Défiscaliser l'investissement
 Condition : aucune
 Probabilité : moyenne
 Titre : Grève à la CFN
+Vignette : greve
 Texte : La Compagnie Ferroviaire Nationale
   est à l'arrêt : un train sur trois
   seulement. La direction parle de
@@ -163,6 +170,7 @@ Choix 3 : Réquisitionner les cheminots
 Condition : SCANDALE > 40
 Probabilité : forte
 Titre : Un ministre mis en examen
+Vignette : scandale
 Texte : Un ministre est mis en examen pour
   prise illégale d'intérêts. Il crie à
   l'acharnement, le parquet à
@@ -185,6 +193,7 @@ Choix 3 : Réformer le statut des ministres
 Condition : aucune
 Probabilité : moyenne
 Titre : Crise avec un voisin
+Vignette : sommet
 Texte : Un pays voisin saisit nos chalutiers
   et ferme un tunnel frontalier. Les
   ambassadeurs sont convoqués, les
@@ -208,6 +217,7 @@ Choix 3 : Saisir l'Union européenne
 Condition : TENSION > 40
 Probabilité : moyenne
 Titre : Flambée de l'électricité
+Vignette : energie
 Texte : Le prix de gros de l'électricité
   triple en un hiver. Les factures
   explosent, les boulangers éteignent

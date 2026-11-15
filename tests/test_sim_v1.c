@@ -394,6 +394,23 @@ static void test_v1_second_mandate(void)
     CHECK_EQ(sim_score_total(&c), s1 + sim_mandate_score(&c, 0));
 }
 
+// Second mandat : une loi en attente reste marquée adoptée (non reproposable).
+static void test_v1_second_mandate_pending(void)
+{
+    Country c;
+    LegislativeResult lr;
+    sim_init(&c, ORIENT_GAUCHE, 72, 4);
+    while (!sim_mandate_over(&c)) sim_end_turn(&c, 0);
+    c.n_pending = 1;
+    c.pending[0].law = LOI_SMIC;
+    c.pending[0].turns_left = 2;
+    CHECK(!law_is_adopted(&c, LOI_SMIC));
+    sim_start_second_mandate(&c, &lr);
+    CHECK(law_is_adopted(&c, LOI_SMIC));
+    CHECK_EQ(c.n_pending, 1);          // elle s'appliquera quand même
+    CHECK_EQ(law_can_propose(&c, LOI_SMIC), LAW_ERR_ADOPTED);
+}
+
 // ---------------------------------------------------------------------------
 // Parties automatiques (1.20)
 // ---------------------------------------------------------------------------
@@ -837,6 +854,7 @@ void test_sim_v1(void)
     test_v1_dissolution();
     test_v1_impeach();
     test_v1_second_mandate();
+    test_v1_second_mandate_pending();
     test_v1_reproducible();
     test_v1_autoplay();
 }

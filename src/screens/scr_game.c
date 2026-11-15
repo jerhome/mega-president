@@ -36,7 +36,14 @@ typedef enum { R_TV, R_FORCE, R_DISSOLVE } ResultKind;
 typedef enum { A_LAW, A_FORCE, A_TV, A_ASSEMBLY, A_MAP, A_REFERENDUM, A_RESHUFFLE, A_DISSOLVE, A_BUDGET,
                A_END, A_OPTIONS, A_QUIT } Action;
 
+// Noms et descriptions des PM : paires consécutives (NOM, DESC) dans l'ordre PM_* (txt[BASE + 2 * pm]).
+_Static_assert(TXT_PM_RASSEMBLEUR_NOM == TXT_PM_TECHNOCRATE_NOM + 2 * PM_RASSEMBLEUR, "TXT_PM_* / PM_*");
+_Static_assert(TXT_PM_REFORMATEUR_NOM == TXT_PM_TECHNOCRATE_NOM + 2 * PM_REFORMATEUR, "TXT_PM_* / PM_*");
+_Static_assert(TXT_PM_TECHNOCRATE_DESC == TXT_PM_TECHNOCRATE_NOM + 1, "TXT_PM_* NOM puis DESC");
+_Static_assert(TXT_PM_REFORMATEUR_DESC == TXT_PM_REFORMATEUR_NOM + 1, "TXT_PM_* NOM puis DESC");
+
 #define MENU_MAX 12   // toutes les actions possibles (A_LAW .. A_QUIT)
+_Static_assert(A_QUIT + 1 <= MENU_MAX, "MENU_MAX : une entrée par action au plus");
 
 static Mode mode;
 static Mode prev_mode;

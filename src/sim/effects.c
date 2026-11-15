@@ -1,5 +1,14 @@
 #include "sim/effects.h"
 
+// sim_apply_effect indexe pillars[] et gauges[] par key - EFF_SOCIAL / EFF_TENSION.
+_Static_assert(EFF_ECONOMIE - EFF_SOCIAL == PIL_ECONOMIE, "EFF_* / PIL_*");
+_Static_assert(EFF_TECHNOLOGIE - EFF_SOCIAL == PIL_TECHNOLOGIE, "EFF_* / PIL_*");
+_Static_assert(EFF_ECOLOGIE - EFF_SOCIAL == PIL_ECOLOGIE, "EFF_* / PIL_*");
+_Static_assert(EFF_SECURITE - EFF_SOCIAL == PIL_SECURITE, "EFF_* / PIL_*");
+_Static_assert(EFF_INTERNATIONAL - EFF_SOCIAL == PIL_INTERNATIONAL, "EFF_* / PIL_*");
+_Static_assert(EFF_SCANDALE - EFF_TENSION == JAUGE_SCANDALE, "EFF_* / JAUGE_*");
+_Static_assert(EFF_DEFIANCE - EFF_TENSION == JAUGE_DEFIANCE, "EFF_* / JAUGE_*");
+
 s16 sim_effect_scale(u8 key)
 {
     switch (key) {

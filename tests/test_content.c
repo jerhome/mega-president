@@ -2,6 +2,7 @@
 #include <string.h>
 #include "test.h"
 #include "content/content_events.h"
+#include "content/content_repliques.h"
 #include "content/content_laws.h"
 #include "content/content_world.h"
 #if defined(__has_include)
@@ -46,13 +47,23 @@ void test_content(void)
     for (i = 0; i < EVT_COUNT; i++) {
         CHECK(text_ok(evt_title[i], 1, 30));
         CHECK(text_ok(evt_text[i], 6, 38));
+        CHECK(strlen(evt_text[i]) <= 255);                 // tampon de scr_event
+        CHECK(evt_vignette[i] < VIG_COUNT);                // vignette déclarée dans docs/contenu
         for (j = 0; j < EVENT_MAX_CHOICES; j++) {
+            if (j < event_defs[i].n_choices)
+                CHECK(evt_choice[i][j] != NULL);
             if (!evt_choice[i][j])
                 continue;
             CHECK(text_ok(evt_choice[i][j], 1, 34));
             CHECK(text_ok(evt_journal[i][j], 2, 38));
         }
     }
+    // Répliques des ministres : tampon q[48] de scr_event (guillemets compris).
+    for (i = 0; i < REP_PERSOS; i++)
+        for (j = 0; j < REP_HUMEURS; j++) {
+            CHECK(text_ok(rep_texte[i][j], 1, 36));
+            CHECK(strlen(rep_texte[i][j]) <= 41);
+        }
     for (i = 0; i < LOI_COUNT; i++) {
         CHECK(text_ok(law_name[i], 1, 24));
         CHECK(text_ok(law_desc[i], 3, 38));

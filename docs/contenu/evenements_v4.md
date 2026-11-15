@@ -8,6 +8,7 @@ post-bac, chômage des jeunes, marche pour le climat). Tout est fictif.
 Condition : DETTE > 100
 Probabilité : moyenne
 Titre : Le gel des pensions
+Vignette : bourse
 Texte : Bercy propose de geler les pensions
   pour « un an, peut-être deux ». Le
   Conseil des retraités rappelle qu'il
@@ -31,6 +32,7 @@ Choix 3 : Geler seulement les plus hautes
 Condition : SOCIAL < 50
 Probabilité : moyenne
 Titre : Scandale en maison de retraite
+Vignette : sante
 Texte : Un livre-enquête révèle des repas à
   1,80 euro et des soins chronométrés
   dans les résidences du groupe
@@ -54,6 +56,7 @@ Choix 3 : Laisser le groupe s'expliquer
 Condition : TECHNOLOGIE > 45
 Probabilité : faible
 Titre : Fracture numérique
+Vignette : numerique
 Texte : Les impôts, la carte vitale et les
   billets de train ne se gèrent plus
   qu'en ligne. Des milliers de seniors
@@ -77,6 +80,7 @@ Choix 3 : Tout dématérialiser
 Condition : aucune
 Probabilité : moyenne
 Titre : L'algorithme du bac
+Vignette : education
 Texte : La plateforme d'affectation Admission+
   publie ses résultats : 60 000
   bacheliers sur liste d'attente, dont
@@ -100,6 +104,7 @@ Choix 3 : Défendre le système
 Condition : CHOMAGE > 7
 Probabilité : moyenne
 Titre : Les jeunes sans emploi
+Vignette : industrie
 Texte : Un jeune actif sur cinq est au
   chômage, et les stages non payés
   s'allongent. Le Syndicat des
@@ -123,6 +128,7 @@ Choix 3 : Compter sur la reprise
 Condition : ECOLOGIE < 50
 Probabilité : moyenne
 Titre : La marche pour le climat
+Vignette : pollution
 Texte : Cent mille jeunes défilent de
   Bastille à République, pancartes en
   carton recyclé : « Vous aurez 40
