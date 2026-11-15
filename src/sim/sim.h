@@ -136,6 +136,7 @@ void sim_economy_update(Country *c);
 void sim_opinion_update(Country *c);
 s16  sim_opinion_target(const Country *c, u8 electorate);
 u8   sim_cp_gain(const Country *c);
+u8   sim_cp_turns_to_next(const Country *c);   // tours avant le prochain apport de CP (>= 1)
 // Avance un reste de calcul : renvoie (acc + annuel) / tpy et garde le reste.
 s16  sim_step(s32 annual, s16 *acc, s16 tpy);
 

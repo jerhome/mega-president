@@ -29,7 +29,7 @@ const char *const law_name[LOI_COUNT] = {
     "Aide au développement", // LOI_AIDE_DEV
     "Police de proximité", // LOI_POLICE_PROX
     "Encadrement des loyers", // LOI_ENCADREMENT
-    "Agriculture bio", // LOI_BIO_CANTINE
+    "Conversion au bio", // LOI_BIO_CANTINE
     "Pass culture pour tous", // LOI_CULTURE
     "Flat tax", // LOI_FLAT_TAX
     "Licenciement assoupli", // LOI_LICENCIEMENT

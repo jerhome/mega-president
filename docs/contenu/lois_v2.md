@@ -126,7 +126,7 @@ Effets suggérés : POP_POPULAIRES +3, POP_MOYENNES +1, POP_AISEES -2, ECONOMIE 
 ## LOI_BIO_CANTINE
 Orientation : -25
 Souveraineté : non
-Nom : Agriculture bio
+Nom : Conversion au bio
 Description :
   Aides à la conversion et 50 % de bio
   dans les cantines publiques. Les

@@ -198,6 +198,14 @@ u8 law_is_adopted(const Country *c, u8 id)
     return law_mask_get(&c->laws_adopted, id);
 }
 
+// Tours restants avant l'application d'une loi votée (0 = pas en attente).
+u8 law_pending_turns(const Country *c, u8 id)
+{
+    for (u8 i = 0; i < c->n_pending; i++)
+        if (c->pending[i].law == id) return c->pending[i].turns_left;
+    return 0;
+}
+
 u8 law_can_propose(const Country *c, u8 id)
 {
     const LawDef *law = law_get(id);

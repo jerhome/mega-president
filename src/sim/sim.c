@@ -143,6 +143,12 @@ u8 sim_game_over(const Country *c)
     return (u8)(c->mandate > 0 && sim_mandate_over(c));
 }
 
+static u8 sim_quarter_tick_at(const Country *c, u8 turn)
+{
+    if (c->turns_per_year <= 4) return 1;
+    return (u8)((turn % 3) == 0);
+}
+
 u8 sim_quarter_tick(const Country *c)
 {
     // En mode mensuel, un trimestre se termine tous les 3 tours.
@@ -318,6 +324,14 @@ u8 sim_cp_gain(const Country *c)
     if (pop >= 500) g++;
     if (parl_support_seats(c) >= SEATS_MAJORITY) g++;
     return g;
+}
+
+// Nombre de tours (>= 1) avant le prochain apport de capital politique.
+u8 sim_cp_turns_to_next(const Country *c)
+{
+    u8 n = 1;
+    while (n < 3 && !sim_quarter_tick_at(c, (u8)(c->turn + n))) n++;
+    return n;
 }
 
 // --- Jauges (par trimestre) ---
