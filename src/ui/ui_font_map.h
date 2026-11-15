@@ -1,14 +1,15 @@
-// Généré par tools/font/make_gfx.py à partir de tools/font/glyphs.txt : ne pas éditer.
+// Généré par tools/ui/make_ui.py à partir de tools/font/glyphs.txt : ne pas éditer.
 #ifndef UI_FONT_MAP_H
 #define UI_FONT_MAP_H
 
-#define UI_FONT_GLYPHS 123
-#define UI_FONT_EXTRA 28
+#define UI_FONT_GLYPHS 125
+#define UI_FONT_EXTRA 30
 
 // Points de code hors ASCII, triés, et indice du glyphe correspondant.
 static const u16 ui_font_extra_cp[UI_FONT_EXTRA] = {
     0x00AB,  // «
     0x00B0,  // °
+    0x00B7,  // ·
     0x00BB,  // »
     0x00C0,  // À
     0x00C7,  // Ç
@@ -34,11 +35,13 @@ static const u16 ui_font_extra_cp[UI_FONT_EXTRA] = {
     0x2019,  // ’
     0x2026,  // …
     0x20AC,  // €
+    0x2192,  // →
     0x2713,  // ✓
 };
 static const u8 ui_font_extra_glyph[UI_FONT_EXTRA] = {
     116,  // «
     118,  // °
+    124,  // ·
     117,  // »
     113,  // À
     114,  // Ç
@@ -64,6 +67,7 @@ static const u8 ui_font_extra_glyph[UI_FONT_EXTRA] = {
     120,  // ’
     121,  // …
     119,  // €
+    123,  // →
     122,  // ✓
 };
 

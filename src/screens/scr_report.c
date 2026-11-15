@@ -15,7 +15,7 @@
 #define LAST_ROW   25   // dernière ligne utilisable pour le contenu
 
 // Instantané pris par scr_game.c au moment de la fin du trimestre.
-extern s16 g_report_snap[9];
+extern s16 g_report_snap[3 + PIL_TOTAL + 1];
 
 static bool dirty;
 static u8 page;   // 0 : bilan, 1 : vie politique (si besoin)
@@ -33,19 +33,64 @@ static void cat_signed(char *dst, s32 v, u16 dec)
     cat_num(dst, v, dec);
 }
 
-// Ligne d'indicateur : flèche, libellé, « avant -> après ».
-static u16 indicator(u16 y, const char *label, s16 before, s16 after, u16 dec, const char *unit)
+// Mise en page de la une (charte V3) :
+//  1-5    bandeau du journal (illustration 38 x 5)
+//  6      date du bilan, 7 filet
+//  8-19   « photo de une » : médaillon x 29-38 (emplacement 8 x 10 tuiles) ;
+//         le texte coule à sa gauche sur 27 colonnes, puis sur toute la largeur.
+#define PHOTO_X   29
+#define PHOTO_Y   8
+#define PHOTO_W   10
+#define PHOTO_H   12
+#define FLOW_Y0   8
+
+// Fin de ligne (colonne exclue) à la rangée y : à gauche de la photo, ou pleine largeur.
+static bool photo_on;   // une (page 0) : le texte contourne la photo
+
+static u16 row_end(u16 y)
+{
+    return (photo_on && y >= PHOTO_Y && y < PHOTO_Y + PHOTO_H) ? PHOTO_X - 1 : 39;
+}
+
+// Rubrique : titre doré suivi d'un filet jusqu'au bout de la ligne.
+static u16 rubric(u16 y, const char *title)
+{
+    u16 n;
+    if (y > LAST_ROW) return y;
+    n = ui_text_draw(1, y, title, UI_STYLE_HIGHLIGHT);
+    if (1 + n + 1 < row_end(y) - 1)
+        ui_separator(2 + n, y, row_end(y) - 2 - n);
+    return y + 1;
+}
+
+// Paragraphe qui coule autour de la photo, à partir de la colonne x ; renvoie la ligne suivante.
+static u16 flow(u16 x, u16 y, u16 max_lines, const char *text, UiStyle st)
+{
+    while (text && y <= LAST_ROW && max_lines--) {
+        text = ui_text_wrap_line(x, y, row_end(y) - x, text, st);
+        y++;
+    }
+    return y;
+}
+
+// Ligne d'indicateur : flèche colorée (hausse/baisse, bonne/mauvaise nouvelle),
+// libellé, « avant → après » aligné à droite.
+static u16 indicator(u16 y, const char *label, s16 before, s16 after, u16 dec, const char *unit,
+                     bool up_is_good)
 {
     char buf[UI_LINE_BUF];
+    bool up = after > before;
+    bool good = up == up_is_good;
     if (before == after || y > LAST_ROW) return y;
-    ui_icon_draw(1, y, after > before ? UI_ICON_ARROW_UP : UI_ICON_ARROW_DOWN);
-    ui_text_draw(3, y, label, UI_STYLE_TEXT);
+    ui_icon_draw(1, y, up ? (good ? UI_ICON_UP_GOOD : UI_ICON_UP_BAD)
+                          : (good ? UI_ICON_DOWN_GOOD : UI_ICON_DOWN_BAD));
+    ui_text_draw(3, y, label, UI_STYLE_DIM);
     buf[0] = 0;
     cat_num(buf, before, dec);
-    strcat(buf, " -> ");
+    strcat(buf, " → ");
     cat_num(buf, after, dec);
     strcat(buf, unit);
-    ui_text_draw(38 - ui_text_len(buf), y, buf, UI_STYLE_HIGHLIGHT);
+    ui_text_right(row_end(y), y, buf, good ? UI_STYLE_TEXT : UI_STYLE_ALERT);
     return y + 1;
 }
 
@@ -116,13 +161,13 @@ static void draw_politics(void)
 {
     const TurnReport *r = &g_game.report;
     char buf[UI_LINE_BUF];
-    u16 y = 4;
+    u16 y = 5;
 
-    ui_text_center(1, 2, 38, "Vie politique", UI_STYLE_DIM);
+    ui_text_center(1, 3, 38, "Vie politique", UI_STYLE_DIM);
 
     if (page == 1 && r->censure != CENSURE_NONE) {
         u8 ok = (r->censure == CENSURE_ADOPTEE);
-        ui_text_draw(1, y++, "Motion de censure", UI_STYLE_HIGHLIGHT);
+        y = rubric(y, "Motion de censure");
         y = para(y, txt[ok ? TXT_CENSURE_ADOPTEE : TXT_CENSURE_REJETEE], ok ? UI_STYLE_ALERT : UI_STYLE_TEXT);
         votes_line(y++, "Voix pour : ", r->censure_votes, SEATS_MAJORITY,
                    ok ? UI_STYLE_ALERT : UI_STYLE_DIM);
@@ -141,7 +186,7 @@ static void draw_politics(void)
         u8 t = r->impeach == IMP_EV_ENGAGEE ? TXT_DESTITUTION_PROCEDURE
              : r->impeach == IMP_EV_REJETEE ? (sen_no ? TXT_DESTITUTION_SENAT_REJETEE : TXT_DESTITUTION_REJETEE)
              : TXT_DESTITUTION_VOTEE;
-        ui_text_draw(1, y++, "Destitution", UI_STYLE_HIGHLIGHT);
+        y = rubric(y, "Destitution");
         y = para(y, txt[t], r->impeach == IMP_EV_REJETEE ? UI_STYLE_TEXT : UI_STYLE_ALERT);
         if (r->impeach == IMP_EV_VOTEE)
             y = para(y, txt[TXT_DESTITUTION_SENAT_VOTEE], UI_STYLE_ALERT);
@@ -168,12 +213,14 @@ static void draw_politics(void)
         y++;
     }
     if (page == 2 && r->affair && y <= LAST_ROW) {
-        ui_text_draw(1, y++, "Une affaire éclate", UI_STYLE_HIGHLIGHT);
+        y = rubric(y, "Une affaire éclate");
         y = para(y, "Un scandale secoue l’Élysée. La presse\nfouille, l’opposition s’en réjouit.", UI_STYLE_ALERT);
         y++;
     }
     if (page == 3) {
         const Country *c = &g_game.country;
+        if ((r->gov_law || r->budget_gov) && y <= LAST_ROW)
+            y = rubric(y, "Cohabitation");
         if (r->gov_law && y <= LAST_ROW) {
             y = para(y, txt[TXT_COHAB_LOI_GOUV], UI_STYLE_HIGHLIGHT);
             ui_icon_draw(1, y, UI_ICON_BULLET);
@@ -190,18 +237,19 @@ static void draw_politics(void)
             u16 before = 0, after = sim_senate_bloc_seats(c);
             for (u8 g = 0; g < GRP_COUNT; g++)
                 if (sim_in_bloc(c, g)) before += r->senate_before[g];
+            y = rubric(y, "Sénat");
             y = para(y, txt[after >= before ? TXT_SENAT_RENOUVELE_GAIN : TXT_SENAT_RENOUVELE_PERTE],
                      after >= before ? UI_STYLE_TEXT : UI_STYLE_ALERT);
             buf[0] = 0;
             strcat(buf, "Sénat, bloc présidentiel : ");
             cat_num(buf, before, 0);
-            strcat(buf, " -> ");
+            strcat(buf, " → ");
             cat_num(buf, after, 0);
             if (y <= LAST_ROW) ui_text_draw(1, y++, buf, UI_STYLE_HIGHLIGHT);
         }
     }
     if (page == 2 && r->budget_reconduit && y <= LAST_ROW) {
-        ui_text_draw(1, y++, "Budget reconduit", UI_STYLE_HIGHLIGHT);
+        y = rubric(y, "Budget reconduit");
         y = para(y, "Faute de budget adopté dans l’année,\nl’État reconduit le budget d’équilibre.", UI_STYLE_TEXT);
     }
 }
@@ -216,21 +264,22 @@ static void report_draw(void)
     char buf[UI_LINE_BUF];
     u16 y, n;
     u8 t;
+    s16 dp;
 
     if (!dirty) return;
     dirty = FALSE;
 
     art_reset();
-    ui_window(0, 0, 40, 28);
+    photo_on = (page == 0);
     if (page != 0) {
-        ui_text_center(1, 1, 38, "LE QUOTIDIEN DU MATIN", UI_STYLE_HIGHLIGHT);
+        ui_window_title(0, 0, 40, 28, "LE QUOTIDIEN DU MATIN", FALSE);
         draw_politics();
-        ui_text_draw(1, 26, next_page(page) ? "A : suite" : "A : continuer", UI_STYLE_TEXT);
+        ui_footer(1, 26, 38, next_page(page) ? "A : suite" : "A : continuer");
         return;
     }
 
-    // Page 1 : bandeau « une » (38 x 5 tuiles, PAL2 : pas de style DIM sur cette page).
-    ui_art_draw(ART_DECOR_JOURNAL, 1, 1);
+    ui_window(0, 0, 40, 28);
+    ui_art_draw_pal(ART_DECOR_JOURNAL, 1, 1, PAL3);   // PAL2 : photo (portrait)
 
     t = c->turn > 0 ? c->turn - 1 : 0;   // tour (trimestre ou mois) qui vient de s'écouler
     buf[0] = 0;
@@ -245,60 +294,79 @@ static void report_draw(void)
         strcat(buf, " ");
         cat_num(buf, START_YEAR + 5 * c->mandate + (t >> 2), 0);
     }
-    ui_text_center(1, 6, 38, buf, UI_STYLE_TEXT);
+    ui_text_center(1, 6, 38, buf, UI_STYLE_HIGHLIGHT);
+    ui_separator(1, 7, 38);
 
-    // Popularité et capital politique
-    y = 8;
-    buf[0] = 0;
-    strcat(buf, "Popularité : ");
-    cat_num(buf, r->popularity_before, 1);
-    strcat(buf, " % -> ");
-    cat_num(buf, r->popularity_after, 1);
-    strcat(buf, " % (");
-    cat_signed(buf, r->popularity_after - r->popularity_before, 1);
-    strcat(buf, ")");
-    ui_text_draw(1, y++, buf, r->popularity_after >= r->popularity_before ? UI_STYLE_TEXT : UI_STYLE_ALERT);
-    buf[0] = 0;
-    strcat(buf, "Capital politique : +");
-    cat_num(buf, r->cp_gain, 0);
-    strcat(buf, " (total ");
-    cat_num(buf, c->cp, 0);
-    strcat(buf, ")");
-    ui_text_draw(1, y++, buf, UI_STYLE_TEXT);
+    // Photo de une : le président (emplacement prévu pour un portrait 8 x 10).
+    ui_medallion(PHOTO_X, PHOTO_Y, PHOTO_W, PHOTO_H);
     {
-        u8 n = sim_cp_turns_to_next(c);
-        buf[0] = 0;
-        strcat(buf, "Prochain apport : ");
-        if (n <= 1) {
-            strcat(buf, "au prochain tour");
-        } else {
-            strcat(buf, "dans ");
-            cat_num(buf, n, 0);
-            strcat(buf, " mois");
-        }
-        ui_text_draw(1, y++, buf, UI_STYLE_TEXT);
+        ArtId id = ART_PRES(c->orientation);
+        u16 w, h;
+        ui_art_size(id, &w, &h);
+        if (w <= PHOTO_W - 2 && h <= PHOTO_H - 2)
+            ui_art_draw(id, PHOTO_X + 1 + (PHOTO_W - 2 - w) / 2, PHOTO_Y + 1 + (PHOTO_H - 2 - h) / 2);
     }
 
+    // Popularité et capital politique
+    y = FLOW_Y0;
+    dp = r->popularity_after - r->popularity_before;
+    ui_icon_draw(1, y, UI_ICON_POPULARITY);
+    ui_text_draw(3, y, "Popularité", UI_STYLE_DIM);
+    buf[0] = 0;
+    cat_signed(buf, dp, 1);
+    ui_text_right(row_end(y), y, buf, dp >= 0 ? UI_STYLE_HIGHLIGHT : UI_STYLE_ALERT);
+    y++;
+    buf[0] = 0;
+    cat_num(buf, r->popularity_before, 1);
+    strcat(buf, " % → ");
+    cat_num(buf, r->popularity_after, 1);
+    strcat(buf, " %");
+    ui_text_draw(3, y++, buf, dp >= 0 ? UI_STYLE_TEXT : UI_STYLE_ALERT);
+
+    ui_icon_draw(1, y, UI_ICON_CP);
+    ui_text_draw(3, y, "Capital politique", UI_STYLE_DIM);
+    buf[0] = 0;
+    strcat(buf, "+");
+    cat_num(buf, r->cp_gain, 0);
+    ui_text_right(row_end(y), y, buf, UI_STYLE_HIGHLIGHT);
+    y++;
+    {
+        u8 nt = sim_cp_turns_to_next(c);
+        buf[0] = 0;
+        strcat(buf, "Total ");
+        cat_num(buf, c->cp, 0);
+        strcat(buf, " · prochain ");
+        if (nt <= 1) {
+            strcat(buf, "au tour suivant");
+        } else {
+            strcat(buf, "dans ");
+            cat_num(buf, nt, 0);
+            strcat(buf, " mois");
+        }
+        y = flow(3, y, 2, buf, UI_STYLE_TEXT);
+    }
+    y++;
+
     // À la une : lois votées ce tour
-    if (law_mask_any(&g_game.laws_tried)) {
-        ui_text_draw(1, y++, "À la une", UI_STYLE_HIGHLIGHT);
+    if (law_mask_any(&g_game.laws_tried) && y <= LAST_ROW) {
+        y = rubric(y, "À la une");
         for (u16 i = 0; i < LOI_COUNT && y <= LAST_ROW; i++) {
+            u8 ok;
             if (!law_mask_get(&g_game.laws_tried, (u8)i)) continue;
-            ui_icon_draw(1, y, UI_ICON_BULLET);
-            n = ui_text_wrap(3, y, 35, LAST_ROW + 1 - y > 2 ? 2 : LAST_ROW + 1 - y,
-                             law_mask_get(&g_game.laws_adopted, (u8)i) ? law_journal_ok[i] : law_journal_ko[i],
-                             law_mask_get(&g_game.laws_adopted, (u8)i) ? UI_STYLE_TEXT : UI_STYLE_ALERT);
-            y += n ? n : 1;
+            ok = law_mask_get(&g_game.laws_adopted, (u8)i);
+            ui_icon_draw(1, y, ok ? UI_ICON_CHECK : UI_ICON_CROSS);
+            y = flow(3, y, 2, ok ? law_journal_ok[i] : law_journal_ko[i], ok ? UI_STYLE_TEXT : UI_STYLE_ALERT);
         }
         y++;
     }
 
     // Lois dont les effets arrivent
     if (r->n_matured && y <= LAST_ROW) {
-        ui_text_draw(1, y++, "Entrent en vigueur", UI_STYLE_HIGHLIGHT);
+        y = rubric(y, "Entrent en vigueur");
         for (u16 i = 0; i < r->n_matured && y <= LAST_ROW; i++) {
             ui_icon_draw(1, y, UI_ICON_BULLET);
-            ui_text_draw_n(3, y++, law_name[r->matured[i]], 35, 0, UI_STYLE_TEXT);
+            ui_text_draw_n(3, y, law_name[r->matured[i]], row_end(y) - 3, 0, UI_STYLE_TEXT);
+            y++;
         }
         y++;
     }
@@ -306,18 +374,19 @@ static void report_draw(void)
     // Indicateurs qui ont bougé
     if (y <= LAST_ROW) {
         u16 y0 = y;
-        ui_text_draw(1, y++, "Indicateurs", UI_STYLE_HIGHLIGHT);
-        y = indicator(y, "Croissance", g_report_snap[0], c->growth, 2, " %");
-        y = indicator(y, "Chômage", g_report_snap[1], c->unemployment, 2, " %");
-        y = indicator(y, "Dette", g_report_snap[2], c->debt, 1, " %");
+        y = rubric(y, "Indicateurs");
+        y = indicator(y, "Croissance", g_report_snap[0], c->growth, 2, " %", TRUE);
+        y = indicator(y, "Chômage", g_report_snap[1], c->unemployment, 2, " %", FALSE);
+        y = indicator(y, "Dette", g_report_snap[2], c->debt, 1, " %", FALSE);
         for (u16 i = 0; i < PIL_TOTAL; i++)
-            y = indicator(y, pillar_names[i], g_report_snap[3 + i], c->pillars[i], 1, "");
-        y = indicator(y, "Tension", g_report_snap[8], c->gauges[JAUGE_TENSION], 0, " %");
+            y = indicator(y, pillar_names[i], g_report_snap[3 + i], c->pillars[i], 1, "", TRUE);
+        y = indicator(y, "Tension", g_report_snap[3 + PIL_TOTAL], c->gauges[JAUGE_TENSION], 0, " %", FALSE);
         if (y == y0 + 1)
-            ui_text_draw(1, y, "Rien de notable.", UI_STYLE_TEXT);
+            ui_text_draw(3, y, "Rien de notable.", UI_STYLE_DIM);
     }
+    (void)n;
 
-    ui_text_draw(1, 26, has_politics() ? "A : suite" : "A : continuer", UI_STYLE_TEXT);
+    ui_footer(1, 26, 38, has_politics() ? "A : suite" : "A : continuer");
 }
 
 static void report_exit(void)

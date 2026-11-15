@@ -47,6 +47,8 @@ void ui_list_init(UiList *list, u16 x, u16 y, u16 w, u16 rows,
     list->rows = (u8)(rows ? rows : 1);
     list->sel = 0;
     list->top = 0;
+    list->flags = 0;
+    list->bar_sel = 0xFF;
 }
 
 UiListResult ui_list_update(UiList *l)
@@ -86,9 +88,20 @@ UiListResult ui_list_update(UiList *l)
     return UI_LIST_IDLE;
 }
 
-void ui_list_draw(const UiList *l)
+void ui_list_draw(UiList *l)
 {
     u16 r, text_w = l->w > 2 ? l->w - 2 : 1;
+    u16 bar_w = l->w > 1 ? l->w - 1 : 1;     // la barre laisse la colonne des flèches
+    u8 bar = (l->sel >= l->top && l->sel < l->top + l->rows) ? (u8)(l->sel - l->top) : 0xFF;
+
+    // Barre de sélection (plan B) : retirée de l'ancienne ligne, posée sur la nouvelle.
+    if (!(l->flags & UI_LIST_NOBAR)) {
+        if (l->bar_sel != 0xFF && l->bar_sel != bar && l->bar_sel < l->rows)
+            ui_select_bar_clear(l->x, l->y + l->bar_sel, bar_w);
+        if (bar != 0xFF && l->count)
+            ui_select_bar(l->x, l->y + bar, bar_w);
+        l->bar_sel = bar;
+    }
 
     for (r = 0; r < l->rows; r++) {
         u16 i = l->top + r;
@@ -127,6 +140,7 @@ static const char *const ok_choice[1] = { "OK" };
 static struct {
     bool open;
     bool drawn;
+    u8 step;          // dépliement en cours (0 .. MSG_UNFOLD_STEPS), puis contenu
     u8 y, h;
     const char *title;
     const char *text;
@@ -164,6 +178,7 @@ void ui_msgbox_open(const char *title, const char *text,
 
     msg.open = TRUE;
     msg.drawn = FALSE;
+    msg.step = 0;
     msg.h = (u8)h;
     msg.y = (u8)(UI_ROWS - 1 - h);   // une ligne de marge en bas (débordement TV)
     msg.title = title;
@@ -175,15 +190,19 @@ static void msgbox_draw(void)
 {
     u16 y = msg.y + 1;
 
-    ui_window(MSG_X, msg.y, MSG_W, msg.h);
     if (msg.title) {
-        ui_text_draw_n(MSG_X + 1, y, msg.title, MSG_TEXT_W, 0, UI_STYLE_HIGHLIGHT);
+        ui_window_title(MSG_X, msg.y, MSG_W, msg.h, msg.title, TRUE);
         y += 2;
+    } else {
+        ui_window(MSG_X, msg.y, MSG_W, msg.h);
     }
     if (msg.text)
         ui_text_wrap(MSG_X + 1, y, MSG_TEXT_W, MSG_MAX_TEXT_LINES, msg.text, UI_STYLE_TEXT);
+    msg.list.bar_sel = 0xFF;
     ui_list_draw(&msg.list);
 }
+
+#define MSG_UNFOLD_STEPS 3   // images de dépliement avant le contenu
 
 s16 ui_msgbox_update(void)
 {
@@ -191,9 +210,17 @@ s16 ui_msgbox_update(void)
 
     if (!msg.open)
         return -1;
-    if (!msg.drawn) {
-        msgbox_draw();
+    if (msg.step < MSG_UNFOLD_STEPS) {
+        // Dépliement : la fenêtre grandit vers le haut depuis le bas de la boîte.
+        u16 h = 2 + (u16)((msg.h - 2) * (msg.step + 1)) / (MSG_UNFOLD_STEPS + 1);
+        ui_window(MSG_X, msg.y + msg.h - h, MSG_W, h);
+        msg.step++;
         msg.drawn = TRUE;
+        return -1;
+    }
+    if (msg.step == MSG_UNFOLD_STEPS) {
+        msgbox_draw();
+        msg.step++;
         return -1;   // pas de saisie à l'image d'ouverture
     }
     r = ui_list_update(&msg.list);
