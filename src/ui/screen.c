@@ -19,6 +19,48 @@ static u8 current = NO_SCREEN;
 static u8 pending = NO_SCREEN;
 static u32 ticks;   // 1/300 s depuis l'entrée dans l'écran courant
 
+#ifdef MP_DEBUG_PERF
+// Mesure de performance (ROM `make rom-perf` seulement, docs/AUDIT_V4_1.md § 5).
+// Durée d'update + draw de chaque image, en 1/76800 s (getSubTick : getTick() n'a
+// que la résolution d'une image) ; images perdues d'après l'écart de getTick()
+// entre deux tours de boucle. Remis à zéro à chaque changement d'écran.
+static u32 perf_max;    // maximum d'update + draw (1/76800 s)
+static u16 perf_lost;   // images perdues sur l'écran courant
+static u32 perf_last;   // getTick() au tour précédent
+
+static void perf_reset(void)
+{
+    perf_max = 0;
+    perf_lost = 0;
+    perf_last = 0;
+}
+
+static u16 perf_put(char *p, u32 v)   // entier décimal, retourne la longueur
+{
+    char t[10];
+    u16 n = 0, i = 0;
+    do { t[n++] = (char)('0' + v % 10); v /= 10; } while (v && n < 9);
+    while (n) p[i++] = t[--n];
+    return i;
+}
+
+static void perf_show(void)
+{
+    char b[16];
+    u16 n = 0;
+    u32 d = (perf_max * 10) / 768;   // dixièmes de milliseconde
+    b[n++] = 'M';
+    n += perf_put(b + n, d / 10);
+    b[n++] = '.';
+    b[n++] = (char)('0' + d % 10);
+    b[n++] = ' ';
+    b[n++] = 'L';
+    n += perf_put(b + n, perf_lost);
+    b[n] = 0;
+    ui_text_draw_n(26, 27, b, 12, 12, UI_STYLE_ALERT);
+}
+#endif
+
 void screen_register(ScreenId id, const Screen *screen)
 {
     if (id < SCREEN_COUNT)
@@ -68,6 +110,9 @@ static void switch_screen(void)
     current = pending;
     pending = NO_SCREEN;
     ticks = 0;
+#ifdef MP_DEBUG_PERF
+    perf_reset();
+#endif
     s = screens[current];
     if (s && s->init)
         s->init();
@@ -110,6 +155,16 @@ void screen_run(ScreenId first)
             ui_transition_hide();
             switch_screen();
         }
+#ifdef MP_DEBUG_PERF
+        u32 perf_t0;
+        {
+            u32 now = getTick() / input_frame_ticks();   // images écoulées
+            if (perf_last && now > perf_last + 1)
+                perf_lost += (u16)(now - perf_last - 1);
+            perf_last = now;
+        }
+        perf_t0 = getSubTick();
+#endif
         input_update();
         s = screens[current];
         if (s && s->update)
@@ -117,6 +172,15 @@ void screen_run(ScreenId first)
         // Si update() a demandé un changement d'écran, on ne dessine pas l'ancien.
         if (pending == NO_SCREEN && s && s->draw)
             s->draw();
+#ifdef MP_DEBUG_PERF
+        {
+            u32 d = getSubTick() - perf_t0;
+            if (d > perf_max && d < 76800)
+                perf_max = d;
+            if (pending == NO_SCREEN)
+                perf_show();
+        }
+#endif
         voice_update();            // charabia (4.18)
         ui_gueule_anim_update();   // visages animés (3.18)
         sfx_update();
