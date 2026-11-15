@@ -250,7 +250,7 @@ def event():
 # ================================================================== ASSEMBLÉE
 def assembly():
     s = Song('assembly', 'Assemblée : solennel et feutré, orgue, contrebasse en walking, maillet de séance',
-             bpm=90, bars=12, swing=0.1, lfo=1, gain=0, ch_vol=[0, 4, 4, 4, 0])
+             bpm=90, bars=12, swing=0.1, lfo=1, gain=0, ch_vol=[0, -4, -4, -4, 0])
     s.use(0, 'upright')
     for c in (1, 2, 3):
         s.use(c, 'organ')
@@ -291,7 +291,7 @@ def map_theme():
 # ================================================================== BUDGET
 def budget():
     s = Song('budget', 'Budget : comptabilité feutrée en mi bémol, marimba en escaliers, touches de calculette',
-             bpm=96, bars=12, swing=0.12, lfo=2, gain=0, ch_vol=[0, 5, 5, 5, 1])
+             bpm=96, bars=12, swing=0.12, lfo=2, gain=-2, ch_vol=[0, 5, 5, 5, 1])
     s.use(0, 'ebass')
     for c in (1, 2, 3):
         s.use(c, 'rhodes')
@@ -317,7 +317,7 @@ def budget():
 # ================================================================== RÉFÉRENDUM
 def referendum():
     s = Song('referendum', 'Référendum : question en suspens, accords suspendus qui ne se résolvent pas',
-             bpm=80, bars=12, swing=0.1, lfo=1, gain=0, ch_vol=[0, 3, 3, 6, 0])
+             bpm=80, bars=12, swing=0.1, lfo=1, gain=-2, ch_vol=[0, 3, 3, 6, 0])
     s.use(0, 'ebass')
     s.use(1, 'pad')
     s.use(2, 'pad')
@@ -449,7 +449,7 @@ def end_win():
 # ================================================================== FIN : DÉFAITE
 def end_lose():
     s = Song('end_lose', 'Fin de partie, défaite : le thème du titre lent et mineur, balais',
-             bpm=70, bars=10, swing=0.1, lfo=1, gain=-1, ch_vol=[0, 2, 2, 6, 2])
+             bpm=70, bars=10, swing=0.1, lfo=1, gain=-3, ch_vol=[0, 2, 2, 6, 2])
     s.use(0, 'upright')
     s.use(1, 'pad')
     s.use(2, 'pad')
