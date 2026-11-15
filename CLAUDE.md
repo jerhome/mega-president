@@ -15,7 +15,10 @@ Le joueur parle français : documents, textes du jeu et rapports en français.
 | `make` | ROM `out/rom.bin` via Docker (`ghcr.io/stephane-d/sgdk`) |
 | `make run` / `make run-ntsc` | Compile puis lance BlastEm (WSLg) en PAL ou NTSC |
 | `make test` | Tests du cœur de simulation sur PC (gcc natif) |
-| `make check` | Tests + ROM + budgets (`tools/budget.sh`) |
+| `make check` | Tests + ROM + budgets (`tools/budget.sh`) + contrôle des 38 colonnes (avertissements seulement) |
+| `python3 tools/check_cols.py` | Contrôle statique des textes : chaînes passées à `ui_text_*` dépassant la colonne 38, lignes de `src/content/*.c` de plus de 38 caractères (`--strict` : code de sortie 1) |
+| `tools/shots.sh [-t "2 5"] [-n] DEMO[:SCRIPT]...` | Construit les ROM de démo (`make rom-demo`), les lance dans BlastEm sur un Xvfb privé, capture par ID de fenêtre aux instants donnés (secondes réelles) : `out/shots/<démo>_<instant>s.png` (320x240) |
+| `python3 tools/shots_compare.py [--tol N]` | Compare `out/shots` à `tests/shots_ref/` pixel par pixel, image de différence dans `out/shots_diff/` ; `--update` copie les captures en référence |
 | `./tools/status.sh` | Ressources système |
 
 Capture de l'écran de l'émulateur (vérification visuelle) :

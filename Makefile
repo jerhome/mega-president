@@ -11,7 +11,8 @@
 #   make art        régénère les illustrations (pixel art, tools/art/)
 #   make music      régénère la musique FM (tools/music/ -> res/music/)
 #   make map        régénère la carte des régions (tools/map/)
-#   make check      tests + ROM + budgets mémoire
+#   make check      tests + ROM + budgets mémoire + contrôle des 38 colonnes (avertissements)
+#   make shots      captures des ROM de démo (SHOTS="-t '2 4' 11 12"), à comparer avec tools/shots_compare.py
 #   make clean      supprime out/
 
 SGDK_IMAGE ?= ghcr.io/stephane-d/sgdk:latest
@@ -29,7 +30,7 @@ SIM_SRC     := $(wildcard src/sim/*.c) $(wildcard src/content/*.c) src/save/scor
 TEST_SRC    := $(wildcard tests/*.c)
 TEST_BIN    := out/host/tests
 
-.PHONY: music all rom rom-demo rom-annee4 debug run run-ntsc test check clean blastem content gfx art map
+.PHONY: shots music all rom rom-demo rom-annee4 debug run run-ntsc test check clean blastem content gfx art map
 
 all: rom
 
@@ -107,6 +108,10 @@ test: $(TEST_BIN)
 
 check: test rom
 	./tools/budget.sh
+	-python3 tools/check_cols.py
+
+shots:
+	./tools/shots.sh $(SHOTS)
 
 clean:
 	rm -rf out
