@@ -203,8 +203,8 @@ On passe tout son temps dans les écrans : ils doivent être superbes. Personnag
 | # | Tâche | Durée | État |
 |---|---|---|---|
 | 3.07 | Générateur de portraits V3 : grand format, 15 couleurs, éclairage, caricature marquée, 2-3 expressions | 8 h | ✅ Validé par le joueur (15/11) |
-| 3.08 | Gueules des 14 personnages existants (présidents, PM, cohabitation, candidats) | 12 h | 🔄 |
-| 3.09 | Nouvelles gueules : ministres, chefs de parti, journalistes, président du Sénat… | 12 h | 🔄 |
+| 3.08 | Gueules des 14 personnages existants (présidents, PM, cohabitation, candidats) | 12 h | ✅ |
+| 3.09 | Nouvelles gueules : ministres, chefs de parti, journalistes, président du Sénat… | 12 h | ✅ |
 | 3.16 | Écran de démarrage redessiné dans le style décalé des gueules (bon enfant, drôle, pointe d'humour de gauche) | 3 h | 🔄 |
 | 3.10 | Intégration des portraits et expressions dans les écrans | 3 h | |
 
