@@ -253,7 +253,7 @@ Titre : Pour une VIe République
 Texte : Des cortèges réclament une VIe
   République : référendum d'initiative
   citoyenne, fin du 49.3, mandat non
-  renouvelable. Camille Roussel parle
+  renouvelable. Camille Rouvière parle
   de « Constitution à rénover ».
 Choix 1 : Convoquer une convention
   Effets : DEFIANCE -4, TENSION -3, CP -2, POP_POPULAIRES +2, POP_TOUS +1

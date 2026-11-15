@@ -28,7 +28,7 @@ const char *const grp_desc[GRP_COUNT] = {
 };
 
 const char *const cand_name[CAND_POOL_COUNT] = {
-    "Camille Roussel", // CAND_GAUCHE_RADICALE
+    "Camille Rouvière", // CAND_GAUCHE_RADICALE
     "Noémie Vasseur", // CAND_ECOLO
     "Hélène Marchetti", // CAND_CENTRE
     "Édouard Valmont", // CAND_DROITE

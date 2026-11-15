@@ -297,3 +297,7 @@ Durée calendaire estimée : environ 20 h.
 3. **Rôle du Sénat dans le budget** : amendement d'une ligne, annulable par la lecture définitive pour 1 CP (proposé), ou pas de rôle budgétaire (le Sénat ne compte que pour la destitution) ?
 4. **Sauvegarde** : accepter qu'une partie en cours sous V3 ne puisse pas être reprise en V4, les high scores étant conservés (proposé), ou écrire une migration (+2 h) ?
 5. **5e thème de campagne « Santé et retraites »** (Ret 4, Pop 2, Moy 2 ; crédibilité = progression du pilier Social), pour donner un thème aux retraités : l'ajouter (+1 h) ou garder 4 thèmes ?
+
+## Décisions du joueur (15/11)
+
+Les 5 propositions sont validées telles quelles : électorats par âge et classe, budget en 6 lignes × 5 crans avec préréglages, rôle budgétaire du Sénat (amendement annulable pour 1 CP), pas de migration de sauvegarde V3 → V4 (high scores conservés), 5e thème de campagne « Santé et retraites ».

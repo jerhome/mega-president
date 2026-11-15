@@ -93,7 +93,7 @@ const char *const evt_text[EVT_COUNT] = {
     "Le grand festival d'été d'Avignon-les-\nPins perd la moitié de sa subvention\nlocale. Les intermittents menacent\nde jouer devant les préfectures.\nLe théâtre vit, mais sous perfusion.", // EVT_FESTIVAL
     "Les lycéens bloquent leurs\nétablissements contre une réforme du\nbaccalauréat. Poubelles en barricade,\nslogans au feutre. Les parents\nhésitent entre fierté et inquiétude.", // EVT_LYCEENS
     "Les contrôleurs aériens cessent le\ntravail un vendredi de départs en\nvacances. Les aéroports ressemblent\nà des gares de campagne. Les valises\ntournent, les avions restent au sol.", // EVT_GREVE_AIGUILLEURS
-    "Des cortèges réclament une VIe\nRépublique : référendum d'initiative\ncitoyenne, fin du 49.3, mandat non\nrenouvelable. Camille Roussel parle\nde « Constitution à rénover ».", // EVT_REFORME_INSTITUTIONS
+    "Des cortèges réclament une VIe\nRépublique : référendum d'initiative\ncitoyenne, fin du 49.3, mandat non\nrenouvelable. Camille Rouvière parle\nde « Constitution à rénover ».", // EVT_REFORME_INSTITUTIONS
     "Des journalistes révèlent qu'un\nservice de renseignement a surveillé\ndes opposants et des reporters.\nLe ministre jure ignorer tout. Les\nmicros, eux, n'ont rien dit.", // EVT_ESPIONNAGE
     "Un incident sur le réseau plonge le\nquart du pays dans le noir. Métros\nbloqués, feux éteints, ascenseurs\nhabités. Au bout de six heures,\nles bougies sont en rupture de stock.", // EVT_PANNE_ELECTRIQUE
     "Un pétrolier s'échoue au large de la\nBretagne. Les plages se couvrent de\nmazout, les bénévoles de gants jaunes.\nL'armateur, basé dans un paradis\nfiscal, promet de « suivre ça ».", // EVT_MAREE_NOIRE

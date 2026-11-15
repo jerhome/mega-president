@@ -25,7 +25,7 @@ const char *const txt[TXT_COUNT] = {
     "Énarque, rigoureux, aime les tableaux.", // TXT_PM_TECHNOCRATE_DESC
     "Marianne Deschamps", // TXT_PM_RASSEMBLEUR_NOM
     "Rassembleuse, parle à tous les bancs.", // TXT_PM_RASSEMBLEUR_DESC
-    "Julien Maréchal", // TXT_PM_REFORMATEUR_NOM
+    "Julien Lestrade", // TXT_PM_REFORMATEUR_NOM
     "Réformateur, pressé par le calendrier.", // TXT_PM_REFORMATEUR_DESC
     "Opposition clémente, marchés sereins.", // TXT_DIFF_FACILE
     "Un quinquennat comme les autres.", // TXT_DIFF_NORMAL

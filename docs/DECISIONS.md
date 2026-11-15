@@ -32,3 +32,5 @@ Décisions prises en autonomie (ou arbitrages du joueur), à relire. Chacune est
 | 15/11 | V3 centrée sur le beau (interface, gueules, musique FM) ; 5 électorats et budget détaillé reportés en V4 | Les inclure en V3 | Décision du joueur |
 | 15/11 | V3 : l'interface n'utilise que PAL0/PAL1, PAL2/PAL3 réservées aux illustrations | Palettes partagées comme en V2 | Les gueules et une interface riche ont besoin de couleurs : 64 couleurs à l'écran au total |
 | 15/11 | V3 lancée en 3 agents parallèles (interface, gueules en Opus, musique FM) | Tranche de démonstration d'abord | Demande du joueur (« déclenche tout ») ; Opus pour les gueules, tâche la plus exigeante en qualité |
+| 15/11 | Gueules V3 validées (style des 3 démonstrations) ; renommages : Camille Roussel → Camille Rouvière, Julien Maréchal → Julien Lestrade ; présidents Antoine Verdier, Laurent Delmas, Henri de Saint-Aubin | Garder les anciens noms | Noms trop proches de personnalités réelles ; décision du joueur |
+| 15/11 | V4 : les 5 propositions de SPEC_V4.md validées | Variantes simplifiées | Décision du joueur |

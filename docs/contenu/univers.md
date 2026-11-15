@@ -30,7 +30,7 @@ n'a pas de candidat : c'est le joueur lui-même.
 
 | Identifiant | Candidat | Parti | Portrait |
 |---|---|---|---|
-| CAND_GAUCHE_RADICALE | Camille Roussel | UGR | Ancienne inspectrice du travail, voix rauque, programme en 140 mesures dont 139 sont populaires. |
+| CAND_GAUCHE_RADICALE | Camille Rouvière | UGR | Ancienne inspectrice du travail, voix rauque, programme en 140 mesures dont 139 sont populaires. |
 | CAND_ECOLO | Noémie Vasseur | Génération Climat | Climatologue devenue élue, prêche la sobriété depuis son vélo cargo. |
 | CAND_DROITE | Édouard Valmont | UTL | Notable de province, ancien ministre du Budget, sourire de banquier. |
 | CAND_NATIONALISTE | Gaspard Lenoir | LSO | Tribun de plateaux télé, promet de tout régler en un quinquennat et un slogan. |
@@ -41,9 +41,9 @@ joueur n'a jamais de candidat contre lui) :
 
 | Orientation du joueur | Adversaires |
 |---|---|
-| Gauche (RSV) | Roussel, Vasseur, Valmont, Lenoir |
-| Centre (MJM) | Roussel, Vasseur, Valmont, Lenoir |
-| Droite (UTL) | Roussel, Vasseur, **Marchetti** (remplace Valmont), Lenoir |
+| Gauche (RSV) | Rouvière, Vasseur, Valmont, Lenoir |
+| Centre (MJM) | Rouvière, Vasseur, Valmont, Lenoir |
+| Droite (UTL) | Rouvière, Vasseur, **Marchetti** (remplace Valmont), Lenoir |
 
 Génération Climat n'a pas de groupe à l'Assemblée.
 
@@ -117,7 +117,7 @@ Traits :
 - Corps rond, bras ouverts comme pour une accolade.
 Expr. : neutre (sourire doux) ; ravi (rire, yeux fermés) ; furieux (lèvres pincées, mains sur les hanches).
 
-**PM_REFORMATEUR** : Julien Maréchal. Premier ministre réformateur.
+**PM_REFORMATEUR** : Julien Lestrade. Premier ministre réformateur.
 Caractère : jeune, pressé, a déjà une loi pour demain matin.
 Traits :
 - Tête fine et anguleuse, banane gominée en vague haute.
@@ -157,7 +157,7 @@ Expr. : neutre (dédain tranquille) ; ravi (sourire en coin) ; furieux (monocle 
 
 ### 5.4 Les candidats à la présidentielle
 
-**CAND_GAUCHE_RADICALE** : Camille Roussel. UGR.
+**CAND_GAUCHE_RADICALE** : Camille Rouvière. UGR.
 Caractère : ancienne inspectrice du travail, voix rauque, 140 mesures.
 Traits :
 - Coupe courte rousse, mèche en crête, visage triangulaire.
@@ -361,11 +361,11 @@ Expr. : neutre (sourire de vendeur) ; ravi (sourire de contrat signé) ; furieux
 | PRES_DROITE | Henri de Saint-Aubin | Président UTL |
 | PM_TECHNOCRATE | Pierre Delaunay | PM technocrate |
 | PM_RASSEMBLEUR | Marianne Deschamps | PM rassembleuse |
-| PM_REFORMATEUR | Julien Maréchal | PM réformateur |
+| PM_REFORMATEUR | Julien Lestrade | PM réformateur |
 | COHAB_GAUCHE | Sophie Carrel | PM cohabitation gauche |
 | COHAB_CENTRE | Bernard Lacombe | PM cohabitation centre |
 | COHAB_DROITE | Philippe de Montclar | PM cohabitation droite |
-| CAND_GAUCHE_RADICALE | Camille Roussel | Candidate UGR |
+| CAND_GAUCHE_RADICALE | Camille Rouvière | Candidate UGR |
 | CAND_ECOLO | Noémie Vasseur | Candidate Génération Climat |
 | CAND_DROITE | Édouard Valmont | Candidat UTL |
 | CAND_NATIONALISTE | Gaspard Lenoir | Candidat LSO |

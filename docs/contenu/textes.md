@@ -101,7 +101,7 @@ Marianne Deschamps
 Rassembleuse, parle à tous les bancs.
 
 ## TXT_PM_REFORMATEUR_NOM
-Julien Maréchal
+Julien Lestrade
 
 ## TXT_PM_REFORMATEUR_DESC
 Réformateur, pressé par le calendrier.
