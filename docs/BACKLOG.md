@@ -251,7 +251,7 @@ Spécification validée : [SPEC_V4.md](SPEC_V4.md). Développement sur la branch
 | 4.20 | Écran événement : réplique du ministre concerné (gueule + charabia) à la phase « Votre décision » (avis DA, REVUE_DA_V3 § 8.3) | 3 h | |
 | 4.21 | **Passe humour** de tous les textes par l'agent `vannes` (journaux, événements, lois, accroches, répliques, aides) : curseur « au-delà de Ron Gilbert, en frisant Radio Nova, avec subtilité » | 4 h | ✅ (accroches en attente du joueur) |
 | 4.22 | Relecture DA de l'écran Options (huissier, icône cartouche, mise en page, lignes grisées) et retouches | 1,5 h | 🔄 |
-| 4.23 | Logo dessiné de l'écran titre (voir A_VALIDER.md : en attente de l'accord du joueur) | 3 h | |
+| 4.23 | ⏭️ Reporté — logo dessiné de l'écran titre : le joueur valide l'écran titre actuel (15/11) | 3 h |
 
 ## Questions ouvertes
 
