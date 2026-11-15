@@ -5,6 +5,7 @@
 #include "screens/scr_map.h"
 #include "audio/music.h"
 #include "screens/scr_help.h"
+#include "screens/scr_options.h"
 #include "audio/sfx.h"
 #include <genesis.h>
 #include <string.h>
@@ -32,9 +33,9 @@ typedef enum { C_FORCE, C_DISSOLVE, C_QUIT } ConfirmKind;
 typedef enum { R_TV, R_FORCE, R_DISSOLVE } ResultKind;
 // Actions du menu principal
 typedef enum { A_LAW, A_FORCE, A_TV, A_ASSEMBLY, A_MAP, A_REFERENDUM, A_RESHUFFLE, A_DISSOLVE, A_BUDGET,
-               A_END, A_QUIT } Action;
+               A_END, A_OPTIONS, A_QUIT } Action;
 
-#define MENU_MAX 12
+#define MENU_MAX 12   // toutes les actions possibles (A_LAW .. A_QUIT)
 
 static Mode mode;
 static Mode prev_mode;
@@ -55,6 +56,7 @@ static u8 menu_act[MENU_MAX];
 static const char *menu_items[MENU_MAX];
 static u8 menu_n;
 static u8 menu_sel, menu_top;
+static bool menu_to_options;   // retour de l'écran Options : barre sur « Options »
 static u8 asm_sel;           // groupe sélectionné dans la vue Assemblée
 static char tv_label[UI_LINE_BUF];
 static char ref_label[UI_LINE_BUF];
@@ -230,8 +232,17 @@ static void menu_build(void)
         menu_items[n++] = budget_blocking() ? "Fin du mois (budget d’abord)" : "Fin du mois";
     else
         menu_items[n++] = budget_blocking() ? "Fin du trimestre (budget d’abord)" : "Fin du trimestre";
+    menu_act[n] = A_OPTIONS;  menu_items[n++] = "Options";
     menu_act[n] = A_QUIT;     menu_items[n++] = "Menu principal (partie sauvegardée)";
     menu_n = n;
+    if (menu_to_options) {
+        u8 i;
+        menu_to_options = FALSE;
+        for (i = 0; i < n; i++)
+            if (menu_act[i] == A_OPTIONS)
+                menu_sel = i;
+        menu_top = 0;
+    }
     ui_list_init(&menu_list, 1, 22, 38, 5, menu_items, n);
     menu_list.disabled = dis;
     if (menu_sel < n && !(dis & ((u32)1 << menu_sel))) {
@@ -392,6 +403,7 @@ static void update_menu(void)
         case A_FORCE: forcing = 1; set_mode(M_LAWS); break;
         case A_ASSEMBLY: asm_sel = g_game.country.player_group; set_mode(M_ASSEMBLY); break;
         case A_MAP: map_open(SCREEN_GAME); break;
+        case A_OPTIONS: options_open(SCREEN_GAME); break;
         case A_REFERENDUM: screen_change(SCREEN_REFERENDUM); break;
         case A_RESHUFFLE: screen_change(SCREEN_RESHUFFLE); break;
         case A_TV: {
@@ -910,6 +922,7 @@ static void game_init(void)
     if (g_game.country.turn == 0) g_budget_seen = 0;   // nouvelle partie ou 2nd mandat
     menu_sel = 0;
     menu_top = 0;
+    menu_to_options = options_take_return();
     forcing = 0;
     mode = M_MENU;
     mode_dirty = TRUE;
