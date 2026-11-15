@@ -490,7 +490,7 @@ static void open_help(void)
         title = "Préréglages";
         text = txt[TXT_BUD_AIDE_PRE];
     } else if (mode == B_COHAB && line_of_focus() == BUD_SECURITE) {
-        title = txt[TXT_COHAB_DEFENSE];
+        title = bl_long(line_of_focus());
         text = txt[TXT_COHAB_DEFENSE_AIDE];
     } else if (mode == B_SENAT && sim_budget_amended_line(&g_game.country) == focus) {
         title = bl_long(line_of_focus());

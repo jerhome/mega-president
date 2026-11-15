@@ -52,6 +52,8 @@ static void scores_init(void)
         e->year = (u16)(2032 + (t % 2) * 5);
     }
 #endif
+    // Reste de l'écran de fin : efface les tuiles du plan A, sans nouveau fondu.
+    ui_clear_rect(0, 0, UI_COLS, UI_ROWS);
     hilite[0] = hilite[1] = -1;
     tab = SCORE_TABLE_MANDAT;
     phase = PH_VIEW;
