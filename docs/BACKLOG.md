@@ -245,7 +245,7 @@ Spécification validée : [SPEC_V4.md](SPEC_V4.md). Développement sur la branch
 | 4.13 | Joueurs automatiques : préréglages, variantes optimiseur, extrême et austère, statistiques par électorat | 3 h | ✅ |
 | 4.14 | Équilibrage V4 (cibles de §3.4, 20 et 60 tours) | 5 h | ✅ |
 | 4.15 | Documentation : REGLES (V4), SIM, DECISIONS, BACKLOG | 1,5 h | ✅ |
-| 4.16 | Contrôle qualité : `make check`, budgets RAM et ROM, BlastEm PAL et NTSC, 38 colonnes, deux mandats, cohabitation forcée, sauvegarde | 2 h | 🔄 |
+| 4.16 | Contrôle qualité : `make check`, budgets RAM et ROM, BlastEm PAL et NTSC, 38 colonnes, deux mandats, cohabitation forcée, sauvegarde | 2 h | 🔄 (rapport QA reçu : 0 bloquant, 3 gênants en correction avec les retouches DA) |
 | 4.17 | Jalon : test console du joueur, étiquette git, release | 1 h |  |
 | 4.18 | **Voix « charabia » des personnages** (à la Sims) : **2 syllabes très accueillantes** par réplique, timbre propre à chaque personnage, lèvres synchronisées puis seuls les yeux bougent ; **voix désactivables** dans les options (choix du joueur, 15/11 ; détail DA : REVUE_DA_V3 § 7) | 10 h | ✅ (écoute du timbre : test console du joueur) |
 | 4.20 | Écran événement : réplique du ministre concerné (gueule + charabia) à la phase « Votre décision » (avis DA, REVUE_DA_V3 § 8.3) | 3 h | ✅ (nom du ministre à l\'écran : à revoir avec la DA) |
@@ -259,8 +259,8 @@ Après le test console de la V4. Relecture par un développeur de haut niveau (O
 
 | # | Tâche | Durée | État |
 |---|---|---|---|
-| 4.1.01 | Captures de référence de chaque écran (ROM de démo) et comparaison automatique avant/après | 2 h |  |
-| 4.1.02 | Audit du code (Opus) : doublons, sûreté mémoire, pile, PAL/NTSC, sauvegarde, cas limites ; rapport classé | 3 h |  |
+| 4.1.01 | Captures de référence de chaque écran (ROM de démo) et comparaison automatique avant/après | 2 h | 🔄 |
+| 4.1.02 | Audit du code (Opus) : doublons, sûreté mémoire, pile, PAL/NTSC, sauvegarde, cas limites ; rapport classé | 3 h | 🔄 |
 | 4.1.03 | Factorisation de l'interface : widgets communs (cadres, listes, jauges, boucle de saisie, boîtes) | 6 h |  |
 | 4.1.04 | Corrections de l'audit : robustesse, bornes, simplifications | 3 h |  |
 | 4.1.05 | Mesures (temps des écrans, ROM, RAM) et optimisations simples en C si un écran rame | 2 h |  |
