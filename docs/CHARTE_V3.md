@@ -33,7 +33,7 @@ illustrations (`ui_art`). Couleurs en niveaux VDP (0-7 par composante).
 | 0 | transparent / fond d'écran | bleu nuit (0,1,2) | — |
 | 1 | ombres, contours | noir | noir |
 | 2, 3 | encre A (haut, bas) | ivoire (7,7,7) → (6,6,5) | or (7,6,2) → (6,5,1) |
-| 4, 5 | encre B (haut, bas) | gris bleuté (5,5,6) → (4,4,5) | rouge (7,3,2) → (6,2,1) |
+| 4, 5 | encre B (haut, bas) | gris bleuté clair (5,6,7) → (4,5,6) | rouge (7,3,2) → (6,2,1) |
 | 6, 7 | jauge A, reflet | vert (1,5,2), (4,7,3) | or (6,5,1), (7,7,4) |
 | 8, 9 | jauge B, reflet | bleu (1,3,7), (4,6,7) | rouge (6,1,1), (7,4,3) |
 | 10 | creux des jauges, fond des médaillons | (0,0,1) | idem |
