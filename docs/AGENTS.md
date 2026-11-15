@@ -12,6 +12,7 @@
 | `game-designer` | Règles, formules, effets des lois, conditions de victoire et de défaite. Rédige des spécifications sans coder | Simulation, institutions | V1 si besoin (Claude tient ce rôle au début) |
 | `equilibrage` | Lance le simulateur sur PC, analyse les statistiques et propose des ajustements chiffrés | 1.19, 1.20, 2.14 | V1 |
 | `assets` | Graphismes : palettes, images provisoires, contrat de format pour le pixel artiste | 1.5, V2 | V2 |
+| `directeur-artistique` | **Artiste et garant du style (Opus)** : tient la charte, tranche les choix graphiques mineurs, relit chaque capture ou planche avant le joueur (✅ ou ❌ avec corrections), écrit les consignes visuelles des `md-dev`, retouche les générateurs de `tools/art/` et `tools/ui/` | Toute tâche visuelle | Depuis la V3 (15/11, demande du joueur) |
 
 **Recommandation** : démarrer avec `md-dev`, `qa-rom` et `redacteur`, puis ajouter les autres au besoin pour limiter la consommation de tokens.
 
@@ -28,6 +29,7 @@ La session principale aiguille chaque demande selon cette table. En cas de doute
 | Son | `md-dev` | `src/audio/` | |
 | Format du contenu, convertisseur | `md-dev` | `tools/content/`, `src/content/` (généré) | |
 | Texte, loi, événement, nom, ton | `redacteur` | `docs/contenu/` | Le convertisseur valide les longueurs |
+| Décision graphique, style, relecture visuelle, consigne d'illustration | `directeur-artistique` | `docs/CHARTE_V3.md`, `tools/art/`, `tools/ui/`, retouches de style dans `src/ui/` et `src/screens/` | Les choix majeurs vont dans `docs/A_VALIDER.md` |
 | Vérification, budgets, non-régression | `qa-rom` | lecture seule | Ne modifie jamais le code |
 | Flux entre écrans, intégration, `main.c`, Makefile, git, releases | Session principale | `src/game/`, `src/main.c`, `Makefile`, docs de pilotage | |
 
@@ -44,3 +46,12 @@ Il servira **uniquement** pour un gros lot de retours du joueur, par exemple apr
   - la priorité ;
   - une estimation en heures.
 - **Usage** : la session principale valide ce tableau avant toute délégation.
+
+## Processus graphique (depuis le 15/11)
+
+1. **Avant** une tâche visuelle, le `directeur-artistique` écrit ou valide la consigne : style, dimensions, palette, critères d'acceptation.
+2. Un `md-dev` (code ou générateur) réalise.
+3. **Avant de montrer** quoi que ce soit au joueur, le `directeur-artistique` relit les captures ou les planches : ✅ montrable, ou ❌ avec corrections. On boucle jusqu'au ✅.
+4. Le joueur valide sur la page mobile de validation. Les choix majeurs passent par `docs/A_VALIDER.md`.
+
+Le directeur artistique compte dans la limite des agents simultanés. Il peut être le 4e agent temporaire pendant une relecture courte.
