@@ -12,6 +12,8 @@
 | **V0 — Démo** | Un mandat jouable : 5 lois, 10 événements, Assemblée, élection | ≈ 38 h | 38 h |
 | **V1 — Jeu complet simplifié** | Règles V1 complètes, 2 mandats, destitution, high scores, bruitages | ≈ 50 h | ≈ 88 h |
 | **V2 — Version enrichie** | Carte des régions, pixel art, musique, institutions complètes | ≈ 70 h, plus la réalisation du pixel art | ≈ 160 h |
+| **V3 — Le beau** | Interface moderne, gueules mémorables, musique FM « chill » par écran | ≈ 117 h | ≈ 290 h |
+| **V5** | 5 électorats (ex-2.09), budget détaillé (ex-2.10) | à estimer | |
 
 La V0 n'est pas un prototype jetable : c'est une première tranche de la V1. Les durées détaillées ci-dessous sont plus précises que l'estimation donnée oralement (≈ 30 h pour la V0 et ≈ 80 h pour la V1).
 
@@ -180,6 +182,43 @@ Retour du joueur sur Evergenesis : bonne impression générale, premier mandat n
 | 2.1.9 | **Pied de page de l'écran d'accueil** : nom de l'auteur, version (`src/version.h`) et « Développé avec Claude ». À garder dans les versions suivantes | 0,5 h | ✅ |
 | 2.1.10 | **Retour au menu principal en cours de partie** : dernière ligne du menu de jeu, avec confirmation ; sauvegarde l'état exact (CP dépensés compris), puis écran d'accueil (B : reprendre, START : nouvelle partie) | 0,5 h | ✅ |
 | 2.1.7 | Nouveau test sur console : deux mandats complets | 1 h | ✅ Deux mandats complets sur Evergenesis le 15/11 : voix, musiques, lois, passage de la 4e année, réélection, fin de partie OK |
+
+## V3 — Le beau (≈ 117 h)
+
+On passe tout son temps dans les écrans : ils doivent être superbes. Personnages avec de vraies « gueules » dont on se souvient, musique FM douce avec des basses, un thème par écran.
+
+**Contrat de palettes (V3)** : l'interface n'utilise plus que **PAL0 et PAL1** ; **PAL2 et PAL3 sont réservées aux illustrations** (portrait principal en PAL2, seconde illustration ou vignette en PAL3), 15 couleurs chacune.
+
+### Interface (agent `md-dev` interface)
+| # | Tâche | Durée | État |
+|---|---|---|---|
+| 3.01 | Charte graphique : palettes PAL0/PAL1, couleurs de texte, cadres, ombres, dégradés ; document `docs/CHARTE_V3.md` | 6 h | |
+| 3.02 | Nouvelles tuiles d'interface : cadres arrondis et ombrés, jauges, icônes, séparateurs, fonds texturés | 8 h | |
+| 3.03 | Police retravaillée (lisibilité, accents, styles) | 4 h | |
+| 3.04 | Animations : fondus entre écrans, curseur animé, apparition des fenêtres | 4 h | |
+| 3.05 | Refonte : tableau de bord, journal, événement | 8 h | |
+| 3.06 | Refonte des 12 autres écrans (titre, élection, campagne, budget, référendum, remaniement, destitution, carte, fin, scores, aide, 2nd mandat) | 10 h | |
+
+### Gueules (agent `md-dev` illustrations)
+| # | Tâche | Durée | État |
+|---|---|---|---|
+| 3.07 | Générateur de portraits V3 : grand format, 15 couleurs, éclairage, caricature marquée, 2-3 expressions | 8 h | |
+| 3.08 | Gueules des 14 personnages existants (présidents, PM, cohabitation, candidats) | 12 h | |
+| 3.09 | Nouvelles gueules : ministres, chefs de parti, journalistes, président du Sénat… | 12 h | |
+| 3.10 | Intégration des portraits et expressions dans les écrans | 3 h | |
+
+### Musique (agent `md-dev` son)
+| # | Tâche | Durée | État |
+|---|---|---|---|
+| 3.11 | Passage à la puce FM (YM2612) via XGM2 : outil de composition en code → VGM → XGM2, instruments (basses, nappes, pianos électriques), voix « For sure ! » et bruitages compatibles | 10 h | |
+| 3.12 | Musiques chill : titre, 5 années, élection | 10 h | |
+| 3.13 | Un thème par écran avec un petit cachet lié à ce qu'on voit (journal, Assemblée, carte, budget, référendum, remaniement, destitution, campagne, fin, scores, aide) | 14 h | |
+| 3.14 | Intégration : musique par écran, enchaînements | 3 h | |
+
+### Jalon V3
+| # | Tâche | Durée | État |
+|---|---|---|---|
+| 3.15 | Budgets ROM/RAM/VRAM, PAL et NTSC, test console du joueur, release | 5 h | |
 
 ## Questions ouvertes
 
