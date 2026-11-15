@@ -157,5 +157,3 @@ def report():
                  h='s.s.s.s.s.s.s.s.', hv=0.8)
     return s
 
-
-SONGS = [title, year1, report]

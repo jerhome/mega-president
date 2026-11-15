@@ -265,16 +265,16 @@ def cand_droite():
 # --- Gaspard Lenoir (LSO) -----------------------------------------------------------------
 
 def cand_nationaliste():
-    """Gaspard Lenoir : cheveux noirs gominés en arrière, front bas, teint hâlé, mâchoire
+    """Gaspard Lenoir : cheveux noirs gominés en arrière, front bas, teint rougeaud, mâchoire
     de boxeur, bouche immense aux dents carnassières, sourcils en accent circonflexe."""
     P = P_({
         "bg": [(5, 3, 3)],
-        "skin": [(2, 1, 0), (4, 2, 1), (6, 4, 2), (7, 5, 4)],
+        "skin": [(3, 1, 1), (6, 3, 2), (7, 5, 4), (7, 6, 5)],   # rougeaud (DA : plus de teint brun)
         "hair": [(1, 0, 1), (1, 1, 2), (3, 3, 4)],
         "suit": [(1, 0, 1), (1, 1, 1), (2, 2, 2)],
         "white": [(5, 5, 5), (7, 7, 7)],
         "acc": [(5, 0, 1), (7, 2, 2)],
-        "iris": [(2, 1, 0)],
+        "iris": [(2, 4, 6)],                                   # regard bleu glacier
     })
     neck(P, w=24, top=56, bottom=76)
     bust(P, top=74, wide=37, tie=None, vw=7, vdepth=13, open_collar=True)

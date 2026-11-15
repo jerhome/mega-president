@@ -9,6 +9,7 @@
 #   make content    régénère le code C depuis docs/contenu/*.md
 #   make gfx        régénère la police et les images d'interface (res/gfx/)
 #   make art        régénère les illustrations (pixel art, tools/art/)
+#   make music      régénère la musique FM (tools/music/ -> res/music/)
 #   make map        régénère la carte des régions (tools/map/)
 #   make check      tests + ROM + budgets mémoire
 #   make clean      supprime out/
@@ -28,7 +29,7 @@ SIM_SRC     := $(wildcard src/sim/*.c) $(wildcard src/content/*.c) src/save/scor
 TEST_SRC    := $(wildcard tests/*.c)
 TEST_BIN    := out/host/tests
 
-.PHONY: all rom rom-demo rom-annee4 debug run run-ntsc test check clean blastem content gfx art map
+.PHONY: music all rom rom-demo rom-annee4 debug run run-ntsc test check clean blastem content gfx art map
 
 all: rom
 
@@ -50,6 +51,9 @@ art:
 
 map:
 	python3 tools/map/make_map.py
+
+music:
+	python3 tools/music/make_music.py
 
 rom: $(CONTENT_GEN)
 	$(DOCKER_SGDK) release EXTRA_FLAGS=-fstack-protector-strong

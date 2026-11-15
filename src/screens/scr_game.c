@@ -107,6 +107,12 @@ static const char *pm_name(u8 pm)
 
 static void set_mode(Mode m)
 {
+    // Cachet musical : thème de l'Assemblée pendant les votes et sa consultation,
+    // retour au thème de l'année dans les menus (la musique de l'écran vient de screen.c).
+    if (m == M_VOTE || m == M_ASSEMBLY)
+        music_play(MUS_ASSEMBLY);
+    else if (m == M_MENU || m == M_LAWS)
+        music_play_year(sim_year(&g_game.country));
     mode = m;
     mode_dirty = TRUE;
 }
@@ -859,7 +865,6 @@ static void update_assembly(void)
 
 static void game_init(void)
 {
-    music_play_year(sim_year(&g_game.country));
     ui_list_init(&law_list, 1, 4, 38, 5, law_name, LOI_COUNT);
     if (g_game.country.turn == 0) g_budget_seen = 0;   // nouvelle partie ou 2nd mandat
     menu_sel = 0;

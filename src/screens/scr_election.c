@@ -19,7 +19,6 @@ static bool player_in_round2;
 
 static void election_init(void)
 {
-    music_play(MUS_ELECTION);
     const ElectionResult *e;
     u8 i, j;
 

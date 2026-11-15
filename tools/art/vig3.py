@@ -492,6 +492,8 @@ def v_education():
         stroke(cv, [(4, 4), (24, 10)], ("red", 0))
         stroke(cv, [(4, 10), (24, 4)], ("red", 0))
         text3(cv, 5, 15, "ZÉRO", ("red", 0))
+        cv.put(10, 14, ("red", 0))      # accent aigu
+        cv.put(11, 13, ("red", 0))
         text3(cv, 5, 22, "VU !", ("hair", 1))
         big_face(cv, 49, 24, 10, "angry", brow_key=("hair", 1))
         for sx in (-1, 1):     # petites lunettes rondes
@@ -610,7 +612,9 @@ def v_industrie():
 
     @S.draw
     def d(cv):
-        text3(cv, 8, 11, "FERMÉ", ("red", 0))
+        text3(cv, 8, 12, "FERMÉ", ("red", 0))
+        cv.put(25, 11, ("red", 0))      # accent aigu (DA : « FERME » se lisait « la ferme »)
+        cv.put(26, 10, ("red", 0))
         for x in range(8, 31, 3):
             cv.fill(rect(x, 20, x, 39), ("bg", 0))
         cv.grid(17, 26, [".kk.", "k..k", "kyyk", "kyyk"], {"k": INK, "y": ("gold", 1)})   # cadenas

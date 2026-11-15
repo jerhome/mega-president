@@ -5,6 +5,7 @@
 #include "ui/input.h"
 #include "ui/ui_internal.h"
 #include "ui/ui_art.h"
+#include "game/game.h"
 
 #define NO_SCREEN 0xFF
 
@@ -37,6 +38,18 @@ u32 screen_time_ms(void)
     return (ticks * 10) / 3;
 }
 
+// Musique de l'écran (3.14) : thème de l'année pour le tableau de bord, issue de la
+// partie pour l'écran de fin (victoire = deux mandats menés à terme sans destitution).
+static void screen_music(u8 id)
+{
+    u8 arg = 0;
+    if (id == SCREEN_GAME)
+        arg = sim_year(&g_game.country);
+    else if (id == SCREEN_END)
+        arg = (!game_destitue() && game_two_mandates()) ? MUSIC_END_WIN : MUSIC_END_LOSE;
+    music_for_screen(id, arg);
+}
+
 static void switch_screen(void)
 {
     const Screen *s;
@@ -55,6 +68,8 @@ static void switch_screen(void)
     s = screens[current];
     if (s && s->init)
         s->init();
+    // Après init() : l'écran titre y lance la voix, que la musique laisse passer.
+    screen_music(current);
 }
 
 void screen_run(ScreenId first)

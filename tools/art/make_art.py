@@ -30,7 +30,7 @@ import persos      # noqa: E402
 # (groupe, palette, liste de (nom, fonction)) : l'ordre global = enum ArtId
 GROUPS = [
     ("Écran titre (320 x 128)", title.PALETTE, title3.TITLE),
-    ("Portraits (56 x 56, palette commune)", portraits.PALETTE, portraits.PORTRAITS),
+    ("Portraits (56 x 56, palette commune)", portraits.PALETTE, []),   # V2 retirés (gueules V3)
 ]
 for name, fn, pal in vig3.vignettes():
     GROUPS.append(("Vignette d'événement (64 x 48)", pal, [(name, fn)]))
