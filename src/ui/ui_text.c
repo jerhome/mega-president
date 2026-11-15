@@ -32,10 +32,16 @@ static u16 utf8_next(const char **p)
     return 0xFFFD;
 }
 
+// ui_text_flow : les sauts de ligne du texte deviennent des espaces.
+static bool newline_as_space;
+
 // Point de code -> glyphe (ou GLYPH_NBSP / GLYPH_NEWLINE).
 static u8 glyph_of(u16 cp)
 {
     u16 lo, hi;
+
+    if (cp == '\n' && newline_as_space)
+        return GLYPH_SPACE;
 
     if (cp >= 32 && cp <= 126)
         return (u8)(cp - 32);
@@ -244,6 +250,15 @@ u16 ui_text_wrap(u16 x, u16 y, u16 w, u16 max_lines, const char *str, UiStyle st
         lines++;
     }
     return lines;
+}
+
+u16 ui_text_flow(u16 x, u16 y, u16 w, u16 max_lines, const char *str, UiStyle style)
+{
+    u16 n;
+    newline_as_space = TRUE;
+    n = ui_text_wrap(x, y, w, max_lines, str, style);
+    newline_as_space = FALSE;
+    return n;
 }
 
 const char *ui_text_wrap_line(u16 x, u16 y, u16 w, const char *str, UiStyle style)

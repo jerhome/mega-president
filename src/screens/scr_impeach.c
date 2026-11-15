@@ -53,7 +53,7 @@ static void items_build(void)
     cat_num(def_tv, DEFENSE_TV_CP);
     strcat(def_tv, " CP)");
     def_neg[0] = 0;
-    strcat(def_neg, "Négocier un soutien (");
+    strcat(def_neg, "Négocier un appui (");
     cat_num(def_neg, DEFENSE_NEGOCIER_CP);
     strcat(def_neg, " CP)");
     def_items[I_TV] = def_tv;
@@ -249,9 +249,9 @@ static void draw_side(void)
         ui_text_wrap(1, 21, 27, 2, grp_name[g], UI_STYLE_DIM);
     } else {
         switch (def_list.sel) {
-        case I_TV: id = GUEULE_JOUR_CHAINE_INFO; cap = "Plateau télé"; break;
+        case I_TV: id = GUEULE_JOUR_CHAINE_INFO; cap = "Le 20 h"; break;
         case I_SACRIFICE: id = GUEULE_MIN_INTERIEUR; e = EXPR_GENE; cap = "Le fusible"; break;
-        case I_NEGOCIER: id = GUEULE_CHEF(c->player_group); cap = "Votre groupe"; break;
+        case I_NEGOCIER: id = GUEULE_CHEF(c->player_group); cap = "Votre camp"; break;
         default: id = GUEULE_SENAT_PRESIDENT; e = EXPR_FURIEUX; cap = "Le Sénat"; break;
         }
     }
@@ -259,12 +259,14 @@ static void draw_side(void)
     ui_medallion(29, 14, UI_PORTRAIT_W, UI_PORTRAIT_H);
     ui_gueule_draw(id, e, 29, 14, PAL2);
     ui_clear_rect(1, 26, 38, 1);
-    ui_text_center(28, 26, 12, cap, UI_STYLE_DIM);
+    ui_text_center(29, 26, 10, cap, UI_STYLE_DIM);   // sous la gueule, sans toucher le cadre
 }
 
 static void draw_list_zone(void)
 {
     ui_clear_rect(1, 14, 27, 12);
+    for (u8 y = 15; y < 15 + I_COUNT; y++)   // barre de l'autre liste (défense / groupe)
+        ui_select_bar_clear(1, y, 26);
     if (phase == P_MAIN) {
         ui_text_draw(1, 14, "Votre défense", UI_STYLE_HIGHLIGHT);
         def_list.bar_sel = 0xFF;
@@ -301,7 +303,7 @@ static void impeach_draw(void)
             strcat(buf, " %   Défiance ");
             cat_num(buf, g_game.country.gauges[JAUGE_DEFIANCE]);
             strcat(buf, " %");
-            ui_text_center(1, 22, 27, buf, UI_STYLE_ALERT);
+            ui_text_center(1, 22, 38, buf, UI_STYLE_ALERT);
             ui_footer(1, 26, 38, "A : préparer la défense");
             return;
         }

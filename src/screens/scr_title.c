@@ -80,6 +80,16 @@ static void title_init(void)
         }
     }
 #endif
+#ifdef MP_DEBUG_SCREEN
+    {   // ROM de démonstration seulement : saut direct à l'écran à capturer.
+        static bool done;
+        if (!done) {
+            done = TRUE;
+            game_debug_jump();
+            return;
+        }
+    }
+#endif
     phase = PH_PRESS;
     dirty = D_ALL;
     blink_on = FALSE;

@@ -12,6 +12,7 @@
 #include "ui/ui_art.h"
 
 // Gueule du PM pressenti à droite (10 x 12 tuiles, PAL2), texte sur 27 colonnes à gauche.
+// Le nom va dans la colonne de texte : sous la gueule, 12 cases ne suffisent pas.
 #define PORTRAIT_X 29
 #define PORTRAIT_Y 4
 #define TEXT_W     27
@@ -22,9 +23,6 @@ static void draw_portrait(u8 pm, Expr e)
         return;
     ui_medallion(PORTRAIT_X, PORTRAIT_Y, UI_PORTRAIT_W, UI_PORTRAIT_H);
     ui_gueule_draw(GUEULE_PM(pm), e, PORTRAIT_X, PORTRAIT_Y, PAL2);
-    ui_clear_rect(PORTRAIT_X - 1, PORTRAIT_Y + UI_PORTRAIT_H, 12, 1);
-    ui_text_center(PORTRAIT_X - 1, PORTRAIT_Y + UI_PORTRAIT_H, 12,
-                   txt[TXT_PM_TECHNOCRATE_NOM + 2 * pm], UI_STYLE_HIGHLIGHT);
 }
 
 typedef enum { P_PICK, P_CONFIRM, P_RESULT } Phase;
@@ -96,7 +94,8 @@ static void draw_detail(void)
     ui_clear_rect(1, 9, TEXT_W, 16);
     ui_clear_rect(1, 18, 38, 7);
     draw_portrait(pm, err == RSH_OK ? EXPR_CONTENT : EXPR_GENE);
-    ui_text_wrap(1, 9, TEXT_W, 7, txt[TXT_PM_TECHNOCRATE_DESC + 2 * pm], UI_STYLE_TEXT);
+    ui_text_draw(1, 10, txt[TXT_PM_TECHNOCRATE_NOM + 2 * pm], UI_STYLE_HIGHLIGHT);
+    ui_text_flow(1, 11, TEXT_W, 5, txt[TXT_PM_TECHNOCRATE_DESC + 2 * pm], UI_STYLE_TEXT);
     if (err == RSH_ERR_YEAR)
         ui_text_wrap(1, 19, 38, 3, txt[TXT_RSH_ANNEE], UI_STYLE_ALERT);
     else if (err == RSH_ERR_COHAB)
@@ -176,18 +175,19 @@ static void rsh_draw(void)
         ui_window(0, 3, 40, 25);
         if (phase == P_PICK) {
             refresh_disabled();
-            ui_text_draw(1, 4, "Nouveau Premier ministre", UI_STYLE_DIM);
+            ui_text_draw(1, 4, "Profils disponibles", UI_STYLE_DIM);
             ui_separator(1, 5, TEXT_W);
             ui_list_draw(&list);
             ui_footer(1, 26, 38, "A : choisir   B : retour");
             detail_dirty = TRUE;
         } else if (phase == P_RESULT) {
             const Country *c = &g_game.country;
-            ui_text_draw(1, 4, "Nouveau Premier ministre", UI_STYLE_DIM);
-            ui_separator(1, 5, TEXT_W);
             draw_portrait(c->pm, EXPR_CONTENT);
-            ui_text_wrap(1, 6, TEXT_W, 5, txt[TXT_RSH_FAIT], UI_STYLE_TEXT);
-            ui_text_wrap(1, 12, TEXT_W, 4, txt[TXT_PM_TECHNOCRATE_DESC + 2 * c->pm], UI_STYLE_DIM);
+            ui_text_flow(1, 5, TEXT_W, 5, txt[TXT_RSH_FAIT], UI_STYLE_TEXT);
+            ui_text_draw(1, 11, "À Matignon", UI_STYLE_DIM);
+            ui_separator(1, 12, TEXT_W);
+            ui_text_draw(1, 13, txt[TXT_PM_TECHNOCRATE_NOM + 2 * c->pm], UI_STYLE_HIGHLIGHT);
+            ui_text_flow(1, 14, TEXT_W, 2, txt[TXT_PM_TECHNOCRATE_DESC + 2 * c->pm], UI_STYLE_DIM);
             ui_icon_draw(1, 19, UI_ICON_POPULARITY);
             ui_text_draw(3, 19, "Popularité", UI_STYLE_DIM);
             buf[0] = 0;

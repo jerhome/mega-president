@@ -28,7 +28,7 @@ SIM_SRC     := $(wildcard src/sim/*.c) $(wildcard src/content/*.c) src/save/scor
 TEST_SRC    := $(wildcard tests/*.c)
 TEST_BIN    := out/host/tests
 
-.PHONY: all rom rom-annee4 debug run run-ntsc test check clean blastem content gfx art map
+.PHONY: all rom rom-demo rom-annee4 debug run run-ntsc test check clean blastem content gfx art map
 
 all: rom
 
@@ -64,6 +64,19 @@ rom-annee4: $(CONTENT_GEN)
 	echo "-fstack-protector-strong -DMP_DEBUG_SKIP_YEARS" > out/dbgflags.txt
 	$(DOCKER_SGDK) release EXTRA_FLAGS=@/src/out/dbgflags.txt
 	rm -rf out/src out/rom.out
+
+# ROM de démonstration (captures, docs/CHARTE_V3.md § 9) : saut direct à un écran
+# (DEMO=1..10, voir game_debug_jump) et manette simulée (SCRIPT="w30 A w20 A").
+# Produit out/demo.bin ; out/rom.bin est ensuite recompilée normalement.
+DEMO   ?= 1
+SCRIPT ?=
+rom-demo: $(CONTENT_GEN)
+	rm -rf out/src out/rom.out
+	printf '%s' '-fstack-protector-strong -DMP_DEBUG_SCREEN=$(DEMO)' > out/dbgflags.txt
+	if [ -n "$(SCRIPT)" ]; then printf ' -DMP_DEBUG_SCRIPT="\\"%s\\""' "$(SCRIPT)" >> out/dbgflags.txt; fi
+	$(DOCKER_SGDK) release EXTRA_FLAGS=@/src/out/dbgflags.txt
+	cp out/rom.bin out/demo.bin
+	rm -rf out/src out/rom.out out/rom.bin
 
 run: rom blastem
 	pkill -x blastem || true
