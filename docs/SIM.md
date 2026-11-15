@@ -168,7 +168,7 @@ Effets d'**un cran (+1)** par ligne (tables ROM `bud_line`) :
 - **Reconduction** (fin d'année sans budget adopté, `budget_year_close`) : chaque dépense recule d'un cran vers 0, les impôts ne changent pas (`TurnReport.budget_reconduit`).
 - **Cohabitation** : le plan du PM d'opposition entre en vigueur en fin d'année (`sim_cohab_plan`) : gauche `+1 +1 0 +1 0 +1`, centre tout à 0, droite `−1 0 +1 −1 0 −1`. Le président règle la ligne Sécurité et défense à ±1 cran autour (`sim_cohab_set_defense`, `Country.cohab_def_adj`), sans CP.
 - **Sénat** : si le bloc présidentiel n'a pas la majorité au Sénat (`sim_senate_has_majority` = 0) et hors cohabitation, il **amende** le plan adopté (vote ou 49.3) : la ligne dont la contribution (cran × orientation de la ligne) est la plus négative recule d'un cran vers 0 (`sim_budget_senate_amend_line`, `Country.bud_amend_line/_from`). **Lecture définitive** : `sim_budget_definitive_reading`, 1 CP, rétablit le plan voulu (possible tant que l'année n'est pas close). `TurnReport.senate_amend` (ligne + 1) l'annonce au compte rendu de fin d'année s'il n'a pas été annulé. L'amendement est rare (bloc présidentiel minoritaire au Sénat : surtout en difficile) : ≈ 1 % des budgets des parties automatiques.
-- **Compatibilité** : `sim_budget_vote/force(c, BUDGET_*)`, `sim_budget_deficit/growth/opinion/pillar/tension/orientation/preview(b)` s'appliquent au plan du préréglage. `sim_cohab_budget` renvoie le préréglage le plus proche du camp du PM (descriptif).
+- **Compatibilité** : `sim_budget_vote/force(c, BUDGET_*)`, `sim_budget_deficit/growth/opinion/pillar/tension/orientation/preview(b)` s'appliquent au plan du préréglage. Ces fonctions ne servent qu'aux tests PC : `tests/budget_compat.c`.
 
 ## Institutions (`institutions.c`)
 

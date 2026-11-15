@@ -3,6 +3,7 @@
 
 // Mini framework de tests sur PC (aucune dépendance).
 #include <stdio.h>
+#include "budget_compat.h"
 
 extern int test_failures;
 extern int test_checks;

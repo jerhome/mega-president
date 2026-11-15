@@ -105,17 +105,6 @@ void sim_init_ex(Country *c, const SimSetup *s)
     sim_region_init(c);
 }
 
-void sim_init(Country *c, u8 orientation, u32 seed, u8 turns_per_year)
-{
-    SimSetup s;
-    s.orientation = orientation;
-    s.pm = PM_NONE;
-    s.difficulty = DIFF_NORMAL;
-    s.turns_per_year = turns_per_year;
-    s.seed = seed;
-    sim_init_ex(c, &s);
-}
-
 // Poids électoraux (parts des suffrages exprimés, somme = 100).
 const u8 elec_weight[ELEC_COUNT] = { 26, 22, 12, 28, 12 };
 
@@ -169,9 +158,7 @@ static u8 sim_quarter_tick_at(const Country *c, u8 turn)
 
 u8 sim_quarter_tick(const Country *c)
 {
-    // En mode mensuel, un trimestre se termine tous les 3 tours.
-    if (c->turns_per_year <= 4) return 1;
-    return (u8)((c->turn % 3) == 0);
+    return sim_quarter_tick_at(c, c->turn);
 }
 
 u8 sim_year(const Country *c)
