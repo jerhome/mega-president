@@ -21,6 +21,12 @@ void game_new(u8 orientation, u8 pm, u8 difficulty, u8 turns_per_year, u32 seed)
     sim_init_ex(&g_game.country, &s);
     g_game.event = -1;
     g_game.event_choice = -1;
+#ifdef MP_DEBUG_SKIP_YEARS
+    // ROM de test seulement : avance jusqu'au dernier tour de l'année 3.
+    while (g_game.country.status == STATUS_PLAYING &&
+           g_game.country.turn + 1 < 3 * g_game.country.turns_per_year)
+        sim_end_turn(&g_game.country, &g_game.report);
+#endif
 }
 
 u8 game_propose_law(u8 law_id, VoteResult *out)

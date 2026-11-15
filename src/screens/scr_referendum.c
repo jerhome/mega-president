@@ -190,7 +190,7 @@ static void ref_update(void)
 
 static void draw_result(void)
 {
-    char buf[40];
+    char buf[UI_LINE_BUF];
     ui_text_draw_n(1, 4, law_name[chosen], 38, 0, UI_STYLE_HIGHLIGHT);
     ui_text_wrap(1, 6, 38, 3, txt[res.adopted ? TXT_REF_OUI : TXT_REF_NON],
                  res.adopted ? UI_STYLE_TEXT : UI_STYLE_ALERT);

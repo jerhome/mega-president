@@ -4,6 +4,7 @@
 #   make run        compile puis lance BlastEm en PAL (Europe, 50 Hz)
 #   make run-ntsc   compile puis lance BlastEm en NTSC (USA, 60 Hz)
 #   make debug      ROM de debug (symboles, -O1)
+#   make rom-annee4 ROM de test : rapport de fin d'année 3 (Sénat)
 #   make test       tests unitaires du cœur de simulation, sur PC (gcc natif)
 #   make content    régénère le code C depuis docs/contenu/*.md
 #   make gfx        régénère la police et les images d'interface (res/gfx/)
@@ -27,7 +28,7 @@ SIM_SRC     := $(wildcard src/sim/*.c) $(wildcard src/content/*.c) src/save/scor
 TEST_SRC    := $(wildcard tests/*.c)
 TEST_BIN    := out/host/tests
 
-.PHONY: all rom debug run run-ntsc test check clean blastem content gfx art map
+.PHONY: all rom rom-annee4 debug run run-ntsc test check clean blastem content gfx art map
 
 all: rom
 
@@ -51,10 +52,18 @@ map:
 	python3 tools/map/make_map.py
 
 rom: $(CONTENT_GEN)
-	$(DOCKER_SGDK) release
+	$(DOCKER_SGDK) release EXTRA_FLAGS=-fstack-protector-strong
 
 debug:
 	$(DOCKER_SGDK) debug
+
+# ROM de test : démarre directement sur le rapport de fin d'année 3 (renouvellement
+# du Sénat, plantage V2). Refaire `make clean rom` ensuite pour la ROM normale.
+rom-annee4: $(CONTENT_GEN)
+	rm -rf out/src out/rom.out
+	echo "-fstack-protector-strong -DMP_DEBUG_SKIP_YEARS" > out/dbgflags.txt
+	$(DOCKER_SGDK) release EXTRA_FLAGS=@/src/out/dbgflags.txt
+	rm -rf out/src out/rom.out
 
 run: rom blastem
 	pkill -x blastem || true

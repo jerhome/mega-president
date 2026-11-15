@@ -68,7 +68,7 @@ static void cand_label(char *buf, u8 cand)
 // Ligne de résultat : nom, pourcentage, jauge (2 lignes de texte).
 static void draw_row(u16 y, u8 cand, s16 score, s16 gmax)
 {
-    char buf[48];
+    char buf[UI_LINE_BUF];
     char num[14];
     u16 n;
     bool me = (cand == CAND_JOUEUR);
@@ -86,7 +86,7 @@ static void draw_row(u16 y, u8 cand, s16 score, s16 gmax)
 // PAL2 est empruntée par les portraits : jauges positive / dorée, jamais NEUTRAL.
 static void draw_finalist(u16 y, u8 cand, s16 score)
 {
-    char buf[40];
+    char buf[UI_LINE_BUF];
     char num[14];
     bool me = (cand == CAND_JOUEUR);
     UiStyle st = me ? UI_STYLE_HIGHLIGHT : UI_STYLE_TEXT;

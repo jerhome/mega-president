@@ -161,7 +161,7 @@ static void rsh_update(void)
 static void rsh_draw(void)
 {
     if (dirty) {
-        char buf[40];
+        char buf[UI_LINE_BUF];
         dirty = FALSE;
         art_reset();
         draw_header();

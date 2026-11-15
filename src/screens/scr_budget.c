@@ -47,7 +47,7 @@ static void cat_signed(char *dst, s32 v, u16 dec)
 static void draw_header(void)
 {
     const Country *c = &g_game.country;
-    char buf[40];
+    char buf[UI_LINE_BUF];
     ui_window(0, 0, 40, 3);
     buf[0] = 0;
     strcat(buf, "Budget - année ");
@@ -184,7 +184,7 @@ static void budget_update(void)
 static void draw_detail(void)
 {
     const Country *c = &g_game.country;
-    char buf[40];
+    char buf[UI_LINE_BUF];
     u8 b = (phase == P_PICK) ? budget_list.sel : chosen;
     VoteResult v;
 
@@ -229,7 +229,7 @@ static void draw_detail(void)
 
 static void draw_zone(void)
 {
-    char buf[40];
+    char buf[UI_LINE_BUF];
 
     ui_clear_rect(1, 20, 38, 7);
     if (phase == P_PICK) {

@@ -54,9 +54,9 @@ static u8 menu_act[MENU_MAX];
 static const char *menu_items[MENU_MAX];
 static u8 menu_n;
 static u8 menu_sel, menu_top;
-static char tv_label[40];
-static char ref_label[40];
-static char rsh_label[40];
+static char tv_label[UI_LINE_BUF];
+static char ref_label[UI_LINE_BUF];
+static char rsh_label[UI_LINE_BUF];
 static char confirm_text[160];
 
 static const char *const pillar_names[PIL_TOTAL] = {
@@ -144,7 +144,7 @@ static void stat_row(u16 y, const char *label, s32 value, u16 dec, const char *u
 
 static void draw_header(const char *title)
 {
-    char buf[40];
+    char buf[UI_LINE_BUF];
     const Country *c = &g_game.country;
     ui_window(0, 0, 40, 3);
     if (title) {
@@ -248,7 +248,7 @@ static void menu_build(void)
 static void draw_menu_full(void)
 {
     const Country *c = &g_game.country;
-    char buf[40];
+    char buf[UI_LINE_BUF];
     art_reset();
     draw_header(NULL);
     ui_window(0, 3, 40, 17);
@@ -287,7 +287,7 @@ static void draw_menu_full(void)
     {
         // Ligne 18 : majorité à gauche ; à droite, prochain apport de CP (forme abrégée si ça ne tient pas).
         const char *mj = sim_has_majority(c) ? "Majorité absolue" : "Majorité relative";
-        char hint[40];
+        char hint[UI_LINE_BUF];
         hint[0] = 0;
         if (sim_cohabitation(c)) strcat(hint, "Cohab. ");
         cat_cp_next(hint, sim_cohabitation(c));
@@ -406,7 +406,7 @@ static void draw_law_detail(void)
     u8 id = law_list.sel;
     const LawDef *law = law_get(id);
     VoteResult v;
-    char buf[40];
+    char buf[UI_LINE_BUF];
     u8 err, cost = sim_law_cost(c, id);
 
     ui_clear_rect(1, 12, 38, 12);
@@ -565,7 +565,7 @@ static void draw_result_full(void)
 {
     const Country *c = &g_game.country;
     const LegislativeResult *lr = &g_game.legislatives;
-    char buf[40];
+    char buf[UI_LINE_BUF];
     u16 y;
 
     art_reset();
@@ -642,7 +642,7 @@ static void update_result(void)
 static void draw_vote_full(void)
 {
     const Country *c = &g_game.country;
-    char buf[40];
+    char buf[UI_LINE_BUF];
     u16 y;
 
     art_reset();
@@ -703,7 +703,7 @@ static void update_vote(void)
 static void draw_assembly_full(void)
 {
     const Country *c = &g_game.country;
-    char buf[40];
+    char buf[UI_LINE_BUF];
     u16 y;
 
     art_reset();

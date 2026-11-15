@@ -24,14 +24,14 @@ static bool top_dirty;    // aperçu du vote, jauges
 static bool list_dirty;   // liste, message
 static UiList def_list;
 static UiList grp_list;
-static char def_tv[40];
-static char def_neg[40];
+static char def_tv[UI_LINE_BUF];
+static char def_neg[UI_LINE_BUF];
 static const char *def_items[I_COUNT];
-static char grp_label[GRP_COUNT][40];
+static char grp_label[GRP_COUNT][UI_LINE_BUF];
 static const char *grp_items[GRP_COUNT];
 static u8 grp_id[GRP_COUNT];
 static u8 grp_n;
-static char msg[2][40];
+static char msg[2][UI_LINE_BUF];
 static u8 msg_alert;
 static u8 has_msg;
 
@@ -198,7 +198,7 @@ static void impeach_update(void)
 static void draw_top(void)
 {
     const Country *c = &g_game.country;
-    char buf[40];
+    char buf[UI_LINE_BUF];
     u16 v = votes_now();
     u16 sv = sim_impeach_senate_votes(c);
     u8 pass = sim_impeach_would_pass(c);
@@ -265,7 +265,7 @@ static void impeach_draw(void)
         ui_window(0, 3, 40, 25);
         ui_text_wrap(1, 4, 38, 3, txt[TXT_DESTITUTION_PROCEDURE], UI_STYLE_TEXT);
         if (phase == P_INTRO) {
-            char buf[40];
+            char buf[UI_LINE_BUF];
             ui_art_draw(ART_DECOR_HEMICYCLE, 10, 9);   // PAL2 : DIM remplacé par TEXT
             buf[0] = 0;
             strcat(buf, "Scandale ");

@@ -36,7 +36,7 @@ static void cat_signed(char *dst, s32 v, u16 dec)
 // Ligne d'indicateur : flèche, libellé, « avant -> après ».
 static u16 indicator(u16 y, const char *label, s16 before, s16 after, u16 dec, const char *unit)
 {
-    char buf[40];
+    char buf[UI_LINE_BUF];
     if (before == after || y > LAST_ROW) return y;
     ui_icon_draw(1, y, after > before ? UI_ICON_ARROW_UP : UI_ICON_ARROW_DOWN);
     ui_text_draw(3, y, label, UI_STYLE_TEXT);
@@ -101,7 +101,7 @@ static u16 para(u16 y, const char *text, UiStyle st)
 
 static void votes_line(u16 y, const char *label, u16 votes, u16 majority, UiStyle st)
 {
-    char buf[40];
+    char buf[UI_LINE_BUF];
     buf[0] = 0;
     strcat(buf, label);
     cat_num(buf, votes, 0);
@@ -115,7 +115,7 @@ static void votes_line(u16 y, const char *label, u16 votes, u16 majority, UiStyl
 static void draw_politics(void)
 {
     const TurnReport *r = &g_game.report;
-    char buf[40];
+    char buf[UI_LINE_BUF];
     u16 y = 4;
 
     ui_text_center(1, 2, 38, "Vie politique", UI_STYLE_DIM);
@@ -193,7 +193,7 @@ static void draw_politics(void)
             y = para(y, txt[after >= before ? TXT_SENAT_RENOUVELE_GAIN : TXT_SENAT_RENOUVELE_PERTE],
                      after >= before ? UI_STYLE_TEXT : UI_STYLE_ALERT);
             buf[0] = 0;
-            strcat(buf, "Bloc présidentiel au Sénat : ");
+            strcat(buf, "Sénat, bloc présidentiel : ");
             cat_num(buf, before, 0);
             strcat(buf, " -> ");
             cat_num(buf, after, 0);
@@ -213,7 +213,7 @@ static void report_draw(void)
     };
     const Country *c = &g_game.country;
     const TurnReport *r = &g_game.report;
-    char buf[40];
+    char buf[UI_LINE_BUF];
     u16 y, n;
     u8 t;
 

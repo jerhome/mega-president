@@ -50,6 +50,17 @@ static u8 group_of(u8 orient)
 
 static void title_init(void)
 {
+#ifdef MP_DEBUG_SKIP_YEARS
+    {   // ROM de test seulement : partie automatique jusqu'au rapport de fin d'année 3.
+        static bool done;
+        if (!done) {
+            done = TRUE;
+            game_new(0, 0, 0, 4, 1234);
+            game_end_turn();
+            return;
+        }
+    }
+#endif
     phase = PH_PRESS;
     dirty = D_ALL;
     blink_on = FALSE;

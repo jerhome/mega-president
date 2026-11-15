@@ -16,6 +16,9 @@
 #define UI_COLS 40
 #define UI_ROWS 28
 #define UI_TEXT_COLS 38   // colonnes utiles (marge d'une colonne de chaque côté)
+// Tampon d'une ligne de texte : 38 colonnes en UTF-8 (accents sur 2 octets, ✓ sur 3).
+// Ne jamais construire une ligne dans un tableau plus petit (plantage V2 de la 4e année).
+#define UI_LINE_BUF 80
 
 // Styles = lignes de palette nommées (res/gfx/pal_ui_*.png).
 typedef enum {
