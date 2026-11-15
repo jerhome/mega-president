@@ -59,6 +59,7 @@ void ui_map_update(void);
 // Daltonisme : orangé (tiers bas), jaune, bleu (tiers haut) au lieu de rouge, jaune, vert.
 // À appeler avant ui_map_set_region_level (les régions déjà colorées ne changent pas).
 void ui_map_set_colorblind(bool on);
+bool ui_map_is_colorblind(void);   // réglage courant (légende de l'écran de la carte)
 // Nom en UTF-8 avec accents ; chaîne vide si region est invalide.
 const char *ui_map_region_name(u8 region);
 

@@ -333,6 +333,11 @@ void game_debug_jump(void)
         c->turn = 6;
         screen_change(SCREEN_MAP);
         break;
+    case 25:   // carte en mode daltonien
+        c->turn = 6;
+        ui_set_colorblind(TRUE);
+        screen_change(SCREEN_MAP);
+        break;
     case 23:   // aide en pages (script : droite pour changer de page)
         screen_change(SCREEN_HELP);
         break;

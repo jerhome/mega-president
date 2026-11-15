@@ -5,6 +5,8 @@
 #include "scr_help.h"
 #include "ui/ui.h"
 #include "ui/input.h"
+#include "util/strbuf.h"
+#include "screens/scr_kit.h"
 
 typedef struct {
     const char *title;
@@ -132,30 +134,30 @@ static void help_update(void)
 {
     u16 p = input_repeat();
     u16 pr = input_pressed();
+    u8 n;
 
     if (pr & (INPUT_B | INPUT_START)) {
         screen_change(return_screen);
         return;
     }
-    if ((p & INPUT_RIGHT) && page + 1 < N_PAGES) { page++; dirty = TRUE; }
-    else if ((p & INPUT_LEFT) && page > 0) { page--; dirty = TRUE; }
+    n = (u8)ui_nav_cycle(page, 0, N_PAGES, (p & INPUT_LEFT) != 0, (p & INPUT_RIGHT) != 0, FALSE);
+    if (n != page) { page = n; dirty = TRUE; }
 }
 
 static void help_draw(void)
 {
-    char buf[8];
+    SB_LINE(sb);
     u16 i, x;
 
     if (!dirty) return;
     dirty = FALSE;
 
-    ui_clear();
+    ui_clear_quiet();
     ui_window_title(0, 0, 40, 28, pages[page].title, TRUE);
-    buf[0] = '0' + page + 1;
-    buf[1] = '/';
-    buf[2] = '0' + N_PAGES;
-    buf[3] = 0;
-    ui_text_right(39, 1, buf, UI_STYLE_DIM);
+    sb_num(&sb, page + 1, 0);
+    sb_str(&sb, "/");
+    sb_num(&sb, N_PAGES, 0);
+    ui_text_right(39, 1, sb.buf, UI_STYLE_DIM);
     ui_text_wrap(2, 4, 36, 19, pages[page].text, UI_STYLE_TEXT);
 
     // Pastilles de pagination : la page courante en or.
