@@ -54,4 +54,34 @@ static inline const char *bl_aide(u8 line)
     return line < BUD_LINES ? txt[TXT_BL_0_AIDE + line] : "";
 }
 
+// --- Premier ministre, cohabitation, piliers (indices bornés) ---
+_Static_assert(TXT_PM_TECHNOCRATE_DESC == TXT_PM_TECHNOCRATE_NOM + 1, "TXT_PM_* NOM puis DESC");
+_Static_assert(TXT_PM_RASSEMBLEUR_NOM == TXT_PM_TECHNOCRATE_NOM + 2, "TXT_PM_* contigus");
+_Static_assert(TXT_PM_REFORMATEUR_NOM == TXT_PM_TECHNOCRATE_NOM + 4, "TXT_PM_* contigus");
+
+// Nom du Premier ministre ; « - » pour PM_NONE ou un indice hors bornes.
+static inline const char *pm_name(u8 pm)
+{
+    return pm < PM_COUNT ? txt[TXT_PM_TECHNOCRATE_NOM + 2 * pm] : "-";
+}
+static inline const char *pm_desc(u8 pm)
+{
+    return pm < PM_COUNT ? txt[TXT_PM_TECHNOCRATE_DESC + 2 * pm] : "";
+}
+// Nom du Premier ministre de cohabitation (camp 0 gauche, 1 centre, 2 droite).
+static inline const char *cohab_pm_name(u8 camp)
+{
+    return camp < 3 ? txt[TXT_COHAB_PM_GAUCHE_NOM + camp] : "-";
+}
+// Nom d'un pilier ; court : 13 cases avant une jauge (« Internat. »).
+static inline const char *pillar_name(u8 p, bool court)
+{
+    static const char *const lng[PIL_TOTAL] = { "Social", "Économie", "Technologie",
+        "Écologie", "Sécurité", "International" };
+    static const char *const sht[PIL_TOTAL] = { "Social", "Économie", "Technologie",
+        "Écologie", "Sécurité", "Internat." };
+    if (p >= PIL_TOTAL) return "";
+    return court ? sht[p] : lng[p];
+}
+
 #endif

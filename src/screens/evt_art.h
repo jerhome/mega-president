@@ -13,6 +13,9 @@ ArtId evt_art(u8 evt);
 // écrans illustrés, et dans leur fonction exit.
 void art_reset(void);
 
+// Comme art_reset, avec ui_clear_quiet() : redessin partiel sans apparition douce.
+void art_reset_quiet(void);
+
 // Ministre de tutelle de l'événement (revue DA § 8.3), selon sa vignette : Écologie
 // (canicule, pollution, énergie, intempéries), Économie (bourse, industrie,
 // numérique, agriculture), Intérieur (sécurité, scandale), Santé, Éducation,

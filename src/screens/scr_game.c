@@ -111,11 +111,6 @@ static void cat_turns(char *dst, u8 turns)
     else strcat(dst, turns > 1 ? " trimestres" : " trimestre");
 }
 
-static const char *pm_name(u8 pm)
-{
-    return pm < PM_COUNT ? txt[TXT_PM_TECHNOCRATE_NOM + 2 * pm] : "-";
-}
-
 static void set_mode(Mode m)
 {
     // Cachet musical : thème de l'Assemblée pendant les votes et sa consultation,

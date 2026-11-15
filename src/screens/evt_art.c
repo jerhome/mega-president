@@ -50,6 +50,12 @@ void art_reset(void)
     ui_art_close();
 }
 
+void art_reset_quiet(void)
+{
+    ui_clear_quiet();
+    ui_art_close();
+}
+
 // Indice du ministre (GUEULE_MIN) ou -1 pour le Premier ministre.
 static s8 evt_min_index(u8 evt)
 {
