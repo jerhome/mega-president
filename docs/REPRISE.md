@@ -1,9 +1,6 @@
-# Point de reprise (15/11, fin de session)
+# Point de reprise (16/11)
 
-- Branche `v4-dev`, V4 à 95 % ; 4.18 (charabia) fusionnée, `make check` OK.
-- En cours au moment de la coupure (agents en arrière-plan, résultats peut-être perdus) :
-  - 4.16 contrôle qualité (qa-rom) ;
-  - relecture DA des écrans V4 → `docs/REVUE_DA_V4.md` (non commitée si présente).
-- Petits restes 4.18 : aperçu « Voix » des Options joue encore « For sure ! » au lieu de l'huissier ; son qui finit pendant une boîte de message (≈ 0,3 s).
-- Ensuite : corrections QA et DA ce soir ; le joueur teste la V4 sur console le 16/11 et fait son retour, puis 4.17 (étiquette, release ; pas de push sans accord).
+- `v4-dev` : V4 prête pour le test console du joueur (version affichée v4.0). ROM : `~/mega-president-roms/mega-president-v4.0-test.bin`. Reste 4.17 (retours du joueur, étiquette v4.0, release ; pas de push sans accord).
+- `v4.1-dev` : V4.1 commencée selon `docs/AUDIT_V4_1.md` (lot U1 StrBuf fusionné ; lot R4 mesures en cours). Fusionner régulièrement v4-dev dans v4.1-dev.
+- Piège : les worktrees d'agents partent de `main` ; leur demander de fusionner la bonne branche (v4-dev ou v4.1-dev) avant de travailler.
 - Recréer la tâche planifiée de suivi (mémoire feedback-suivi-planifie).
