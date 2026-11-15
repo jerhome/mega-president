@@ -196,7 +196,6 @@ const char *const txt[TXT_COUNT] = {
     "Matignon impose un plan social et de\nrelance : dépenses en hausse, et les\nentreprises passent à la caisse.", // TXT_COHAB_PLAN_GAUCHE
     "Matignon impose un budget de\nreconduction : rien ne bouge et tout\nle monde râle. L'équilibre, quoi.", // TXT_COHAB_PLAN_CENTRE
     "Matignon impose la rigueur : moins de\ndépenses, moins d'impôts pour les\nentreprises. Ça ruissellera, promis.", // TXT_COHAB_PLAN_DROITE
-    "Défense : seule ligne qui vous reste,\nà un cran près de celle de Matignon.", // TXT_COHAB_DEFENSE
     "Domaine réservé : sécurité et défense.\nUn cran de plus ou de moins, sans CP.\nLes autres lignes sont grisées.", // TXT_COHAB_DEFENSE_AIDE
     "Chômage, salaires, apprentissage.\nJeunes et populaires. Promis, juré.", // TXT_THEME_EMPLOI_DESC
     "Police, justice, tranquillité. Parle\nsurtout aux retraités. Képis inclus.", // TXT_THEME_SECURITE_DESC

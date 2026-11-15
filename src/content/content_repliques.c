@@ -7,7 +7,7 @@ const char *const rep_nom[REP_PERSOS] = {
 
 const char *const rep_fonction[REP_PERSOS] = {
     "ministre de l'Économie", "ministre de l'Intérieur", "ministre de la Santé",
-    "ministre de l'Éducation", "ministre de l'Écologie", "Affaires étrangères", ""
+    "ministre de l'Éducation", "ministre de l'Écologie", "Affaires étrangères", "Matignon"
 };
 
 const char *const rep_texte[REP_PERSOS][REP_HUMEURS] = {
