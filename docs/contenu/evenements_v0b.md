@@ -37,8 +37,8 @@ Texte : Classes surchargées, postes vacants,
   applaudissent discrètement.
 Choix 1 : Revaloriser les salaires
   Effets : SOCIAL +3, DETTE +3, TENSION -4, POP_CADRES -2, POP_JEUNES +2
-  Journal : Les profs augmentés. Bercy cherche
-    la craie de rechange.
+  Journal : Profs revalorisés : Bercy corrige
+    la copie en rouge.
 Choix 2 : Promettre des postes plus tard
   Effets : TENSION +3, CP -1, POP_MOYENNES -2, POP_JEUNES -2
   Journal : Des postes « à la rentrée »,
@@ -219,8 +219,8 @@ Choix 1 : Bouclier tarifaire
     facture est gelée, la dette chauffe.
 Choix 2 : Aide ciblée aux ménages
   Effets : SOCIAL +2, DETTE +2, POP_MOYENNES -2, POP_CADRES -1
-  Journal : Chèque énergie ciblé : pour les
-    pauvres, un joli courrier.
+  Journal : Chèque énergie ciblé : l'enveloppe
+    est jolie, le montant discret.
 Choix 3 : Laisser jouer le marché
   Effets : ECONOMIE +1, ECOLOGIE +1, TENSION +4, POP_POPULAIRES -5, POP_RETRAITES -2, POP_JEUNES -1
   Journal : Factures libres : les ménages

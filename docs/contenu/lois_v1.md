@@ -6,8 +6,8 @@ Suite de lois_v0.md, même format. Orientation indiquée dans CONTRAT_V1 §2.
 Nom : Départ à la retraite
 Description :
   Recule l'âge de départ de deux ans.
-  Les comptes s'équilibrent, les
-  cortèges de l'UST aussi.
+  Bercy équilibre ses comptes, l'UST
+  ses itinéraires de cortège.
 Journal si adoptée : Retraites : deux ans de plus à tirer
 Journal si rejetée : Retraites : réforme au vestiaire
 Effets suggérés : dette en baisse, économie en hausse, populaires et moyennes en baisse, tension en hausse, retraités en baisse.
@@ -18,7 +18,7 @@ Description :
   Rétablit un impôt sur les grands
   patrimoines. Les yachts amarrés en
   Suisse envisagent de rester amarrés.
-Journal si adoptée : Impôt sur la fortune : on compte
+Journal si adoptée : ISF rétabli : les coffres font la tête
 Journal si rejetée : ISF enterré, les coffres respirent
 Effets suggérés : dette en baisse, populaires en hausse, cadres en baisse, économie en baisse légère, retraités en baisse.
 

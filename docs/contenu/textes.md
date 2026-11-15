@@ -10,8 +10,8 @@ L'opposition crie au coup de force.
 
 ## TXT_TV_SUCCES
 Allocution réussie : les Français ont
-écouté jusqu'au bout. Les audiences
-félicitent, le sondeur aussi.
+écouté jusqu'au bout. Les communicants
+s'attribuent tout le mérite.
 
 ## TXT_TV_FLOP
 Allocution ratée : prompteur en panne
@@ -25,8 +25,8 @@ les voix, et les portables aussi.
 
 ## TXT_CENSURE_ADOPTEE
 Motion de censure adoptée : le
-gouvernement tombe. Il faut former
-une nouvelle équipe, et vite.
+gouvernement tombe. Les ministres
+apprennent la nouvelle par SMS.
 
 ## TXT_CENSURE_REJETEE
 Motion de censure rejetée de peu.
@@ -60,8 +60,8 @@ ministères comptent ce qui reste.
 
 ## TXT_BUDGET_493
 Budget adopté par le 49.3, sans vote
-final. Il passe, mais l'ambiance
-dans l'hémicycle ne s'améliore pas.
+final. Il passe ; l'hémicycle, lui,
+ne passe pas l'éponge.
 
 ## TXT_DESTITUTION_PROCEDURE
 Une procédure de destitution est
@@ -86,7 +86,7 @@ préparer : on peut enfin être franc.
 ## TXT_FIN_SECOND_MANDAT
 Dix ans à l'Élysée s'achèvent. Vous
 ne pouvez plus vous représenter.
-Le bilan revient à l'histoire.
+Place aux Mémoires, en trois tomes.
 
 ## TXT_PM_TECHNOCRATE_NOM
 Pierre Delaunay

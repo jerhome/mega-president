@@ -58,8 +58,8 @@ Texte : La France accueille une compétition
   les riverains se bouchent l'oreille.
 Choix 1 : Soigner l'accueil à tout prix
   Effets : ECONOMIE +3, DETTE +3, POP_TOUS +1, INTERNATIONAL +3
-  Journal : Fête réussie, addition salée.
-    Le chiffre officiel reste à venir.
+  Journal : Fête réussie, addition salée : le
+    chiffre officiel est attendu en 2040.
 Choix 2 : Un événement sobre
   Effets : ECOLOGIE +2, DETTE -1, POP_MOYENNES -1, POP_JEUNES +1
   Journal : Des Jeux sans fard : moins de

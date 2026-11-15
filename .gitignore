@@ -6,3 +6,4 @@ tools/blastem*/
 .claude/settings.local.json
 res/*.h
 __pycache__/
+releases/

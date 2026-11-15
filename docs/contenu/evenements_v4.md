@@ -39,8 +39,8 @@ Texte : Un livre-enquête révèle des repas à
   journal avec les photos.
 Choix 1 : Plan grand âge
   Effets : SOCIAL +4, DETTE +3, POP_RETRAITES +4, POP_POPULAIRES +1, TENSION -2
-  Journal : Un plan grand âge est annoncé. Les
-    couloirs auront aussi des rampes.
+  Journal : Plan grand âge : des bras, des lits,
+    et le dessert n'est plus en option.
 Choix 2 : Contrôles et sanctions
   Effets : SOCIAL +2, SCANDALE -2, POP_RETRAITES +2, ECONOMIE -1, POP_CADRES -1
   Journal : Inspections surprises : le menu
@@ -108,8 +108,8 @@ Texte : Un jeune actif sur cinq est au
   à former ».
 Choix 1 : Contrat d'insertion jeunes
   Effets : CHOMAGE -2, DETTE +3, SOCIAL +2, POP_JEUNES +4, POP_RETRAITES -1
-  Journal : Un contrat d'insertion est lancé.
-    Les jeunes y voient un premier CDD.
+  Journal : Contrat d'insertion lancé. Pour une
+    fois, le premier emploi est payé.
 Choix 2 : Alléger les charges
   Effets : CHOMAGE -1, ECONOMIE +2, DETTE +2, POP_JEUNES +1, POP_CADRES +2
   Journal : Charges allégées pour embaucher les

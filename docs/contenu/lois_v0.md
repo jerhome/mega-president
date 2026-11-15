@@ -7,11 +7,11 @@ la ligne « Effets suggérés » est indicative.
 ## LOI_SMIC
 Nom : Hausse du SMIC
 Description :
-  Revalorise le SMIC de 5 %. Salaires
-  suivent, les marges patronales
-  protestent. L'UPE parle de « drame ».
+  Revalorise le SMIC de 5 %. Les
+  salaires suivent, l'UPE annonce la
+  fin du monde, comme l'an dernier.
 Journal si adoptée : Le SMIC grimpe, les caisses sonnent
-Journal si rejetée : SMIC rejeté, les prix eux montent
+Journal si rejetée : SMIC rejeté, les prix, eux, montent
 Effets suggérés : popularité populaires en hausse, cadres en baisse, chômage légèrement en hausse, jeunes en hausse.
 
 ## LOI_IS

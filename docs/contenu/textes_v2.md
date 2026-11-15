@@ -9,7 +9,7 @@ Cohabitation
 ## TXT_COHAB_DEBUT
 Législatives perdues : l'opposition
 gouverne. Vous gardez l'Élysée, elle
-garde Matignon. Les dîners se tendent.
+garde Matignon, et le stylo du budget.
 
 ## TXT_COHAB_FIN
 Législatives gagnées : la cohabitation
@@ -120,8 +120,8 @@ ce mandat. Une seule fois, pas deux.
 
 ## TXT_REF_ANNONCE
 Le peuple est appelé aux urnes.
-Les bureaux ferment, les plateaux
-télé retiennent leur souffle.
+Les bureaux ouvrent, les plateaux
+télé ont déjà leurs pronostics.
 
 ## TXT_REF_OUI
 Le oui l'emporte : la loi est adoptée

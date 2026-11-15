@@ -58,8 +58,8 @@ Texte : Une banque d'affaires étrangère
   l'État à l'aide.
 Choix 1 : Garantir les dépôts
   Effets : ECONOMIE +3, DETTE +4, POP_CADRES +2, POP_POPULAIRES -2, POP_RETRAITES +1
-  Journal : L'État vole au secours des banques.
-    La liberté d'entreprise, version État.
+  Journal : L'État sauve les banques. Les pertes
+    sont publiques, les bonus privés.
 Choix 2 : Laisser le marché se purger
   Effets : ECONOMIE -3, CHOMAGE +3, POP_CADRES -3, POP_RETRAITES -2, POP_JEUNES -2
   Journal : L'État ne bouge pas : la main
@@ -99,7 +99,7 @@ Titre : Nuits d'émeutes
 Texte : Après une bavure, des quartiers
   s'embrasent. Voitures brûlées,
   vitrines brisées, appels au calme sur
-  Chaîne Info 24. Les LSO exigent l'état
+  Chaîne Info 24. La LSO exige l'état
   d'urgence, l'UGR une enquête
   indépendante.
 Choix 1 : Déployer les forces de l'ordre
@@ -109,7 +109,7 @@ Choix 1 : Déployer les forces de l'ordre
 Choix 2 : Lancer une enquête indépendante
   Effets : SOCIAL +2, TENSION -3, SECURITE -2, POP_MOYENNES -3, POP_JEUNES +1
   Journal : Enquête indépendante : la justice
-    avance, la droite aboie.
+    avance, la LSO hurle au laxisme.
 Choix 3 : Plan de rattrapage des quartiers
   Effets : SOCIAL +3, DETTE +3, POP_POPULAIRES +2, POP_MOYENNES -2, POP_JEUNES +2, POP_RETRAITES -2
   Journal : Un énième plan pour les quartiers.
@@ -131,8 +131,8 @@ Choix 1 : Nationaliser temporairement
     elle, garde ses dividendes.
 Choix 2 : Négocier un plan social
   Effets : SOCIAL +2, DETTE +1, TENSION -2, POP_CADRES -1
-  Journal : Plan social signé : 800 familles
-    sans pot de départ.
+  Journal : Plan social signé : 800 départs,
+    et un pot offert par la direction.
 Choix 3 : Ne pas intervenir
   Effets : CHOMAGE +2, ECONOMIE +2, POP_POPULAIRES -3, TENSION +3, POP_JEUNES -2
   Journal : L'État s'abstient. Omnicorp se dit
@@ -145,13 +145,12 @@ Titre : Percée scientifique
 Texte : Un laboratoire public annonce un
   procédé de stockage d'énergie
   révolutionnaire. Les investisseurs
-  accourent, les chercheurs rappellent
-  qu'ils sont payés au SMIC de la
-  recherche.
+  accourent ; les chercheurs demandent
+  si la photocopieuse sera réparée.
 Choix 1 : Financer le laboratoire
   Effets : TECHNOLOGIE +4, DETTE +2, POP_MOYENNES +2, POP_JEUNES +2
   Journal : Fonds publics pour la découverte.
-    Les chercheurs n'y croient pas.
+    Les labos se pincent pour y croire.
 Choix 2 : Céder le brevet à un industriel
   Effets : ECONOMIE +3, CROISSANCE +1, POP_CADRES +2, POP_POPULAIRES -2
   Journal : Brevet vendu à Omnicorp : la science
@@ -177,8 +176,8 @@ Choix 1 : Sanctions et dépollution
     Elle trouve ça peu agile.
 Choix 2 : Amende symbolique
   Effets : ECONOMIE +2, ECOLOGIE -3, POP_MOYENNES -3, POP_JEUNES -2
-  Journal : Amende minime : le fleuve garde
-    le pH de la facture.
+  Journal : Amende symbolique : polluer reste
+    moins cher que filtrer.
 Choix 3 : Création d'une agence de contrôle
   Effets : ECOLOGIE +2, DETTE +2, SCANDALE -2
   Journal : Nouvelle agence de contrôle : le
@@ -190,13 +189,13 @@ Probabilité : moyenne
 Titre : Le dîner qui fait jaser
 Texte : Le Quotidien du Matin révèle un
   dîner discret entre un ministre et les
-  dirigeants de l'UPE. Au menu : homard
+  dirigeants de l'UPE. Au menu : turbot
   et assouplissement fiscal. Le ministre
-  assure avoir « payé son homard ».
+  jure qu'il a « partagé l'addition ».
 Choix 1 : Soutenir le ministre
   Effets : SCANDALE +5, POP_MOYENNES -2, REL_PARTI +3, POP_JEUNES -2, POP_RETRAITES -1
   Journal : Le président défend son ministre.
-    Le homard a bon dos.
+    L'addition arrivera dans les urnes.
 Choix 2 : Limoger le ministre
   Effets : SCANDALE -3, CP -1, POP_POPULAIRES +2, POP_CADRES -2, POP_JEUNES +1
   Journal : Ministre limogé : l'UPE y voit un

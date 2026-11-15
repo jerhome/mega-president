@@ -5,22 +5,22 @@
 
 const char *const txt[TXT_COUNT] = {
     "Le gouvernement engage sa\nresponsabilité : 49.3, acte cinquante.\nL'opposition crie au coup de force.", // TXT_493_UTILISE
-    "Allocution réussie : les Français ont\nécouté jusqu'au bout. Les audiences\nfélicitent, le sondeur aussi.", // TXT_TV_SUCCES
+    "Allocution réussie : les Français ont\nécouté jusqu'au bout. Les communicants\ns'attribuent tout le mérite.", // TXT_TV_SUCCES
     "Allocution ratée : prompteur en panne\net formules creuses. Chaîne Info 24\npasse l'extrait en boucle.", // TXT_TV_FLOP
     "Une motion de censure est déposée.\nLes couloirs de l'Assemblée comptent\nles voix, et les portables aussi.", // TXT_CENSURE_DEPOSEE
-    "Motion de censure adoptée : le\ngouvernement tombe. Il faut former\nune nouvelle équipe, et vite.", // TXT_CENSURE_ADOPTEE
+    "Motion de censure adoptée : le\ngouvernement tombe. Les ministres\napprennent la nouvelle par SMS.", // TXT_CENSURE_ADOPTEE
     "Motion de censure rejetée de peu.\nLe gouvernement reste en place,\nsoulagé et un peu essoufflé.", // TXT_CENSURE_REJETEE
     "Un nouveau Premier ministre arrive à\nMatignon. Choisissez avec soin :\nchacun a sa méthode.", // TXT_NOUVEAU_PM
     "Vous dissolvez l'Assemblée nationale.\nLes Français retournent aux urnes,\nles députés à leur circonscription.", // TXT_DISSOLUTION
     "Législatives gagnées : vous obtenez\nune majorité plus solide. Les\nprojets de loi respirent enfin.", // TXT_LEGISLATIVES_GAGNEES
     "Législatives perdues : la majorité\nvous échappe. Cohabitation en vue,\nles dîners seront moins chaleureux.", // TXT_LEGISLATIVES_PERDUES
     "Le budget est adopté après des nuits\nd'amendements. Bercy souffle, les\nministères comptent ce qui reste.", // TXT_BUDGET_ADOPTE
-    "Budget adopté par le 49.3, sans vote\nfinal. Il passe, mais l'ambiance\ndans l'hémicycle ne s'améliore pas.", // TXT_BUDGET_493
+    "Budget adopté par le 49.3, sans vote\nfinal. Il passe ; l'hémicycle, lui,\nne passe pas l'éponge.", // TXT_BUDGET_493
     "Une procédure de destitution est\nengagée contre vous. Le Parlement\nse réunit en Haute Cour.", // TXT_DESTITUTION_PROCEDURE
     "La destitution est votée. Vous quittez\nl'Élysée. L'histoire retiendra\nsurtout comment.", // TXT_DESTITUTION_VOTEE
     "La destitution est rejetée. Vous\nrestez en place, mais les yeux\ndu pays sont désormais sur vous.", // TXT_DESTITUTION_REJETEE
     "Vous êtes réélu pour un second\nmandat. Plus de réélection à\npréparer : on peut enfin être franc.", // TXT_SECOND_MANDAT
-    "Dix ans à l'Élysée s'achèvent. Vous\nne pouvez plus vous représenter.\nLe bilan revient à l'histoire.", // TXT_FIN_SECOND_MANDAT
+    "Dix ans à l'Élysée s'achèvent. Vous\nne pouvez plus vous représenter.\nPlace aux Mémoires, en trois tomes.", // TXT_FIN_SECOND_MANDAT
     "Pierre Delaunay", // TXT_PM_TECHNOCRATE_NOM
     "Énarque, rigoureux, aime les tableaux.", // TXT_PM_TECHNOCRATE_DESC
     "Marianne Deschamps", // TXT_PM_RASSEMBLEUR_NOM
@@ -41,7 +41,7 @@ const char *const txt[TXT_COUNT] = {
     "On reconduit l'existant, à la marge.\nPersonne n'est content, rien ne casse.", // TXT_BUD_EQUILIBRE_DESC
     "Investissement public et services\nrenforcés. Bercy fait la grimace.", // TXT_BUD_RELANCE_DESC
     "Cohabitation", // TXT_COHAB_TITRE
-    "Législatives perdues : l'opposition\ngouverne. Vous gardez l'Élysée, elle\ngarde Matignon. Les dîners se tendent.", // TXT_COHAB_DEBUT
+    "Législatives perdues : l'opposition\ngouverne. Vous gardez l'Élysée, elle\ngarde Matignon, et le stylo du budget.", // TXT_COHAB_DEBUT
     "Législatives gagnées : la cohabitation\ns'achève. Le gouvernement redevient le\nvôtre, et le Premier ministre aussi.", // TXT_COHAB_FIN
     "Cohabitation : le Premier ministre\nest celui de l'Assemblée. Restent\nles lois de souveraineté, référendum\net dissolution. Pas de remaniement ;\nlois et budget : au gouvernement.", // TXT_COHAB_AIDE
     "En cohabitation, seules les lois de\nsouveraineté relèvent de l'Élysée.", // TXT_COHAB_LOI_REFUSEE
@@ -67,7 +67,7 @@ const char *const txt[TXT_COUNT] = {
     "Une fois par mandat, pour 6 CP, le\npeuple tranche une loi non adoptée.\nSuccès : la loi passe et votre cote\nmonte. Échec : elle tombe, et vous\navec elle dans les sondages.", // TXT_REF_AIDE
     "Soumettre cette loi au peuple ?\nLes urnes ne font pas de cadeaux.", // TXT_REF_CONFIRME
     "Vous avez déjà consulté le peuple\nce mandat. Une seule fois, pas deux.", // TXT_REF_DEJA
-    "Le peuple est appelé aux urnes.\nLes bureaux ferment, les plateaux\ntélé retiennent leur souffle.", // TXT_REF_ANNONCE
+    "Le peuple est appelé aux urnes.\nLes bureaux ouvrent, les plateaux\ntélé ont déjà leurs pronostics.", // TXT_REF_ANNONCE
     "Le oui l'emporte : la loi est adoptée\npar le peuple. Les éditorialistes\ndécouvrent la démocratie directe.", // TXT_REF_OUI
     "Le non l'emporte : le peuple rejette\nla loi. Chaîne Info 24 parle de leçon,\nl'opposition de claque.", // TXT_REF_NON
     "OUI", // TXT_REF_LABEL_OUI

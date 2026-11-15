@@ -107,8 +107,8 @@ Choix 1 : Porter un accord ambitieux
     Les industriels demandent un délai.
 Choix 2 : Un accord a minima
   Effets : ECOLOGIE +1, POP_TOUS +1, CP +1, INTERNATIONAL +1, POP_JEUNES +1
-  Journal : Accord a minima signé. Chacun
-    repart avec sa conclusion.
+  Journal : Accord a minima signé. Chacun repart
+    en jet privé, satisfait.
 Choix 3 : Défendre l'industrie d'abord
   Effets : ECONOMIE +3, ECOLOGIE -3, TENSION +2, POP_CADRES +1, INTERNATIONAL -3, POP_JEUNES -3
   Journal : La France défend ses usines. Le
@@ -169,8 +169,8 @@ Texte : Quarante classes rurales vont fermer
   récréation. Les vaches regardent.
 Choix 1 : Geler les fermetures
   Effets : SOCIAL +2, DETTE +2, POP_POPULAIRES +2, TENSION -3, POP_TOUS +1, POP_RETRAITES +2
-  Journal : Fermetures gelées. Les écharpes
-    des maires reprennent leur cou.
+  Journal : Fermetures gelées. Les maires
+    détachent leur écharpe des grilles.
 Choix 2 : Regrouper les écoles
   Effets : ECONOMIE +1, DETTE -1, POP_POPULAIRES -3, TENSION +3, POP_TOUS +1, POP_RETRAITES -2
   Journal : Écoles regroupées, cars scolaires
@@ -280,7 +280,7 @@ Texte : Des journalistes révèlent qu'un
 Choix 1 : Ouvrir une enquête
   Effets : SCANDALE -3, SECURITE -2, DEFIANCE -2, POP_MOYENNES +1, POP_TOUS +1, INTERNATIONAL +1
   Journal : Enquête ouverte sur les services.
-    Les dossiers sont dans les tiroirs.
+    Ils savaient déjà qu'elle viendrait.
 Choix 2 : Invoquer le secret défense
   Effets : SCANDALE +4, DEFIANCE +4, SECURITE +1, POP_MOYENNES -2, POP_TOUS +1, INTERNATIONAL -3
   Journal : Secret défense invoqué. Il est
@@ -309,8 +309,8 @@ Choix 2 : Blâmer l'opérateur
     promet de rallumer, c'est déjà ça.
 Choix 3 : Miser sur la sobriété
   Effets : ECOLOGIE +3, TENSION +2, POP_MOYENNES -2, CROISSANCE -1, POP_RETRAITES -3, POP_JEUNES +1
-  Journal : Sobriété prônée. Les citoyens
-    éteignent, le président sourit.
+  Journal : Sobriété prônée. Les Français
+    éteignent, l'Élysée reste allumé.
 
 ## EVT_MAREE_NOIRE
 Condition : aucune

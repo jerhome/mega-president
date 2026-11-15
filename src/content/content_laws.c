@@ -47,12 +47,12 @@ const char *const law_name[LOI_COUNT] = {
 };
 
 const char *const law_desc[LOI_COUNT] = {
-    "Revalorise le SMIC de 5 %. Salaires\nsuivent, les marges patronales\nprotestent. L'UPE parle de « drame ».", // LOI_SMIC
+    "Revalorise le SMIC de 5 %. Les\nsalaires suivent, l'UPE annonce la\nfin du monde, comme l'an dernier.", // LOI_SMIC
     "Réduit l'impôt sur les sociétés pour\n« libérer l'investissement ». Les\nrecettes de l'État s'évaporent.", // LOI_IS
     "Finance l'isolation de millions de\nlogements. Les passoires thermiques\nchauffent moins, les chantiers plus.", // LOI_RENOV
     "Recrute 10 000 policiers sur le\nquinquennat. Plus de bleu dans les\nrues, plus de lignes dans le budget.", // LOI_POLICE
     "Renforce le crédit d'impôt recherche.\nLes labos respirent, les cabinets de\nconseil en optimisation aussi.", // LOI_CIR
-    "Recule l'âge de départ de deux ans.\nLes comptes s'équilibrent, les\ncortèges de l'UST aussi.", // LOI_RETRAITES
+    "Recule l'âge de départ de deux ans.\nBercy équilibre ses comptes, l'UST\nses itinéraires de cortège.", // LOI_RETRAITES
     "Rétablit un impôt sur les grands\npatrimoines. Les yachts amarrés en\nSuisse envisagent de rester amarrés.", // LOI_ISF
     "Recrute, rouvre des lits, revalorise\nles soignants. Les urgences espèrent\nenfin de la place dans les couloirs.", // LOI_HOPITAL
     "Recrute des professeurs et réduit les\neffectifs par classe. Les craies sont\ncommandées, le budget suit de loin.", // LOI_ECOLE
@@ -66,7 +66,7 @@ const char *const law_desc[LOI_COUNT] = {
     "Passage progressif à 32 heures sans\nperte de salaire. Le vendredi est\nun sujet de négociation nationale.", // LOI_SEMAINE4J
     "Un repas gratuit à l'école pour tous\nles enfants. La purée devient une\nligne budgétaire très surveillée.", // LOI_CANTINE
     "Interdit l'avion quand le train met\nmoins de 4 heures. Les valises\napprennent à voyager en wagon.", // LOI_VOLS_COURTS
-    "Régule l'installation des médecins\nfinance des centres de santé. Le\ndocteur se rapproche du patient.", // LOI_DESERTS_MED
+    "Régule l'installation des médecins\net ouvre des centres de santé. Le\nrendez-vous passe de six mois à trois.", // LOI_DESERTS_MED
     "Un million de signatures suffisent à\nsoumettre une loi au vote. Le peuple\ns'invite, l'agenda aussi.", // LOI_RIC
     "Les sièges suivent enfin les voix.\nLes coalitions deviennent la règle,\nles calculettes aussi.", // LOI_PROPORTIONNELLE
     "Porte l'aide publique au 0,7 % du\nrevenu national. La solidarité\ninternationale entre dans le budget.", // LOI_AIDE_DEV
@@ -74,19 +74,19 @@ const char *const law_desc[LOI_COUNT] = {
     "Plafonne les loyers dans les grandes\nvilles. Les annonces immobilières\nrédigent des romans plus courts.", // LOI_ENCADREMENT
     "Aides à la conversion et 50 % de bio\ndans les cantines publiques. Les\nchamps sourient, les rendements non.", // LOI_BIO_CANTINE
     "Un chèque culture annuel pour chaque\njeune et plus de moyens pour les\nthéâtres. Molière est ravi.", // LOI_CULTURE
-    "Un taux unique de 25 % sur le\ncapital. La simplicité séduit les\nuns, inquiète les autres.", // LOI_FLAT_TAX
+    "Un taux unique de 25 % sur le\ncapital. Simple comme un virement\nvers ceux qui en ont déjà.", // LOI_FLAT_TAX
     "Plafonne les indemnités et simplifie\nles procédures. Les employeurs\nembauchent, les syndicats défilent.", // LOI_LICENCIEMENT
-    "Tenue unique du primaire au collège.\nLe débat sur la longueur des jupes\nest enfin clos.", // LOI_UNIFORME
+    "Tenue unique du primaire au collège.\nLes cours de récré virent au bleu,\nles marques de baskets au rouge.", // LOI_UNIFORME
     "Caméras dans les villes de plus\nde 10 000 habitants. Le pigeon est\nfilmé sous tous les angles.", // LOI_VIDEO
     "Réduit d'un tiers les députés et\nles sénateurs. Les sièges fondent,\nles ego aussi, peut-être.", // LOI_PARLEMENTAIRES
     "Hausse massive du budget des armées\nsur sept ans. Les chars arrivent, la\nfacture aussi.", // LOI_LPM
-    "Service obligatoire de six mois pour\ntous les jeunes. Le sac à dos est de\nretour, le réveil sonne à six h.", // LOI_SERVICE_MIL
+    "Service obligatoire de six mois pour\ntous les jeunes. Le sac à dos est de\nretour, la grasse matinée est abolie.", // LOI_SERVICE_MIL
     "Renforce la défense commune avec\nnos alliés et accueille leurs bases.\nLa diplomatie parle bas, en kaki.", // LOI_ALLIANCE
-    "Facilite les contrats d'armement\nles pays partenaires. La balance\ncommerciale applaudit, on tousse.", // LOI_EXPORT_ARMES
+    "Facilite les ventes d'armes aux pays\npartenaires. La balance commerciale\napplaudit, la morale toussote.", // LOI_EXPORT_ARMES
     "Assouplit les normes et soutient les\ngrandes exploitations exportatrices.\nLe rendement est roi, la haie part.", // LOI_AGRI_PRODUCT
     "Un prix du carbone progressif,\nreversé aux ménages par chèque.\nLa pompe devient pédagogue.", // LOI_CARBONE
-    "Un plan pour protéger les mairies\net hôpitaux des pirates. Le mot de\npasse '1234' est enfin interdit.", // LOI_CYBER
-    "Des peines minimales pour les\nrécidivistes. Les juges y voient une\nliberté en moins, cellules en plus.", // LOI_PEINES_PLANCHERS
+    "Un plan pour protéger les mairies\net hôpitaux des pirates. Le mot de\npasse passe enfin à « 12345 ».", // LOI_CYBER
+    "Des peines minimales pour les\nrécidivistes. Les juges perdent la\nmain, les prisons cherchent la place.", // LOI_PEINES_PLANCHERS
 };
 
 const char *const law_journal_ok[LOI_COUNT] = {
@@ -96,7 +96,7 @@ const char *const law_journal_ok[LOI_COUNT] = {
     "10 000 policiers dans les rues", // LOI_POLICE
     "Recherche : crédit pour les labos", // LOI_CIR
     "Retraites : deux ans de plus à tirer", // LOI_RETRAITES
-    "Impôt sur la fortune : on compte", // LOI_ISF
+    "ISF rétabli : les coffres font la tête", // LOI_ISF
     "Hôpital : des lits et des bras", // LOI_HOPITAL
     "École : des profs devant les classes", // LOI_ECOLE
     "Énergie : réacteurs et éoliennes", // LOI_ENERGIE
@@ -133,7 +133,7 @@ const char *const law_journal_ok[LOI_COUNT] = {
 };
 
 const char *const law_journal_ko[LOI_COUNT] = {
-    "SMIC rejeté, les prix eux montent", // LOI_SMIC
+    "SMIC rejeté, les prix, eux, montent", // LOI_SMIC
     "IS : texte enterré, l'UPE fulmine", // LOI_IS
     "Rénovation : les passoires restent", // LOI_RENOV
     "Police : recrutement bloqué", // LOI_POLICE

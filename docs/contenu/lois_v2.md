@@ -57,8 +57,8 @@ Souveraineté : non
 Nom : Déserts médicaux
 Description :
   Régule l'installation des médecins
-  finance des centres de santé. Le
-  docteur se rapproche du patient.
+  et ouvre des centres de santé. Le
+  rendez-vous passe de six mois à trois.
 Journal si adoptée : Déserts médicaux : des docteurs
 Journal si rejetée : Déserts médicaux : la salle d'attente
 Effets suggérés : SOCIAL +3, DETTE +1, TENSION -2, POP_POPULAIRES +2, POP_MOYENNES +2, POP_RETRAITES +3, Coût CP 3, Délai 3
@@ -153,8 +153,8 @@ Souveraineté : non
 Nom : Flat tax
 Description :
   Un taux unique de 25 % sur le
-  capital. La simplicité séduit les
-  uns, inquiète les autres.
+  capital. Simple comme un virement
+  vers ceux qui en ont déjà.
 Journal si adoptée : Flat tax : un taux pour les gouverner
 Journal si rejetée : Flat tax : le barème reste complexe
 Effets suggérés : ECONOMIE +3, CROISSANCE +2, DETTE +2, POP_CADRES +3, POP_POPULAIRES -3, POP_JEUNES -1, Coût CP 4, Délai 2
@@ -177,8 +177,8 @@ Souveraineté : non
 Nom : Uniforme à l'école
 Description :
   Tenue unique du primaire au collège.
-  Le débat sur la longueur des jupes
-  est enfin clos.
+  Les cours de récré virent au bleu,
+  les marques de baskets au rouge.
 Journal si adoptée : Uniforme : tout le monde en bleu
 Journal si rejetée : Uniforme : le style reste libre
 Effets suggérés : SOCIAL -1, TENSION +2, POP_MOYENNES +2, POP_RETRAITES +2, POP_JEUNES -1, REL_PARTI +1, Coût CP 2, Délai 1
@@ -226,7 +226,7 @@ Nom : Service national
 Description :
   Service obligatoire de six mois pour
   tous les jeunes. Le sac à dos est de
-  retour, le réveil sonne à six h.
+  retour, la grasse matinée est abolie.
 Journal si adoptée : Service national : retour du sac à dos
 Journal si rejetée : Service national : on respire
 Effets suggérés : SECURITE +2, SOCIAL +1, DETTE +2, POP_MOYENNES +1, POP_RETRAITES +3, POP_POPULAIRES -1, POP_JEUNES -4, Coût CP 5, Délai 4
@@ -248,9 +248,9 @@ Orientation : +45
 Souveraineté : oui
 Nom : Exportations d'armes
 Description :
-  Facilite les contrats d'armement
-  les pays partenaires. La balance
-  commerciale applaudit, on tousse.
+  Facilite les ventes d'armes aux pays
+  partenaires. La balance commerciale
+  applaudit, la morale toussote.
 Journal si adoptée : Armes : les contrats décollent
 Journal si rejetée : Armes : les exportations sont gelées
 Effets suggérés : ECONOMIE +2, CROISSANCE +1, DEFIANCE +2, DETTE -1, POP_POPULAIRES -1, POP_JEUNES -1, Coût CP 3, Délai 2
@@ -286,7 +286,7 @@ Nom : Cybersécurité nationale
 Description :
   Un plan pour protéger les mairies
   et hôpitaux des pirates. Le mot de
-  passe '1234' est enfin interdit.
+  passe passe enfin à « 12345 ».
 Journal si adoptée : Cybersécurité : le pare-feu national
 Journal si rejetée : Cybersécurité : les pirates ravis
 Effets suggérés : TECHNOLOGIE +3, SECURITE +1, DETTE +1, POP_MOYENNES +1, POP_JEUNES +1, POP_RETRAITES +1, Coût CP 2, Délai 2
@@ -297,8 +297,8 @@ Souveraineté : oui
 Nom : Peines planchers
 Description :
   Des peines minimales pour les
-  récidivistes. Les juges y voient une
-  liberté en moins, cellules en plus.
+  récidivistes. Les juges perdent la
+  main, les prisons cherchent la place.
 Journal si adoptée : Peines planchers : barème durci
 Journal si rejetée : Peines planchers : la balance penche
 Effets suggérés : SECURITE +3, DETTE +1, TENSION +3, POP_CADRES +2, POP_RETRAITES +2, POP_JEUNES -2, REL_PARTI +1, Coût CP 4, Délai 2
