@@ -170,10 +170,11 @@ class Layer:
 
 
 class Portrait:
-    def __init__(self, ramps, bg="bg"):
+    def __init__(self, ramps, bg="bg", w=W, h=H):
         """ramps : nom -> liste de couleurs MD (r, g, b) du plus sombre au plus clair.
         'ink' et 'bg' obligatoires."""
         self.ramps = ramps
+        self.w, self.h = w, h
         self.layers = []
         self.bgname = bg
         self.ops = []      # traits dessinés (rejoués pour chaque expression)
@@ -185,18 +186,18 @@ class Portrait:
 
     # --- rendu de base -----------------------------------------------------------
     def render_base(self, bg_draw=None):
-        owner = [[-1] * W for _ in range(H)]
+        owner = [[-1] * self.w for _ in range(self.h)]
         for i, l in enumerate(self.layers):
             for (x, y) in l.z:
-                if 0 <= x < W and 0 <= y < H:
+                if 0 <= x < self.w and 0 <= y < self.h:
                     owner[y][x] = i
-        key = [[(self.bgname, len(self.ramps[self.bgname]) - 1)] * W for _ in range(H)]
+        key = [[(self.bgname, len(self.ramps[self.bgname]) - 1)] * self.w for _ in range(self.h)]
         if bg_draw:
             bg_draw(key)
-        tone = [[0] * W for _ in range(H)]
+        tone = [[0] * self.w for _ in range(self.h)]
         zs = [l.smoothed() for l in self.layers]
-        for y in range(H):
-            for x in range(W):
+        for y in range(self.h):
+            for x in range(self.w):
                 i = owner[y][x]
                 if i < 0:
                     continue
@@ -251,10 +252,10 @@ class Portrait:
                 for k in range(1, 1 + max(abs(sx), abs(sy))):
                     px = x + round(sx * k / max(abs(sx), abs(sy)))
                     py = y + round(sy * k / max(abs(sx), abs(sy)))
-                    if 0 <= px < W and 0 <= py < H and 0 <= owner[py][px] < j:
+                    if 0 <= px < self.w and 0 <= py < self.h and 0 <= owner[py][px] < j:
                         tone[py][px] = -1   # marqué : ombre
-        for y in range(H):
-            for x in range(W):
+        for y in range(self.h):
+            for x in range(self.w):
                 i = owner[y][x]
                 if i < 0:
                     continue
@@ -265,13 +266,13 @@ class Portrait:
                 key[y][x] = (l.mat, t)
         # encre
         ink = set()
-        for y in range(H):
-            for x in range(W):
+        for y in range(self.h):
+            for x in range(self.w):
                 i = owner[y][x]
                 if i < 0:
                     continue
                 for (qx, qy) in ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)):
-                    if not (0 <= qx < W and 0 <= qy < H):
+                    if not (0 <= qx < self.w and 0 <= qy < self.h):
                         continue
                     j = owner[qy][qx]
                     li = self.layers[i]
@@ -357,18 +358,18 @@ class Draw:
         self.P = P
 
     def put(self, x, y, k):
-        if 0 <= x < W and 0 <= y < H:
+        if 0 <= x < self.P.w and 0 <= y < self.P.h:
             self.key[y][x] = k
 
     def get(self, x, y):
-        return self.key[y][x] if (0 <= x < W and 0 <= y < H) else None
+        return self.key[y][x] if (0 <= x < self.P.w and 0 <= y < self.P.h) else None
 
     def fill(self, m, k):
         for (x, y) in m:
             self.put(x, y, k)
 
     def owner_is(self, x, y, layer):
-        if not (0 <= x < W and 0 <= y < H):
+        if not (0 <= x < self.P.w and 0 <= y < self.P.h):
             return False
         i = self.P.owner[y][x]
         return i >= 0 and self.P.layers[i] is layer

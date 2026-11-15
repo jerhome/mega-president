@@ -112,7 +112,8 @@ if __name__ == "__main__":
         sys.exit(0)
     if args and args[0] == "--contact":   # --contact SORTIE.png [échelle]
         import title
-        t = title.TITLE[0][1]()
+        import title3
+        t = title3.TITLE[0][1]()
         contact(args[1], render_all(), scale=int(args[2]) if len(args) > 2 else 4,
                 extra=[(t.px, title.PALETTE)])
         sys.exit(0)
