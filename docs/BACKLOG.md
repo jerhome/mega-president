@@ -222,7 +222,7 @@ On passe tout son temps dans les écrans : ils doivent être superbes. Personnag
 ### Jalon V3
 | # | Tâche | Durée | État |
 |---|---|---|---|
-| 3.15 | Budgets ROM/RAM/VRAM, PAL et NTSC, test console du joueur, release | 5 h | 🔄 ROM v3.0 prête, test console du joueur en attente |
+| 3.15 | Budgets ROM/RAM/VRAM, PAL et NTSC, test console du joueur, release | 5 h | ✅ ROM v3.0 livrée (étiquette v3.0, out/mega-president-v3.0.bin) ; test console du joueur le 16/11, retours en V3.1 si besoin |
 
 ## V4 — 5 électorats et budget détaillé (≈ 50 h)
 
@@ -241,7 +241,7 @@ Spécification validée : [SPEC_V4.md](SPEC_V4.md). Développement sur la branch
 | 4.09 | Budget en cohabitation (plan du PM, ligne défense) et amendement du Sénat (lecture définitive à 1 CP), comptes rendus | 2,5 h | ✅ |
 | 4.10 | Textes : noms des lignes, aide C, phrases du journal (reconduction, Sénat, budget du PM), phrases de l'écran électorats | 1,5 h | ✅ |
 | 4.11 | Écran budget détaillé (6 lignes × 5 crans, préréglage, aperçu en direct, vote / 49.3, cohabitation, Sénat) | 5 h |  |
-| 4.12 | Sauvegarde : `GAMESAVE_VERSION` = 2, message à l'écran titre, test de non-régression | 1 h | 🔄 partie simulation faite, message de l'écran titre à faire |
+| 4.12 | Sauvegarde : `GAMESAVE_VERSION` = 2, message à l'écran titre, test de non-régression | 1 h | 🔄 |
 | 4.13 | Joueurs automatiques : préréglages, variantes optimiseur, extrême et austère, statistiques par électorat | 3 h | ✅ |
 | 4.14 | Équilibrage V4 (cibles de §3.4, 20 et 60 tours) | 5 h | ✅ |
 | 4.15 | Documentation : REGLES (V4), SIM, DECISIONS, BACKLOG | 1,5 h |  |
@@ -249,6 +249,9 @@ Spécification validée : [SPEC_V4.md](SPEC_V4.md). Développement sur la branch
 | 4.17 | Jalon : test console du joueur, étiquette git, release | 1 h |  |
 | 4.18 | **Voix « charabia » des personnages** (à la Sims) : **2 syllabes très accueillantes** par réplique, timbre propre à chaque personnage, lèvres synchronisées puis seuls les yeux bougent ; **voix désactivables** dans les options (choix du joueur, 15/11 ; détail DA : REVUE_DA_V3 § 7) | 10 h | |
 | 4.20 | Écran événement : réplique du ministre concerné (gueule + charabia) à la phase « Votre décision » (avis DA, REVUE_DA_V3 § 8.3) | 3 h | |
+| 4.21 | **Passe humour** de tous les textes par l'agent `vannes` (journaux, événements, lois, accroches, répliques, aides) : curseur « au-delà de Ron Gilbert, en frisant Radio Nova, avec subtilité » | 4 h | 🔄 |
+| 4.22 | Relecture DA de l'écran Options (huissier, icône cartouche, mise en page, lignes grisées) et retouches | 1,5 h | 🔄 |
+| 4.23 | Logo dessiné de l'écran titre (voir A_VALIDER.md : en attente de l'accord du joueur) | 3 h | |
 
 ## Questions ouvertes
 
