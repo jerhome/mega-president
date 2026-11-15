@@ -143,3 +143,43 @@ Captures : `referendum_choix.png`, `referendum_confirmation.png`.
 - Campagne : la légende des signes est supprimée, et le neutre s'écrit « = » avec une jauge bleue.
 - Événement : nom et fonction du ministre sur une ligne propre. La bouche ne parle que sur une réplique attribuée, jamais sur l'écho du journal.
 - Confirmation du référendum : le nom de la loi devient le titre de la boîte.
+
+---
+
+## Vérification après retouches
+
+16/11, directeur artistique. Branche `v4-dev` en d7fffa3 (fusion des retouches de md-dev). Les ROM de démonstration ont été compilées dans un worktree à part. Les captures ont été faites dans BlastEm en PAL, puis recadrées en 320 × 224 et rangées dans `docs/captures/v4/`.
+
+### Verdicts
+
+| Écran | Capture | Verdict |
+|---|---|---|
+| Budget, Relance, ligne 1 active (DEMO=3) | `budget_relance.png`, `budget_actions.png` | ✅ Les lignes vides en y 16 et le séparateur en y 22 font respirer l'écran. La grille d'opinion tient sur une ligne, ◀ +1 ▶ reste dans la barre et le médaillon est dégagé. « Impôts sociétés » ne touche plus la jauge. |
+| Budget, Sénat (DEMO=17) | `budget_senat.png`, `budget_senat_actions.png` | ✅ Le préréglage n'a plus de flèches et s'affiche en DIM. « ✗ Amendement » est en y 21 en phase d'action. Le bas est dense, mais lisible. |
+| Budget, cohabitation (DEMO=16) | `budget_cohab.png`, `budget_cohab_aide.png` | ❌ Une correction (C-1). L'écran principal est bon, et l'accord « Matignon impose » est corrigé. |
+| Tableau de bord (DEMO=12) | `tableau_de_bord.png` | ✅ Les cellules Pop, Moy et Cad sont en x 3, 11 et 19, alignées sur « Popularité ». |
+| Électorats (DEMO=18) | `electorats.png` | ✅ La jauge part de x 22 et le libellé ne la touche plus. |
+| Campagne (DEMO=1) | `campagne_securite.png`, `campagne_ecologie.png` | ✅ La légende a disparu, et la description occupe y 23-24 pour les 5 thèmes. Le neutre s'affiche « = » en DIM avec une jauge bleue. |
+| Référendum, choix (DEMO=4) | `referendum_choix.png` | ✅ « OUI attendu » est en HIGHLIGHT, avec des lignes vides en y 12 et y 18. **Écart accepté** : l'aide tient sur 5 lignes (y 19-23), et y 24-25 restent libres. |
+| Référendum, confirmation et résultat | `referendum_confirmation.png`, `referendum_resultat.png` | ✅ La loi est le titre de la boîte, et les 5 électorats restent visibles. Le bas du cadre de « Jeunes » (y 17) affleure la boîte sans être coupé. |
+| Événement, « Votre décision » (DEMO=15, DEMO=13) | `evenement_decision_marches.png`, `evenement_decision_greve.png` | ✅ avec une retouche non bloquante (C-3). « Fontaine, ministre de l'Économie » et la réplique se lisent bien, et la bouche ne lit plus le journal. **Écart accepté** : il n'y a pas de séparateur en y 21. L'icône du journal et l'en-tête DIM suffisent à séparer les blocs, et l'écho garde ses 3 lignes (11 échos sur 153 en ont besoin). |
+| Bilan des deux mandats (DEMO=9) | `bilan_deux_mandats.png` | ❌ Une correction (C-2). **Écart accepté** : « Piliers » est remonté en y 18 contre le bloc Économie. L'en-tête HIGHLIGHT et son filet suffisent, et y 25 respire avant le pied de page. |
+| Saisie des initiales (DEMO=9 puis A) | `scores_initiales.png` | ✅ avec une retouche P3 (C-4). |
+| Destitution (DEMO=6) | `destitution.png` | ✅ La démo affiche « Au moins une chambre vous sauve ». La variante « Deux chambres : vous êtes destitué » n'a pas pu être obtenue. Elle fait 34 colonnes depuis x 3 (fin en x 36) et utilise le même style ALERT que les chiffres du Sénat, donc elle tient. |
+| Options, huissier (DEMO=11) | `options_musique.png`, `options_voix.png` | ✅ Tisserand, huissier, figure sous le médaillon. Les aides tiennent sur une ligne et la réplique de l'huissier est centrée entre guillemets (la plus longue finit en x 38). |
+
+### Corrections restantes pour md-dev
+
+- **C-1 (bloquant, 5 min) : titre de l'aide « Défense » en cohabitation.** Dans `scr_budget.c`, `open_help`, la boîte a pour titre `TXT_COHAB_DEFENSE`, un texte de 2 lignes qui s'affiche coupé (« Défense : seule ligne qui vous reste, »). Remplacez-le par `title = bl_long(line_of_focus());` (« Sécurité et défense »), comme pour les autres lignes, et gardez `TXT_COHAB_DEFENSE_AIDE` comme corps du texte. `TXT_COHAB_DEFENSE` n'est plus utilisé : retirez-le de `textes_v4.md` puis régénérez. Critère : sur DEMO=16 avec C, le titre tient sur une ligne.
+- **C-2 (bloquant, 5 min) : la chute du bilan des deux mandats est coupée.** `TXT_FIN_SECOND_MANDAT`, recoupé sur 27 colonnes, demande 5 lignes, mais `ui_text_flow(1, 4, 27, 4, …)` s'arrête à « Place aux Mémoires, en », et la vanne « en trois tomes. » est perdue. Dans `scr_end.c` (branche `two`), passez à **5 lignes** (y 4-8) : le séparateur de y 9 sépare ensuite les blocs. Ne touchez pas au cas de la destitution, qui ne dépasse pas 4 lignes. Critère : sur DEMO=9, la phrase se termine par « tomes. ».
+- **C-3 (non bloquant, 20 min) : nommer le Premier ministre.** Pour le PM, la ligne y 20 affiche « Matignon » seul, puis la réplique commence par « Matignon vous suit… ». La consigne P1-2 demandait le nom de famille du PM en place, avec « Matignon » pour fonction : « Deschamps, Matignon », ou le nom du PM de cohabitation via `TXT_COHAB_PM_*_NOM`. Utilisez le `surname()` mis en commun. La réplique peut rester telle quelle, puisque le PM qui parle de lui-même à la troisième personne colle au personnage.
+- **C-4 (P3, 30 min) : points parasites sur la saisie des initiales.** Sur la ligne y 27, sous le cadre, une ligne de pixels de couleur apparaît après l'écran de fin. Ce sont probablement des tuiles d'un plan qui n'a pas été effacé. Elle est discrète mais reste dans les 224 lignes visibles en PAL. Effacez la ligne 27 (ou le plan concerné) dans `scores_init`.
+- **P3, cosmétique** : la boîte de confirmation du référendum (y 18-26) laisse voir le bas du cadre de la fenêtre en y 27, ce qui donne un double filet. C'est acceptable en l'état.
+
+Hors du champ de la DA : le pied de page de l'écran titre affiche encore « v3.0 » (`src/version.h`) sur la branche V4.
+
+### Décisions DA (à reporter dans DECISIONS.md)
+- Événement : pas de séparateur entre la réplique du ministre et le journal. L'icône et l'en-tête DIM du *Quotidien* suffisent.
+- Référendum : l'aide peut occuper 5 lignes (y 19-23).
+- Bilan des deux mandats : « Piliers » en y 18, collé au bloc Économie, est accepté.
+- Aide de la Défense en cohabitation : le titre est le libellé long de la ligne (« Sécurité et défense »).

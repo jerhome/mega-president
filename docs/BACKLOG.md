@@ -253,17 +253,17 @@ Spécification validée : [SPEC_V4.md](SPEC_V4.md). Développement sur la branch
 | 4.22 | Relecture DA de l'écran Options (huissier, icône cartouche, mise en page, lignes grisées) et retouches | 1,5 h | ✅ |
 | 4.23 | ⏭️ Reporté — logo dessiné de l'écran titre : le joueur valide l'écran titre actuel (15/11) | 3 h |
 
-## V4.1 — Relecture et factorisation du code (≈ 18 h)
+## V4.1 — Relecture et factorisation du code (≈ 30 h)
 
 Après le test console de la V4. Relecture par un développeur de haut niveau (Opus), sans assembleur : C uniquement, `src/sim/` reste portable. Aucun changement de règle ni de contenu.
 
 | # | Tâche | Durée | État |
 |---|---|---|---|
 | 4.1.01 | Captures de référence de chaque écran (ROM de démo) et comparaison automatique avant/après | 2 h | ✅ (outils prêts ; références à générer une fois les écrans stabilisés) |
-| 4.1.02 | Audit du code (Opus) : doublons, sûreté mémoire, pile, PAL/NTSC, sauvegarde, cas limites ; rapport classé | 3 h | 🔄 |
-| 4.1.03 | Factorisation de l'interface : widgets communs (cadres, listes, jauges, boucle de saisie, boîtes) | 6 h |  |
-| 4.1.04 | Corrections de l'audit : robustesse, bornes, simplifications | 3 h |  |
-| 4.1.05 | Mesures (temps des écrans, ROM, RAM) et optimisations simples en C si un écran rame | 2 h |  |
+| 4.1.02 | Audit du code (Opus) : doublons, sûreté mémoire, pile, PAL/NTSC, sauvegarde, cas limites ; rapport classé | 3 h | ✅ ([AUDIT_V4_1.md](AUDIT_V4_1.md)) |
+| 4.1.03 | Factorisation (AUDIT_V4_1 § 6, lots U1-U3 et E1-E6) : StrBuf, widgets, kit d'écran, migration des écrans | 14 h |  |
+| 4.1.04 | Corrections de l'audit (lots R1-R3, U4) : C1, C2, vignettes manquantes, sauvegarde, horloges, code mort | 7 h |  |
+| 4.1.05 | Mesures (lot R4) et optimisations simples en C (P3, P4, R6 `-Os`) si un écran rame | 2,5 h |  |
 | 4.1.06 | Contrôle qualité, comparaison des captures, test console, release | 2 h |  |
 
 ## Questions ouvertes
