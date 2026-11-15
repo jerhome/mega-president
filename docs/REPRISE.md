@@ -19,6 +19,9 @@
   - P7 hémicycle (src/ui/ui_hemi.c seulement, objectif < 16 ms, 0 image perdue).
 - À suivre : E1-E6 (après U3) (écrans), fin de R2 (`budget_seen`, instantané du rapport), R3 horloges + correctif C2 du charabia (U2 fait : peut démarrer), U4 nettoyage, R6 `-Os`. C1 (`q[48]` de scr_event.c) dans E5.
 
+## Notifications
+- Dès qu'une version est prête à pousser : PushNotification au joueur, puis attendre son accord (mémoire feedback-notif-push).
+
 ## Pièges
 - Les worktrees d'agents partent de `main` (V3) : chaque brief commence par `git merge v4.1-dev` (ou v4-dev).
 - BlastEm : tuer par PID ; `tools/shots.sh` capture sur un Xvfb privé (fiable).
