@@ -9,6 +9,7 @@
 #include "content/content_world.h"
 #include "content/content_texts.h"
 #include "ui/screen.h"
+#include "version.h"
 #include "ui/ui_art.h"
 #include "screens/evt_art.h"
 
@@ -204,8 +205,11 @@ static void title_draw(void)
             ui_text_center(0, 19, UI_COLS, "Élysée, cinq ans de pouvoir", UI_STYLE_HIGHLIGHT);
             ui_text_center(0, 20, UI_COLS, "« À vous de gouverner ! »", UI_STYLE_TEXT);
             if (has_save)
-                ui_text_center(0, 24, UI_COLS, "B : continuer la partie", UI_STYLE_TEXT);
-            ui_text_center(0, 25, UI_COLS, "C : meilleurs scores", UI_STYLE_TEXT);
+                ui_text_center(0, 23, UI_COLS, "B : continuer la partie", UI_STYLE_TEXT);
+            ui_text_center(0, 24, UI_COLS, "C : meilleurs scores", UI_STYLE_TEXT);
+            // Pied de page (PAL2 est prise par l'illustration : pas de style DIM ici).
+            ui_text_center(0, 25, UI_COLS, GAME_AUTHOR " - " GAME_VERSION, UI_STYLE_TEXT);
+            ui_text_center(0, 26, UI_COLS, "Développé avec Claude", UI_STYLE_TEXT);
         } else {
             if (phase == PH_ORIENT || phase == PH_PM)
                 ui_window(PORTRAIT_X - 1, PORTRAIT_Y - 1, 9, 9);

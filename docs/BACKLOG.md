@@ -176,6 +176,8 @@ Retour du joueur sur Evergenesis : bonne impression générale, premier mandat n
 | 2.1.4 | **Une musique par année du mandat** (5 thèmes, 5 ambiances), pour varier et donner une signature sonore à chaque année | 4 h | ✅ |
 | 2.1.5 | **Voix digitalisée « For sure ! »** sur l'écran d'accueil uniquement, au démarrage : voix de synthèse générée par nos soins (pas d'imitation d'une vraie voix), échantillon PCM joué par le Z80. Vérifier qu'elle se mélange bien à la musique PSG et contrôler la taille de la ROM | 2 h | ✅ |
 | 2.1.6 | Autres remarques du joueur | — | ✅ Aucune autre remarque (15/11) |
+| 2.1.8 | **Voix « For sure ! » inaudible** (2e retour console) : le pilote Z80 était déchargé dès la 1re image, car `SND_PCM_isPlaying()` répondait « arrêté » avant que le Z80 ait pris la commande. Attente fondée sur la durée de l'échantillon (`getTick`), vérifiée sur le canal DAC de BlastEm (`-y`) | 0,5 h | ✅ |
+| 2.1.9 | **Pied de page de l'écran d'accueil** : nom de l'auteur, version (`src/version.h`) et « Développé avec Claude ». À garder dans les versions suivantes | 0,5 h | ✅ |
 | 2.1.7 | Nouveau test sur console : deux mandats complets | 1 h | |
 
 ## Questions ouvertes
