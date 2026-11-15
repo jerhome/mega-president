@@ -1,5 +1,6 @@
 // Mega Président — écran titre et choix de l'orientation (tâche 6.3).
 #include "audio/music.h"
+#include "audio/voice.h"
 #include <genesis.h>
 #include "screens.h"
 #include "ui/ui.h"
@@ -39,6 +40,7 @@ static u32 seed_acc;
 static u32 press_ms;
 static u8 has_save;
 static UiList list;
+static bool music_wait;   // musique différée jusqu'à la fin de la voix
 
 // Groupe du parti du joueur selon l'orientation (contrat §4).
 static u8 group_of(u8 orient)
@@ -54,7 +56,10 @@ static void title_init(void)
     seed_acc = 0;
     press_ms = 0;
     has_save = game_has_save();
-    music_play(MUS_TITLE);
+    // Voix « For sure ! » une seule fois par allumage ; la musique suit juste après.
+    music_wait = voice_play_intro_once();
+    if (!music_wait)
+        music_play(MUS_TITLE);
     duree_items[0] = txt[TXT_DUREE_20];
     duree_items[1] = txt[TXT_DUREE_60];
     pm_items[PM_TECHNOCRATE] = txt[TXT_PM_TECHNOCRATE_NOM];
@@ -122,6 +127,11 @@ static void choose(void)
 static void title_update(void)
 {
     u16 p = input_pressed();
+
+    if (music_wait && !voice_busy()) {
+        music_wait = FALSE;
+        music_play(MUS_TITLE);
+    }
 
     // Entropie : compteur d'images et durée d'attente.
     seed_acc = seed_acc * 1103515245UL + 12345UL + input_frame_ticks() + input_held();

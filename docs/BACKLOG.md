@@ -164,6 +164,12 @@ La V0 n'est pas un prototype jetable : c'est une première tranche de la V1. Les
 | 2.14 | ✅ Équilibrage V2 | 5 h | 71/55/25 % ; 60 tours à ±5 points ; passif < 10 % |
 | 2.15 | ✅ Mode 60 tours (reporté de la V1, tâche 1.01) | 3 h |
 
+### V2.1
+
+| # | Tâche | Durée |
+|---|---|---|
+| 2.1.5 | ✅ Voix digitalisée « For sure ! » à l'accueil, une fois par allumage (Z80 PCM, tools/voice/) | 2 h |
+
 ## Questions ouvertes
 
 - ~~Licence du dépôt public~~ → MIT.
