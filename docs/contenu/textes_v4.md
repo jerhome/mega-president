@@ -291,10 +291,6 @@ Matignon impose la rigueur : moins de
 dépenses, moins d'impôts pour les
 entreprises. Ça ruissellera, promis.
 
-## TXT_COHAB_DEFENSE
-Défense : seule ligne qui vous reste,
-à un cran près de celle de Matignon.
-
 ## TXT_COHAB_DEFENSE_AIDE
 Domaine réservé : sécurité et défense.
 Un cran de plus ou de moins, sans CP.

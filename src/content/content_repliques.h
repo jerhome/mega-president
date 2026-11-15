@@ -12,8 +12,8 @@
 // Humeurs, dans l'ordre du fichier de textes.
 enum { REP_CONTENT, REP_NEUTRE, REP_GENE, REP_FURIEUX, REP_HUMEURS };
 
-extern const char *const rep_nom[REP_PERSOS];        // nom de famille (PM : « Matignon »)
-extern const char *const rep_fonction[REP_PERSOS];   // PM : chaîne vide
+extern const char *const rep_nom[REP_PERSOS];        // nom de famille (PM : remplacé par le nom du PM en place)
+extern const char *const rep_fonction[REP_PERSOS];   // PM : « Matignon »
 extern const char *const rep_texte[REP_PERSOS][REP_HUMEURS];
 
 #endif

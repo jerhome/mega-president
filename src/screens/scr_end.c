@@ -147,7 +147,7 @@ static void end_draw(void)
     }
 
     if (two)
-        ui_text_flow(1, 4, 27, 4, txt[TXT_FIN_SECOND_MANDAT], UI_STYLE_TEXT);
+        ui_text_flow(1, 4, 27, 5, txt[TXT_FIN_SECOND_MANDAT], UI_STYLE_TEXT);
     else {
         ui_text_wrap(1, 4, 27, 2, "Battu(e) à la présidentielle.", UI_STYLE_ALERT);
         draw_defeat();

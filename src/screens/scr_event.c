@@ -86,6 +86,17 @@ static u8 persona(void)
                ? (u8)(g - GUEULE_MIN_ECONOMIE) : REP_PM;
 }
 
+// Nom de famille du Premier ministre en place (celui de la cohabitation compris).
+static const char *pm_surname(void)
+{
+    const Country *c = &g_game.country;
+    const char *n = sim_cohabitation(c) ? txt[TXT_COHAB_PM_GAUCHE_NOM + sim_cohab_camp(c)]
+                                        : txt[TXT_PM_TECHNOCRATE_NOM + 2 * c->pm];
+    const char *sp = n;
+    while (*sp && *sp != ' ') sp++;
+    return *sp ? sp + 1 : n;
+}
+
 static const char *replique(void)
 {
     Expr m = evt_mood(evt, chosen);
@@ -147,7 +158,7 @@ static void event_draw(void)
         ui_text_draw_n(3, 19, evt_choice[evt][chosen], 36, 0, UI_STYLE_HIGHLIGHT);
         {
             u8 p = persona();
-            u16 x = 3 + ui_text_draw_n(3, 20, rep_nom[p], 36, 0, UI_STYLE_HIGHLIGHT);
+            u16 x = 3 + ui_text_draw_n(3, 20, p == REP_PM ? pm_surname() : rep_nom[p], 36, 0, UI_STYLE_HIGHLIGHT);
             if (rep_fonction[p][0]) {
                 x += ui_text_draw(x, 20, ", ", UI_STYLE_DIM);
                 ui_text_draw_n(x, 20, rep_fonction[p], 38 - x, 0, UI_STYLE_DIM);

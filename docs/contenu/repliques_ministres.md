@@ -93,8 +93,6 @@ TXT_COHAB_PLAN_CENTRE
   "Matignon impose un budget de\nreconduction : rien ne bouge et tout\nle monde râle. L'équilibre, quoi."
 TXT_COHAB_PLAN_DROITE
   "Matignon impose la rigueur : moins de\ndépenses, moins d'impôts pour les\nentreprises. Ça ruissellera, promis."
-TXT_COHAB_DEFENSE
-  "Défense : seule ligne qui vous reste,\nà un cran près de celle de Matignon."
 ```
 
 Les trois `TXT_COHAB_PM_*_DESC` (Elle/Il, accordés au nom) et
