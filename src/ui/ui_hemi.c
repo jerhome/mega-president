@@ -40,50 +40,73 @@ static void set_group(u8 g, bool on)
     group_on[g] = on;
     pal[2 + 2 * g] = on ? lit[g][0] : off[g][0];
     pal[3 + 2 * g] = on ? lit[g][1] : off[g][1];
-    PAL_setColors(HEMI_PAL * 16 + 2 + 2 * g, &pal[2 + 2 * g], 2, CPU);
+    PAL_setColors(HEMI_PAL * 16 + 2 + 2 * g, &pal[2 + 2 * g], 2, DMA_QUEUE);
 }
 
-void ui_hemi_draw(u16 x, u16 y, UiHemiChamber ch, const u16 *seats)
+// Génération des tuiles : préparée dans ui_hemi_draw (table rang -> groupe), puis
+// étalée sur plusieurs images par ui_hemi_update (CHUNK tuiles par image, envoyées
+// par DMA_QUEUE depuis un tampon statique).
+#define CHUNK 24
+#define TBL_MAX 577
+static u8 tbl[TBL_MAX];        // rang de siège -> couleur du fond (reflet = fond - 1)
+static u32 chunk[CHUNK * 8];
+static UiHemiChamber b_ch;
+static u16 b_x, b_y, b_base, b_i, b_n;   // b_i >= b_n : génération terminée
+
+static void build_chunk(void)
 {
-    const u16 *txy = ch == UI_HEMI_SENATE ? hemi_senat_tile_xy : hemi_an_tile_xy;
-    const u16 *first = ch == UI_HEMI_SENATE ? hemi_senat_first : hemi_an_first;
-    const u32 *pix = ch == UI_HEMI_SENATE ? hemi_senat_pix : hemi_an_pix;
-    const u16 *dfirst = ch == UI_HEMI_SENATE ? hemi_senat_dfirst : hemi_an_dfirst;
-    const u8 *deco = ch == UI_HEMI_SENATE ? hemi_senat_deco : hemi_an_deco;
-    u16 ntiles = ch == UI_HEMI_SENATE ? HEMI_SENAT_TILES : HEMI_AN_TILES;
-    u16 total = ch == UI_HEMI_SENATE ? HEMI_SENAT_SEATS : HEMI_AN_SEATS;
-    u16 bound[UI_HEMI_GROUPS];   // rang de fin (exclu) de chaque groupe
-    u16 acc = 0, base, i, j;
-    u32 rows[8];
+    const u16 *txy = b_ch == UI_HEMI_SENATE ? hemi_senat_tile_xy : hemi_an_tile_xy;
+    const u16 *first = b_ch == UI_HEMI_SENATE ? hemi_senat_first : hemi_an_first;
+    const u32 *pix = b_ch == UI_HEMI_SENATE ? hemi_senat_pix : hemi_an_pix;
+    const u16 *dfirst = b_ch == UI_HEMI_SENATE ? hemi_senat_dfirst : hemi_an_dfirst;
+    const u8 *deco = b_ch == UI_HEMI_SENATE ? hemi_senat_deco : hemi_an_deco;
+    u16 i0 = b_i, n = b_n - b_i, k, j;
 
-    for (i = 0; i < UI_HEMI_GROUPS; i++) {
-        acc += seats[i];
-        bound[i] = acc > total ? total : acc;
-    }
-    bound[UI_HEMI_GROUPS - 1] = total;
-
-    base = ui_art_reserve(0x100 + ch, ntiles);
-    if (base == 0)
-        return;
-    for (i = 0; i < ntiles; i++) {
-        for (j = 0; j < 8; j++)
-            rows[j] = 0;
+    if (n > CHUNK)
+        n = CHUNK;
+    memsetU32(chunk, 0, n * 8);
+    for (k = 0; k < n; k++) {
+        u16 i = i0 + k;
+        u32 *rows = chunk + k * 8;
         for (j = dfirst[i]; j < dfirst[i + 1]; j++) {
             u8 p = deco[2 * j], c = deco[2 * j + 1];
             rows[p >> 3] |= (u32)c << ((7 - (p & 7)) * 4);
         }
         for (j = first[i]; j < first[i + 1]; j++) {
             u32 v = pix[j];
-            u16 rank = (u16)(v >> 7);
-            u8 g = 0, c;
-            while (g < UI_HEMI_GROUPS - 1 && rank >= bound[g])
-                g++;
-            c = (u8)(2 + 2 * g + ((v & 0x40) ? 0 : 1));
+            u8 c = (u8)(tbl[(u16)(v >> 7)] - ((v >> 6) & 1));
             rows[(v >> 3) & 7] |= (u32)c << ((7 - (v & 7)) * 4);
         }
-        VDP_loadTileData(rows, base + i, 1, CPU);
-        VDP_setTileMapXY(BG_A, UI_ATTR(HEMI_PAL, base + i), x + (txy[i] & 31), y + (txy[i] >> 5));
+        VDP_setTileMapXY(BG_A, UI_ATTR(HEMI_PAL, b_base + i), b_x + (txy[i] & 31), b_y + (txy[i] >> 5));
     }
+    VDP_loadTileData(chunk, b_base + i0, n, DMA_QUEUE);
+    b_i = i0 + n;
+}
+
+void ui_hemi_draw(u16 x, u16 y, UiHemiChamber ch, const u16 *seats)
+{
+    u16 ntiles = ch == UI_HEMI_SENATE ? HEMI_SENAT_TILES : HEMI_AN_TILES;
+    u16 total = ch == UI_HEMI_SENATE ? HEMI_SENAT_SEATS : HEMI_AN_SEATS;
+    u16 acc = 0, start = 0, base, i;
+
+    b_n = b_i = 0;
+    base = ui_art_reserve(0x100 + ch, ntiles);
+    if (base == 0)
+        return;
+    // Table rang -> groupe : un seul parcours cumulatif (plus de recherche par pixel).
+    for (i = 0; i < UI_HEMI_GROUPS; i++) {
+        u8 c = (u8)(3 + 2 * i);
+        acc += seats[i];
+        if (acc > total || i == UI_HEMI_GROUPS - 1)
+            acc = total;
+        for (; start < acc; start++)
+            tbl[start] = c;
+    }
+    b_ch = ch;
+    b_x = x;
+    b_y = y;
+    b_base = base;
+    b_n = ntiles;
 
     pal[0] = 0;
     pal[1] = 0;
@@ -125,8 +148,10 @@ void ui_hemi_focus(u8 group)
 
 bool ui_hemi_update(void)
 {
-    if (!shown || PAL_isDoingFade())
-        return anim_next >= UI_HEMI_GROUPS;
+    if (b_i < b_n)
+        build_chunk();
+    if (!shown || PAL_isDoingFade() || b_i < b_n)
+        return anim_next >= UI_HEMI_GROUPS && b_i >= b_n;
     if (anim_next < UI_HEMI_GROUPS) {
         anim_ticks += input_frame_ticks();
         if (anim_ticks >= STEP_TICKS) {
@@ -145,8 +170,8 @@ bool ui_hemi_update(void)
             if (focus_ticks < BLINK_TICKS) {
                 set_group(focus, group_on[focus]);
             } else {
-                u16 c = RGB(7, 7, 7);
-                PAL_setColors(HEMI_PAL * 16 + 2 + 2 * focus, &c, 1, CPU);
+                static u16 c = RGB(7, 7, 7);
+                PAL_setColors(HEMI_PAL * 16 + 2 + 2 * focus, &c, 1, DMA_QUEUE);
             }
         }
     }
