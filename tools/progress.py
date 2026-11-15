@@ -22,7 +22,7 @@ HOURS = re.compile(r"\|\s*(\d+(?:,\d+)?)\s*h\s*\|")
 def parse(text):
     versions, cur, epic = {}, None, None
     for line in text.splitlines():
-        m = re.match(r"^## (V\d+)\b(.*)", line)
+        m = re.match(r"^## (V\d+(?:\.\d+)?)\b(.*)", line)
         if m:
             cur = m.group(1)
             versions[cur] = {"title": line[3:].strip(), "epics": {}}
