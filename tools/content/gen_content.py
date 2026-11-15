@@ -21,6 +21,9 @@ MAX_TEXT_LINES, MAX_JOURNAL_LINES, MAX_LAW_NAME = 6, 2, 24
 MAX_LAW_DESC_LINES = 3
 MAX_CHOICES = 3
 MAX_EFFECTS = 6
+VIGNETTES = ["greve", "canicule", "inondation", "scandale", "sommet", "bourse", "sante", "pollution",
+             "securite", "numerique", "education", "energie", "agriculture", "industrie", "fete"]
+# Même ordre que ART_EVT_* (src/ui/ui_art.h) : verrouillé par _Static_assert dans evt_art.c.
 MAX_EVENTS = 64   # EVENT_CAPACITY (events_done sur 64 bits)
 
 WEIGHTS = {"faible": 1, "moyenne": 2, "forte": 4}
@@ -159,7 +162,7 @@ def parse_event_file(fname, events):
             if name.startswith("EVT_"):
                 if any(e["id"] == name for e in events):
                     err(where, "événement en double : %s" % name)
-                cur = {"id": name, "line": n, "file": fname, "cond": None, "prob": None, "title": None,
+                cur = {"id": name, "line": n, "file": fname, "cond": None, "prob": None, "title": None, "vignette": None,
                        "text": [], "choices": [], "seen": set()}
                 events.append(cur)
             continue
@@ -171,7 +174,7 @@ def parse_event_file(fname, events):
         m = split_field(line)
         indented = line.startswith("  ")
         key = m.group(2) if m else None
-        if m and not indented and key in ("Condition", "Probabilité", "Titre", "Texte"):
+        if m and not indented and key in ("Condition", "Probabilité", "Titre", "Vignette", "Texte"):
             cur["seen"].add(key)
             val = m.group(3).strip()
             choice = None
@@ -184,6 +187,10 @@ def parse_event_file(fname, events):
                 cur["prob"] = val
             elif key == "Titre":
                 cur["title"] = val
+            elif key == "Vignette":
+                if val not in VIGNETTES:
+                    err(where, "vignette inconnue : « %s » (%s)" % (val, ", ".join(VIGNETTES)))
+                cur["vignette"] = val
             else:
                 cur["text"] = [val] if val else []
                 field = (cur, "text")
@@ -210,7 +217,7 @@ def parse_event_file(fname, events):
 def validate_events(events):
     for e in events:
         w = "%s (%s:%d)" % (e["id"], e["file"], e["line"])
-        for k in ("Condition", "Probabilité", "Titre", "Texte"):
+        for k in ("Condition", "Probabilité", "Titre", "Vignette", "Texte"):
             if k not in e["seen"]:
                 err(w, "champ manquant : %s" % k)
         if e["title"] is not None and (not e["title"] or len(e["title"]) > MAX_TITLE):
@@ -505,13 +512,19 @@ def gen_events(events):
     h = ["#ifndef CONTENT_EVENTS_H\n#define CONTENT_EVENTS_H\n\n" + HEADER,
          '#include "sim/events.h"\n\n',
          "// Textes UTF-8 indexés par EVT_*. Les lignes sont séparées par '\\n'.\n",
+         "// Vignettes : même ordre que ART_EVT_GREVE.. (src/ui/ui_art.h).\n",
+         "enum {\n" + "".join("    VIG_%s,\n" % v.upper() for v in VIGNETTES) + "    VIG_COUNT\n};\n\n",
+         "extern const u8 evt_vignette[EVT_COUNT];\n",
          "extern const char *const evt_title[EVT_COUNT];\n",
          "extern const char *const evt_text[EVT_COUNT];                       // 6 lignes max\n",
          "extern const char *const evt_choice[EVT_COUNT][EVENT_MAX_CHOICES];   // libellés\n",
          "extern const char *const evt_journal[EVT_COUNT][EVENT_MAX_CHOICES];  // 2 lignes max\n\n",
          "#endif\n"]
     write("src/content/content_events.h", "".join(h))
-    c = [HEADER, '#include "content/content_events.h"\n\n', "const char *const evt_title[EVT_COUNT] = {\n"]
+    c = [HEADER, '#include "content/content_events.h"\n\n', "const u8 evt_vignette[EVT_COUNT] = {\n"]
+    for e in events:
+        c.append("    VIG_%s, // %s\n" % (e["vignette"].upper(), e["id"]))
+    c.append("};\n\nconst char *const evt_title[EVT_COUNT] = {\n")
     for e in events:
         c.append("    %s, // %s\n" % (cstr(e["title"]), e["id"]))
     c.append("};\n\nconst char *const evt_text[EVT_COUNT] = {\n")

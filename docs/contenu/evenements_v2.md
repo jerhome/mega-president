@@ -7,6 +7,7 @@ Tendance globale : neutre.
 Condition : SCANDALE > 40
 Probabilité : forte
 Titre : L'affaire rebondit
+Vignette : scandale
 Texte : Chaîne Info 24 diffuse de nouvelles
   écoutes : les affaires en cours
   touchent désormais le premier cercle.
@@ -29,6 +30,7 @@ Choix 3 : Dénoncer un complot
 Condition : DEFIANCE > 45
 Probabilité : moyenne
 Titre : Le Sénat fait front
+Vignette : scandale
 Texte : Le Sénat rejette trois textes en une
   semaine et convoque le gouvernement
   pour une audition fleuve. Le
@@ -51,6 +53,7 @@ Choix 3 : Annoncer une réforme du Sénat
 Condition : DETTE > 110
 Probabilité : moyenne
 Titre : Rapport de la Cour des comptes
+Vignette : bourse
 Texte : La Cour des comptes publie un rapport
   sévère : dérapage de la dette,
   dépenses mal évaluées, niches
@@ -73,6 +76,7 @@ Choix 3 : Contester le rapport
 Condition : CROISSANCE < 1
 Probabilité : moyenne
 Titre : Dégradation de la note
+Vignette : bourse
 Texte : Une agence de notation abaisse la
   note de la France d'un cran. Les
   taux d'emprunt montent, les
@@ -96,6 +100,7 @@ Choix 3 : Un plan de relance ciblé
 Condition : aucune
 Probabilité : moyenne
 Titre : Sommet sur le climat
+Vignette : pollution
 Texte : Le sommet mondial sur le climat
   s'ouvre à Lyon. Cent quatre-vingt
   délégations, des discours émus et
@@ -118,6 +123,7 @@ Choix 3 : Défendre l'industrie d'abord
 Condition : aucune
 Probabilité : faible
 Titre : Prix Nobel français
+Vignette : fete
 Texte : Un chercheur français reçoit le prix
   Nobel de physique. Il remercie son
   équipe, son laboratoire et ses
@@ -140,6 +146,7 @@ Choix 3 : Rappeler les coupes passées
 Condition : aucune
 Probabilité : moyenne
 Titre : Urgences pédiatriques
+Vignette : sante
 Texte : Une bronchiolite sature les
   urgences pédiatriques. Des enfants
   sont transférés à 200 kilomètres.
@@ -162,6 +169,7 @@ Choix 3 : Miser sur la télémédecine
 Condition : aucune
 Probabilité : moyenne
 Titre : Fermeture de classes rurales
+Vignette : agriculture
 Texte : Quarante classes rurales vont fermer
   à la rentrée. Les maires nouent
   leur écharpe aux grilles des écoles,
@@ -184,6 +192,7 @@ Choix 3 : Un plan pour les territoires
 Condition : aucune
 Probabilité : faible
 Titre : Festival menacé
+Vignette : fete
 Texte : Le grand festival d'été d'Avignon-les-
   Pins perd la moitié de sa subvention
   locale. Les intermittents menacent
@@ -206,6 +215,7 @@ Choix 3 : Lancer un fonds pour la culture
 Condition : aucune
 Probabilité : moyenne
 Titre : Mouvement lycéen
+Vignette : education
 Texte : Les lycéens bloquent leurs
   établissements contre une réforme du
   baccalauréat. Poubelles en barricade,
@@ -228,6 +238,7 @@ Choix 3 : Faire évacuer les lycées
 Condition : aucune
 Probabilité : moyenne
 Titre : Contrôleurs aériens en grève
+Vignette : greve
 Texte : Les contrôleurs aériens cessent le
   travail un vendredi de départs en
   vacances. Les aéroports ressemblent
@@ -250,6 +261,7 @@ Choix 3 : Laisser pourrir le conflit
 Condition : POPULARITE < 40
 Probabilité : moyenne
 Titre : Pour une VIe République
+Vignette : sommet
 Texte : Des cortèges réclament une VIe
   République : référendum d'initiative
   citoyenne, fin du 49.3, mandat non
@@ -272,6 +284,7 @@ Choix 3 : Refuser tout changement
 Condition : SCANDALE > 25
 Probabilité : moyenne
 Titre : Scandale d'espionnage
+Vignette : securite
 Texte : Des journalistes révèlent qu'un
   service de renseignement a surveillé
   des opposants et des reporters.
@@ -294,6 +307,7 @@ Choix 3 : Réformer le renseignement
 Condition : aucune
 Probabilité : faible
 Titre : Panne géante d'électricité
+Vignette : energie
 Texte : Un incident sur le réseau plonge le
   quart du pays dans le noir. Métros
   bloqués, feux éteints, ascenseurs
@@ -316,6 +330,7 @@ Choix 3 : Miser sur la sobriété
 Condition : aucune
 Probabilité : faible
 Titre : Marée noire
+Vignette : pollution
 Texte : Un pétrolier s'échoue au large de la
   Bretagne. Les plages se couvrent de
   mazout, les bénévoles de gants jaunes.

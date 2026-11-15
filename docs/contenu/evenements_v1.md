@@ -7,6 +7,7 @@ Tendance globale : à peu près neutre.
 Condition : aucune
 Probabilité : moyenne
 Titre : Sécheresse historique
+Vignette : canicule
 Texte : Les nappes phréatiques sont à sec
   dès le mois de juin. Des communes
   sont ravitaillées par camion-citerne
@@ -29,6 +30,7 @@ Choix 3 : Lancer un plan de l'eau
 Condition : aucune
 Probabilité : faible
 Titre : Classement international
+Vignette : education
 Texte : Une étude internationale classe les
   élèves français en dessous de la
   moyenne en mathématiques. Le Quotidien
@@ -51,6 +53,7 @@ Choix 3 : Dénoncer un classement biaisé
 Condition : aucune
 Probabilité : faible
 Titre : Grand événement sportif
+Vignette : fete
 Texte : La France accueille une compétition
   internationale. Stades neufs, hôtels
   complets et métros bondés. Les
@@ -73,6 +76,7 @@ Choix 3 : Réserver des places aux écoles
 Condition : SCANDALE > 25
 Probabilité : moyenne
 Titre : Magistrats en colère
+Vignette : scandale
 Texte : Une tribune de mille magistrats
   dénonce le manque de moyens et les
   pressions politiques. Les audiences
@@ -96,6 +100,7 @@ Choix 3 : Promettre une loi de moyens
 Condition : aucune
 Probabilité : moyenne
 Titre : Colère en outre-mer
+Vignette : greve
 Texte : Un archipel d'outre-mer proteste
   contre le prix de la vie : un litre
   de lait coûte le double de Paris.
@@ -118,6 +123,7 @@ Choix 3 : Une mission d'enquête
 Condition : aucune
 Probabilité : forte
 Titre : Le panier s'allège
+Vignette : bourse
 Texte : Les prix de l'alimentation ont
   bondi de 12 % en un an. Les pâtes
   deviennent un produit de luxe, et
@@ -140,6 +146,7 @@ Choix 3 : Faire confiance aux filières
 Condition : aucune
 Probabilité : faible
 Titre : Laïcité à l'école
+Vignette : education
 Texte : Un incident dans un collège relance
   le débat sur la laïcité. Les
   enseignants demandent des règles
@@ -162,6 +169,7 @@ Choix 3 : Réunir un comité de sages
 Condition : DEFIANCE > 40
 Probabilité : moyenne
 Titre : Rumeur virale
+Vignette : numerique
 Texte : Un faux document circule en ligne :
   il attribue au gouvernement un projet
   de taxe sur les animaux de compagnie.
@@ -184,6 +192,7 @@ Choix 3 : Ignorer, la rumeur passera
 Condition : aucune
 Probabilité : faible
 Titre : Incendie industriel
+Vignette : industrie
 Texte : Un entrepôt de produits chimiques
   prend feu près d'un quartier habité.
   Un nuage noir traverse la ville.
@@ -206,6 +215,7 @@ Choix 3 : Indemniser et rassurer
 Condition : POPULARITE < 45
 Probabilité : moyenne
 Titre : La jeunesse se mobilise
+Vignette : education
 Texte : Des milliers de lycéens et d'étudiants
   défilent pour le climat, l'emploi et
   le logement. Slogans soignés,

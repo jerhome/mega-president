@@ -245,7 +245,8 @@ void game_turn_label(u8 turn, char *buf)
 //   10 élection perdue au 1er tour, 11 titre, 12 tableau de bord,
 //   13 / 15 événement (texte long / court), 14 meilleurs scores remplis,
 //   16 budget en cohabitation, 17 budget amendé par le Sénat, 18 électorats,
-//   19 titre avec sauvegarde d'une ancienne version.
+//   19 titre avec sauvegarde d'une ancienne version,
+//   20 / 21 événements V4 EHPAD / marche pour le climat.
 static void dbg_opinion(Country *c, s16 v)
 {
     for (u8 e = 0; e < ELEC_COUNT; e++)
@@ -285,6 +286,10 @@ void game_debug_jump(void)
         break;
     case 13: case 15:   // événement au texte long (13) ou court (15)
         g_game.event = (k == 13) ? 1 : 2;
+        screen_change(SCREEN_EVENT);
+        break;
+    case 20: case 21:   // événements V4 (vignette 4.1 R1) : EHPAD (20), marche pour le climat (21)
+        g_game.event = (k == 20) ? EVT_EHPAD : EVT_MARCHE_CLIMAT;
         screen_change(SCREEN_EVENT);
         break;
     case 14:   // meilleurs scores, 10 noms (remplis par scr_scores.c)

@@ -1,65 +1,47 @@
-// Mega Président — table des vignettes d'événements (45 événements, 15 vignettes).
+// Mega Président — vignette et ministre de chaque événement.
 #include "screens/evt_art.h"
 #include "ui/ui.h"
 #include "sim/events_ids.h"
 #include "sim/events.h"
+#include "content/content_events.h"
+#include "content/content_repliques.h"
 #include "sim/cohab.h"
 #include "game/game.h"
 
-static const u8 evt_art_table[EVT_COUNT] = {
-    [EVT_CANICULE] = ART_EVT_CANICULE,
-    [EVT_GREVE_GENERALE] = ART_EVT_GREVE,
-    [EVT_CRISE_FINANCIERE] = ART_EVT_BOURSE,
-    [EVT_SOMMET] = ART_EVT_SOMMET,
-    [EVT_EMEUTES] = ART_EVT_SECURITE,
-    [EVT_USINE_FERMEE] = ART_EVT_INDUSTRIE,
-    [EVT_DECOUVERTE] = ART_EVT_FETE,
-    [EVT_POLLUTION] = ART_EVT_POLLUTION,
-    [EVT_DINER_LOBBY] = ART_EVT_SCANDALE,
-    [EVT_COMMUNICATION] = ART_EVT_SCANDALE,
-    [EVT_EPIDEMIE] = ART_EVT_SANTE,
-    [EVT_GREVE_ENSEIGNANTS] = ART_EVT_EDUCATION,
-    [EVT_CRISE_LAIT] = ART_EVT_AGRICULTURE,
-    [EVT_CYBERATTAQUE] = ART_EVT_NUMERIQUE,
-    [EVT_GEANT_NUMERIQUE] = ART_EVT_NUMERIQUE,
-    [EVT_LOGEMENT] = ART_EVT_GREVE,
-    [EVT_GREVE_RAIL] = ART_EVT_GREVE,
-    [EVT_AFFAIRE_JUDICIAIRE] = ART_EVT_SCANDALE,
-    [EVT_CRISE_DIPLO] = ART_EVT_SOMMET,
-    [EVT_PRIX_ELECTRICITE] = ART_EVT_ENERGIE,
-    [EVT_SECHERESSE] = ART_EVT_CANICULE,
-    [EVT_CLASSEMENT_EDU] = ART_EVT_EDUCATION,
-    [EVT_EVENEMENT_SPORTIF] = ART_EVT_FETE,
-    [EVT_JUSTICE_MOYENS] = ART_EVT_SCANDALE,
-    [EVT_OUTREMER] = ART_EVT_GREVE,
-    [EVT_INFLATION_ALIM] = ART_EVT_BOURSE,
-    [EVT_LAICITE_ECOLE] = ART_EVT_EDUCATION,
-    [EVT_DESINFORMATION] = ART_EVT_NUMERIQUE,
-    [EVT_ACCIDENT_INDUSTRIEL] = ART_EVT_INDUSTRIE,
-    [EVT_VOTE_JEUNES] = ART_EVT_EDUCATION,
-    [EVT_AFFAIRE_SUITE] = ART_EVT_SCANDALE,
-    [EVT_SENAT_FRONDEUR] = ART_EVT_SCANDALE,
-    [EVT_COUR_COMPTES] = ART_EVT_BOURSE,
-    [EVT_AGENCE_NOTATION] = ART_EVT_BOURSE,
-    [EVT_SOMMET_CLIMAT] = ART_EVT_POLLUTION,
-    [EVT_NOBEL] = ART_EVT_FETE,
-    [EVT_URGENCES_PEDIATRIQUES] = ART_EVT_SANTE,
-    [EVT_CLASSES_RURALES] = ART_EVT_AGRICULTURE,
-    [EVT_FESTIVAL] = ART_EVT_FETE,
-    [EVT_LYCEENS] = ART_EVT_EDUCATION,
-    [EVT_GREVE_AIGUILLEURS] = ART_EVT_GREVE,
-    [EVT_REFORME_INSTITUTIONS] = ART_EVT_SOMMET,
-    [EVT_ESPIONNAGE] = ART_EVT_SECURITE,
-    [EVT_PANNE_ELECTRIQUE] = ART_EVT_ENERGIE,
-    [EVT_MAREE_NOIRE] = ART_EVT_POLLUTION,
-};
+// La vignette vient de docs/contenu (champ « Vignette »), émise par gen_content.py
+// dans evt_vignette[] ; VIG_* suit l'ordre de ART_EVT_GREVE...
+#define VIG_CHECK(v, a) _Static_assert((v) == (a) - ART_FIRST_EVENT, "VIG_* et ART_EVT_* désalignés")
+VIG_CHECK(VIG_GREVE, ART_EVT_GREVE);
+VIG_CHECK(VIG_CANICULE, ART_EVT_CANICULE);
+VIG_CHECK(VIG_INONDATION, ART_EVT_INONDATION);
+VIG_CHECK(VIG_SCANDALE, ART_EVT_SCANDALE);
+VIG_CHECK(VIG_SOMMET, ART_EVT_SOMMET);
+VIG_CHECK(VIG_BOURSE, ART_EVT_BOURSE);
+VIG_CHECK(VIG_SANTE, ART_EVT_SANTE);
+VIG_CHECK(VIG_POLLUTION, ART_EVT_POLLUTION);
+VIG_CHECK(VIG_SECURITE, ART_EVT_SECURITE);
+VIG_CHECK(VIG_NUMERIQUE, ART_EVT_NUMERIQUE);
+VIG_CHECK(VIG_EDUCATION, ART_EVT_EDUCATION);
+VIG_CHECK(VIG_ENERGIE, ART_EVT_ENERGIE);
+VIG_CHECK(VIG_AGRICULTURE, ART_EVT_AGRICULTURE);
+VIG_CHECK(VIG_INDUSTRIE, ART_EVT_INDUSTRIE);
+VIG_CHECK(VIG_FETE, ART_EVT_FETE);
+_Static_assert(VIG_COUNT == ART_EVENT_COUNT, "nombre de vignettes");
+
+_Static_assert(REP_PM == GUEULE_MIN_AFFAIRES_ETR - GUEULE_MIN_ECONOMIE + 1, "content_repliques.h : 6 ministres puis le PM");
+
+// Ordre des ministres supposé par evt_min_index et evt_mood (cases 0 à 5).
+_Static_assert(GUEULE_MIN_INTERIEUR - GUEULE_MIN_ECONOMIE == 1, "ordre des ministres");
+_Static_assert(GUEULE_MIN_SANTE - GUEULE_MIN_ECONOMIE == 2, "ordre des ministres");
+_Static_assert(GUEULE_MIN_EDUCATION - GUEULE_MIN_ECONOMIE == 3, "ordre des ministres");
+_Static_assert(GUEULE_MIN_ECOLOGIE - GUEULE_MIN_ECONOMIE == 4, "ordre des ministres");
+_Static_assert(GUEULE_MIN_AFFAIRES_ETR - GUEULE_MIN_ECONOMIE == 5, "ordre des ministres");
 
 ArtId evt_art(u8 evt)
 {
-    // Entrée absente (0 = ART_TITLE) ou hors table : vignette générique.
-    if (evt >= EVT_COUNT || evt_art_table[evt] < ART_FIRST_EVENT)
+    if (evt >= EVT_COUNT || evt_vignette[evt] >= VIG_COUNT)
         return ART_EVT_SCANDALE;
-    return (ArtId)evt_art_table[evt];
+    return (ArtId)(ART_FIRST_EVENT + evt_vignette[evt]);
 }
 
 void art_reset(void)
