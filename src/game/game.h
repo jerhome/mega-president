@@ -78,4 +78,8 @@ u16  game_score_first(void);     // score du 1er mandat (tableau 1)
 u16  game_score_total(void);     // score cumulé sur 10 ans (tableau 2), 0 si un seul mandat
 u16  game_end_year(void);        // année civile de fin de partie
 
+#ifdef MP_DEBUG_SCREEN
+void game_debug_jump(void);   // ROM de démonstration seulement
+#endif
+
 #endif

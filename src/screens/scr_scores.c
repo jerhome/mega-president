@@ -42,6 +42,16 @@ static void scores_init(void)
 {
     u8 t;
     sram_scores_load(&board);
+#if defined(MP_DEBUG_SCREEN) && MP_DEBUG_SCREEN == 14
+    // ROM de démonstration : tableau rempli (en RAM seulement, jamais sauvegardé).
+    for (t = 0; t < SCORES_COUNT; t++) {
+        ScoreEntry *e = &board.t[0].e[t];
+        e->ini[0] = (char)('A' + t); e->ini[1] = 'W'; e->ini[2] = 'M';
+        e->score = (u16)(1980 - t * 137);
+        e->orient = (u8)(t % ORIENT_COUNT);
+        e->year = (u16)(2032 + (t % 2) * 5);
+    }
+#endif
     hilite[0] = hilite[1] = -1;
     tab = SCORE_TABLE_MANDAT;
     phase = PH_VIEW;
@@ -141,14 +151,20 @@ static void draw_view(void)
     u16 x;
 
     ui_window_title(0, 0, 40, 28, "Meilleurs scores", FALSE);
-    ui_text_center(0, 4, UI_COLS, tab_names[tab], UI_STYLE_HIGHLIGHT);
-    ui_text_draw(2, 4, "←", UI_STYLE_DIM);
-    ui_text_draw(37, 4, "→", UI_STYLE_DIM);
-    ui_text_draw(4, 5, "Rang  Nom   Score  Orient.   Année", UI_STYLE_DIM);
+    // Rangs aux rangées 5 à 23 (une sur deux), pied de page en 26 : rien ne se chevauche.
+    ui_text_center(0, 3, UI_COLS, tab_names[tab], UI_STYLE_HIGHLIGHT);
+    ui_text_draw(2, 3, "←", UI_STYLE_DIM);
+    ui_text_draw(37, 3, "→", UI_STYLE_DIM);
+    // En-têtes calés sur le début (ou la fin, pour les nombres) de chaque colonne.
+    ui_text_right(6, 4, "Rang", UI_STYLE_DIM);
+    ui_text_draw(11, 4, "Nom", UI_STYLE_DIM);
+    ui_text_right(22, 4, "Score", UI_STYLE_DIM);
+    ui_text_draw(24, 4, "Orient.", UI_STYLE_DIM);
+    ui_text_draw(33, 4, "Année", UI_STYLE_DIM);
 
     for (i = 0; i < SCORES_COUNT; i++) {
         const ScoreEntry *e = &t->e[i];
-        u16 y = 7 + i * 2;
+        u16 y = 5 + i * 2;
         UiStyle st = (hilite[tab] == (s8)i) ? UI_STYLE_HIGHLIGHT : UI_STYLE_TEXT;
 
         ui_format_number(buf, i + 1, 0);

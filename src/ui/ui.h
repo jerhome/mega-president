@@ -129,6 +129,10 @@ u16 ui_text_len(const char *str);
 // saut ; espace insécable U+00A0 / U+202F respectée). Écrit au plus max_lines
 // lignes et renvoie le nombre de lignes écrites.
 u16 ui_text_wrap(u16 x, u16 y, u16 w, u16 max_lines, const char *str, UiStyle style);
+// Comme ui_text_wrap, mais les '\n' du texte (mis en page pour 38 colonnes)
+// comptent comme des espaces : pour un texte remis en page sur une colonne
+// étroite (à côté d'un portrait).
+u16 ui_text_flow(u16 x, u16 y, u16 w, u16 max_lines, const char *str, UiStyle style);
 // Nombre de lignes qu'occuperait le texte sur w colonnes (sans rien écrire).
 u16 ui_text_count_lines(u16 w, const char *str);
 // Écrit UNE ligne (coupée sur w colonnes) et renvoie la suite du texte, ou NULL

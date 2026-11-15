@@ -27,12 +27,6 @@ void ui_map_set_colorblind(bool on)
     colorblind = on;
 }
 
-// Interpolation d'une composante 0..7 entre a et b, t sur 0..128.
-static u16 lerp7(u16 a, u16 b, s32 t)
-{
-    return (u16)((s32)a + (((s32)b - (s32)a) * t + 64) / 128);
-}
-
 static void apply(u8 region, u16 color)
 {
     PAL_setColor(MAP_PAL_BASE + 1 + region, color);
@@ -75,7 +69,7 @@ void ui_map_clear_region(u8 region)
 void ui_map_set_region_level(u8 region, s16 value, s16 min, s16 max)
 {
     s32 t;   // 0..255
-    u16 r, g, color;
+    u16 color;
 
     if (region >= REGION_COUNT)
         return;
@@ -86,32 +80,15 @@ void ui_map_set_region_level(u8 region, s16 value, s16 min, s16 max)
     else
         t = ((s32)(value - min) * 255) / (max - min);
 
+    // Trois teintes franches, celles que nomme la légende de la carte (revue DA P1-5) :
+    // rouge (7,2,1) sous la moyenne, jaune (7,6,1) autour, vert (1,6,1) au-dessus.
     // Valeurs 0..7 par composante (VDP : 3 bits, 0x0BGR avec bits pairs).
-    if (colorblind) {
-        // Rampe divergente lisible par tous : orangé (7,2,0) -> ivoire (7,7,5) -> bleu (1,3,7)
-        u16 b;
-        if (t < 128) {
-            r = 7;
-            g = lerp7(2, 7, t);
-            b = lerp7(0, 5, t);
-        } else {
-            s32 u = ((t - 128) * 128) / 127;
-            r = lerp7(7, 1, u);
-            g = lerp7(7, 3, u);
-            b = lerp7(5, 7, u);
-        }
-        color = (u16)((r << 1) | (g << 5) | (b << 9));
-    } else {
-        // rouge (7,1,1) -> jaune (7,6,1) -> vert (1,6,1)
-        if (t < 128) {
-            r = 7;
-            g = 1 + (u16)((t * 5) / 128);
-        } else {
-            g = 6;
-            r = 7 - (u16)(((t - 128) * 6) / 127);
-        }
-        color = (u16)((r << 1) | (g << 5) | (1 << 9));
-    }
+    if (t < 85)
+        color = colorblind ? UI_MAP_LOW_CB : UI_MAP_LOW;
+    else if (t > 170)
+        color = colorblind ? UI_MAP_HIGH_CB : UI_MAP_HIGH;
+    else
+        color = UI_MAP_MID;
     region_color[region] = color;
     if (region != selected)
         apply(region, color);
