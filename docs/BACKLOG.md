@@ -205,7 +205,7 @@ On passe tout son temps dans les écrans : ils doivent être superbes. Personnag
 | 3.07 | Générateur de portraits V3 : grand format, 15 couleurs, éclairage, caricature marquée, 2-3 expressions | 8 h | ✅ Validé par le joueur (15/11) |
 | 3.08 | Gueules des 14 personnages existants (présidents, PM, cohabitation, candidats) | 12 h | ✅ |
 | 3.09 | Nouvelles gueules : ministres, chefs de parti, journalistes, président du Sénat… | 12 h | ✅ |
-| 3.16 | Écran de démarrage redessiné dans le style décalé des gueules (bon enfant, drôle, pointe d'humour de gauche) | 3 h | 🔄 |
+| 3.16 | Écran de démarrage redessiné dans le style décalé des gueules (bon enfant, drôle, pointe d'humour de gauche) | 3 h | ✅ |
 | 3.17 | Vignettes d'événement et décors redessinés dans le style V3 ; hémicycle dynamique (sièges colorés, vote en direct) ; passe sur tout ce qui fait « cheap » | 8 h | ✅ |
 | 3.18 | **Visages animés sans son**, à la Dune : clignements irréguliers, regard qui s'échappe, changement d'expression masqué par un clignement, bouche qui bouge sur les répliques ; une seule gueule animée à la fois (consigne DA, REVUE_DA_V3 § 6) | 8 h | ✅ relu par la DA (4 retouches) |
 | 3.19 | **Écran Options** soigné (avancé de la V4 à la demande du joueur) : son, affichage, jeu, données ; accès depuis le titre et le menu de jeu ; réglages mémorisés en SRAM. Conception DA (docs/SPEC_OPTIONS.md), puis md-dev ; le réglage des voix servira en V4 | 9,5 h | ✅ (relecture DA à faire) |
@@ -222,7 +222,7 @@ On passe tout son temps dans les écrans : ils doivent être superbes. Personnag
 ### Jalon V3
 | # | Tâche | Durée | État |
 |---|---|---|---|
-| 3.15 | Budgets ROM/RAM/VRAM, PAL et NTSC, test console du joueur, release | 5 h | 🔄 contrôle visuel des 8 écrans non capturés en cours |
+| 3.15 | Budgets ROM/RAM/VRAM, PAL et NTSC, test console du joueur, release | 5 h | 🔄 ROM v3.0 prête, test console du joueur en attente |
 
 ## V4 — 5 électorats et budget détaillé (≈ 50 h)
 
