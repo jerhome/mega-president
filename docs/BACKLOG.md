@@ -13,7 +13,7 @@
 | **V1 — Jeu complet simplifié** | Règles V1 complètes, 2 mandats, destitution, high scores, bruitages | ≈ 50 h | ≈ 88 h |
 | **V2 — Version enrichie** | Carte des régions, pixel art, musique, institutions complètes | ≈ 70 h, plus la réalisation du pixel art | ≈ 160 h |
 | **V3 — Le beau** | Interface moderne, gueules mémorables, musique FM « chill » par écran | ≈ 117 h | ≈ 290 h |
-| **V4** | 5 électorats (ex-2.09), budget détaillé (ex-2.10) | à estimer | |
+| **V4** | 5 électorats (ex-2.09), budget détaillé (ex-2.10) — voir [SPEC_V4.md](SPEC_V4.md) | ≈ 44 h | ≈ 335 h |
 
 La V0 n'est pas un prototype jetable : c'est une première tranche de la V1. Les durées détaillées ci-dessous sont plus précises que l'estimation donnée oralement (≈ 30 h pour la V0 et ≈ 80 h pour la V1).
 
