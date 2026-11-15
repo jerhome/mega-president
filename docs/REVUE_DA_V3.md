@@ -1,0 +1,273 @@
+# Revue artistique de la V3 (directeur artistique, 15/11)
+
+Revue complète avant le test sur la console du joueur : 30 gueules (4 expressions), écran titre,
+15 vignettes, 3 décors, 12 écrans capturés (`design_v3/v31/`, captures de 21 h 30, à jour à
+une demi-heure près ; `v32/` était vide). Les captures plus anciennes (`design_v3/v3_*.png`) ont
+encore les portraits V2 : elles servent d'historique et ne sont pas notées une par une.
+
+**Priorités** : P1 = visible et gênant ; P2 = finition ; P3 = idée.
+**Verdict** : ✅ montrable, ❌ à corriger avant de le montrer.
+
+## Bilan
+
+| Lot | Avant la revue | Après mes retouches |
+|---|---|---|
+| Gueules (30) | 24 ✅ / 6 ❌ | **30 ✅** (6 corrigées dans `tools/art/`) |
+| Vignettes (15) | 14 ✅ / 1 ❌ | **15 ✅** (« FERMÉ » corrigé) |
+| Décors (3) et illustration du titre | 4 ✅ | 4 ✅ |
+| Écrans (12) | 5 ✅ / 7 ❌ | 5 ✅ / 7 ❌ (corrections dans `src/` : voir « Consignes pour md-dev ») |
+| **Total (61)** | **47 ✅ / 14 ❌** | **54 ✅ / 7 ❌** |
+
+Avis général : les gueules sont la grande réussite de la V3. Elles ont un vrai style, sculpté et
+éclairé, avec des silhouettes qu'on reconnaît. Les vignettes ont le même ton et l'interface est
+cohérente : bleu nuit, or, ivoire. Pour l'instant, les défauts qui comptent sont des défauts de mise en page :
+débordements, pied de page collé, médaillon mal dimensionné. Il manque aussi un vrai logo sur l'écran titre.
+
+Planche avant/après de mes retouches : `scratchpad/gueules_v3/planche_retouches_DA.png`.
+
+## 1. Gueules
+
+| # | Personnage | Verdict | Remarques |
+|---|---|---|---|
+| 1 | Antoine Verdier (pres_gauche) | ✅ | Tignasse en nuage et barbe de prof : la gueule-étendard du jeu. |
+| 2 | Laurent Delmas (pres_centre) | ❌ → ✅ | **P1, corrigé** : le visage était fade, sans gag (« gendre idéal » générique) alors que c'est un président qu'on voit tout le temps. Ajouts : sourire de pub plus large, **éclat de dentifrice** en étoile sur les dents (neutre et content), fossettes. |
+| 3 | Henri de Saint-Aubin (pres_droite) | ✅ | P2 : le « cou de taureau » ne se lit pas, et le visage est plat entre les tempes. On pourrait élargir le cou de 4 px et creuser les orbites. |
+| 4 | Pierre Delaunay (pm_technocrate) | ✅ | Le badge sur la veste est une trouvaille. |
+| 5 | Marianne Deschamps (pm_rassembleur) | ✅ | Le rouge aux joues de « furieux » fonctionne bien. |
+| 6 | Julien Lestrade (pm_reformateur) | ✅ | La goutte de sueur est présente aussi en neutre : c'est voulu (le réformateur toujours sous pression), je garde ce gag. |
+| 7 | Sophie Carrel (cohab_gauche) | ❌ → ✅ | **P1, corrigé** : on la prenait pour un homme. De plus, avec ses cheveux gris en pointes, son foulard rouge et sa veste kaki, elle était la jumelle d'Étienne Marchal. Ajouts : créoles rouges, rouge à lèvres (neutre), cils. |
+| 8 | Bernard Lacombe (cohab_centre) | ✅ | |
+| 9 | Philippe de Montclar (cohab_droite) | ✅ | Le monocle et la fine moustache : parfait. |
+| 10 | Camille Rouvière (cand_gauche_radicale) | ✅ | P2 : en neutre, la bouche ouverte en « O » avec les dents fait « ahurie » plutôt que « tribun ». Il faudrait une bouche serrée avec un coin relevé. |
+| 11 | Noémie Vasseur (cand_ecolo) | ✅ | P2 : les taches de rousseur font des points sombres qu'on prend pour de la saleté. Une teinte plus claire ou moins de points. |
+| 12 | Hélène Marchetti (cand_centre) | ✅ | P3 : c'est la plus sage du casting. Une idée de gag : l'écharpe tricolore qui pend jusqu'au sol, ou un sourire « photo officielle » figé. |
+| 13 | Édouard Valmont (cand_droite) | ✅ | Le double menton étagé est très drôle. |
+| 14 | Gaspard Lenoir (cand_nationaliste) | ❌ → ✅ | **P1, corrigé** : son teint brun-orangé le faisait passer pour un personnage non blanc, alors que c'est le candidat d'extrême droite. La lecture était fausse et gênante, et il ressemblait à Nadia Benali. Il a maintenant le teint rougeaud d'un orateur de meeting et des yeux bleu glacier. La mâchoire de boxeur ne change pas. |
+| 15 | Gilles Fontaine (min_economie) | ✅ | Le hibou aux grandes oreilles. |
+| 16 | Régis Fermont (min_interieur) | ✅ | Le bouledogue en parpaing. |
+| 17 | Odile Varenne (min_sante) | ❌ → ✅ | **P1, corrigé** : le stylo violet traversait la joue et ressemblait à un **coquard**. Il est maintenant planté dans le chignon, hors du visage, et les cheveux sont gris-blond au lieu de kaki. P2 restant : avec les lunettes relevées, la masse des cheveux se lit encore comme un casque d'aviateur. Il faudrait dégager le front de 3 px et ajouter deux mèches qui retombent. |
+| 18 | Étienne Marchal (min_education) | ❌ → ✅ | **P1, corrigé** : c'était le jumeau de Carrel (voir 7). Il porte maintenant une veste en velours côtelé marron, plus « prof ». P2 : le stylo rouge à l'oreille, fin d'un pixel, se lit comme une entaille. Il faudrait l'épaissir à 2 px avec un capuchon blanc. |
+| 19 | Maëlle Kervella (min_ecologie) | ✅ | |
+| 20 | Louis de Valcourt (min_affaires_etr) | ✅ | |
+| 21 | Yannick Brossard (chef_ugr) | ✅ | Le bûcheron à la chemise à carreaux : excellent. |
+| 22 | Claire Aubert (chef_rsv) | ✅ | P2 : en neutre, un point rouge au coin gauche de la bouche fait penser à une blessure. |
+| 23 | Gérard Poulain (chef_mjm) | ✅ | P2 : les favoris blonds se lisent comme un casque audio. Il faudrait les foncer et leur donner une texture de poils. |
+| 24 | Aymeric Dubreuil-Castagnac (chef_utl) | ❌ → ✅ | **P1, corrigé** : il ressemblait trop à Saint-Aubin, du même parti (cheveux gris, costume marine, cravate rouge). Il porte maintenant un costume anthracite à fines rayures et une cravate prune. |
+| 25 | Maxime Corbeau (chef_lso) | ✅ | |
+| 26 | Karine Lopez (jour_chaine_info) | ✅ | Une des meilleures : le brushing et le bandeau « 24 ». |
+| 27 | Hubert Lenglet (jour_editorialiste) | ✅ | P2 : le modelé est pâteux (taches d'ombre au hasard sur les joues) et la bouche est illisible en neutre. Il faudrait des seuils d'ombre plus francs et un trait de bouche plus marqué. |
+| 28 | Gaston Mirebeau (senat_president) | ✅ | |
+| 29 | Nadia Benali (synd_ust) | ✅ | |
+| 30 | Charles-Henri Dumoulin (patron_upe) | ✅ | P3 : en furieux, la ligne rose sur le cou est sans objet. |
+
+Cohérence du casting : après les retouches, aucune paire n'est plus confondable de loin.
+Vigilance : il y a beaucoup de crânes chauves avec une couronne grise (Lacombe, Delaunay,
+Poulain, Lenglet, Brossard). Leurs silhouettes restent distinctes (moustache, lunettes,
+favoris, barbe), mais une future gueule ne devra plus être chauve.
+
+## 2. Écran titre (illustration)
+
+✅ Composition lisible et drôle : l'Élysée, le président qui salue, la pancarte « UST SMIC + »,
+le « GRR ! », le CRS, le « 1 M€ » et la journaliste.
+- P2 : le corps du président est une cloche brune sans bras gauche ni épaules : il faut marquer les épaules et la veste.
+- P2 : les figurants ont la peau jaune ou verdâtre (« 1 M€ », « GRR ! »). Elle ne va pas avec les gueules : il faudrait prendre la peau rose de la palette.
+- P2 : on ne sait pas qui dit « 1 M€ ». La queue de la bulle doit pointer vers le patron.
+- Le vrai problème vient de l'écran, pas de l'illustration : voir § 4 (logo, drapeau caché).
+
+## 3. Vignettes et décors
+
+| Vignette | Verdict | Remarques |
+|---|---|---|
+| Grève | ✅ | |
+| Canicule | ✅ | P2 : « 45° » rouge sur orange, peu contrasté. |
+| Inondation | ✅ | Le canard et le parapluie : très bien. |
+| Scandale | ✅ | P2 : le « E » de SCANDALE touche le bord. |
+| Sommet | ✅ | |
+| Bourse | ✅ | |
+| Santé | ✅ | |
+| Pollution | ✅ | P2 : l'usine brune à gauche n'est qu'une masse : il faut des cheminées et un toit en dents de scie. |
+| Sécurité | ✅ | |
+| Numérique | ✅ | P2 : on ne sait pas ce qu'est l'objet doré sous l'écran. |
+| Éducation | ✅ | Accent de « ZÉRO » ajouté. P3 : « ZÉRO VU ! » est obscur ; « 0/20 ! » serait plus clair. |
+| Énergie | ✅ | |
+| Agriculture | ✅ | |
+| Industrie | ❌ → ✅ | **P1, corrigé** : on lisait « FERME » (une ferme !) au lieu de « FERMÉ ». La police 3×5 n'a pas d'accent : je l'ai dessiné à la main. |
+| Fête | ✅ | |
+| Décor hémicycle | ✅ | |
+| Décor urne | ✅ | |
+| Bandeau du Quotidien | ✅ | P2 : « EDITION SPECIALE » sans accents (police 3×5). |
+
+## 4. Écrans (captures `v31/`)
+
+| Écran | Verdict | Corrections |
+|---|---|---|
+| Titre | ❌ | **P1** : le pied de page affiche « v2.1 » sur la V3. **P1** : le titre est un simple bandeau de texte en police d'interface, trop petit pour un écran titre, et il cache le haut du drapeau et le pigeon. Il faut un vrai logo (`A_VALIDER.md`). P2 : le bandeau en rangée 0 est en zone d'overscan. |
+| Titre, choix du PM | ❌ | **P1** : sous le médaillon, un morceau de la journaliste (manche blanche) dépasse en rangée 14 et fait penser à une erreur d'affichage. |
+| Tableau de bord | ✅ | P2 : « International » colle à sa jauge. P2 : la ligne « Pop 49,2 Moy 54,1 Ais 49,7 » est cryptique (« Ais »). P2 : les piliers n'ont pas de « % » alors que les autres valeurs en ont. |
+| Journal (bilan) | ✅ | P2 : la moitié basse est vide (rangées 17 à 24). P2 : la flèche « → » entre les deux popularités se lit mal en rouge. |
+| Événement | ❌ | **P1** : la vignette en paysage (8×6 tuiles) est posée dans un médaillon portrait de 10×12 : un grand cadre noir à moitié vide. Le cadre doit épouser l'image, comme le veut la charte. |
+| Proposer une loi | ✅ | Propre et hiérarchisé. |
+| Assemblée | ❌ | **P1** : « Union pour la Tradition Libérale » déborde jusqu'au cadre. **P1** : « Bloc 420 absolue » ne veut rien dire : le libellé est coupé en deux autour du nombre. P2 : « B retour » est collé à la dernière ligne. |
+| Vote (hémicycle) | ✅ | P2 : « Effets dans 2 trimestres. » colle au pied de page. |
+| Carte | ❌ | **P1** : la légende dit « Jaune / Rouge / Vert », mais la carte montre du jaune et de l'orange : on ne sait pas ce que veut dire l'orange. P2 : la région choisie ne se voit pas (pas de contour). P2 : pixel parasite jaunâtre en (120, 219). |
+| Aide | ✅ | P3 : « high scores » → « meilleurs scores ». |
+| Intervention télévisée | ❌ | **P1** : retours à la ligne erratiques (« Français ont » seul sur sa ligne, « audiences » isolé) alors que 27 colonnes sont disponibles. |
+| Meilleurs scores | ❌ | **P1** : la ligne « 10 » chevauche le pied de page. P2 : les en-têtes « Score / Orient. » ne sont pas alignés sur les colonnes. |
+
+Captures anciennes (`v3_*.png`), à revérifier sur la ROM actuelle : le journal de l'année 3
+affichait « 0,0 → 50,7 » pour tous les piliers (valeurs précédentes à zéro ?). Sur la page
+Sénat, tout le paragraphe est en rouge : seul le titre devrait l'être (P2).
+
+**Marges de sécurité TV.** Tous les écrans posent leur bandeau en rangée 0 (y 0-23) et leur
+pied de page en rangée 25 ou 26. Sur un téléviseur PAL à tube, les 8 à 12 premières lignes sont
+souvent mangées. Je ne déplace rien à l'aveugle : **pendant le test console, le joueur vérifie que le texte du bandeau du haut et le pied de page sont entiers.**
+S'ils sont rognés, on descend tous les écrans d'une rangée (consigne P2-6).
+
+## 5. Consignes pour md-dev
+
+Pour chaque consigne : les fichiers, ce qu'on attend et le critère d'acceptation. Toutes se vérifient
+par une capture BlastEm (PAL et NTSC) relue par le DA.
+
+**P1-1. Version au pied du titre**. Fichier : `src/version.h`.
+Passer `GAME_VERSION` à « v3.0 » au moment de la livraison de la V3.
+Critère : le pied de page de l'écran titre affiche « v3.0 ».
+
+**P1-2. Choix du PM sur l'écran titre** (`src/screens/scr_title.c`).
+Placer le médaillon du PM en x 29-38, y 3-14 : son bas doit toucher le bord supérieur du
+panneau, sans rangée d'illustration visible en dessous. Si une rangée reste visible, effacer
+le rectangle d'illustration x 28-39 sur la rangée concernée (`ui_art_erase` ou tuiles de fond).
+Critère : aucun morceau de personnage coupé autour du médaillon.
+
+**P1-3. Médaillon des vignettes d'événement** (`src/screens/scr_event.c`, `src/screens/evt_art.c`).
+La vignette fait 8×6 tuiles. Utiliser `ui_medallion(x, y, 8, 6)` posé sur la vignette elle-même
+(x 30-37). Centrer verticalement sur le bloc de texte (y 5-10 pour un texte de 6 à 8 lignes),
+au lieu du cadre de gueule 10×12. Le texte garde ses 27 colonnes, ou passe à 28.
+Critère : aucun fond noir dans le cadre, et le filet doré touche l'image sur les 4 côtés.
+
+**P1-4. Assemblée** (`src/screens/scr_game.c`, vue Assemblée).
+- Une ligne par groupe : `★/♦`, sigle en or, sièges, jauge de relation, valeur. Le nom complet
+  du groupe ne s'affiche que pour la ligne sélectionnée, ou en note sous la liste (≤ 36 colonnes).
+- En haut, à gauche « Majorité absolue » et sa valeur en dessous ; à droite « Bloc présidentiel »
+  et sa valeur en dessous. Pas de libellé coupé autour d'un nombre.
+- Une rangée vide avant le pied de page « B : retour ».
+Critère : aucun caractère en colonne 39, et chaque libellé se lit d'un bloc.
+
+**P1-5. Carte** (`src/screens/scr_map.c`, `src/ui/ui_map.c`).
+La légende doit nommer exactement les couleurs affichées. Si l'orange représente la popularité
+faible, écrire « Orange : faible », ou mieux, passer la teinte faible à un vrai rouge (7,2,1),
+pour garder le code habituel rouge/jaune/vert. Pour la région sélectionnée, ajouter un contour
+blanc ou clignotant (le clignotement existe déjà : vérifier qu'il est visible hors fondu).
+P2 : trouver la tuile qui pose le pixel jaunâtre en (120, 219), rangée 27, colonne 15.
+Critère : un joueur sait sans aide ce que veut dire chaque couleur.
+
+**P1-6. Intervention télévisée** (`src/screens/scr_game.c` ou l'écran TV).
+Le texte doit couler sur 27 colonnes avec la même fonction de retour à la ligne que l'événement.
+Les coupures actuelles (12 à 16 caractères) font penser à une largeur comptée en octets UTF-8
+ou à une mauvaise largeur. Critère : aucune ligne coupée alors que le mot suivant tenait.
+
+**P1-7. Meilleurs scores** (`src/screens/scr_scores.c`).
+Dix lignes de rang tous les 2 rangs à partir de la rangée 5, donc jusqu'à la rangée 23. Pied de page
+en rangée 25 ou 26, avec au moins une rangée vide entre les deux. Aligner les en-têtes sur le
+début des colonnes de valeurs. Critère : aucun chevauchement, même avec 10 noms remplis.
+
+**P2-1. Tableau de bord** : libellé « Internat. », ou jauges décalées d'une colonne ;
+remplacer « Pop / Moy / Ais » par « Populaire 49 · Moyen 54 · Aisé 50 » sur une ligne de
+38 colonnes au plus ; mettre « % » aux piliers ou le retirer partout.
+**P2-2. Vote** : une rangée vide entre « Effets dans… » et le pied de page.
+**P2-3. Journal, page Sénat** : titre en rouge, corps en ivoire (`UI_STYLE_TEXT`).
+**P2-4. Journal, bilan** : utiliser la moitié basse vide, par exemple en remontant le pied de page
+ou en y mettant la manchette « à la une » de la page 1.
+**P2-5. Titre** : le bandeau « MEGA PRÉSIDENT » en attendant le logo (voir `A_VALIDER.md`).
+**P2-6. Overscan** : si le test console montre que la rangée 0 ou la rangée 27 est rognée, décaler
+`ui_banner` en rangée 1 sur tous les écrans et vérifier qu'aucun pied de page ne dépasse la rangée 26.
+
+## 6. Animer les visages ? (question du joueur, référence : *Dune*, Cryo 1992)
+
+**Avis de la DA : oui, et c'est le meilleur rapport effet/coût qui reste en V3.** Dans *Dune*,
+on ne retient pas une animation précise. On retient que les personnages sont **vivants** : ils
+clignent des yeux, leurs lèvres bougent quand ils parlent, ils tournent un peu le regard.
+C'est discret, irrégulier, et ça ne vole jamais la vedette au texte. Nos gueules sont des
+caricatures fixes et très expressives : un battement de paupières suffit à les faire exister.
+On garde l'intention de *Dune*, pas son style (pas de rotoscopie, pas de grands gestes de tête).
+
+### Quelles animations, par ordre d'intérêt
+1. **Clignement des yeux** : une image « yeux fermés » de 100 à 130 ms, plus une image
+   « mi-clos » de 60 ms pour les grands yeux (Fontaine, Lopez, Lestrade). Intervalle
+   **aléatoire de 2,5 à 6 s**, avec parfois un double clignement (1 fois sur 6). Deux gueules
+   à l'écran ne clignent jamais ensemble.
+2. **Bouche qui parle** pendant qu'un texte s'affiche ou reste « dit » par le personnage :
+   2 images (mi-ouverte, ouverte) en alternance avec la bouche de l'expression. Cadence
+   **irrégulière de 90 à 160 ms**, petite pause sur les espaces et la ponctuation si on suit le texte.
+   Arrêt net à la fin du texte ou à l'appui sur A.
+3. **Regard qui se déplace** : les iris vont sur le côté pendant 0,8 à 1,5 s, toutes les 8 à 15 s.
+   Très peu cher, et c'est l'effet *Dune* le plus fort par rapport à son coût.
+4. **Transition d'expression masquée par un clignement** : quand une gueule change d'expression
+   (journal, élection), on passe par « yeux fermés » pendant 80 ms. Le changement paraît voulu
+   et ne fait plus de saut.
+5. **Petits accessoires en sprites matériels** (optionnel) : la goutte de sueur de « gêné » qui
+   glisse de 4 px puis réapparaît (cycle de 1,5 s), l'éclat de dentifrice de Delmas qui
+   scintille, la veine de « furieux » qui bat. Un sprite de 8×8 dans la palette de la gueule
+   coûte une tuile et aucun redessin du plan.
+
+**Quels écrans**
+| Écran | Animations |
+|---|---|
+| Tableau de bord (PM) | clignement et regard seulement : le joueur y lit des chiffres |
+| Journal (président, éditorialiste) | clignement ; transition d'expression par clignement |
+| Événement, Intervention TV, Lopez à la télévision | bouche qui parle pendant l'apparition du texte, clignement |
+| Élection 2nd tour (deux finalistes) | clignements désynchronisés ; le perdant regarde de côté |
+| Remaniement, second mandat, choix du PM | clignement, regard |
+
+**À éviter** : tout mouvement régulier comme un métronome ; deux gueules animées en même temps ;
+la bouche qui bouge sans texte ; animer pendant les fondus ou sous une boîte de message ; faire
+bouger la tête entière ou les épaules (redessin de tout le portrait, effet « pantin ») ; les
+cycles de palette sur la peau. Règle d'or : **si on remarque l'animation, elle est trop forte.**
+
+### Faisabilité Megadrive
+- **Principe** : le même que `ui_gueule_expr`. On réécrit seulement un petit rectangle de tuiles
+  du plan B (les yeux : environ 5×2 tuiles ; la bouche : environ 3×2 tuiles). Les tuiles sont chargées en VRAM
+  avec la gueule, et une image d'animation ne coûte qu'une écriture de 6 à 10 mots de carte de
+  tuiles : pas de DMA de tuiles, presque rien par image.
+- **Génération (`tools/art/`)** : `gueules.py` sait déjà rendre une expression avec d'autres
+  paramètres d'yeux et de bouche (`T.eye(open_=…)`, `look`, `T.mouth(kind=…)`). On ajoute des
+  pseudo-expressions dérivées de chaque expression (`blink`, `look`, `talk1`, `talk2`).
+  `make_art.py` compare l'image obtenue à l'image de l'expression et extrait le plus petit
+  rectangle de tuiles qui change, comme pour les patches actuels. La palette reste celle du
+  personnage (15 couleurs, aucune couleur en plus).
+- **Coût par personnage** : clignement pour les 4 expressions (~4 × 10 tuiles), regard en
+  neutre (~10), parole en neutre et content (2 × 2 × ~6 tuiles), soit **≈ 75 tuiles ≈ 2,4 Ko de ROM**,
+  donc ≈ 72 Ko pour les 30 personnages. La ROM fait aujourd'hui 768 Ko sur 2 048 : c'est confortable.
+  **En VRAM**, on ne charge que l'animation de l'expression affichée : ≈ 25 tuiles par gueule,
+  ≈ 50 pour deux gueules, sur ≈ 1 040 tuiles libres.
+- **Cadence** : tout se compte en millisecondes, avec la même horloge que le curseur animé
+  (4 × 100 ms). Le rendu est donc identique en PAL et en NTSC. Les intervalles aléatoires viennent
+  d'un **petit générateur à part, jamais du `rng` de la simulation**, pour que les parties restent
+  reproductibles.
+- **RAM** : 2 emplacements (PAL2, PAL3) de ~16 octets chacun.
+
+### Consigne prête pour un md-dev (lot « gueules vivantes »)
+1. **`tools/art/gueules.py`, `persos.py`, `make_art.py`** : pour chaque personnage, rendre
+   `blink` (yeux fermés) pour les 4 expressions, `blink_half` en option (champ `half_blink=True`
+   dans la définition), `look` (iris à droite, neutre) et `talk1`/`talk2` (neutre et content :
+   bouche mi-ouverte, puis ouverte, sans changer les dents ni le rouge à lèvres du personnage).
+   Extraire pour chacun le rectangle minimal par rapport à son expression. Écrire les PNG
+   `gueule_<nom>_<expr>_<anim>.png` et compléter `GueuleDef` dans `ui_art_gueules.h` (rectangle et images).
+   Planche de contrôle : `apercu_gueules.py --anim` (toutes les images de tous les personnages)
+   pour la relecture DA.
+2. **`src/ui/ui_art.c/.h`** : nouvelle API
+   `ui_gueule_anim_start(slot, id, expr, x, y, pal)`, `ui_gueule_anim_talk(slot, bool)`,
+   `ui_gueule_anim_expr(slot, expr)` (transition par clignement de 80 ms), `ui_gueule_anim_stop(slot)`,
+   `ui_gueule_anim_update()` appelée une fois par image par la boucle d'écran. Elle doit être
+   suspendue pendant les fondus et les boîtes de message, et ne jamais dépasser une écriture de
+   rectangle par gueule et par image.
+3. **Intégration** : les écrans du tableau ci-dessus. `ui_gueule_anim_talk(TRUE)` pendant
+   l'apparition des textes d'événement et de télévision.
+4. **Critères d'acceptation** : planche relue par le DA ; mêmes cadences en PAL et en NTSC
+   (vérification au chronomètre sur 20 clignements) ; budget VRAM inchangé à ±60 tuiles près ;
+   `make check` vert ; aucune animation visible pendant un fondu.
+
+**Chiffrage** : générateur et planche 4 h, API `ui_art` 3 h, intégration sur 6 écrans 2 h, relecture DA et
+retouches 1 h, soit **≈ 10 h** (+ 2 h si on ajoute les accessoires en sprites).
+**Version** : je recommande une **V3.1**, lancée juste après le test console de la V3, pour ne
+pas retarder la livraison. Si le test console est repoussé, le **clignement seul (≈ 4 h)** peut
+entrer en V3 : c'est à lui seul 70 % de l'effet « vivant ».
