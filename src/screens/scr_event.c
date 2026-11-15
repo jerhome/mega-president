@@ -90,11 +90,8 @@ static u8 persona(void)
 static const char *pm_surname(void)
 {
     const Country *c = &g_game.country;
-    const char *n = sim_cohabitation(c) ? txt[TXT_COHAB_PM_GAUCHE_NOM + sim_cohab_camp(c)]
-                                        : txt[TXT_PM_TECHNOCRATE_NOM + 2 * c->pm];
-    const char *sp = n;
-    while (*sp && *sp != ' ') sp++;
-    return *sp ? sp + 1 : n;
+    return surname(sim_cohabitation(c) ? txt[TXT_COHAB_PM_GAUCHE_NOM + sim_cohab_camp(c)]
+                                       : txt[TXT_PM_TECHNOCRATE_NOM + 2 * c->pm]);
 }
 
 static const char *replique(void)
