@@ -16,11 +16,12 @@
 - ✅ U3 kit d'écran (scr_kit.[ch], pm_name/pillar_name bornés dans scr_txt.h, art_reset_quiet), fusionné dans v4.1-dev.
 - ✅ R2 sauvegarde (format v3 : empreinte, `game_sanitize`, 2 emplacements, Fletcher différé ; `Game` dans `src/game/game_state.h`). Une sauvegarde V4 (v2) sera refusée par la V4.1 (message « ancienne version »). Fusionné.
 - ✅ P7 hémicycle : 20-25 ms → 9-10 ms par image (rendu identique). Le compteur d'images perdues `L` reste élevé partout : à étudier (boucle entière). Fusionné.
+- ✅ R3 horloges sur getTick (input_frame_ticks réel, plafonné à 300 ms), carte et boîtes en ms, palette carte en DMA_QUEUE, C2 corrigé. Fusionné.
 - 🔄 Lancés le 16/11 vers 00 h 45-01 h (résultats peut-être perdus après un `/clear` → vérifier les branches `worktree-agent-*`, merge-base sur v4.1-dev, sinon relancer) :
   - U4 nettoyage partiel (code mort, Z80 chargé une fois, commentaires, CLAUDE.md ; pas screen.c/input.c/ui_map/ui_widgets/ui_hemi/voice.c) ;
-  - R3 horloges sur getTick, carte et boîtes en ms, correctif C2 du charabia (pas ui_hemi.c) ;
+  - E1 réduit : scr_reshuffle, scr_map, scr_help migrés vers StrBuf/widgets/kit (pas scr_elec) ;
   - QA intermédiaire de v4.1-dev (qa-rom, comparaison des captures v4-dev / v4.1-dev).
-- À suivre : E1-E6 (U3 fait ; de préférence après les corrections du test console V4, qui toucheront les écrans) (écrans), fin de R2 (`budget_seen`, `opinion_prev`, instantané du rapport : avec les lots E), fin de U4 (screen.c/main.c après R3), U4 nettoyage, R6 `-Os`. C1 (`q[48]` de scr_event.c) dans E5.
+- À suivre : E1-E6 (U3 fait ; de préférence après les corrections du test console V4, qui toucheront les écrans) (écrans), fin de R2 (`budget_seen`, `opinion_prev`, instantané du rapport : avec les lots E), fin de U4 (screen.c/main.c : R3 fait, peut démarrer après U4 partiel), U4 nettoyage, R6 `-Os`. C1 (`q[48]` de scr_event.c) dans E5.
 
 ## Notifications
 - Dès qu'une version est prête à pousser : PushNotification au joueur, puis attendre son accord (mémoire feedback-notif-push).
