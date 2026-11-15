@@ -410,13 +410,13 @@ static void test_save_version(void)
 {
     u8 src[64], blob[GAMESAVE_HEADER + 64];
     u16 i, len;
-    CHECK_EQ(GAMESAVE_VERSION, 2);
+    CHECK_EQ(GAMESAVE_VERSION, 3);
     for (i = 0; i < 64; i++) src[i] = (u8)i;
-    len = gamesave_pack(src, 64, blob);
-    CHECK_EQ(gamesave_unpack(0, 64, blob, len), 1);
+    len = gamesave_pack(src, 64, 0x1234, 1, blob);
+    CHECK_EQ(gamesave_unpack(0, 64, 0x1234, blob, len), 1);
     // une sauvegarde V3 (version 1) est refusée proprement, sans migration
     blob[4] = 1;
-    CHECK_EQ(gamesave_unpack(0, 64, blob, len), 0);
+    CHECK_EQ(gamesave_unpack(0, 64, 0x1234, blob, len), 0);
     CHECK(sizeof(Country) <= 220);
 }
 
