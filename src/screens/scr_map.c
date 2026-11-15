@@ -1,16 +1,15 @@
 // Mega Président — carte de la popularité par région.
-// La carte emprunte PAL2 (ui_map.h) : les couleurs de PAL2 (style DIM, jauge NEUTRAL)
-// y sont celles de la carte. Attention : la légende en daltonisme utilise pourtant
-// UI_GAUGE_NEUTRAL (voir le rapport d'audit U4).
+// La carte emprunte PAL2 (ui_map.h) : aucun style DIM de texte sur cet écran. La jauge
+// NEUTRAL de la légende en daltonisme est sur PAL0 (bleue, jeu d'encre B) : vérifié à
+// l'écran, pas de conflit avec PAL2.
 
 #include <genesis.h>
-#include <string.h>
 #include "screens.h"
 #include "scr_map.h"
 #include "ui/ui.h"
 #include "ui/ui_art.h"
 #include "ui/ui_map.h"
-#include "save/settings.h"
+#include "util/strbuf.h"
 #include "ui/input.h"
 #include "game/game.h"
 #include "sim/regions.h"
@@ -53,7 +52,7 @@ static void map_init(void)
     // moyenne nationale : un tiers de ± 10 points pour chaque teinte).
     ui_separator(PANEL_X, 17, PANEL_W);
     // Légende : en daltonisme, la carte passe au bleu (celui de la jauge neutre).
-    ui_gauge_draw(PANEL_X, 18, 2, 1, 1, settings_get(SET_COLORS) ? UI_GAUGE_NEUTRAL : UI_GAUGE_POSITIVE);
+    ui_gauge_draw(PANEL_X, 18, 2, 1, 1, ui_map_is_colorblind() ? UI_GAUGE_NEUTRAL : UI_GAUGE_POSITIVE);
     ui_text_draw(PANEL_X + 3, 18, "Forte", UI_STYLE_TEXT);
     ui_gauge_draw(PANEL_X, 19, 2, 1, 1, UI_GAUGE_GOLD);
     ui_text_draw(PANEL_X + 3, 19, "Moyenne", UI_STYLE_TEXT);
@@ -84,44 +83,45 @@ static void map_update(void)
 
 static void map_draw(void)
 {
-    char buf[24], num[12];
-    s16 pop, gap;
+    s16 pop, nat, gap;
     u16 y = 4, n;
 
     if (!dirty) return;
     dirty = FALSE;
 
     // efface le panneau
-    for (u16 i = 3; i < 18; i++)
-        ui_text_draw(PANEL_X, i, "                ", UI_STYLE_TEXT);
+    ui_clear_rect(PANEL_X, 3, PANEL_W, 15);
 
+    nat = sim_popularity(&g_game.country);
     pop = sim_region_popularity(&g_game.country, sel);
-    gap = (s16)(pop - sim_popularity(&g_game.country));
+    gap = (s16)(pop - nat);
 
     n = ui_text_wrap(PANEL_X, y, PANEL_W, 3, ui_map_region_name(sel), UI_STYLE_HIGHLIGHT);
     y += n + 1;
 
-    ui_format_number(num, pop, 1);
-    buf[0] = 0;
-    strcat(buf, num);
-    strcat(buf, " %");
-    ui_text_draw(PANEL_X, y++, buf, UI_STYLE_TEXT);
+    {
+        SB_LINE(sb);
+        sb_num(&sb, pop, 1);
+        sb_str(&sb, " %");
+        ui_text_draw(PANEL_X, y++, sb.buf, UI_STYLE_TEXT);
+    }
     y++;
 
     ui_text_draw(PANEL_X, y++, "Moyenne nat.", UI_STYLE_TEXT);
-    ui_format_number(num, sim_popularity(&g_game.country), 1);
-    buf[0] = 0;
-    strcat(buf, num);
-    strcat(buf, " %");
-    ui_text_draw(PANEL_X, y++, buf, UI_STYLE_TEXT);
+    {
+        SB_LINE(sb);
+        sb_num(&sb, nat, 1);
+        sb_str(&sb, " %");
+        ui_text_draw(PANEL_X, y++, sb.buf, UI_STYLE_TEXT);
+    }
     y++;
 
-    buf[0] = 0;
-    strcat(buf, "Écart : ");
-    if (gap > 0) strcat(buf, "+");
-    ui_format_number(num, gap, 1);
-    strcat(buf, num);
-    ui_text_draw(PANEL_X, y, buf, gap < 0 ? UI_STYLE_ALERT : UI_STYLE_HIGHLIGHT);
+    {
+        SB_LINE(sb);
+        sb_str(&sb, "Écart : ");
+        sb_signed(&sb, gap, 1);
+        ui_text_draw(PANEL_X, y, sb.buf, gap < 0 ? UI_STYLE_ALERT : UI_STYLE_HIGHLIGHT);
+    }
 }
 
 const Screen scr_map = { map_init, map_update, map_draw, NULL };

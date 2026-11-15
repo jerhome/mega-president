@@ -329,6 +329,23 @@ void game_debug_jump(void)
         SRAM_disable();
         screen_change(SCREEN_TITLE);
         break;
+    case 22:   // carte de la popularité par région
+        c->turn = 6;
+        screen_change(SCREEN_MAP);
+        break;
+    case 25:   // carte en mode daltonien
+        c->turn = 6;
+        ui_set_colorblind(TRUE);
+        screen_change(SCREEN_MAP);
+        break;
+    case 23:   // aide en pages (script : droite pour changer de page)
+        screen_change(SCREEN_HELP);
+        break;
+    case 24:   // remaniement avec 1 CP (profils grisés, message d'erreur)
+        c->turn = 6;
+        c->cp = 1;
+        screen_change(SCREEN_RESHUFFLE);
+        break;
     case 4:
         screen_change(SCREEN_REFERENDUM);
         break;

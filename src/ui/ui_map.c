@@ -25,6 +25,11 @@ static u16 blink_col;      // mot lu par le DMA (doit rester valide jusqu'au VBl
 static bool map_open;
 static bool colorblind;
 
+bool ui_map_is_colorblind(void)
+{
+    return colorblind;
+}
+
 void ui_map_set_colorblind(bool on)
 {
     colorblind = on;
