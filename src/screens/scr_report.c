@@ -278,6 +278,7 @@ static void draw_politics(void)
         }
         ui_medallion(29, 14, UI_PORTRAIT_W, UI_PORTRAIT_H);
         ui_gueule_draw(id, e, 29, 14, PAL2);
+        ui_gueule_talk(2400);   // l'éditorialiste (ou le président du Sénat) commente la page
         ui_text_right(28, 25, id == GUEULE_SENAT_PRESIDENT ? "Le président du Sénat" : "L’éditorialiste",
                       UI_STYLE_DIM);
     }

@@ -27,6 +27,8 @@ void ui_frame_end(void);
 // Changement d'écran : fondu au noir (non bloquant), puis apparition.
 void ui_fade_out_start(void);
 bool ui_fade_busy(void);
+// Animations décoratives permises (aucun fondu en cours ni à venir) : visages animés.
+bool ui_anim_allowed(void);
 // Écran noir (affichage coupé) pendant init/dessin du nouvel écran, puis fondu d'apparition.
 void ui_transition_hide(void);
 void ui_transition_show(void);

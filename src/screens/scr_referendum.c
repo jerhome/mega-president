@@ -241,6 +241,7 @@ static void ref_draw(void)
             ui_gueule_draw(GUEULE_JOUR_CHAINE_INFO, EXPR_NEUTRE, 29, 4, PAL2);
             ui_text_draw(1, 5, "Édition spéciale", UI_STYLE_HIGHLIGHT);
             ui_text_wrap(1, 7, 27, 5, txt[TXT_REF_ANNONCE], UI_STYLE_TEXT);
+            ui_gueule_talk(ui_gueule_talk_ms(txt[TXT_REF_ANNONCE]));
             ui_art_draw_pal(ART_DECOR_URNE, 10, 14, PAL3);
             ui_footer(1, 26, 38, "A : passer");
             break;

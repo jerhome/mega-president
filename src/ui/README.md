@@ -92,6 +92,15 @@ API (`ui_art.c` est le seul fichier qui touche VDP/PAL pour les illustrations) :
   Raccourcis : `GUEULE_PRES(ORIENT_*)`, `GUEULE_PM(PM_*)`, `GUEULE_COHAB(camp)`,
   `GUEULE_CAND(CAND_*)`, `GUEULE_CHEF(GRP_*)`, `GUEULE_MIN(i)`. Les anciens portraits
   56 × 56 (`ART_PRES_*`, `ART_PM_*`, `ART_COHAB_*`, `ART_CAND_ROUVIERE…`) sont retirés.
+- **Visages animés (3.18, sans son)** : la dernière gueule dessinée par `ui_gueule_draw`
+  s'anime seule (clignements irréguliers, regard de côté, changement d'expression masqué
+  par un clignement de 80 ms) ; `ui_gueule_talk(ms)` la fait parler (bouche irrégulière,
+  arrêt à la fin ou sur A/B/C/START), à appeler **après** `ui_gueule_draw` ;
+  `ui_gueule_talk_ms(texte)` donne une durée selon la longueur de la réplique.
+  Mise à jour par `screen.c` (`ui_gueule_anim_update`), suspendue pendant les fondus et
+  sous une boîte de message ; arrêt automatique si le visage est recouvert (fenêtre,
+  `ui_clear`, `ui_gueule_erase`, illustration, carte) ou à `ui_art_close`.
+  VRAM : une planche d'animation (≈ 15 à 30 tuiles) chargée à la première image animée.
 - Cadre : `ui_medallion(x, y, UI_PORTRAIT_W, UI_PORTRAIT_H)` pose un cadre doré sur le
   pourtour de la gueule (plan A) et un fond sombre (plan B) avant le dessin.
 - `ui_art_reserve(clé, n)` / `ui_art_claim_palette(pal)` : zone VRAM et ligne de palette

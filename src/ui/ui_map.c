@@ -1,6 +1,7 @@
 // Mega Président — carte de France : seul fichier à toucher VDP/PAL pour la carte.
 #include "ui/ui_internal.h"
 #include "ui/ui_map.h"
+#include "ui/ui_art.h"
 #include "gfx_ui.h"
 #include "gfx_map.h"
 
@@ -30,6 +31,7 @@ void ui_map_draw(u16 x, u16 y)
     u16 i;
     u16 base = ui_tile_icons + ts_ui_icons.numTile;   // juste après les tuiles de ui.c
 
+    ui_gueule_anim_cover(0, 0, 64, 32);   // la carte réutilise la VRAM des illustrations
     VDP_loadTileSet(&ts_map_france, base, DMA);
     PAL_setPalette(MAP_PAL, pal_map.data, DMA);
     for (i = 0; i < REGION_COUNT; i++)
