@@ -231,6 +231,12 @@ s16 ui_msgbox_update(void)
     return -1;
 }
 
+void ui_msgbox_set_sel(u16 i)
+{
+    if (msg.open && i < msg.list.count)
+        msg.list.sel = (u8)i;
+}
+
 bool ui_msgbox_is_open(void)
 {
     return msg.open;

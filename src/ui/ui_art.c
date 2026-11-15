@@ -246,6 +246,17 @@ static struct {
 } ga;
 
 static u16 ga_seed = 0x5EED;
+static void ga_rest(void);
+static bool ga_enabled = TRUE;   // réglage « Visages » (Options, 3.19)
+
+void ui_gueule_anim_enable(bool on)
+{
+    ga_enabled = on;
+    if (!on) {
+        ga_rest();       // image de base de l'expression, la gueule reste « suivie »
+        ga.talk_t = 0;
+    }
+}
 
 static u16 ga_rand(u16 lo, u16 hi)   // xorshift 16 bits, bornes incluses
 {
@@ -457,7 +468,7 @@ void ui_gueule_anim_update(void)
 
     if (!ga.on)
         return;
-    if (!ui_anim_allowed() || ui_msgbox_is_open()) {
+    if (!ga_enabled || !ui_anim_allowed() || ui_msgbox_is_open()) {
         ga_rest();   // fondu ou boîte de message : visage au repos, horloges arrêtées
         return;
     }
@@ -507,7 +518,7 @@ bool ui_gueule_expr(GueuleId id, Expr e, u16 x, u16 y, u16 pal)
         ga.eye_state = EYE_CLOSED;
         ga.eye_t = MS(80);
         ga.double_blink = FALSE;
-        if ((gueule_defs[id].aflags[e] & GA_BLINK) && ui_anim_allowed() && ga_write(TRUE, F_ONE))
+        if ((gueule_defs[id].aflags[e] & GA_BLINK) && ga_enabled && ui_anim_allowed() && ga_write(TRUE, F_ONE))
             ga.eye_shown = F_ONE;
     }
     return TRUE;

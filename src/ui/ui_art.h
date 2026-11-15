@@ -134,6 +134,9 @@ u16 ui_gueule_talk_ms(const char *text);
 void ui_gueule_anim_stop(void);
 // Boucle des écrans (screen.c) : une fois par image.
 void ui_gueule_anim_update(void);
+// Réglage « Visages » (Options) : FALSE fige les visages sur l'image de base de leur
+// expression (les changements d'expression restent, sans clignement) ; TRUE les relance.
+void ui_gueule_anim_enable(bool on);
 // Couche d'interface : le rectangle (x, y, w, h) du plan B va être redessiné ;
 // arrête l'animation s'il recouvre les yeux ou la bouche.
 void ui_gueule_anim_cover(u16 x, u16 y, u16 w, u16 h);

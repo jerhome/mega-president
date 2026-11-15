@@ -24,5 +24,11 @@ void sfx_init(void);              // une fois au démarrage : charge le pilote X
 void sfx_play(SfxId id);          // le dernier son gagne, sauf élection (non coupée par SFX_MOVE)
 void sfx_update(void);            // une fois par image
 void sfx_set_enabled(bool on);    // coupe/active les bruitages (coupe le son en cours)
+// Réglage « Bruitages » (Options) : tous, essentiels (sans SFX_MOVE, SFX_OK ni
+// SFX_CANCEL : les clics de menu), aucun.
+#define SFX_MODE_ALL       0
+#define SFX_MODE_ESSENTIAL 1
+#define SFX_MODE_OFF       2
+void sfx_set_mode(u8 mode);
 
 #endif

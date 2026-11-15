@@ -6,6 +6,8 @@
 #include "ui/ui_internal.h"
 #include "ui/ui_art.h"
 #include "game/game.h"
+#include "save/sram.h"
+#include "save/settings_apply.h"
 
 #define NO_SCREEN 0xFF
 
@@ -78,6 +80,10 @@ void screen_run(ScreenId first)
     input_init();
     sfx_init();
     music_init();
+    // Réglages de l'écran Options lus AVANT le premier écran (sinon « For sure ! »
+    // partirait avant la lecture du réglage Voix).
+    sram_settings_load();
+    settings_apply_all();
     pending = first;
 
     while (TRUE) {

@@ -20,6 +20,18 @@ static u16 region_color[REGION_COUNT];   // couleur courante (hors clignotement)
 static u8 selected = REGION_NONE;
 static u8 blink;
 static bool map_open;
+static bool colorblind;
+
+void ui_map_set_colorblind(bool on)
+{
+    colorblind = on;
+}
+
+// Interpolation d'une composante 0..7 entre a et b, t sur 0..128.
+static u16 lerp7(u16 a, u16 b, s32 t)
+{
+    return (u16)((s32)a + (((s32)b - (s32)a) * t + 64) / 128);
+}
 
 static void apply(u8 region, u16 color)
 {
@@ -75,15 +87,31 @@ void ui_map_set_region_level(u8 region, s16 value, s16 min, s16 max)
         t = ((s32)(value - min) * 255) / (max - min);
 
     // Valeurs 0..7 par composante (VDP : 3 bits, 0x0BGR avec bits pairs).
-    // rouge (7,1,1) -> jaune (7,6,1) -> vert (1,6,1)
-    if (t < 128) {
-        r = 7;
-        g = 1 + (u16)((t * 5) / 128);
+    if (colorblind) {
+        // Rampe divergente lisible par tous : orangé (7,2,0) -> ivoire (7,7,5) -> bleu (1,3,7)
+        u16 b;
+        if (t < 128) {
+            r = 7;
+            g = lerp7(2, 7, t);
+            b = lerp7(0, 5, t);
+        } else {
+            s32 u = ((t - 128) * 128) / 127;
+            r = lerp7(7, 1, u);
+            g = lerp7(7, 3, u);
+            b = lerp7(5, 7, u);
+        }
+        color = (u16)((r << 1) | (g << 5) | (b << 9));
     } else {
-        g = 6;
-        r = 7 - (u16)(((t - 128) * 6) / 127);
+        // rouge (7,1,1) -> jaune (7,6,1) -> vert (1,6,1)
+        if (t < 128) {
+            r = 7;
+            g = 1 + (u16)((t * 5) / 128);
+        } else {
+            g = 6;
+            r = 7 - (u16)(((t - 128) * 6) / 127);
+        }
+        color = (u16)((r << 1) | (g << 5) | (1 << 9));
     }
-    color = (u16)((r << 1) | (g << 5) | (1 << 9));
     region_color[region] = color;
     if (region != selected)
         apply(region, color);

@@ -47,6 +47,9 @@ void ui_map_clear_region(u8 region);
 // ui_map_update() doit être appelé à chaque image pour animer le clignotement.
 void ui_map_highlight(u8 region);
 void ui_map_update(void);
+// Daltonisme : rampe orangé (min) -> ivoire -> bleu (max) au lieu de rouge -> jaune -> vert.
+// À appeler avant ui_map_set_region_level (les régions déjà colorées ne changent pas).
+void ui_map_set_colorblind(bool on);
 // Nom en UTF-8 avec accents ; chaîne vide si region est invalide.
 const char *ui_map_region_name(u8 region);
 

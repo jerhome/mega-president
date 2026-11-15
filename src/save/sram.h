@@ -17,4 +17,13 @@ void sram_scores_save(const ScoreBoard *b);
 #define SRAM_TAGLINE_OFFSET 254
 u8 sram_tagline_next(u8 n);
 
+// Réglages de l'écran Options (save/settings.h) : 16 octets de 224 à 239.
+// Les octets 169-223 et 240-253 restent libres ; l'octet 254 n'est pas touché.
+#define SRAM_SETTINGS_OFFSET 224
+// Lit les réglages (SRAM vierge ou corrompue : défauts) ; renvoie le code de
+// settings_deserialize. N'applique rien (voir settings_apply_all).
+u8 sram_settings_load(void);
+// Écrit les réglages et efface le drapeau « modifié ».
+void sram_settings_save(void);
+
 #endif

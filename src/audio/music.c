@@ -39,6 +39,12 @@ static u8 s_playing;   // piste XGM2 en cours, 0xFF = silence
 static u8 s_pending;   // piste à lancer à la fin du fondu de sortie, 0xFF = aucune
 static bool s_fading;  // fondu de sortie en cours
 static bool s_enabled;
+static u8 s_fm = 100, s_psg = 100;   // volumes XGM2 voulus (réglage « Musique »)
+static bool s_vol_pending;           // à réappliquer à la fin du fondu en cours
+
+// Cran perçu -> valeurs XGM2 (FM : pas de 0,75 dB, PSG : pas de 2 dB).
+static const u8 s_vol_fm[5]  = { 0, 31, 46, 61, 100 };
+static const u8 s_vol_psg[5] = { 0, 13, 35, 61, 100 };
 
 static u16 ms_to_frames(u16 ms)
 {
@@ -130,8 +136,33 @@ void music_stop(void)
     }
 }
 
+void music_set_volume(u8 cran)
+{
+    if (cran > 4)
+        cran = 4;
+    if (cran == 1 && !MUSIC_HAS_25)
+        cran = 2;
+    if (cran == 0) {
+        music_set_enabled(FALSE);
+        return;
+    }
+    s_fm = s_vol_fm[cran];
+    s_psg = s_vol_psg[cran];
+    // Mémorisés par XGM2 (fondus d'entrée et nouveaux morceaux les reprennent).
+    XGM2_setFMVolume(s_fm);
+    XGM2_setPSGVolume(s_psg);
+    s_vol_pending = XGM2_isProcessingFade();
+    music_set_enabled(TRUE);
+}
+
 void music_update(void)
 {
+    if (s_vol_pending && !XGM2_isProcessingFade()) {
+        // La dernière image d'un fondu a réécrit son volume cible : on remet le réglage.
+        s_vol_pending = FALSE;
+        XGM2_setFMVolume(s_fm);
+        XGM2_setPSGVolume(s_psg);
+    }
     if (!s_fading) {
         // Morceau mis en attente pendant la voix de démarrage
         if (s_pending != 0xFF && s_playing == 0xFF && s_enabled && !voice_busy()) {

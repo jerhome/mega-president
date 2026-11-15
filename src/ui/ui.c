@@ -3,6 +3,7 @@
 #include "ui/ui_internal.h"
 #include "ui/input.h"
 #include "ui/ui_art.h"
+#include "ui/ui_map.h"
 #include "gfx_ui.h"
 
 u16 ui_tile_font, ui_tile_frame, ui_tile_gauge, ui_tile_icons;
@@ -19,11 +20,56 @@ static u16 pal_target[64];
 static u16 pal_from[64];
 static u16 anim_ticks;     // 1/300 s, pour le curseur animé
 static u8 cursor_frame;
+static u8 fade_speed;      // réglage « Transitions » : 0 douces, 1 rapides, 2 aucune
+static bool colorblind;    // réglage « Couleurs » : daltonisme
 
+// Durée d'un fondu en images selon le réglage (moitié en « Rapides »).
 static u16 ms_frames(u16 ms)
 {
-    u16 f = (u16)((u32)ms * (IS_PAL_SYSTEM ? 50 : 60) / 1000);
+    u16 f;
+    if (fade_speed == 1)
+        ms /= 2;
+    f = (u16)((u32)ms * (IS_PAL_SYSTEM ? 50 : 60) / 1000);
     return f ? f : 1;
+}
+
+void ui_set_fade_speed(u8 s)
+{
+    fade_speed = s > 2 ? 2 : s;
+}
+
+// Daltonisme : jauge A et flèches favorables (PAL0 6-7) en turquoise au lieu du vert.
+#define CB_COL6 RGB3_3_3_TO_VDPCOLOR(0, 4, 6)
+#define CB_COL7 RGB3_3_3_TO_VDPCOLOR(3, 7, 7)
+
+static void colorblind_apply(void)
+{
+    u16 c[2];
+    if (colorblind) {
+        c[0] = CB_COL6;
+        c[1] = CB_COL7;
+    } else {
+        c[0] = pal_ui_text.data[6];
+        c[1] = pal_ui_text.data[7];
+    }
+    PAL_setColors(6, c, 2, DMA);
+    // Fondu en cours vers les anciennes couleurs : sa cible change aussi.
+    pal_target[6] = c[0];
+    pal_target[7] = c[1];
+}
+
+void ui_set_colorblind(bool on)
+{
+    colorblind = on;
+    colorblind_apply();
+    ui_map_set_colorblind(on);
+}
+
+void ui_soft_replay(void)
+{
+    if (fade_speed == 2 || fx != FX_NONE)
+        return;
+    soft_req = TRUE;
 }
 
 void ui_soft_cancel(void)
@@ -37,6 +83,10 @@ void ui_fade_out_start(void)
     soft_req = FALSE;
     if (PAL_isDoingFade())
         PAL_interruptFade();
+    if (fade_speed == 2) {   // « Aucune » : changement d'écran sans fondu
+        fx = FX_NONE;
+        return;
+    }
     PAL_fadeOut(0, 63, ms_frames(UI_FADE_OUT_MS), TRUE);
     fx = FX_OUT;
     input_block(INPUT_BLOCK_DISCARD);
@@ -58,6 +108,8 @@ void ui_palettes_reset(void)
     PAL_setPalette(PAL1, pal_ui_highlight.data, DMA);
     PAL_setPalette(PAL2, pal_ui_dim.data, DMA);
     PAL_setPalette(PAL3, pal_ui_alert.data, DMA);
+    if (colorblind)
+        colorblind_apply();
 }
 
 void ui_transition_hide(void)
@@ -72,6 +124,14 @@ void ui_transition_hide(void)
 
 void ui_transition_show(void)
 {
+    if (fade_speed == 2) {   // « Aucune » : l'écran apparaît d'un coup, déjà dessiné
+        VDP_setBackgroundColor(0);
+        VDP_setEnable(TRUE);
+        fx = FX_NONE;
+        input_block(INPUT_BLOCK_OFF);
+        soft_req = FALSE;
+        return;
+    }
     // Palettes voulues par le nouvel écran (écrites en CRAM par init / draw).
     PAL_getColors(0, pal_target, 64);
     PAL_setColors(0, palette_black, 64, CPU);
@@ -128,7 +188,7 @@ void ui_frame_end(void)
     }
     if (soft_req) {
         soft_req = FALSE;
-        if (fx == FX_NONE)
+        if (fx == FX_NONE && fade_speed != 2)
             soft_start();
     }
 

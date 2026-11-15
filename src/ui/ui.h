@@ -186,6 +186,9 @@ void ui_msgbox_open(const char *title, const char *text,
 // l'indice du choix (0 pour « OK »). La boîte reste affichée : ui_msgbox_close.
 s16 ui_msgbox_update(void);
 bool ui_msgbox_is_open(void);
+// Sélection initiale (à appeler juste après ui_msgbox_open) : choix « Annuler » d'une
+// confirmation d'effacement, par exemple.
+void ui_msgbox_set_sel(u16 i);
 void ui_msgbox_close(void);   // efface la zone de la boîte (l'écran redessine le reste)
 
 // --- Animations ---------------------------------------------------------------
@@ -196,5 +199,15 @@ void ui_msgbox_close(void);   // efface la zone de la boîte (l'écran redessine
 
 // Annule l'apparition douce demandée par ui_clear (redessin sans effet).
 void ui_soft_cancel(void);
+// Rejoue l'apparition douce de l'écran affiché (aperçu du réglage « Transitions »).
+void ui_soft_replay(void);
+
+// --- Réglages d'affichage (écran Options, 3.19 ; appelés par settings_apply) ---
+// Fondus : 0 durées de la charte, 1 moitié, 2 aucun (palettes posées directement ;
+// l'affichage reste coupé pendant l'init et le premier dessin d'un écran).
+void ui_set_fade_speed(u8 s);
+// Daltonisme : vert de l'interface (PAL0 6-7 : jauge A, flèches favorables) en
+// turquoise, et rampe de la carte orangé -> ivoire -> bleu.
+void ui_set_colorblind(bool on);
 
 #endif
