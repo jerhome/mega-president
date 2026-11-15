@@ -38,8 +38,8 @@ PAL0 = [
     (0, 0, 0),  # 1  ombre, contours
     (7, 7, 7),  # 2  encre A haut : texte
     (6, 6, 5),  # 3  encre A bas  : texte (dégradé ivoire)
-    (5, 5, 6),  # 4  encre B haut : texte atténué
-    (4, 4, 5),  # 5  encre B bas
+    (5, 6, 7),  # 4  encre B haut : texte atténué (gris bleuté clair, contrasté sur le bleu)
+    (4, 5, 6),  # 5  encre B bas
     (1, 5, 2),  # 6  jauge A : verte
     (4, 7, 3),  # 7  jauge A : reflet
     (1, 3, 7),  # 8  jauge B : bleue
