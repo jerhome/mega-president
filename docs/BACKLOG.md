@@ -236,11 +236,11 @@ Spécification validée : [SPEC_V4.md](SPEC_V4.md). Développement sur la branch
 | 4.04 | Générateur de contenu : nouvelles clés, alias `POP_CADRES`, `LAW_MAX_IMMEDIATE` = 4, contrôle des limites | 1 h | ✅ |
 | 4.05 | Passe sur les 40 lois (effets immédiats sur 5 électorats) | 3 h | ✅ |
 | 4.06 | Passe sur environ 50 événements et 6 nouveaux événements (retraités, jeunes) | 4 h | ✅ |
-| 4.07 | Écrans électorats : ligne du tableau de bord avec tendances, écran détail (C), référendum et campagne à 5 lignes, aide | 3 h |  |
+| 4.07 | Écrans électorats : ligne du tableau de bord avec tendances, écran détail (C), référendum et campagne à 5 lignes, aide | 3 h | 🔄 |
 | 4.08 | Cœur budget détaillé : `budget_lvl[6]`, tables, multiplicateur, préréglages, reconduction par services votés, garde-fous, orientation de vote, 49.3, aperçus, tests | 5 h | ✅ |
 | 4.09 | Budget en cohabitation (plan du PM, ligne défense) et amendement du Sénat (lecture définitive à 1 CP), comptes rendus | 2,5 h | ✅ |
 | 4.10 | Textes : noms des lignes, aide C, phrases du journal (reconduction, Sénat, budget du PM), phrases de l'écran électorats | 1,5 h | ✅ |
-| 4.11 | Écran budget détaillé (6 lignes × 5 crans, préréglage, aperçu en direct, vote / 49.3, cohabitation, Sénat) | 5 h |  |
+| 4.11 | Écran budget détaillé (6 lignes × 5 crans, préréglage, aperçu en direct, vote / 49.3, cohabitation, Sénat) | 5 h | 🔄 |
 | 4.12 | Sauvegarde : `GAMESAVE_VERSION` = 2, message à l'écran titre, test de non-régression | 1 h | 🔄 |
 | 4.13 | Joueurs automatiques : préréglages, variantes optimiseur, extrême et austère, statistiques par électorat | 3 h | ✅ |
 | 4.14 | Équilibrage V4 (cibles de §3.4, 20 et 60 tours) | 5 h | ✅ |
