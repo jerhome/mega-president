@@ -116,7 +116,9 @@ def anim_sheet(path, names=None, scale=4, gap=6, bg=0x202020):
             continue
         P, pal, pxs, anim = make_art.render_gueule(fn)
         for e in range(len(gueules.EXPRS)):
-            rows.append(([pxs[e]] + anim[e], pal))
+            ims = [pxs[e] if (a == "look" and e not in make_art.LOOK_EXPRS) else im
+                   for a, im in zip(make_art.ANIMS, anim[e])]   # regard : neutre et content
+            rows.append(([pxs[e]] + ims, pal))
     n = 1 + len(make_art.ANIMS)
     Wt = n * (gueules.W + gap) + gap
     Ht = len(rows) * (gueules.H + gap) + gap
