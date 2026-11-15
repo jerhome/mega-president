@@ -320,7 +320,7 @@ def registry():
              "cand_gauche_radicale", "cand_ecolo", "cand_centre", "cand_droite", "cand_nationaliste",
              "min_economie", "min_interieur", "min_sante", "min_education", "min_ecologie",
              "min_affaires_etr", "chef_ugr", "chef_rsv", "chef_mjm", "chef_utl", "chef_lso",
-             "jour_chaine_info", "jour_editorialiste", "senat_president", "synd_ust", "patron_upe"]
+             "jour_chaine_info", "jour_editorialiste", "senat_president", "synd_ust", "patron_upe", "huissier"]
     found = {}
     for mod in (g_demo, g_pouvoir, g_candidats, g_gouv, g_divers):
         for name, fn in mod.ALL:
