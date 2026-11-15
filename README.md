@@ -9,8 +9,8 @@ Gouvernez, faites voter vos lois, gérez les crises, survivez au Parlement, et t
 
 ## Cible technique
 
-- Megadrive d'origine (PAL ou NTSC), sans Mega-CD, via une cartouche flash (prévu pour EverDrive MD V3 ; test sur console à venir).
-- High scores sauvegardés dans la SRAM de la cartouche.
+- Megadrive d'origine (PAL ou NTSC), sans Mega-CD, via une cartouche flash (EverDrive MD V3) ; testé sur console d'origine.
+- Meilleurs scores, réglages et partie en cours sauvegardés dans la SRAM de la cartouche.
 - Développé en C avec [SGDK](https://github.com/Stephane-D/SGDK).
 
 ## Compilation
@@ -21,7 +21,7 @@ Prérequis : Docker.
 make        # compile out/rom.bin via l'image ghcr.io/stephane-d/sgdk
 make run    # compile puis lance l'émulateur BlastEm (PAL) ; make run-ntsc pour le NTSC
 make test   # tests du cœur de simulation sur PC
-make check  # tests + ROM + budgets mémoire
+make check  # tests + ROM + budgets mémoire + contrôle des 38 colonnes
 ```
 
 ## Pourquoi « Mega » Président
