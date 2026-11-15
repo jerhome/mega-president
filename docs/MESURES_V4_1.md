@@ -52,3 +52,14 @@ Lecture : les chiffres sont lus sur de petites captures (un « 0 » et un « 8 �
 - Titre avec sauvegarde (P5), options, destitution et fermeture de l'aide du budget (P2) non relevés.
 - Le compteur `L` est élevé partout, y compris sur la carte et le tableau de bord ; avant d'optimiser, séparer le temps passé hors update + draw (ajouter un second maximum sur la boucle entière) pour savoir si l'hôte ou `ui_frame_end` est en cause.
 - L'affichage de `M`/`L` coûte lui-même un `ui_text_draw_n` par image (hors de la fenêtre mesurée).
+
+## Après P7 (hémicycle, `ui_hemi.c`)
+
+Mêmes scénarios et même méthode (`make rom-perf`, BlastEm, M = maximum d'update + draw).
+
+| Écran | Avant PAL M | Après PAL M | Avant NTSC M | Après NTSC M |
+|---|---|---|---|---|
+| Vote (hémicycle) | 20,0 ms | 9,0 ms | 21,3 ms | 8,9 ms |
+| Assemblée (hémicycle) | 23,0 ms | 9,0 ms | 24,8 ms | 10,0 ms |
+
+Objectif M < 16 ms atteint. Changements : table rang -> groupe construite en un parcours (plus de recherche par pixel pour les 577 sièges) ; tuiles générées 24 par image dans `ui_hemi_update` (tampon statique de 768 o + table de 577 o) et envoyées par `DMA_QUEUE`, au lieu des ≈ 170 envois CPU d'un coup ; palettes en `DMA_QUEUE` au changement d'état. L'hémicycle se complète en 7 images (≈ 120 ms), pendant le fondu d'entrée ; le résultat final est identique au pixel près (`shots_compare` : 2 captures identiques, vote et Assemblée). Le compteur `L` reste à 16-27 comme sur les écrans légers : il vient du tour de boucle hors update + draw ou de l'hôte, pas de l'hémicycle. RAM statique : 7 936 o.
