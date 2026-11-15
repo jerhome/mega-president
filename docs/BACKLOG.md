@@ -222,7 +222,7 @@ On passe tout son temps dans les écrans : ils doivent être superbes. Personnag
 ### Jalon V3
 | # | Tâche | Durée | État |
 |---|---|---|---|
-| 3.15 | Budgets ROM/RAM/VRAM, PAL et NTSC, test console du joueur, release | 5 h | ✅ ROM v3.0 livrée (étiquette v3.0, out/mega-president-v3.0.bin) ; test console du joueur le 16/11, retours en V3.1 si besoin |
+| 3.15 | Budgets ROM/RAM/VRAM, PAL et NTSC, test console du joueur, release | 5 h | ✅ ROM v3.0 livrée et publiée sur GitHub le 15/11 (release v3.0) ; test console du joueur le 16/11, retours en V3.1 si besoin |
 
 ## V4 — 5 électorats et budget détaillé (≈ 50 h)
 
