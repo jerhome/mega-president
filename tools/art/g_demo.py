@@ -13,7 +13,7 @@ from persos import (P_, CX, INK, bust, neck, ears, curl_marks, stripes, comb,
 # --- Le président de gauche ---------------------------------------------------------------
 
 def pres_gauche():
-    """Le président (gauche, RSV) : tignasse frisée en nuage, barbe de prof de fac,
+    """Antoine Verdier, président (gauche, RSV) : tignasse frisée en nuage, barbe de prof de fac,
     lunettes rondes sur un nez en pomme de terre, veste de velours côtelé."""
     P = P_({
         "bg": [(5, 6, 5)],

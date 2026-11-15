@@ -17,6 +17,7 @@ def render_all(names=None):
         if names and name not in names:
             continue
         P = fn()
+        P.name = name
         P.render_base()
         keys = [P.render(e) for e in gueules.EXPRS]
         pal, index = P.palette(keys, strict=False)
@@ -42,6 +43,40 @@ def sheet(path, items, scale=4, gap=6, bg=0x202020):
                         for sx in range(scale):
                             row[(ox + x) * scale + sx] = col
     write_rgb_png(path, img)
+
+
+def contact(path, items, per_row=3, scale=4, gap=6, bg=0x202020, extra=None):
+    """Planche-contact : chaque personnage = bloc de 4 expressions, per_row blocs par ligne.
+    extra : liste de (pixels, palette) d'images supplémentaires ajoutées en bas (ex. titre)."""
+    n = len(gueules.EXPRS)
+    bw = n * (gueules.W + 2) + gap
+    rows = (len(items) + per_row - 1) // per_row
+    Wt = per_row * bw + gap
+    Ht = rows * (gueules.H + gap) + gap
+    ex_h = sum(len(px) + gap for px, _ in (extra or []))
+    Wt = max(Wt, max([len(px[0]) + 2 * gap for px, _ in (extra or [])] or [0]))
+    img = [[bg] * Wt for _ in range(Ht + ex_h)]
+    for k, (name, pxs, pal) in enumerate(items):
+        ox = gap + (k % per_row) * bw
+        oy = gap + (k // per_row) * (gueules.H + gap)
+        for c, px in enumerate(pxs):
+            for y in range(gueules.H):
+                for x in range(gueules.W):
+                    img[oy + y][ox + c * (gueules.W + 2) + x] = pal[px[y][x]]
+    oy = Ht
+    for px, pal in (extra or []):
+        for y, row in enumerate(px):
+            for x, v in enumerate(row):
+                img[oy + y][gap + x] = pal[v]
+        oy += len(px) + gap
+    out = []
+    for row in img:
+        r = []
+        for c in row:
+            r += [c] * scale
+        for _ in range(scale):
+            out.append(list(r))
+    write_rgb_png(path, out)
 
 
 def scaled(px, pal, scale):
@@ -74,6 +109,13 @@ if __name__ == "__main__":
     args = sys.argv[1:]
     if args and args[0] == "--export":
         export(args[1])
+        sys.exit(0)
+    if args and args[0] == "--contact":   # --contact SORTIE.png [échelle]
+        import title
+        import title3
+        t = title3.TITLE[0][1]()
+        contact(args[1], render_all(), scale=int(args[2]) if len(args) > 2 else 4,
+                extra=[(t.px, title.PALETTE)])
         sys.exit(0)
     scale = 4
     if "--scale" in args:

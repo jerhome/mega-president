@@ -12,7 +12,7 @@ static const Image *const art_images[ART_COUNT] = {
     &art_pres_gauche, &art_pres_centre, &art_pres_droite,
     &art_pm_technocrate, &art_pm_rassembleur, &art_pm_reformateur,
     &art_cohab_gauche, &art_cohab_centre, &art_cohab_droite,
-    &art_cand_roussel, &art_cand_vasseur, &art_cand_marchetti, &art_cand_valmont, &art_cand_lenoir,
+    &art_cand_rouviere, &art_cand_vasseur, &art_cand_marchetti, &art_cand_valmont, &art_cand_lenoir,
     &art_evt_greve, &art_evt_canicule, &art_evt_inondation, &art_evt_scandale, &art_evt_sommet,
     &art_evt_bourse, &art_evt_sante, &art_evt_pollution, &art_evt_securite, &art_evt_numerique,
     &art_evt_education, &art_evt_energie, &art_evt_agriculture, &art_evt_industrie, &art_evt_fete,
