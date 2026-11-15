@@ -7,7 +7,7 @@ Le joueur parle français : documents, textes du jeu et rapports en français.
 - `docs/REGLES.md` : règles validées (V1 et V2 distinguées).
 - `docs/BACKLOG.md` : tâches V0, V1 et V2. Marquer ✅ (fait) ou 🔄 (en cours) dans la ligne de la tâche ; `python3 tools/progress.py` calcule l'avancement.
 - `docs/A_VALIDER.md` : décisions importantes en attente d'accord du joueur (mode retrait).
-- `docs/AGENTS.md` : agents `md-dev`, `qa-rom`, `redacteur`, `directeur-artistique` (Opus, décisions graphiques et relecture visuelle avant le joueur) (`.claude/agents/`), en Sonnet. **3 agents simultanés au maximum** ; un 4e temporaire si gain de temps, avec notification mobile (PushNotification). Opus ponctuellement si gros gain, en prévenant aussi.
+- `docs/AGENTS.md` : agents `md-dev`, `qa-rom`, `redacteur`, `directeur-artistique` (Opus, décisions graphiques et relecture visuelle avant le joueur), `vannes` (Opus, relecture et écriture de l'humour) (`.claude/agents/`), en Sonnet. **3 agents simultanés au maximum** ; un 4e temporaire si gain de temps, avec notification mobile (PushNotification). Opus ponctuellement si gros gain, en prévenant aussi.
 
 ## Commandes
 | Commande | Effet |

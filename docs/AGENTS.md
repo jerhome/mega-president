@@ -12,6 +12,7 @@
 | `game-designer` | Règles, formules, effets des lois, conditions de victoire et de défaite. Rédige des spécifications sans coder | Simulation, institutions | V1 si besoin (Claude tient ce rôle au début) |
 | `equilibrage` | Lance le simulateur sur PC, analyse les statistiques et propose des ajustements chiffrés | 1.19, 1.20, 2.14 | V1 |
 | `assets` | Graphismes : palettes, images provisoires, contrat de format pour le pixel artiste | 1.5, V2 | V2 |
+| `vannes` | **Auteur comique (Opus)** : de gauche, un peu trash, mais dans les clous (tout fictif, on tape sur ce que les puissants font, jamais sur ce que les gens sont). Relit, affûte et écrit les vannes | Textes drôles | Depuis la V3 (15/11, demande du joueur) |
 | `directeur-artistique` | **Artiste et garant du style (Opus)** : tient la charte, tranche les choix graphiques mineurs, relit chaque capture ou planche avant le joueur (✅ ou ❌ avec corrections), écrit les consignes visuelles des `md-dev`, retouche les générateurs de `tools/art/` et `tools/ui/` | Toute tâche visuelle | Depuis la V3 (15/11, demande du joueur) |
 
 **Recommandation** : démarrer avec `md-dev`, `qa-rom` et `redacteur`, puis ajouter les autres au besoin pour limiter la consommation de tokens.
@@ -30,6 +31,7 @@ La session principale aiguille chaque demande selon cette table. En cas de doute
 | Format du contenu, convertisseur | `md-dev` | `tools/content/`, `src/content/` (généré) | |
 | Texte, loi, événement, nom, ton | `redacteur` | `docs/contenu/` | Le convertisseur valide les longueurs |
 | Décision graphique, style, relecture visuelle, consigne d'illustration | `directeur-artistique` | `docs/CHARTE_V3.md`, `tools/art/`, `tools/ui/`, retouches de style dans `src/ui/` et `src/screens/` | Les choix majeurs vont dans `docs/A_VALIDER.md` |
+| Humour : relecture, affûtage ou écriture des vannes (journaux, événements, accroches, répliques) | `vannes` | `docs/contenu/` | Opus ; tout nouveau texte drôle passe par lui avant le joueur |
 | Vérification, budgets, non-régression | `qa-rom` | lecture seule | Ne modifie jamais le code |
 | Flux entre écrans, intégration, `main.c`, Makefile, git, releases | Session principale | `src/game/`, `src/main.c`, `Makefile`, docs de pilotage | |
 
