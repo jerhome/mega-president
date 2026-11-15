@@ -32,8 +32,9 @@ Le nom est un double clin d'œil :
   avec un nom qui grandit à chaque fois : **Super Président** sur Nintendo (Super Nintendo),
   puis **Giga Président** sur PC et Mac ;
 - **le régime** : c'est un pied de nez au pouvoir démesuré que la Ve République donne à son
-  président. Plus la machine est grosse, plus le président l'est aussi… et plus les
-  contre-pouvoirs rapetissent.
+  président. Plus la machine est grosse, plus le président se croit tout-puissant… et
+  plus les contre-pouvoirs gonflent pour lui tenir tête (rue, Parlement, Sénat, presse,
+  juges) : c'est tout l'enjeu du jeu.
 
 ## Univers
 
