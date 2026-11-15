@@ -36,7 +36,7 @@ static void cat_signed(char *dst, s32 v, u16 dec)
 // Mise en page de la une (charte V3) :
 //  1-5    bandeau du journal (illustration 38 x 5)
 //  6      date du bilan, 7 filet
-//  8-19   « photo de une » : médaillon x 29-38 (emplacement 8 x 10 tuiles) ;
+//  8-19   « photo de une » : gueule du président x 29-38 (10 x 12 tuiles, PAL2) ;
 //         le texte coule à sa gauche sur 27 colonnes, puis sur toute la largeur.
 #define PHOTO_X   29
 #define PHOTO_Y   8
@@ -85,12 +85,22 @@ static u16 indicator(u16 y, const char *label, s16 before, s16 after, u16 dec, c
     ui_icon_draw(1, y, up ? (good ? UI_ICON_UP_GOOD : UI_ICON_UP_BAD)
                           : (good ? UI_ICON_DOWN_GOOD : UI_ICON_DOWN_BAD));
     ui_text_draw(3, y, label, UI_STYLE_DIM);
-    buf[0] = 0;
-    cat_num(buf, before, dec);
-    strcat(buf, " → ");
-    cat_num(buf, after, dec);
-    strcat(buf, unit);
-    ui_text_right(row_end(y), y, buf, good ? UI_STYLE_TEXT : UI_STYLE_ALERT);
+    // Colonnes fixes : unité (2 cases), « après » (6), flèche, « avant » (6).
+    // À côté de la photo, seule la valeur « après » tient.
+    {
+        u16 xe = row_end(y);
+        UiStyle st = good ? UI_STYLE_TEXT : UI_STYLE_ALERT;
+        ui_text_draw(xe - 2, y, unit[0] ? "%" : "", UI_STYLE_DIM);
+        buf[0] = 0;
+        cat_num(buf, after, dec);
+        ui_text_right(xe - 3, y, buf, st);
+        if (xe >= 39) {
+            ui_text_draw(xe - 11, y, "→", UI_STYLE_DIM);
+            buf[0] = 0;
+            cat_num(buf, before, dec);
+            ui_text_right(xe - 12, y, buf, UI_STYLE_DIM);
+        }
+    }
     return y + 1;
 }
 
@@ -252,6 +262,25 @@ static void draw_politics(void)
         y = rubric(y, "Budget reconduit");
         y = para(y, "Faute de budget adopté dans l’année,\nl’État reconduit le budget d’équilibre.", UI_STYLE_TEXT);
     }
+
+    // Une gueule en bas à droite si la page laisse la place : le président du Sénat
+    // au renouvellement, sinon l'éditorialiste (ravi des mauvaises nouvelles).
+    if (y <= 13) {
+        GueuleId id = GUEULE_JOUR_EDITORIALISTE;
+        Expr e = (r->censure == CENSURE_ADOPTEE || r->affair || r->impeach != IMP_EV_NONE)
+               ? EXPR_CONTENT : EXPR_NEUTRE;
+        if (page == 3 && r->senate_renewed) {
+            u16 before = 0;
+            for (u8 g = 0; g < GRP_COUNT; g++)
+                if (sim_in_bloc(&g_game.country, g)) before += r->senate_before[g];
+            id = GUEULE_SENAT_PRESIDENT;
+            e = sim_senate_bloc_seats(&g_game.country) >= before ? EXPR_NEUTRE : EXPR_FURIEUX;
+        }
+        ui_medallion(29, 14, UI_PORTRAIT_W, UI_PORTRAIT_H);
+        ui_gueule_draw(id, e, 29, 14, PAL2);
+        ui_text_right(28, 25, id == GUEULE_SENAT_PRESIDENT ? "Le président du Sénat" : "L’éditorialiste",
+                      UI_STYLE_DIM);
+    }
 }
 
 static void report_draw(void)
@@ -297,14 +326,12 @@ static void report_draw(void)
     ui_text_center(1, 6, 38, buf, UI_STYLE_HIGHLIGHT);
     ui_separator(1, 7, 38);
 
-    // Photo de une : le président (emplacement prévu pour un portrait 8 x 10).
+    // Photo de une : le président, content ou gêné selon le trimestre.
     ui_medallion(PHOTO_X, PHOTO_Y, PHOTO_W, PHOTO_H);
     {
-        ArtId id = ART_PRES(c->orientation);
-        u16 w, h;
-        ui_art_size(id, &w, &h);
-        if (w <= PHOTO_W - 2 && h <= PHOTO_H - 2)
-            ui_art_draw(id, PHOTO_X + 1 + (PHOTO_W - 2 - w) / 2, PHOTO_Y + 1 + (PHOTO_H - 2 - h) / 2);
+        s16 d = r->popularity_after - r->popularity_before;
+        Expr e = (r->affair || d <= -15) ? EXPR_GENE : (d >= 10 ? EXPR_CONTENT : EXPR_NEUTRE);
+        ui_gueule_draw(GUEULE_PRES(c->orientation), e, PHOTO_X, PHOTO_Y, PAL2);
     }
 
     // Popularité et capital politique

@@ -42,15 +42,15 @@ static void map_init(void)
     dirty = TRUE;
     ui_clear();
     ui_art_close();   // la carte emprunte PAL2 et la zone de VRAM des illustrations
-    ui_window(0, 0, 40, 28);
-    ui_text_center(1, 1, 38, "Popularité par région", UI_STYLE_HIGHLIGHT);
+    ui_window_title(0, 0, 40, 28, "Popularité par région", FALSE);
     ui_map_draw(MAP_X, MAP_Y);
     paint_regions();
     ui_map_highlight(sel);
     ui_text_draw(PANEL_X, 18, "Jaune : moyenne", UI_STYLE_HIGHLIGHT);
     ui_text_draw(PANEL_X, 19, "Rouge : faible", UI_STYLE_ALERT);
     ui_text_draw(PANEL_X, 20, "Vert : forte", UI_STYLE_TEXT);
-    ui_text_draw(1, 26, "Gauche/droite : région  B : retour", UI_STYLE_HIGHLIGHT);
+    ui_separator(PANEL_X, 17, PANEL_W);
+    ui_footer(1, 26, 38, "Gauche/Droite : région   B : retour");
 }
 
 static void map_update(void)

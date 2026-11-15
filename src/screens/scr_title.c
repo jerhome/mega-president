@@ -17,10 +17,10 @@ enum { PH_PRESS = 0, PH_ORIENT, PH_PM, PH_DIFF, PH_DUREE };
 
 enum { D_ALL = 1, D_LIST = 2, D_DESC = 4 };
 
-#define LIST_Y 19       // sous le titre de la phase (ligne 18), dans la fenêtre du bas (17-27)
-#define WIN_Y  17
-#define PORTRAIT_X 31   // portrait 7 x 7 dans un cadre 9 x 9 sur l'illustration du titre
-#define PORTRAIT_Y 4
+#define LIST_Y 18       // sous le titre de la phase (ligne 17), dans la fenêtre du bas (16-27)
+#define WIN_Y  16       // l illustration occupe les lignes 0 à 15
+#define PORTRAIT_X 29   // gueule 10 x 12 sur l illustration (PAL3 ; le titre est en PAL2)
+#define PORTRAIT_Y 2
 
 static const char *const orient_items[ORIENT_COUNT] = {
     "Gauche — RSV", "Centre — MJM", "Droite — UTL"
@@ -178,23 +178,24 @@ static void title_update(void)
     }
 }
 
-// Fond : illustration du titre (lignes 0-15, palette PAL2 : pas de style DIM
-// tant qu'elle est affichée), titre dans le ciel, fenêtre du bas (17-27).
+// Fond : illustration du titre (lignes 0-15, PAL2), plaque du titre dans le ciel,
+// fenêtre du bas (16-27).
 static void draw_frame(void)
 {
     art_reset();
     ui_art_draw(ART_TITLE, 0, 0);
-    ui_text_center(0, 1, UI_COLS, "MEGA PRÉSIDENT", UI_STYLE_HIGHLIGHT);
-    ui_window(0, WIN_Y, UI_COLS, 11);
+    ui_banner(10, 0, 20, "MEGA PRÉSIDENT", FALSE);
+    ui_window(0, WIN_Y, UI_COLS, UI_ROWS - WIN_Y);
 }
 
-// Portrait en surbrillance (cadre + palette PAL3, celle de l'illustration du titre est PAL2).
+// Gueule du président ou du PM sélectionné, sur l'illustration (PAL3).
 static void draw_portrait(void)
 {
     if (phase != PH_ORIENT && phase != PH_PM)
         return;
-    ui_art_draw_pal(phase == PH_ORIENT ? ART_PRES(list.sel) : ART_PM(list.sel),
-                    PORTRAIT_X, PORTRAIT_Y, PAL3);
+    ui_medallion(PORTRAIT_X, PORTRAIT_Y, UI_PORTRAIT_W, UI_PORTRAIT_H);
+    ui_gueule_draw(phase == PH_ORIENT ? GUEULE_PRES(list.sel) : GUEULE_PM(list.sel), EXPR_CONTENT,
+                   PORTRAIT_X, PORTRAIT_Y, PAL3);
 }
 
 static void title_draw(void)
@@ -202,25 +203,22 @@ static void title_draw(void)
     if (dirty & D_ALL) {
         draw_frame();
         if (phase == PH_PRESS) {
-            ui_text_center(0, 18, UI_COLS, "Élysée, cinq ans de pouvoir", UI_STYLE_HIGHLIGHT);
-            ui_text_center(0, 19, UI_COLS, "« À vous de gouverner ! »", UI_STYLE_TEXT);
-            if (has_save)
-                ui_text_center(0, 22, UI_COLS, "B : continuer la partie", UI_STYLE_TEXT);
-            ui_text_center(0, 23, UI_COLS, "C : meilleurs scores", UI_STYLE_TEXT);
-            // Pied de page, séparé des actions par une ligne vide (style atténué : PAL0 en V3).
+            ui_text_center(0, 17, UI_COLS, "Élysée, cinq ans de pouvoir", UI_STYLE_HIGHLIGHT);
+            ui_text_center(0, 18, UI_COLS, "« À vous de gouverner ! »", UI_STYLE_TEXT);
+            ui_footer(1, 22, UI_TEXT_COLS, has_save ? "B : continuer la partie   C : meilleurs scores"
+                                                    : "C : meilleurs scores");
+            // Pied de page, séparé des actions par une ligne vide et un filet.
+            ui_separator(1, 24, UI_TEXT_COLS);
             ui_text_center(0, 25, UI_COLS, GAME_AUTHOR " - " GAME_VERSION, UI_STYLE_DIM);
             ui_text_center(0, 26, UI_COLS, "Développé avec Claude", UI_STYLE_DIM);
         } else {
-            if (phase == PH_ORIENT || phase == PH_PM)
-                ui_window(PORTRAIT_X - 1, PORTRAIT_Y - 1, 9, 9);
             static const char *const titles[4] = {
                 "Votre orientation politique", "Votre Premier ministre", "Difficulté", NULL
             };
-            ui_text_center(0, 18, UI_COLS, phase == PH_DUREE ? txt[TXT_DUREE_TITRE] : titles[phase - PH_ORIENT],
+            ui_text_center(0, 17, UI_COLS, phase == PH_DUREE ? txt[TXT_DUREE_TITRE] : titles[phase - PH_ORIENT],
                            UI_STYLE_HIGHLIGHT);
-            ui_text_draw(1, 26, phase == PH_DUREE ? "Haut/Bas  A : jouer  B : retour"
-                                                 : "Haut/Bas  A : suite  B : retour",
-                         UI_STYLE_TEXT);
+            ui_footer(1, 26, UI_TEXT_COLS, phase == PH_DUREE ? "A : jouer   B : retour"
+                                                            : "A : suite   B : retour");
             dirty |= D_LIST | D_DESC;
         }
         blink_on = FALSE;
@@ -233,9 +231,9 @@ static void title_draw(void)
         if (on != blink_on) {
             blink_on = on;
             if (on)
-                ui_text_center(0, 21, UI_COLS, "Appuyez sur START", UI_STYLE_TEXT);
+                ui_footer(1, 20, UI_TEXT_COLS, "START : nouvelle partie");
             else
-                ui_clear_rect(1, 21, UI_TEXT_COLS, 1);
+                ui_clear_rect(1, 20, UI_TEXT_COLS, 1);
         }
         return;
     }
@@ -245,22 +243,23 @@ static void title_draw(void)
         dirty &= (u8)~D_LIST;
     }
     if (dirty & D_DESC) {
-        ui_clear_rect(1, 22, UI_TEXT_COLS, 4);
+        ui_clear_rect(1, 22, UI_TEXT_COLS, 3);
         draw_portrait();
         if (phase == PH_ORIENT) {
             u8 g = group_of(list.sel);
-            ui_text_draw_n(1, 23, grp_name[g], UI_TEXT_COLS, 0, UI_STYLE_HIGHLIGHT);
-            ui_text_wrap(1, 24, UI_TEXT_COLS, 2, grp_desc[g], UI_STYLE_TEXT);
+            ui_text_draw_n(1, 22, grp_name[g], UI_TEXT_COLS, 0, UI_STYLE_HIGHLIGHT);
+            ui_text_wrap(1, 23, UI_TEXT_COLS, 2, grp_desc[g], UI_STYLE_TEXT);
         } else if (phase == PH_PM) {
-            ui_text_wrap(1, 23, UI_TEXT_COLS, 3, txt[TXT_PM_TECHNOCRATE_DESC + 2 * list.sel], UI_STYLE_TEXT);
+            ui_text_wrap(1, 22, UI_TEXT_COLS, 3, txt[TXT_PM_TECHNOCRATE_DESC + 2 * list.sel], UI_STYLE_TEXT);
         } else if (phase == PH_DUREE) {
-            ui_text_wrap(1, 23, UI_TEXT_COLS, 3, txt[TXT_DUREE_20_DESC + list.sel], UI_STYLE_TEXT);
+            ui_text_wrap(1, 22, UI_TEXT_COLS, 3, txt[TXT_DUREE_20_DESC + list.sel], UI_STYLE_TEXT);
         } else {
-            ui_text_wrap(1, 23, UI_TEXT_COLS, 3, txt[TXT_DIFF_FACILE + list.sel], UI_STYLE_TEXT);
+            ui_text_wrap(1, 22, UI_TEXT_COLS, 3, txt[TXT_DIFF_FACILE + list.sel], UI_STYLE_TEXT);
         }
         dirty &= (u8)~D_DESC;
     }
 }
+
 
 static void title_exit(void)
 {

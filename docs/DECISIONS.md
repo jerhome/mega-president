@@ -35,3 +35,4 @@ Décisions prises en autonomie (ou arbitrages du joueur), à relire. Chacune est
 | 15/11 | Gueules V3 validées (style des 3 démonstrations) ; renommages : Camille Roussel → Camille Rouvière, Julien Maréchal → Julien Lestrade ; présidents Antoine Verdier, Laurent Delmas, Henri de Saint-Aubin | Garder les anciens noms | Noms trop proches de personnalités réelles ; décision du joueur |
 | 15/11 | V4 : les 5 propositions de SPEC_V4.md validées | Variantes simplifiées | Décision du joueur |
 | 15/11 | Interface V3 validée ; hémicycle dynamique + illustrations redessinées ; « plus rien de cheap » | Garder l'hémicycle illustré seul | Demande du joueur (« le jeu est fun, il doit être beau ») |
+| 15/11 | Série prévue sur plusieurs plateformes : Mega Président (Megadrive), Super Président (Nintendo), Giga Président (PC/Mac) ; le nom est aussi un pied de nez aux pouvoirs trop grands du président de la Ve République | — | Décision du joueur, notée dans README.md |

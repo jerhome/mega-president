@@ -286,19 +286,29 @@ void ui_separator(u16 x, u16 y, u16 w)
     VDP_clearTileMapRect(BG_A, x, y, w, 1);
 }
 
+// Rangée du cadre de portrait sur le plan A.
+static void ring_row(u16 x, u16 y, u16 w, u16 tl, u16 tm, u16 tr)
+{
+    VDP_setTileMapXY(BG_A, UI_FRAME_ATTR(tl), x, y);
+    if (w > 2)
+        VDP_fillTileMapRect(BG_A, UI_FRAME_ATTR(tm), x + 1, y, w - 2, 1);
+    VDP_setTileMapXY(BG_A, UI_FRAME_ATTR(tr), x + w - 1, y);
+}
+
 void ui_medallion(u16 x, u16 y, u16 w, u16 h)
 {
     if (w < 2 || h < 2)
         return;
-    deco_row(x, y, w, UI_T_MD_TL, UI_T_MD_T, UI_T_MD_TR);
-    if (h > 2) {
-        VDP_fillTileMapRect(BG_B, UI_FRAME_ATTR(UI_T_MD_L), x, y + 1, 1, h - 2);
-        if (w > 2)
-            VDP_fillTileMapRect(BG_B, UI_FRAME_ATTR(UI_T_MD_C), x + 1, y + 1, w - 2, h - 2);
-        VDP_fillTileMapRect(BG_B, UI_FRAME_ATTR(UI_T_MD_R), x + w - 1, y + 1, 1, h - 2);
-    }
-    deco_row(x, y + h - 1, w, UI_T_MD_BL, UI_T_MD_B, UI_T_MD_BR);
+    // Fond du portrait (plan B, recouvert par l'illustration) et cadre doré sur le
+    // bord du rectangle (plan A : seules les marges des tuiles sont opaques).
+    VDP_fillTileMapRect(BG_B, UI_FRAME_ATTR(UI_T_PF_C), x, y, w, h);
     VDP_clearTileMapRect(BG_A, x, y, w, h);
+    ring_row(x, y, w, UI_T_PF_TL, UI_T_PF_T, UI_T_PF_TR);
+    if (h > 2) {
+        VDP_fillTileMapRect(BG_A, UI_FRAME_ATTR(UI_T_PF_L), x, y + 1, 1, h - 2);
+        VDP_fillTileMapRect(BG_A, UI_FRAME_ATTR(UI_T_PF_R), x + w - 1, y + 1, 1, h - 2);
+    }
+    ring_row(x, y + h - 1, w, UI_T_PF_BL, UI_T_PF_B, UI_T_PF_BR);
 }
 
 void ui_select_bar(u16 x, u16 y, u16 w)

@@ -137,29 +137,31 @@ static void help_update(void)
 
 static void help_draw(void)
 {
-    char buf[24];
-    u16 n;
+    char buf[8];
+    u16 i, x;
 
     if (!dirty) return;
     dirty = FALSE;
 
     ui_clear();
-    ui_window(0, 0, 40, 28);
-    ui_text_center(1, 1, 38, "AIDE", UI_STYLE_DIM);
-    ui_text_center(1, 3, 38, pages[page].title, UI_STYLE_HIGHLIGHT);
-    ui_text_wrap(2, 5, 36, 18, pages[page].text, UI_STYLE_TEXT);
+    ui_window_title(0, 0, 40, 28, pages[page].title, TRUE);
+    buf[0] = '0' + page + 1;
+    buf[1] = '/';
+    buf[2] = '0' + N_PAGES;
+    buf[3] = 0;
+    ui_text_right(39, 1, buf, UI_STYLE_DIM);
+    ui_text_wrap(2, 4, 36, 19, pages[page].text, UI_STYLE_TEXT);
 
-    n = 0;
-    buf[n++] = 'P'; buf[n++] = 'a'; buf[n++] = 'g'; buf[n++] = 'e'; buf[n++] = ' ';
-    buf[n++] = '0' + page + 1;
-    buf[n++] = '/';
-    buf[n++] = '0' + N_PAGES;
-    buf[n] = 0;
-    ui_text_center(1, 24, 38, buf, UI_STYLE_TEXT);
-    ui_text_draw(2, 26, page > 0 ? "< précédente" : "", UI_STYLE_DIM);
+    // Pastilles de pagination : la page courante en or.
+    x = 20 - N_PAGES;
+    for (i = 0; i < N_PAGES; i++)
+        if (i == page) ui_icon_draw(x + i * 2, 24, UI_ICON_BULLET);
+        else ui_text_draw(x + i * 2, 24, "·", UI_STYLE_DIM);
+    if (page > 0)
+        ui_text_draw(1, 26, "← préc.", UI_STYLE_DIM);
     if (page + 1 < N_PAGES)
-        ui_text_draw(38 - ui_text_len("suivante >"), 26, "suivante >", UI_STYLE_DIM);
-    ui_text_center(1, 26, 38, "B : retour", UI_STYLE_DIM);
+        ui_text_right(39, 26, "suiv. →", UI_STYLE_DIM);
+    ui_footer(9, 26, 22, "B : retour");
 }
 
 const Screen scr_help = { help_init, help_update, help_draw, NULL };

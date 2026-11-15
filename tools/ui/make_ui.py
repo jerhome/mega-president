@@ -38,8 +38,8 @@ PAL0 = [
     (0, 0, 0),  # 1  ombre, contours
     (7, 7, 7),  # 2  encre A haut : texte
     (6, 6, 5),  # 3  encre A bas  : texte (dégradé ivoire)
-    (5, 5, 6),  # 4  encre B haut : texte atténué
-    (4, 4, 5),  # 5  encre B bas
+    (5, 6, 7),  # 4  encre B haut : texte atténué (gris bleuté clair, contrasté sur le bleu)
+    (4, 5, 6),  # 5  encre B bas
     (1, 5, 2),  # 6  jauge A : verte
     (4, 7, 3),  # 7  jauge A : reflet
     (1, 3, 7),  # 8  jauge B : bleue
@@ -382,36 +382,33 @@ def make_misc_tiles():
     for tx, nm in enumerate(["SEP_L", "SEP_M", "SEP_R"]):
         tiles.append((nm, 0, cut(img, tx, 0)))
 
-    # Médaillon doré (cadre de portrait) : 3x3, intérieur sombre.
-    def medal(px, py, w, h):
-        # anneau doré sur les 3 pixels intérieurs des tuiles de bord
+    # Cadre de portrait (plan A, PAL1) posé SUR le bord du portrait : coins arrondis
+    # (pixels hors de l'arrondi peints du fond de fenêtre), contour noir, filet doré
+    # clair en haut à gauche, sombre en bas à droite, filet noir intérieur. L'intérieur
+    # des tuiles reste transparent : le portrait (plan B) s'y voit.
+    def ring(px, py, w, h):
+        if outside_round(px, py, w, h, 4):
+            return fill_pixel(px, py)
         e = min(px, py, w - 1 - px, h - 1 - py)
-        if e <= 2:
-            if outside_round(px, py, w - 1, h - 1, 2):
-                return SH if not outside_round(px - 1, py - 1, w - 1, h - 1, 2) else fill_pixel(px, py)
-            if e == 0:
-                return SH
-            if e == 1:
-                return IA1 if (px + py) < (w + h) // 2 else IA2
+        d = ring_dist(px, py, w, h, 4)
+        if d == 0:
             return SH
-        if e <= 4:
-            # chanfrein intérieur : or sombre en haut/gauche, clair en bas/droite
-            return IA2 if e == 3 else SH
-        if e <= 7:
-            return fill_pixel(px, py) if False else TROUGH
-        return TROUGH
-    img = render_box(24, 24, lambda x, y: medal(x, y, 24, 24))
-    # Le médaillon entoure le portrait : bords de 5 pixels utiles à l'extérieur du portrait.
-    names = ["MD_TL", "MD_T", "MD_TR", "MD_L", "MD_C", "MD_R", "MD_BL", "MD_B", "MD_BR"]
+        if d == 1:
+            return IA1 if (px + py) < (w + h) // 2 - 4 or (px < w - 6 and py < h - 6) else IA2
+        if d == 2:
+            return IA2
+        if d == 3:
+            return SH
+        return TR
+    img = render_box(24, 24, lambda x, y: ring(x, y, 24, 24))
+    names = ["PF_TL", "PF_T", "PF_TR", "PF_L", None, "PF_R", "PF_BL", "PF_B", "PF_BR"]
     for ty in range(3):
         for tx in range(3):
-            tiles.append((names[ty * 3 + tx], 1, cut(img, tx, ty)))
-    return tiles
-
-
-def medal_fix(tiles):
-    """Le médaillon : les tuiles de bord ne doivent montrer l'anneau que du côté extérieur.
-    On recalcule chaque tuile de bord à partir de la distance au bord extérieur."""
+            if names[ty * 3 + tx]:
+                tiles.append((names[ty * 3 + tx], 1, cut(img, tx, ty)))
+    # Fond d'un emplacement de portrait vide (plan B) : creux sombre tramé.
+    t = [[TROUGH if (x + y) % 4 else X15 for x in range(8)] for y in range(8)]
+    tiles.append(("PF_C", 0, t))
     return tiles
 
 
@@ -635,12 +632,10 @@ def preview(dirpath, font, frame_tiles, gauges, icons):
                 put(i, y, "SEP_M")
         y += 1
     text(2, 5, "Pop 51,4  Moy 52,8  Ais 50,1", 2)
-    # médaillon
+    # emplacement de portrait (fond seul, le cadre est sur le plan A)
     for j in range(12):
         for i in range(10):
-            col = 0 if i == 0 else (2 if i == 9 else 1)
-            row = 0 if j == 0 else (2 if j == 11 else 1)
-            put(29 + i, 4 + j, ["MD_TL", "MD_T", "MD_TR", "MD_L", "MD_C", "MD_R", "MD_BL", "MD_B", "MD_BR"][row * 3 + col])
+            put(29 + i, 4 + j, "PF_C")
     text(30, 16, "Delaunay", 1)
     text(30, 17, "Maj. abs.", 2)
     window(0, 20, 40, 8)
@@ -705,6 +700,9 @@ def main():
         img = [[i // 8 for i in range(16 * 8)] for _ in range(8)]
         write_png(os.path.join(GFX, name + ".png"), img, pal)
     write_header(frame_tiles)
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import make_hemi
+    make_hemi.main(sys.argv[sys.argv.index("--preview") + 1] if "--preview" in sys.argv else None)
     if "--preview" in sys.argv:
         preview(sys.argv[sys.argv.index("--preview") + 1], font, frame_tiles, gauges, icons)
     print("%d glyphes x 2 encres, %d tuiles de décor, %d de jauge, %d icônes"

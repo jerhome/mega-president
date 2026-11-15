@@ -50,58 +50,57 @@ static void election_update(void)
     }
 }
 
-// Libellé d'un candidat : « Vous (RSV) » ou « Nom (parti) ».
-static void cand_label(char *buf, u8 cand)
+// Libellé d'un candidat : « Vous » ou son nom.
+static const char *cand_title(u8 cand)
 {
-    if (cand == CAND_JOUEUR) {
-        strcpy(buf, "Vous (");
-        strcat(buf, grp_sigle[g_game.country.player_group]);
-        strcat(buf, ")");
-    } else {
-        strcpy(buf, cand_name[cand]);
-        strcat(buf, " (");
-        strcat(buf, cand_party[cand]);
-        strcat(buf, ")");
-    }
+    return cand == CAND_JOUEUR ? "Vous" : cand_name[cand];
 }
 
-// Ligne de résultat : nom, pourcentage, jauge (2 lignes de texte).
-static void draw_row(u16 y, u8 cand, s16 score, s16 gmax)
+static const char *cand_sigle(u8 cand)
 {
-    char buf[UI_LINE_BUF];
-    char num[14];
-    u16 n;
-    bool me = (cand == CAND_JOUEUR);
-    UiStyle st = me ? UI_STYLE_HIGHLIGHT : UI_STYLE_TEXT;
-
-    cand_label(buf, cand);
-    ui_text_draw_n(1, y, buf, 28, 0, st);
-    n = ui_format_number(num, score, 1);
-    ui_text_draw(UI_TEXT_COLS - n - 1, y, num, st);
-    ui_text_draw(UI_TEXT_COLS - 1, y, "%", st);
-    ui_gauge_draw(1, y + 1, UI_TEXT_COLS, score, gmax, me ? UI_GAUGE_GOLD : UI_GAUGE_NEUTRAL);
+    return cand == CAND_JOUEUR ? grp_sigle[g_game.country.player_group] : cand_party[cand];
 }
 
-// Bloc d'un finaliste (second tour) : portrait 7 x 7 à gauche, nom, parti, score et jauge à droite.
-// PAL2 est empruntée par les portraits : jauges positive / dorée, jamais NEUTRAL.
-static void draw_finalist(u16 y, u8 cand, s16 score)
+static GueuleId cand_gueule(u8 cand)
 {
-    char buf[UI_LINE_BUF];
+    return cand == CAND_JOUEUR ? GUEULE_PRES(g_game.country.orientation) : GUEULE_CAND(cand);
+}
+
+// Premier tour : une ligne par candidat (rang, nom, parti, score, jauge).
+static void draw_row(u16 y, u8 rank, u8 cand, s16 score, s16 gmax)
+{
     char num[14];
     bool me = (cand == CAND_JOUEUR);
     UiStyle st = me ? UI_STYLE_HIGHLIGHT : UI_STYLE_TEXT;
 
-    ui_art_draw(me ? ART_PRES(g_game.country.orientation) : ART_CAND(cand), 1, y);
-    ui_text_draw_n(9, y + 1, me ? "Vous" : cand_name[cand], 30, 0, st);
-    buf[0] = 0;
-    strcat(buf, "(");
-    strcat(buf, me ? grp_sigle[g_game.country.player_group] : cand_party[cand]);
-    strcat(buf, ")");
-    ui_text_draw_n(9, y + 2, buf, 30, 0, UI_STYLE_TEXT);
+    ui_number_draw(1, y, rank + 1, 0, UI_STYLE_DIM);
+    ui_text_draw_n(3, y, cand_title(cand), 20, 0, st);
+    ui_text_draw_n(23, y, cand_sigle(cand), 9, 0, UI_STYLE_DIM);
     ui_format_number(num, score, 1);
     strcat(num, " %");
-    ui_text_draw(9, y + 4, num, st);
-    ui_gauge_draw(9, y + 5, 30, score, 1000, me ? UI_GAUGE_GOLD : UI_GAUGE_POSITIVE);
+    ui_text_right(39, y, num, st);
+    ui_gauge_draw(3, y + 1, 36, score, gmax, me ? UI_GAUGE_GOLD : UI_GAUGE_NEUTRAL);
+    if (rank < 2)
+        ui_icon_draw(1, y + 1, UI_ICON_CHECK);
+}
+
+// Second tour : deux gueules face à face, noms, partis et scores.
+#define FACE_Y 4
+static void draw_finalist(u8 side, u8 cand, s16 score, Expr e)
+{
+    char num[14];
+    u16 x = side ? 28 : 2;               // gueule 10 x 12
+    u16 cx = side ? 25 : 1;              // colonne de texte : 14 cases sous la gueule
+    bool me = (cand == CAND_JOUEUR);
+    UiStyle st = me ? UI_STYLE_HIGHLIGHT : UI_STYLE_TEXT;
+
+    ui_medallion(x, FACE_Y, UI_PORTRAIT_W, UI_PORTRAIT_H);
+    ui_gueule_draw(cand_gueule(cand), e, x, FACE_Y, side ? PAL3 : PAL2);
+    ui_text_center(cx, FACE_Y + 12, 14, cand_title(cand), st);
+    ui_text_center(cx, FACE_Y + 13, 14, cand_sigle(cand), UI_STYLE_DIM);
+    ui_format_number(num, score, 1);
+    strcat(num, " %");
+    ui_text_center(cx, FACE_Y + 15, 14, num, st);
 }
 
 static void election_draw(void)
@@ -113,26 +112,36 @@ static void election_draw(void)
         return;
     dirty = FALSE;
     art_reset();
-    ui_window(0, 0, 40, 28);
 
     if (phase == PH_ROUND1) {
-        ui_text_center(0, 1, UI_COLS, "PRÉSIDENTIELLE : PREMIER TOUR", UI_STYLE_HIGHLIGHT);
+        ui_window_title(0, 0, 40, 28, "Présidentielle · premier tour", FALSE);
+        ui_text_center(1, 4, 38, "Les deux premiers vont au second tour", UI_STYLE_DIM);
         for (i = 0; i < ELECTION_CANDIDATES; i++)
-            draw_row(4 + i * 3, e->cand[order[i]], e->round1[order[i]], 500);
-        ui_text_center(0, 25, UI_COLS, "A : second tour", UI_STYLE_DIM);
-    } else {
-        ui_text_center(0, 1, UI_COLS, "PRÉSIDENTIELLE : SECOND TOUR", UI_STYLE_HIGHLIGHT);
-        for (i = 0; i < 2; i++)
-            draw_finalist(3 + i * 7, e->finalist[i], e->round2[i]);
-        if (!player_in_round2)
-            ui_text_center(0, 17, UI_COLS, "Vous n'êtes pas qualifié(e).", UI_STYLE_TEXT);
+            draw_row(6 + i * 4, i, e->cand[order[i]], e->round1[order[i]], 500);
+        ui_footer(1, 26, 38, "A : second tour");
+        return;
+    }
 
-        if (phase == PH_ROUND2) {
-            ui_text_center(0, 25, UI_COLS, "A : résultat", UI_STYLE_TEXT);
+    ui_window_title(0, 0, 40, 28, "Présidentielle · second tour", FALSE);
+    {
+        bool verdict = (phase == PH_VERDICT);
+        u8 w = e->round2[0] >= e->round2[1] ? 0 : 1;   // vainqueur
+        for (i = 0; i < 2; i++) {
+            Expr ex = !verdict ? EXPR_NEUTRE : (i == w ? EXPR_CONTENT : EXPR_GENE);
+            draw_finalist(i, e->finalist[i], e->round2[i], ex);
+        }
+        ui_text_center(13, FACE_Y + 5, 14, "contre", UI_STYLE_DIM);
+        // Duel : part du premier finaliste sur la barre (or si c'est le joueur).
+        ui_gauge_draw(1, FACE_Y + 17, 38, e->round2[0], e->round2[0] + e->round2[1],
+                      e->finalist[0] == CAND_JOUEUR ? UI_GAUGE_GOLD : UI_GAUGE_NEUTRAL);
+        if (!player_in_round2)
+            ui_text_center(1, FACE_Y + 18, 38, "Vous n'êtes pas qualifié(e).", UI_STYLE_ALERT);
+
+        if (!verdict) {
+            ui_footer(1, 26, 38, "A : résultat");
         } else {
             const char *l1, *l2;
             UiStyle st = e->elected ? UI_STYLE_HIGHLIGHT : UI_STYLE_ALERT;
-            ui_window(4, 18, 32, 8);
             music_stop();   // la fanfare (ou le thème de défaite) joue seule
             sfx_play(e->elected ? SFX_ELECTION_WIN : SFX_ELECTION_LOSE);
             if (e->elected) {
@@ -145,9 +154,9 @@ static void election_draw(void)
                 l1 = "DÉFAITE";
                 l2 = "Battu(e) au second tour.";
             }
-            ui_text_center(4, 19, 32, l1, st);
-            ui_text_wrap(6, 21, 28, 2, l2, UI_STYLE_TEXT);
-            ui_text_center(4, 24, 32, e->elected ? "A : second mandat" : "A : bilan du mandat", UI_STYLE_TEXT);
+            ui_text_center(1, 23, 38, l1, st);
+            ui_text_center(1, 24, 38, l2, UI_STYLE_TEXT);
+            ui_footer(1, 26, 38, e->elected ? "A : second mandat" : "A : bilan du mandat");
         }
     }
 }

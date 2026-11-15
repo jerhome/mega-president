@@ -9,6 +9,8 @@
 #include "ui/input.h"
 #include "game/game.h"
 #include "content/content_texts.h"
+#include "screens/evt_art.h"
+#include "ui/ui_art.h"
 
 // Défini dans scr_game.c : tour (+1) où l'écran du budget a été vu.
 extern u8 g_budget_seen;
@@ -48,18 +50,19 @@ static void draw_header(void)
 {
     const Country *c = &g_game.country;
     char buf[UI_LINE_BUF];
-    ui_window(0, 0, 40, 3);
+    u16 n;
     buf[0] = 0;
-    strcat(buf, "Budget - année ");
+    strcat(buf, "Budget · année ");
     cat_num(buf, sim_year(c) + 1, 0);
-    ui_text_draw(1, 1, buf, UI_STYLE_HIGHLIGHT);
+    ui_banner(0, 0, 40, buf, TRUE);
     buf[0] = 0;
-    strcat(buf, "CP ");
     cat_num(buf, c->cp, 0);
     strcat(buf, "/");
     cat_num(buf, CP_MAX, 0);
-    ui_clear_rect(30, 1, 8, 1);
-    ui_text_draw(38 - ui_text_len(buf), 1, buf, UI_STYLE_TEXT);
+    n = ui_text_len(buf);
+    ui_text_right(39, 1, " CP", UI_STYLE_DIM);
+    ui_text_right(36, 1, buf, UI_STYLE_TEXT);
+    ui_icon_draw(34 - n, 1, UI_ICON_CP);
 }
 
 static void actions_setup(void)
@@ -81,7 +84,7 @@ static void budget_init(void)
     budget_items[BUDGET_RIGUEUR] = txt[TXT_BUD_RIGUEUR];
     budget_items[BUDGET_EQUILIBRE] = txt[TXT_BUD_EQUILIBRE];
     budget_items[BUDGET_RELANCE] = txt[TXT_BUD_RELANCE];
-    ui_list_init(&budget_list, 1, 4, 38, 3, budget_items, 3);
+    ui_list_init(&budget_list, 1, 4, 27, 3, budget_items, 3);
     budget_list.sel = BUDGET_EQUILIBRE;
     phase = P_PICK;
     rejected = forced = err_cp = 0;
@@ -181,39 +184,49 @@ static void budget_update(void)
     }
 }
 
+// Ligne « icône, libellé, valeur » de la colonne de gauche (fin en colonne 27).
+static void bud_row(u16 y, UiIcon icon, const char *label, const char *val, UiStyle st)
+{
+    ui_icon_draw(1, y, icon);
+    ui_text_draw(3, y, label, UI_STYLE_DIM);
+    ui_text_right(28, y, val, st);
+}
+
 static void draw_detail(void)
 {
     const Country *c = &g_game.country;
     char buf[UI_LINE_BUF];
     u8 b = (phase == P_PICK) ? budget_list.sel : chosen;
+    s16 def = sim_budget_deficit(b), gr = sim_budget_growth(b), tn = sim_budget_tension(b);
     VoteResult v;
 
-    ui_clear_rect(1, 8, 38, 13);
-    ui_text_wrap(1, 8, 38, 2, txt[TXT_BUD_RIGUEUR_DESC + b], UI_STYLE_DIM);
+    ui_clear_rect(1, 8, 27, 8);
+    ui_clear_rect(1, 16, 38, 4);
+    // La ministre de l'Économie juge le budget : ravie de la rigueur, gênée par le déficit.
+    ui_gueule_expr(GUEULE_MIN_ECONOMIE, def < 0 ? EXPR_CONTENT : (def > 0 ? EXPR_GENE : EXPR_NEUTRE),
+                   29, 4, PAL2);
+    ui_text_wrap(1, 8, 27, 3, txt[TXT_BUD_RIGUEUR_DESC + b], UI_STYLE_TEXT);
 
     buf[0] = 0;
-    strcat(buf, "Déficit : ");
-    cat_signed(buf, sim_budget_deficit(b), 1);
-    strcat(buf, " pt de PIB par an");
-    ui_text_draw(1, 11, buf, UI_STYLE_TEXT);
+    cat_signed(buf, def, 1);
+    strcat(buf, " pt PIB/an");
+    bud_row(12, UI_ICON_DEBT, "Déficit", buf, def > 0 ? UI_STYLE_ALERT : UI_STYLE_TEXT);
     buf[0] = 0;
-    strcat(buf, "Croissance : ");
-    cat_signed(buf, sim_budget_growth(b), 2);
+    cat_signed(buf, gr, 2);
     strcat(buf, " pt");
-    ui_text_draw(1, 12, buf, UI_STYLE_TEXT);
+    bud_row(13, UI_ICON_GROWTH, "Croissance", buf, gr < 0 ? UI_STYLE_ALERT : UI_STYLE_TEXT);
     buf[0] = 0;
-    strcat(buf, "Tension : ");
-    cat_signed(buf, sim_budget_tension(b), 0);
-    ui_text_draw(1, 13, buf, UI_STYLE_TEXT);
-    ui_text_draw(1, 14, "Opinion visée :", UI_STYLE_DIM);
+    cat_signed(buf, tn, 0);
+    bud_row(14, UI_ICON_TENSION, "Tension", buf, tn > 0 ? UI_STYLE_ALERT : UI_STYLE_TEXT);
     buf[0] = 0;
-    strcat(buf, "Pop. ");
+    strcat(buf, "Pop ");
     cat_signed(buf, sim_budget_opinion(b, ELEC_POPULAIRES), 1);
-    strcat(buf, "   Moy. ");
+    strcat(buf, " Moy ");
     cat_signed(buf, sim_budget_opinion(b, ELEC_MOYENNES), 1);
-    strcat(buf, "   Ais. ");
+    strcat(buf, " Ais ");
     cat_signed(buf, sim_budget_opinion(b, ELEC_AISEES), 1);
-    ui_text_draw(1, 15, buf, UI_STYLE_TEXT);
+    ui_icon_draw(1, 15, UI_ICON_SOCIAL);
+    ui_text_draw_n(3, 15, buf, 26, 0, UI_STYLE_TEXT);
 
     sim_budget_preview(c, b, &v);
     buf[0] = 0;
@@ -221,9 +234,10 @@ static void draw_detail(void)
     cat_num(buf, v.votes_pour, 0);
     strcat(buf, " voix sur ");
     cat_num(buf, SEATS_TOTAL, 0);
-    ui_text_draw(1, 17, buf, UI_STYLE_TEXT);
+    ui_icon_draw(1, 17, UI_ICON_ASSEMBLY);
+    ui_text_draw(3, 17, buf, UI_STYLE_TEXT);
     ui_gauge_draw(1, 18, 38, v.votes_pour, SEATS_TOTAL, v.adopted ? UI_GAUGE_POSITIVE : UI_GAUGE_NEGATIVE);
-    ui_text_draw(1, 19, v.adopted ? "Adopté si vous le soumettez" : "Rejeté si vous le soumettez",
+    ui_text_draw(3, 19, v.adopted ? "Adopté si vous le soumettez" : "Rejeté si vous le soumettez",
                  v.adopted ? UI_STYLE_TEXT : UI_STYLE_ALERT);
 }
 
@@ -232,9 +246,13 @@ static void draw_zone(void)
     char buf[UI_LINE_BUF];
 
     ui_clear_rect(1, 20, 38, 7);
+    ui_select_bar_clear(1, 21, 37);
+    ui_select_bar_clear(1, 22, 37);
+    ui_select_bar_clear(1, 23, 37);
     if (phase == P_PICK) {
-        ui_text_draw(1, 21, "A : choisir ce budget   B : retour", UI_STYLE_DIM);
+        ui_footer(1, 26, 38, "A : choisir ce budget   B : retour");
     } else if (phase == P_ACTION) {
+        action_list.bar_sel = 0xFF;
         ui_list_draw(&action_list);
         if (rejected) {
             buf[0] = 0;
@@ -249,9 +267,10 @@ static void draw_zone(void)
             ui_text_draw(1, 25, "Capital politique insuffisant", UI_STYLE_ALERT);
         }
     } else {
-        ui_text_center(1, 20, 38, forced ? "BUDGET ADOPTÉ PAR 49.3" : "BUDGET ADOPTÉ", UI_STYLE_HIGHLIGHT);
+        ui_icon_draw(9, 21, UI_ICON_CHECK);
+        ui_text_center(1, 21, 38, forced ? "BUDGET ADOPTÉ PAR 49.3" : "BUDGET ADOPTÉ", UI_STYLE_HIGHLIGHT);
         ui_text_wrap(1, 22, 38, 3, txt[forced ? TXT_BUDGET_493 : TXT_BUDGET_ADOPTE], UI_STYLE_TEXT);
-        ui_text_draw(1, 26, "A : continuer", UI_STYLE_DIM);
+        ui_footer(1, 26, 38, "A : continuer");
     }
 }
 
@@ -259,9 +278,12 @@ static void budget_draw(void)
 {
     if (dirty) {
         dirty = FALSE;
-        ui_clear();
+        art_reset();
         draw_header();
         ui_window(0, 3, 40, 25);
+        ui_medallion(29, 4, UI_PORTRAIT_W, UI_PORTRAIT_H);
+        ui_gueule_draw(GUEULE_MIN_ECONOMIE, EXPR_NEUTRE, 29, 4, PAL2);
+        budget_list.bar_sel = 0xFF;
         ui_list_draw(&budget_list);
         detail_dirty = TRUE;
         zone_dirty = TRUE;
@@ -276,4 +298,9 @@ static void budget_draw(void)
     }
 }
 
-const Screen scr_budget = { budget_init, budget_update, budget_draw, NULL };
+static void budget_exit(void)
+{
+    art_reset();
+}
+
+const Screen scr_budget = { budget_init, budget_update, budget_draw, budget_exit };
