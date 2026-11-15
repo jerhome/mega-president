@@ -20,8 +20,9 @@
 - ✅ U4 partiel : code mort retiré (fonctions de test dans `tests/budget_compat.c`), Z80 chargé une fois (sfx_init), commentaires et CLAUDE.md. Restent morts : `ui_art_erase`, `ui_gueule_erase`, `ui_map_clear_region`, `ui_soft_cancel`, `voice_preview`. Bug possible signalé : légende daltonienne de la carte sur PAL2 (aussi en V4), confié à E1. Fusionné.
 - 🔄 Lancés le 16/11 vers 00 h 45-01 h (résultats peut-être perdus après un `/clear` → vérifier les branches `worktree-agent-*`, merge-base sur v4.1-dev, sinon relancer) :
   - E1 réduit : scr_reshuffle, scr_map, scr_help migrés vers StrBuf/widgets/kit (pas scr_elec) ;
+  - fin de U4 (code mort de src/ui et voice_preview, rappel d'entrée d'écran, réglages chargés dans main.c) + enquête sur le compteur L ;
   - QA intermédiaire de v4.1-dev (qa-rom, comparaison des captures v4-dev / v4.1-dev).
-- À suivre : E1-E6 (U3 fait ; de préférence après les corrections du test console V4, qui toucheront les écrans) (écrans), fin de R2 (`budget_seen`, `opinion_prev`, instantané du rapport : avec les lots E), fin de U4 (screen.c/main.c : R3 fait, peut démarrer après U4 partiel), U4 nettoyage, R6 `-Os`. C1 (`q[48]` de scr_event.c) dans E5.
+- À suivre : E1-E6 (U3 fait ; de préférence après les corrections du test console V4, qui toucheront les écrans) (écrans), fin de R2 (`budget_seen`, `opinion_prev`, instantané du rapport : avec les lots E), U4 nettoyage, R6 `-Os`. C1 (`q[48]` de scr_event.c) dans E5.
 
 ## Notifications
 - Dès qu'une version est prête à pousser : PushNotification au joueur, puis attendre son accord (mémoire feedback-notif-push).
