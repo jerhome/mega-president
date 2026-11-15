@@ -247,6 +247,7 @@ Spécification validée : [SPEC_V4.md](SPEC_V4.md). Développement sur la branch
 | 4.16 | Contrôle qualité : `make check`, budgets RAM et ROM, BlastEm PAL et NTSC, 38 colonnes, deux mandats, cohabitation forcée, sauvegarde | 2 h |  |
 | 4.17 | Jalon : test console du joueur, étiquette git, release | 1 h |  |
 | 4.18 | **Voix « charabia » des personnages** (à la Sims) : **2 syllabes très accueillantes** par réplique, timbre propre à chaque personnage, lèvres synchronisées puis seuls les yeux bougent ; **voix désactivables** dans les options (choix du joueur, 15/11 ; détail DA : REVUE_DA_V3 § 7) | 10 h | |
+| 4.19 | **Écran Options (réglages)**, accessible depuis l'écran titre et le menu de jeu : musique (marche/arrêt), bruitages (marche/arrêt), voix des personnages (marche/arrêt, 4.18), animations des visages (marche/arrêt) ; choix mémorisés en SRAM (demande du joueur, 15/11) | 3 h | |
 
 ## Questions ouvertes
 
