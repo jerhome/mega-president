@@ -274,11 +274,16 @@ entrer en V3 : c'est à lui seul 70 % de l'effet « vivant ».
 
 ## 7. Charabia à la Sims (question du joueur : « trois syllabes sans aucun sens, puis seulement les yeux »)
 
+> **Décision du joueur (15/11) : charabia reporté en V4 (tâche 4.18).** En V3, les visages s'animent
+> **sans son**, exactement selon le § 6 (tâche 3.18), y compris la bouche qui parle pendant
+> l'apparition des textes. Ce § 7 est un **avis pour la V4** : il ne modifie pas le lot V3 en cours.
+> L'API `ui_gueule_anim_talk(slot, bool)` du § 6 suffit à brancher le charabia plus tard.
+
 **Avis de la DA : oui, c'est une très bonne idée, et c'est même le complément naturel du § 6.**
 Le joueur a vu juste sur un point : une bouche qui remue en silence pendant tout un paragraphe
 fait « pantin muet ». Une bouche qui s'agite **pendant un son**, puis se tait pendant qu'on lit,
 fait « le personnage a parlé, maintenant je lis ce qu'il a dit ». C'est la convention des Sims,
-d'*Animal Crossing* et d'*Undertale*, et elle vieillit très bien. Je **remplace donc** la « bouche
+d'*Animal Crossing* et d'*Undertale*, et elle vieillit très bien. **En V4, quand le son arrivera**, je propose de remplacer la « bouche
 qui parle pendant tout l'affichage du texte » du § 6 par : **bouche pendant le charabia, puis
 repos, avec seulement le clignement et le regard.** C'est plus juste et moins cher en
 animation.
@@ -450,10 +455,9 @@ que SAPI.
 | Écoute sur console, relecture DA, retouches | 0,5 h | 1 h |
 | **Total** | **≈ 8 h** | **≈ 12,5 h** |
 
-**Planning : dans le même lot que les visages animés, en V3.1**, après le test console de la V3.
-Les deux chantiers partagent les images de bouche, l'API `ui_gueule_anim_talk` et l'horloge. Faits
-séparément, on dessinerait deux fois les bouches. Lot « gueules vivantes et parlantes » :
-≈ 10 h (§ 6) + ≈ 12,5 h - ≈ 1 h de recouvrement ≈ **21 h**, faisable par deux `md-dev` en parallèle
-(l'un sur `tools/art/` et `ui_art`, l'autre sur `tools/voice/` et `voice.c`), puis intégration commune.
-Si on veut aller vite : **1 syllabe seule d'abord (≈ 8 h)**, les 3 syllabes en V3.2 ; l'architecture
-(banque, file, table des temps) l'accepte sans refaire quoi que ce soit.
+**Planning : V4 (tâche 4.18)**, sur la base des visages animés de la V3 (tâche 3.18). Les images
+`talk1`/`talk2` et `ui_gueule_anim_talk` existeront déjà ; il restera à rendre les images de parole
+pour les 4 expressions, si la V3 ne les a faites qu'en neutre et content, et à piloter la bouche par
+la table des temps au lieu du texte. **Recommandation V4 : le mélange (1 syllabe par défaut,
+3 pour les moments forts), ≈ 12,5 h**, ou la syllabe seule (≈ 8 h) d'abord si la V4 est chargée :
+l'architecture (banque, file, table des temps) accepte les 3 syllabes plus tard sans rien refaire.
