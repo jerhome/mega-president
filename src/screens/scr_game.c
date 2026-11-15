@@ -62,7 +62,7 @@ static char rsh_label[UI_LINE_BUF];
 static char confirm_text[160];
 
 static const char *const pillar_names[PIL_TOTAL] = {
-    "Social", "Économie", "Technologie", "Écologie", "Sécurité", "International"
+    "Social", "Économie", "Technologie", "Écologie", "Sécurité", "Internat."   // 13 cases avant la jauge
 };
 
 // --- Utilitaires -----------------------------------------------------------------
@@ -262,16 +262,18 @@ static const char *surname(const char *full)
     return last;
 }
 
-// Trois électorats : libellés atténués, valeurs claires.
+// Trois électorats : libellés atténués, valeurs claires (entières : la ligne tient
+// dans les 26 colonnes laissées par le portrait, « Ais » seul était cryptique).
 static void draw_electorates(u16 y)
 {
-    static const char *const lab[ELEC_COUNT] = { "Pop", "Moy", "Ais" };
+    static const char *const lab[ELEC_COUNT] = { "Pop.", "Moy.", "Aisés" };
     char b[14];
     const Country *c = &g_game.country;
+    u16 x = 2;
     for (u16 e = 0; e < ELEC_COUNT; e++) {
-        ui_text_draw(2 + 9 * e, y, lab[e], UI_STYLE_DIM);
-        ui_format_number(b, c->opinion[e], 1);
-        ui_text_draw(6 + 9 * e, y, b, UI_STYLE_TEXT);
+        x += ui_text_draw(x, y, lab[e], UI_STYLE_DIM) + 1;
+        ui_format_number(b, (c->opinion[e] + 5) / 10, 0);
+        x += ui_text_draw(x, y, b, UI_STYLE_TEXT) + 2;
     }
 }
 
@@ -762,8 +764,8 @@ static void draw_vote_verdict(void)
     ui_hemi_majority(1, 15, 38, last_vote.votes_pour, SEATS_TOTAL, SEATS_MAJORITY);
     ui_icon_draw(19 - n / 2 - 2, 21, last_adopted ? UI_ICON_CHECK : UI_ICON_CROSS);
     ui_text_center(1, 21, 38, verdict, last_adopted ? UI_STYLE_HIGHLIGHT : UI_STYLE_ALERT);
-    ui_icon_draw(1, 23, UI_ICON_NEWS);
-    ui_text_wrap(3, 23, 36, 2, last_adopted ? law_journal_ok[last_law] : law_journal_ko[last_law],
+    ui_icon_draw(1, 22, UI_ICON_NEWS);   // rangée 25 laissée vide avant le pied de page
+    ui_text_wrap(3, 22, 36, 2, last_adopted ? law_journal_ok[last_law] : law_journal_ko[last_law],
                  UI_STYLE_TEXT);
     if (last_adopted) {
         const LawDef *law = law_get(last_law);
@@ -771,7 +773,7 @@ static void draw_vote_verdict(void)
         strcat(buf, "Effets dans ");
         cat_delay(buf, law->delay_q);
         strcat(buf, ".");
-        ui_text_draw(3, 25, buf, UI_STYLE_DIM);
+        ui_text_draw(3, 24, buf, UI_STYLE_DIM);
     }
     ui_footer(1, 26, 38, "A : continuer");
 }
