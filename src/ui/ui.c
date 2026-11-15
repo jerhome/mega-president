@@ -5,6 +5,7 @@
 #include "ui/ui_art.h"
 #include "ui/ui_map.h"
 #include "gfx_ui.h"
+#include "util/strbuf.h"
 
 u16 ui_tile_font, ui_tile_frame, ui_tile_gauge, ui_tile_icons;
 
@@ -494,29 +495,11 @@ void ui_icon_draw(u16 x, u16 y, UiIcon icon)
 
 u16 ui_format_number(char *buf, s32 value, u16 decimals)
 {
-    char tmp[12];
-    u32 v;
-    u16 n = 0, len = 0;
+    StrBuf sb;
 
-    if (decimals > 9)
-        decimals = 9;
-    if (value < 0) {
-        buf[len++] = '-';
-        v = 0u - (u32)value;
-    } else {
-        v = (u32)value;
-    }
-    do {
-        tmp[n++] = '0' + (char)(v % 10);
-        v /= 10;
-    } while (v || n <= decimals);   // au moins un chiffre avant la virgule
-    while (n) {
-        if (n == decimals)
-            buf[len++] = ',';
-        buf[len++] = tmp[--n];
-    }
-    buf[len] = 0;
-    return len;
+    sb_init(&sb, buf, 14);   // pire cas : signe + 10 chiffres + virgule + 0
+    sb_num(&sb, value, decimals);
+    return sb.len;
 }
 
 u16 ui_number_draw(u16 x, u16 y, s32 value, u16 decimals, UiStyle style)
