@@ -259,7 +259,7 @@ Après le test console de la V4. Relecture par un développeur de haut niveau (O
 
 | # | Tâche | Durée | État |
 |---|---|---|---|
-| 4.1.01 | Captures de référence de chaque écran (ROM de démo) et comparaison automatique avant/après | 2 h | 🔄 |
+| 4.1.01 | Captures de référence de chaque écran (ROM de démo) et comparaison automatique avant/après | 2 h | ✅ (outils prêts ; références à générer une fois les écrans stabilisés) |
 | 4.1.02 | Audit du code (Opus) : doublons, sûreté mémoire, pile, PAL/NTSC, sauvegarde, cas limites ; rapport classé | 3 h | 🔄 |
 | 4.1.03 | Factorisation de l'interface : widgets communs (cadres, listes, jauges, boucle de saisie, boîtes) | 6 h |  |
 | 4.1.04 | Corrections de l'audit : robustesse, bornes, simplifications | 3 h |  |
