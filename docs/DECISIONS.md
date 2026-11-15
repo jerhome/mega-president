@@ -43,3 +43,4 @@ Décisions prises en autonomie (ou arbitrages du joueur), à relire. Chacune est
 | 15/11 | Vignette Industrie : « FERMÉ » avec accent dessiné à la main (la police 3×5 n'a pas d'accent) ; accent de « ZÉRO » dans la vignette Éducation | — | « FERME » se lisait « une ferme » |
 | 15/11 | `make_art.py` n'exporte plus les portraits V2 de 56 × 56 : `make art` régénérait 14 IMAGE retirées de `gfx_art.res` et décalait l'enum ArtId | — | Rendre `make art` reproductible |
 | 15/11 | La goutte de sueur permanente de Lestrade (PM réformateur) est conservée en neutre : c'est un gag de personnage, pas un défaut | La réserver à « gêné » | Choix du DA |
+| 15/11 | Visages animés sans son en V3 (3.18) ; voix « charabia » à la Sims reportée en V4 (4.18) | Tout en V3.1 | Décision du joueur |

@@ -271,3 +271,189 @@ retouches 1 h, soit **≈ 10 h** (+ 2 h si on ajoute les accessoires en sprites)
 **Version** : je recommande une **V3.1**, lancée juste après le test console de la V3, pour ne
 pas retarder la livraison. Si le test console est repoussé, le **clignement seul (≈ 4 h)** peut
 entrer en V3 : c'est à lui seul 70 % de l'effet « vivant ».
+
+## 7. Charabia à la Sims (question du joueur : « trois syllabes sans aucun sens, puis seulement les yeux »)
+
+**Avis de la DA : oui, c'est une très bonne idée, et c'est même le complément naturel du § 6.**
+Le joueur a vu juste sur un point : une bouche qui remue en silence pendant tout un paragraphe
+fait « pantin muet ». Une bouche qui s'agite **pendant un son**, puis se tait pendant qu'on lit,
+fait « le personnage a parlé, maintenant je lis ce qu'il a dit ». C'est la convention des Sims,
+d'*Animal Crossing* et d'*Undertale*, et elle vieillit très bien. Je **remplace donc** la « bouche
+qui parle pendant tout l'affichage du texte » du § 6 par : **bouche pendant le charabia, puis
+repos, avec seulement le clignement et le regard.** C'est plus juste et moins cher en
+animation.
+
+Réponse directe à la question complémentaire (**1 syllabe ou 3 ?**) : **un mélange.** Une
+interjection d'une syllabe par défaut, et trois syllabes pour les moments forts. Comparaison au
+§ 7.3.
+
+### 7.1 Intérêt
+- **Charme et gueules** : le son donne une **voix** à des caricatures qui n'ont que 4 expressions.
+  Un « hmpf » grave et sec pour Fermont, un « ouiii ? » flûté et mielleux pour Dumoulin : on
+  reconnaît le personnage avant de lire son nom. C'est exactement ce qu'on veut, des gueules mémorables.
+- **Humour** : le charabia rend drôles des répliques sérieuses sans toucher au texte. Lenglet qui
+  pérore en trois syllabes pompeuses au-dessus d'un éditorial accablant, Poulain qui fait
+  « beuh… bah… boh » (ni pour ni contre), Lopez qui mitraille « tatata ! » à la moindre météo. C'est
+  bon enfant, et la pointe politique reste dans les textes et le design des voix (le patron
+  mielleux, la syndicaliste franche), jamais dans les mots puisqu'il n'y en a pas.
+- **Risque d'agacement : réel**, c'est le point à soigner. Un jeu de gestion se joue longtemps,
+  et le même son sur le même écran 200 fois devient vite insupportable. Les parades (variété,
+  rareté, coupure par A, option de menu) sont détaillées au § 7.5. Avec elles, le risque est maîtrisé.
+
+### 7.2 Design sonore
+**Une voix par personnage, construite à partir de 6 familles.** Trente voix entièrement
+différentes, ce serait trop long à régler et pas plus lisible à l'oreille. Six familles de
+timbre, déclinées par personnage en hauteur, débit, mélodie et voyelles préférées, donnent
+30 voix qu'on distingue sans tout refaire.
+
+| Famille | Timbre | Personnages (exemples) | Signature |
+|---|---|---|---|
+| Ténor chaleureux | moyen-grave, rond, voyelles « o, a » | Verdier, Brossard, Mirebeau (plus lent, plus grave) | mélodie qui monte puis tombe, comme une promesse |
+| Lisse | moyen, net, sans aspérité, « é, i » | Delmas, Marchetti, Poulain, Lacombe | mélodie plate, débit régulier, presque synthétique |
+| Grave autoritaire | grave, sec, attaques dures « k, t, r » | Saint-Aubin, Fermont, Valmont, Lenoir | syllabes courtes, finale qui tombe, gros « hmpf » |
+| Nasal ironique | moyen, nasal, « an, on, in » | Dubreuil-Castagnac, Montclar, Valcourt, Lenglet, Corbeau | finale qui remonte, petit rire d'une syllabe |
+| Aigu vif | aigu, rapide, « i, a » | Lestrade, Kervella, Lopez, Vasseur (plus douce) | débit rapide, staccato, finale montante |
+| Alto franc | moyen-grave, voix poitrinée, un peu rauque | Carrel, Rouvière, Benali, Varenne (lasse), Deschamps, Aubert | volume et attaque marqués, finale franche |
+
+Cas à part : Delaunay et Fontaine (famille « lisse » mais **monotone**, débit d'énumération
+comptable), Marchal (articulé à l'excès, syllabes détachées), Dumoulin (glissando mielleux, voyelles
+longues).
+
+**Quand les déclencher**
+- **Uniquement à l'apparition d'une réplique attribuée à un personnage visible** : événement,
+  conseil du PM, intervention TV, Lopez à la télévision, résultat d'élection, remaniement, cohabitation.
+- **Jamais** sur le tableau de bord, les menus, l'Assemblée chiffre par chiffre, ni le journal (le
+  journal est un texte écrit, on ne le « dit » pas ; l'éditorialiste peut avoir un petit « hm ! » à
+  l'ouverture, au plus).
+- **Une fois par boîte de texte**, au début. Rien à la page suivante de la même réplique.
+- **Anti-radotage** : si le même personnage a déjà parlé il y a moins de 20 s, on joue seulement
+  son interjection courte, ou rien une fois sur deux.
+- **A coupe tout** : le son s'arrête et la bouche se ferme net.
+
+**Enchaînement avec la musique et les bruitages**
+- Le charabia passe **après** le bruitage d'apparition (jingle d'événement, « ding » TV) : 150 à
+  250 ms de décalage, jamais en même temps.
+- Pas d'atténuation de la musique pour une syllabe : on mixe le charabia assez fort (pointe à
+  -3 dB) et dans le médium (300 Hz à 3 kHz), là où la musique FM laisse de la place. Pour les
+  3 syllabes, une **légère baisse de la musique** (`XGM2_setFMVolume` et `XGM2_setPSGVolume`, -25 %
+  pendant 0,6 s, remontée en 200 ms) est un plus, à tester sur console et à garder seulement si elle ne
+  « pompe » pas à l'oreille.
+- Le charabia ne doit jamais tomber pile sur un temps fort de percussion PCM (canal 1) ; en pratique,
+  sur une boucle, c'est imperceptible. Ce n'est pas un critère bloquant.
+
+### 7.3 Une syllabe ou trois ? Comparaison
+| Critère | 1 syllabe (interjection) | 3 syllabes (charabia) |
+|---|---|---|
+| Exemples | Fermont « hmpf », Poulain « bah », Kervella « oh ! », Lenglet « hm-hm », Benali « ouais » | Lopez « ta-ta-tam ! », Lenglet « bou-ré-dam », Verdier « mo-na-ba » |
+| Charme | Fort et immédiat : c'est un **tic de personnage**, comme dans la BD (« Rogntudju ») | Plus fort encore : on croit entendre une **phrase**, effet Sims complet |
+| Agacement | Faible : 0,25 s, ça passe comme une ponctuation | Plus élevé : 0,5 à 0,7 s, et la redite se remarque plus |
+| Lèvres | 1 image (bouche ouverte, propre à l'expression), 2 avec une mi-ouverte | 2 images (mi-ouverte, ouverte), alternées sur les syllabes, plus la fermeture sur « b, m, p » |
+| ROM (13,3 kHz) | ≈ 3,3 Ko par interjection ; 2 variantes × 30 ≈ **200 Ko** | banque de 6 syllabes ≈ 12 Ko par perso ; × 30 ≈ **360 Ko** |
+| ROM (6,65 kHz) | ≈ **100 Ko** | ≈ **180 Ko** |
+| Production | ≈ 8 h au total | ≈ 12 h (enchaînement de syllabes, synchronisation plus fine) |
+
+**Recommandation : le mélange.**
+- **Par défaut, l'interjection d'une syllabe** (2 variantes par personnage, tirées au hasard) :
+  conseils du PM, événements ordinaires, cohabitation, remaniement.
+- **Trois syllabes pour les moments forts** : première apparition d'un personnage dans la partie,
+  intervention TV, Lopez en direct, résultat d'élection, scandale, motion de censure, fin de mandat.
+  C'est rare, donc ça reste un plaisir.
+- Les 3 syllabes sont **tirées d'une banque de 6 syllabes** par personnage et enchaînées par le code
+  (ordre aléatoire, sans répéter la même deux fois de suite) : 120 combinaisons, donc jamais deux
+  fois la même « phrase » d'affilée, pour le prix de 6 échantillons.
+- Mélange à **6,65 kHz** : ≈ 100 + 180 = **≈ 280 Ko**. Avec les visages animés (≈ 72 Ko), la ROM
+  passe de 768 Ko à ≈ 1,1 Mo sur 2 Mo. **Budget à inscrire dans `tools/budget.sh` : 300 Ko de charabia
+  au maximum.**
+
+**Fréquence d'échantillonnage.** Attention, XGM2 ne lit que **deux cadences : 13,3 kHz ou
+6,65 kHz** (paramètre `halfRate` de `XGM2_playPCMEx`). Le 8 et le 11 kHz n'existent pas avec ce
+pilote. Je recommande **6,65 kHz** : la bande passante (jusqu'à 3,3 kHz) contient les deux premiers
+formants, donc le timbre et la mélodie, et le côté « talkie-walkie » rend la parole un peu étouffée,
+ce qui est exactement ce qu'on veut d'un charabia. Si l'écoute sur console montre que les voix aiguës
+(Lopez, Kervella, Lestrade) deviennent ternes, on passe **ces voix-là seulement** à 13,3 kHz : le
+drapeau est choisi par échantillon, ça ne coûte rien en code.
+
+### 7.4 Synchronisation des lèvres
+- **Principe** : le générateur exporte, avec chaque échantillon, une **table de temps** (début et fin
+  de chaque noyau de voyelle, consonnes labiales « b, m, p »), en millisecondes. Le code ouvre la
+  bouche sur les voyelles, la ferme sur les labiales et entre les syllabes, et la remet au repos à la
+  fin de l'échantillon. Pas d'analyse du son sur la console, tout est précalculé.
+- **Images de bouche** : **2 par expression affichée** (mi-ouverte, ouverte), ce sont les `talk1` et
+  `talk2` du § 6. Règle : mi-ouverte sur les 40 premières ms d'une voyelle et sur les voyelles fermées
+  (i, u, ou), ouverte sur a, o, é ; fermeture sur les labiales. Pour l'interjection d'une syllabe,
+  `talk2` seul suffit, `talk1` en attaque est un bonus.
+- On les rend pour **les 4 expressions** (et non plus neutre et content seulement, comme prévu au
+  § 6), car « hmpf » se dit souvent avec la tête de « furieux » ou « gêné ». Coût : + 2 × 2 × ~6 tuiles
+  par personnage, ≈ + 0,8 Ko, soit ≈ 24 Ko de ROM pour les 30. En VRAM, rien de plus : on ne charge
+  que l'expression affichée.
+- **Après le son** : bouche au repos, puis seulement le clignement et le regard, comme le propose le
+  joueur. Le premier clignement vient 300 à 600 ms après la fin du son : c'est le petit « temps de
+  réaction » qui rend le personnage vivant.
+- Horloge : la même que le § 6 (millisecondes, `getTick`), donc la synchronisation est identique en
+  PAL et en NTSC.
+
+### 7.5 Production
+**Outil recommandé : synthèse formantique maison en Python (`tools/voice/charabia.py`)**, plutôt
+que SAPI.
+- **Pourquoi pas SAPI** : une seule voix française disponible (Hortense), donc 30 personnages
+  obtenus en changeant la hauteur, ce qui donne l'effet « disque accéléré ou ralenti » et des
+  timbres trop proches. SAPI lit aussi des syllabes inventées comme du français : on risque des mots
+  réels involontaires (« bite », « con », un nom propre). Enfin, cela suppose Windows et PowerShell,
+  ce qui n'est pas reproductible dans le conteneur. SAPI reste bon pour une **réplique** précise
+  (« For sure ! ») ; pour du charabia, il est inadapté.
+- **Synthèse maison** : source glottique (impulsions avec légère irrégularité, souffle réglable),
+  3 filtres de formants par voyelle (a, é, i, o, ou, an, on), consonnes simples (explosion pour
+  p/t/k/b/d, bruit filtré pour f/ch/s, nasale pour m/n), enveloppe et courbe de hauteur par syllabe.
+  Chaque personnage est une **fiche de paramètres** (`charabia_persos.py`) : hauteur de base,
+  courbe mélodique, débit, souffle, nasalité, vibrato, voyelles et consonnes préférées, plus sa ou ses
+  interjections. Graine fixe par personnage : **même entrée, même fichier**, octet pour octet.
+- **100 % fictif et propre** : les syllabes sont tirées dans un alphabet inventé, et un **filtre de
+  mots interdits** (liste de syllabes et de combinaisons à éviter, mots grossiers et noms réels)
+  rejette les tirages douteux. Aucune voix réelle n'est échantillonnée.
+- Sortie : PCM 8 bits signé à 6,65 kHz (ou 13,3 kHz), normalisé, pré-emphase légère et fondu de
+  5 ms aux bords (pas de clic), comme `make_voice.py`. Fichiers `res/sfx/chb_<perso>_<n>.wav`, plus la
+  table des temps en en-tête C générée. Cible `make voice`, et planche d'écoute
+  `charabia.py --preview` (un WAV qui enchaîne les 30 personnages) pour la relecture.
+- **Coût en ROM** (rappel) : 1 octet par échantillon, soit **≈ 1 000 octets par syllabe de 150 ms à
+  6,65 kHz** (2 000 à 13,3 kHz). Mélange recommandé : ≈ 280 Ko à 6,65 kHz, ≈ 560 Ko tout à 13,3 kHz.
+- **Canal PCM : le canal 3**. La voix « For sure ! » n'y joue qu'une fois, à l'allumage ; le canal
+  est libre ensuite. Le canal 2 reste aux bruitages et le 1 aux percussions, ce qui évite qu'un
+  « clic » de menu coupe une syllabe. Le module `voice.c` devient la porte d'entrée unique du canal 3
+  (`voice_chb_play(perso, court/long)`, `voice_chb_stop()`), avec une file de 3 syllabes au plus et
+  la même prudence que pour « For sure ! » (ne pas interroger le Z80 juste après le lancement).
+
+### 7.6 À éviter
+- La bouche qui bouge **sans son**, ou le son sans bouche (personnage hors écran : pas de charabia).
+- Un charabia **à chaque écran** ou à chaque page de texte : une fois par réplique, et moins encore
+  si le personnage vient de parler.
+- Des voix **trop proches de vraies voix** ou des syllabes qui forment des mots : le filtre de mots
+  interdits est obligatoire, et aucune imitation d'une personnalité réelle, même par le timbre ou un tic.
+- Les **caricatures sonores lourdes** (accent régional moqué, voix de femme « hystérique », voix
+  efféminée pour faire rire) : on fait rire avec le caractère du personnage, pas avec un cliché. Les
+  femmes ne sont pas toutes aiguës : Carrel et Rouvière sont graves et rauques, c'est dans leurs fiches.
+- **Changer la hauteur à l'exécution** pour varier : impossible proprement avec XGM2. La variété vient
+  de la banque de syllabes et des variantes précalculées.
+- Un volume plus fort que la musique de plus de 3 dB, et des syllabes de plus de 200 ms (on
+  « entend » alors une voix ralentie et on cherche du sens).
+- Le charabia pendant un fondu, sous une boîte système ou pendant la sauvegarde.
+- **Pas d'option pour le couper** : il faut une ligne dans les options, « Voix : toutes / courtes
+  seulement / aucune ».
+
+### 7.7 Chiffrage et planning
+| Poste | 1 syllabe seule | Mélange recommandé |
+|---|---|---|
+| Synthétiseur formantique et filtre de mots | 3 h | 3 h |
+| 30 fiches de voix et réglage à l'oreille | 2 h | 3 h |
+| Code : `voice_chb_*`, file de syllabes, tables de temps, option de menu | 1,5 h | 3 h |
+| Synchronisation des lèvres avec `ui_gueule_anim` (+ images de parole pour les 4 expressions) | 0,5 h | 1,5 h |
+| Intégration aux écrans, règles de déclenchement | 0,5 h | 1 h |
+| Écoute sur console, relecture DA, retouches | 0,5 h | 1 h |
+| **Total** | **≈ 8 h** | **≈ 12,5 h** |
+
+**Planning : dans le même lot que les visages animés, en V3.1**, après le test console de la V3.
+Les deux chantiers partagent les images de bouche, l'API `ui_gueule_anim_talk` et l'horloge. Faits
+séparément, on dessinerait deux fois les bouches. Lot « gueules vivantes et parlantes » :
+≈ 10 h (§ 6) + ≈ 12,5 h - ≈ 1 h de recouvrement ≈ **21 h**, faisable par deux `md-dev` en parallèle
+(l'un sur `tools/art/` et `ui_art`, l'autre sur `tools/voice/` et `voice.c`), puis intégration commune.
+Si on veut aller vite : **1 syllabe seule d'abord (≈ 8 h)**, les 3 syllabes en V3.2 ; l'architecture
+(banque, file, table des temps) l'accepte sans refaire quoi que ce soit.
