@@ -11,6 +11,7 @@
 #include "content/content_texts.h"
 #include "screens/evt_art.h"
 #include "ui/ui_art.h"
+#include "screens/scr_txt.h"
 
 typedef enum { P_PICK, P_CONFIRM, P_SUSPENSE, P_RESULT } Phase;
 
@@ -26,8 +27,6 @@ static s16 pop_before, pop_after;
 static u8 def_before, def_after;
 static u32 phase_ms;
 static char confirm_text[100];
-
-static const char *const elec_names[ELEC_COUNT] = { "Populaires", "Moyennes", "Aisées" };
 
 static void cat_num(char *dst, s32 v, u16 dec)
 {
@@ -77,12 +76,12 @@ static void ref_init(void)
 static void gauge_row(u16 y, const char *label, s16 yes)
 {
     char buf[14];
-    ui_text_draw_n(1, y, label, 12, 12, UI_STYLE_DIM);
-    ui_gauge_draw(13, y, 16, yes, 1000, yes >= 500 ? UI_GAUGE_POSITIVE : UI_GAUGE_NEGATIVE);
+    ui_text_draw_n(1, y, label, 18, 18, UI_STYLE_DIM);
+    ui_gauge_draw(20, y, 11, yes, 1000, yes >= 500 ? UI_GAUGE_POSITIVE : UI_GAUGE_NEGATIVE);
     buf[0] = 0;
     cat_num(buf, yes, 1);
     strcat(buf, " %");
-    ui_clear_rect(30, y, 9, 1);
+    ui_clear_rect(31, y, 8, 1);
     ui_text_right(39, y, buf, yes >= 500 ? UI_STYLE_HIGHLIGHT : UI_STYLE_ALERT);
 }
 
@@ -96,9 +95,9 @@ static void draw_detail(void)
     ui_text_draw_n(1, 10, law_name[id], 38, 0, UI_STYLE_HIGHLIGHT);
     if (err != RFD_ERR_ADOPTED) {
         sim_referendum_preview(&g_game.country, id, &pv);
-        gauge_row(12, "OUI attendu", pv.yes);
+        gauge_row(11, "OUI attendu", pv.yes);
         for (u16 e = 0; e < ELEC_COUNT; e++)
-            gauge_row(13 + e, elec_names[e], pv.yes_elec[e]);
+            gauge_row(12 + e, elec_txt(e, ET_LONG), pv.yes_elec[e]);
     }
     if (err == RFD_ERR_USED)
         ui_text_wrap(1, 18, 38, 2, txt[TXT_REF_DEJA], UI_STYLE_ALERT);
@@ -204,17 +203,17 @@ static void draw_result(void)
     ui_text_draw(1, 13, "OUI par électorat", UI_STYLE_HIGHLIGHT);
     ui_separator(19, 13, 20);
     for (u16 e = 0; e < ELEC_COUNT; e++)
-        gauge_row(14 + e, elec_names[e], res.yes_elec[e]);
+        gauge_row(14 + e, elec_txt(e, ET_LONG), res.yes_elec[e]);
     buf[0] = 0;
     strcat(buf, "Popularité : ");
     cat_num(buf, pop_before, 1); strcat(buf, " % → "); cat_num(buf, pop_after, 1); strcat(buf, " %");
-    ui_icon_draw(1, 19, UI_ICON_POPULARITY);
-    ui_text_draw(3, 19, buf, res.adopted ? UI_STYLE_TEXT : UI_STYLE_ALERT);
+    ui_icon_draw(1, 20, UI_ICON_POPULARITY);
+    ui_text_draw(3, 20, buf, res.adopted ? UI_STYLE_TEXT : UI_STYLE_ALERT);
     buf[0] = 0;
     strcat(buf, "Défiance : ");
     cat_num(buf, def_before, 0); strcat(buf, " → "); cat_num(buf, def_after, 0);
-    ui_icon_draw(1, 20, UI_ICON_DEFIANCE);
-    ui_text_draw(3, 20, buf, res.adopted ? UI_STYLE_TEXT : UI_STYLE_ALERT);
+    ui_icon_draw(1, 21, UI_ICON_DEFIANCE);
+    ui_text_draw(3, 21, buf, res.adopted ? UI_STYLE_TEXT : UI_STYLE_ALERT);
 }
 
 static void ref_draw(void)

@@ -47,4 +47,15 @@ void test_gamesave(void)
     CHECK_EQ(gamesave_unpack(dst, N, bad, len), 0);
     memset(bad, 0xFF, sizeof bad);
     CHECK_EQ(gamesave_unpack(dst, N, bad, len), 0);
+
+    // sauvegarde d'une version précédente : reconnue « ancienne », pas « vierge »
+    CHECK_EQ(gamesave_is_stale(blob, len, N), 0);          // valide : pas ancienne
+    CHECK_EQ(gamesave_is_stale(blob, len, N + 2), 1);      // taille différente
+    memcpy(bad, blob, len);
+    bad[4] = 1;
+    CHECK_EQ(gamesave_is_stale(bad, len, N), 1);           // ancienne version du format
+    memset(bad, 0x00, sizeof bad);
+    CHECK_EQ(gamesave_is_stale(bad, len, N), 0);           // SRAM vierge
+    memset(bad, 0xFF, sizeof bad);
+    CHECK_EQ(gamesave_is_stale(bad, len, N), 0);
 }

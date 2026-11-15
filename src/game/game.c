@@ -3,6 +3,7 @@
 #include "save/sram_game.h"
 #include "ui/ui.h"
 #include "content/content_texts.h"
+#include "screens/screens.h"
 
 #define GAME_START_YEAR 2027
 
@@ -151,6 +152,11 @@ void game_save_and_quit(void)
     screen_change(SCREEN_TITLE);
 }
 
+u8 game_save_stale(void)
+{
+    return sram_game_stale();
+}
+
 u8 game_has_save(void)
 {
     return sram_game_exists();
@@ -237,7 +243,9 @@ void game_turn_label(u8 turn, char *buf)
 //   3 budget, 4 référendum, 5 remaniement, 6 destitution,
 //   7 fin : destitution, 8 fin : défaite, 9 fin : victoire (deux mandats),
 //   10 élection perdue au 1er tour, 11 titre, 12 tableau de bord,
-//   13 / 15 événement (texte long / court), 14 meilleurs scores remplis.
+//   13 / 15 événement (texte long / court), 14 meilleurs scores remplis,
+//   16 budget en cohabitation, 17 budget amendé par le Sénat, 18 électorats,
+//   19 titre avec sauvegarde d'une ancienne version.
 static void dbg_opinion(Country *c, s16 v)
 {
     for (u8 e = 0; e < ELEC_COUNT; e++)
@@ -285,6 +293,36 @@ void game_debug_jump(void)
     case 3:
         c->turn = 3;   // le budget se vote au 4e trimestre
         screen_change(SCREEN_BUDGET);
+        break;
+    case 16:   // budget en cohabitation (plan du PM de gauche, défense réglable)
+        c->turn = 6;
+        cohab_start(c);
+        c->cohab_group = GRP_G1;
+        screen_change(SCREEN_BUDGET);
+        break;
+    case 17:   // budget adopté puis amendé par le Sénat (lecture définitive à 1 CP)
+        c->turn = 3;
+        c->budget_lvl[BUD_SOCIAL] = 1;
+        c->budget_lvl[BUD_EDUCATION] = 1;
+        c->budget_lvl[BUD_IMPOT_ENTREPRISES] = 1;
+        c->budget_done = 1;
+        c->bud_amend_line = BUD_SOCIAL + 1;
+        c->bud_amend_from = 2;
+        screen_change(SCREEN_BUDGET);
+        break;
+    case 18:   // détail des électorats
+        c->turn = 5;
+        g_opinion_prev_ok = 0;
+        c->opinion[0] = 380; c->opinion[1] = 470; c->opinion[2] = 610;
+        c->opinion[3] = 540; c->opinion[4] = 320;
+        screen_change(SCREEN_ELEC);
+        break;
+    case 19:   // écran titre avec une sauvegarde d'une ancienne version (version 1 du format)
+        sram_game_save(&g_game);
+        SRAM_enable();
+        SRAM_writeByte(SRAM_GAME_OFFSET + 4, 1);
+        SRAM_disable();
+        screen_change(SCREEN_TITLE);
         break;
     case 4:
         screen_change(SCREEN_REFERENDUM);

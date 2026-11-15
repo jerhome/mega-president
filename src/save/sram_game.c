@@ -37,6 +37,12 @@ u8 sram_game_exists(void)
     return gamesave_unpack(0, (u16)sizeof(Game), s_buf, GS_LEN);
 }
 
+u8 sram_game_stale(void)
+{
+    read_block();
+    return gamesave_is_stale(s_buf, GS_LEN, (u16)sizeof(Game));
+}
+
 void sram_game_erase(void)
 {
     u16 i;

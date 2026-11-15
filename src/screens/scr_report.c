@@ -4,6 +4,7 @@
 #include <string.h>
 #include "screens.h"
 #include "ui/ui.h"
+#include "screens/scr_txt.h"
 #include "ui/input.h"
 #include "game/game.h"
 #include "content/content_laws.h"
@@ -111,7 +112,7 @@ static u8 has_page(u8 p)
     const TurnReport *r = &g_game.report;
     if (p == 1) return (u8)(r->censure != CENSURE_NONE || r->impeach != IMP_EV_NONE);
     if (p == 3) return (u8)(r->gov_law || r->budget_gov || r->senate_renewed);
-    return (u8)(r->affair || r->budget_reconduit);
+    return (u8)(r->affair || r->budget_reconduit || r->senate_amend);
 }
 
 static u8 next_page(u8 p)
@@ -239,8 +240,7 @@ static void draw_politics(void)
         }
         if (r->budget_gov && y <= LAST_ROW) {
             y = para(y, txt[TXT_COHAB_BUDGET_GOUV], UI_STYLE_HIGHLIGHT);
-            ui_icon_draw(1, y, UI_ICON_BULLET);
-            ui_text_draw_n(3, y++, txt[TXT_BUD_RIGUEUR + sim_cohab_budget(c)], 35, 0, UI_STYLE_TEXT);
+            y = para(y, txt[TXT_COHAB_PLAN_GAUCHE + sim_cohab_camp(c)], UI_STYLE_TEXT);
             y++;
         }
         if (r->senate_renewed && y <= LAST_ROW) {
@@ -262,7 +262,16 @@ static void draw_politics(void)
     }
     if (page == 2 && r->budget_reconduit && y <= LAST_ROW) {
         y = rubric(y, "Budget reconduit");
-        y = para(y, "Faute de budget adopté dans l’année,\nl’État reconduit le budget d’équilibre.", UI_STYLE_TEXT);
+        y = para(y, txt[TXT_BUDJ_RECONDUIT], UI_STYLE_TEXT);
+        y++;
+    }
+    if (page == 2 && r->senate_amend && y <= LAST_ROW) {
+        y = rubric(y, "Le Sénat amende le budget");
+        y = para(y, txt[TXT_BUDJ_SENAT_AMENDE], UI_STYLE_ALERT);
+        buf[0] = 0;
+        strcat(buf, "Ligne amendée : ");
+        strcat(buf, bl_long((u8)(r->senate_amend - 1)));
+        if (y <= LAST_ROW) ui_text_draw_n(1, y++, buf, 38, 0, UI_STYLE_HIGHLIGHT);
     }
 
     // Une gueule en bas à droite si la page laisse la place : le président du Sénat

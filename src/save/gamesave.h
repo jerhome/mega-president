@@ -27,5 +27,8 @@ u16 gamesave_pack(const void *src, u16 size, u8 *out);
 // Vérifie signature, version, taille (== size) et somme ; si valide copie les
 // données dans dst (dst peut être NULL : simple validation) et renvoie 1, sinon renvoie 0 sans toucher dst.
 u8 gamesave_unpack(void *dst, u16 size, const u8 *in, u16 len);
+// 1 si le bloc porte la signature du jeu mais n'est PAS lisible par cette version
+// (version du format ou taille différentes) : une sauvegarde « ancienne » ignorée.
+u8 gamesave_is_stale(const u8 *in, u16 len, u16 size);
 
 #endif

@@ -19,6 +19,7 @@
 #include "screens/evt_art.h"
 #include "ui/ui_art.h"
 #include "ui/ui_hemi.h"
+#include "screens/scr_txt.h"
 
 // Instantané des indicateurs pris au moment de « Fin du trimestre » : lu par
 // scr_report.c pour afficher ce qui a bougé.
@@ -224,8 +225,12 @@ static void menu_build(void)
     if (sim_can_dissolve(c)) {
         menu_act[n] = A_DISSOLVE; menu_items[n++] = "Dissoudre l’Assemblée";
     }
-    if (sim_budget_due(c) && !c->budget_done) {
+    if (sim_cohabitation(c)) {
+        menu_act[n] = A_BUDGET;   menu_items[n++] = txt[TXT_BUD_TITRE_GOUV];
+    } else if (sim_budget_due(c) && !c->budget_done) {
         menu_act[n] = A_BUDGET;   menu_items[n++] = "Présenter le budget";
+    } else if (c->budget_done && sim_budget_amended_line(c)) {
+        menu_act[n] = A_BUDGET;   menu_items[n++] = "Budget amendé : lecture définitive";
     }
     menu_act[n] = A_END;
     if (game_is_monthly())
@@ -273,19 +278,24 @@ static const char *surname(const char *full)
     return last;
 }
 
-// Trois électorats : libellés atténués, valeurs claires (entières : la ligne tient
-// dans les 26 colonnes laissées par le portrait, « Ais » seul était cryptique).
+// Cinq électorats sur deux lignes (3 + 2, cellules de 8 colonnes : « Pop 52 » + flèche de
+// tendance). Libellés atténués, valeurs entières, rouge si l'électorat est sous les 50 %.
+// La seconde ligne rappelle le détail (touche C).
 static void draw_electorates(u16 y)
 {
-    static const char *const lab[ELEC_COUNT] = { "Pop.", "Moy.", "Aisés" };
     char b[14];
     const Country *c = &g_game.country;
-    u16 x = 2;
     for (u16 e = 0; e < ELEC_COUNT; e++) {
-        x += ui_text_draw(x, y, lab[e], UI_STYLE_DIM) + 1;
-        ui_format_number(b, (c->opinion[e] + 5) / 10, 0);
-        x += ui_text_draw(x, y, b, UI_STYLE_TEXT) + 2;
+        u16 x = 2 + (e % 3) * 8;
+        u16 row = y + e / 3;
+        s16 o = c->opinion[e];
+        x += ui_text_draw(x, row, elec_txt((u8)e, ET_ABR), UI_STYLE_DIM) + 1;
+        ui_format_number(b, (o + 5) / 10, 0);
+        x += ui_text_draw(x, row, b, o >= 500 ? UI_STYLE_TEXT : UI_STYLE_ALERT);
+        elec_trend_icon(x, row, elec_trend(c, (u8)e));
     }
+    ui_icon_draw(19, y + 1, UI_ICON_BTN_C);
+    ui_text_draw(21, y + 1, "détail", UI_STYLE_DIM);
 }
 
 // Colonne du médaillon : portrait du PM (ou du PM de cohabitation), nom, majorité, CP.
@@ -356,7 +366,6 @@ static void draw_menu_full(void)
     stat_row(4, UI_ICON_POPULARITY, "Popularité", pop, 1, " %", pop, 1000, UI_GAUGE_GOLD,
              pop >= 500 ? UI_STYLE_HIGHLIGHT : UI_STYLE_ALERT, DASH_X_END);
     draw_electorates(5);
-    ui_separator(1, 6, DASH_X_END - 1);
     stat_row(7, UI_ICON_GROWTH, "Croissance", c->growth, 2, " %", c->growth - GROWTH_MIN,
              GROWTH_MAX - GROWTH_MIN, c->growth >= 0 ? UI_GAUGE_POSITIVE : UI_GAUGE_NEGATIVE,
              c->growth >= 0 ? UI_STYLE_TEXT : UI_STYLE_ALERT, DASH_X_END);
@@ -445,6 +454,8 @@ static void update_menu(void)
             g_report_snap[2] = c->debt;
             for (u16 i = 0; i < PIL_TOTAL; i++) g_report_snap[3 + i] = c->pillars[i];
             g_report_snap[3 + PIL_TOTAL] = c->gauges[JAUGE_TENSION];
+            for (u16 e = 0; e < ELEC_COUNT; e++) g_opinion_prev[e] = c->opinion[e];
+            g_opinion_prev_ok = 1;
             game_end_turn();
             break;
         }
@@ -919,7 +930,10 @@ static void update_assembly(void)
 static void game_init(void)
 {
     ui_list_init(&law_list, 1, 4, 38, 5, law_name, LOI_COUNT);
-    if (g_game.country.turn == 0) g_budget_seen = 0;   // nouvelle partie ou 2nd mandat
+    if (g_game.country.turn == 0) {   // nouvelle partie ou 2nd mandat
+        g_budget_seen = 0;
+        g_opinion_prev_ok = 0;
+    }
     menu_sel = 0;
     menu_top = 0;
     menu_to_options = options_take_return();
@@ -930,8 +944,9 @@ static void game_init(void)
 
 static void game_update(void)
 {
-    if (mode != M_CONFIRM && (input_pressed() & INPUT_C)) {   // aide
-        help_open(SCREEN_GAME);
+    if (mode != M_CONFIRM && (input_pressed() & INPUT_C)) {
+        if (mode == M_MENU) screen_change(SCREEN_ELEC);   // détail des électorats
+        else help_open(SCREEN_GAME);                      // aide
         return;
     }
     if (mode_dirty) return;   // laisse draw() finir le changement de mode
