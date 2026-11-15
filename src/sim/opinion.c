@@ -1,7 +1,7 @@
 #include "sim/sim.h"
 
 // Opinion par électorat (tâche 2.4). Constantes : docs/SIM.md.
-#define OPN_BASE        339
+#define OPN_BASE        396
 #define OPN_NOISE       8
 #define OPN_NOISE_M     5    // aléa par tour à 12 tours/an
 #define SCANDAL_K       12   // -1,2 point d'opinion cible par 10 points de scandale
@@ -14,14 +14,16 @@
 #define GROWTH_REF      110
 #define UNEMP_REF       750
 #define TENSION_REF     20
+#define DEBT_OPN_REF    30   // V4.14 : défiance des marchés au-delà de 3 points de dette creusée depuis le début du mandat
+#define DEBT_OPN_DIV    800  // malus (dixièmes) = excès² / 800, soit -8 points à +80 points de dette
 #define GRACE_PER_YEAR  80   // érosion de l'état de grâce (dixièmes de % par an)
 
 // Affinité de l'électorat avec l'orientation du joueur (V4 : 5 électorats,
 // ordre Pop Moy Cad Ret Jeu ; docs/SPEC_V4.md §1.2).
 static const s8 orient_affinity[ORIENT_COUNT][ELEC_COUNT] = {
-    {  30,   0, -30, -10,  30 },   // gauche
+    {  47,  17, -13,   7,  47 },   // gauche (V4.14 : +17, compense le rappel des piliers)
     { -20,  10,  15,  15, -20 },   // centre
-    { -40,   0,  40,  10, -35 },   // droite
+    { -46,  -6,  34,   4, -41 },   // droite (V4.14 : -6)
 };
 
 // Sensibilité au chômage et à la croissance (dixièmes de % par point, / 10).
@@ -60,6 +62,10 @@ s16 sim_opinion_target(const Country *c, u8 e)
     t -= (s32)c->gauges[JAUGE_SCANDALE] * SCANDAL_K / 10;
     if (c->gauges[JAUGE_DEFIANCE] > DEFIANCE_FREE)
         t -= ((s32)c->gauges[JAUGE_DEFIANCE] - DEFIANCE_FREE) / 2;
+    if ((s32)c->debt - c->debt_start > DEBT_OPN_REF) {
+        s32 ex = (s32)c->debt - c->debt_start - DEBT_OPN_REF;
+        t -= ex * ex / DEBT_OPN_DIV;
+    }
     t += sim_plan_opinion(&plan, e);
     if (c->pm == PM_TECHNOCRATE) t -= TECHNO_POP;
     if (c->mandate > 0)

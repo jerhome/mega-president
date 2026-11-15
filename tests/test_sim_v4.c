@@ -173,7 +173,7 @@ static void test_budget_tables(void)
     p.lvl[BUD_IMPOT_ENTREPRISES] = 1;
     CHECK_EQ(sim_budget_plan_preset(&p), BUDGET_PERSO);
 
-    // Popularité pondérée des préréglages : Rigueur ≈ -0,9 point, Relance ≈ +0,6
+    // Popularité pondérée des préréglages : Rigueur ≈ -0,9 point, Relance ≈ -1,3 (V4.14)
     {
         s32 pr = 0, pl = 0;
         for (e = 0; e < ELEC_COUNT; e++) {
@@ -181,7 +181,9 @@ static void test_budget_tables(void)
             pl += (s32)elec_weight[e] * sim_budget_opinion(BUDGET_RELANCE, e);
         }
         CHECK(pr / 100 >= -11 && pr / 100 <= -7);
-        CHECK(pl / 100 >= 3 && pl / 100 <= 9);
+        // V4.14 : la défiance des marchés (déficit² / 7) ramène l'effet direct de la Relance à
+        // environ -1,3 point ; son attrait vient de la croissance et des piliers (voir SIM.md).
+        CHECK(pl / 100 >= -16 && pl / 100 <= -10);
     }
 
     // Asymétrie : +2 ne rapporte que 1,5 fois un cran, -2 coûte 2,5 fois

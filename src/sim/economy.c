@@ -8,7 +8,7 @@
 #define UNEMP_STRUCT   750   // chômage structurel (rappel faible)
 #define DEFICIT_BASE   45    // déficit primaire de base : 4,5 points de PIB par an
 #define DEBT_REF       1100  // au-delà, consolidation budgétaire spontanée
-#define DEBT_CONSOL    20    // -1 point de déficit par an pour 20 points de dette en plus
+#define DEBT_CONSOL    120   // -1 point de déficit par an pour 20 points de dette en plus
 #define INFLATION      200   // 2,00 % (croissance nominale = réelle + inflation)
 #define TENSION_BASE   20
 #define TECHNO_TREND   30    // PM Technocrate : +0,30 point de tendance
