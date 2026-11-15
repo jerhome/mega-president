@@ -242,7 +242,7 @@ static void ref_draw(void)
                 ui_art_size(ART_DECOR_URNE, &aw, &ah);
                 ui_art_draw_pal(ART_DECOR_URNE, 1 + (27 - aw) / 2, 13, PAL3);
             }
-            ui_gueule_talk(ui_gueule_talk_ms(txt[TXT_REF_ANNONCE]));
+            ui_gueule_say(ui_gueule_talk_ms(txt[TXT_REF_ANNONCE]));
             ui_footer(1, 26, 38, "A : passer");
             break;
         case P_RESULT:

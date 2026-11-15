@@ -4,6 +4,7 @@
 #include "gfx_ui.h"
 #include "gfx_art.h"
 #include "ui/input.h"
+#include "audio/voice.h"
 
 #define ART_SLOTS 24  // jeux de tuiles chargés en même temps (illustrations, gueules, expressions), au plus
 
@@ -243,6 +244,7 @@ static struct {
     u16 blink_t, look_t; // avant le prochain clignement, le prochain regard
     u16 mouth_t;         // durée restante de l'image de bouche
     u32 talk_t;          // parole restante
+    bool sung;           // bouche pilotée par la voix (charabia), pas par le hasard
 } ga;
 
 static u16 ga_seed = 0x5EED;
@@ -336,17 +338,23 @@ static void ga_start(GueuleId id, Expr e, u16 x, u16 y, u16 pal)
     ga.blink_t = ga_rand(MS(1200), MS(3500));   // premier clignement assez tôt
     ga.look_t = ga_rand(MS(5000), MS(12000));
     ga.talk_t = 0;
+    ga.sung = FALSE;
     ga.mouth_t = 0;
+    ga.sung = FALSE;
 }
 
 static void ga_off(void)
 {
     ga.on = FALSE;
+    ga.sung = FALSE;
+    voice_say_stop();
     ga.talk_t = 0;
 }
 
 void ui_gueule_anim_stop(void)
 {
+    ga.sung = FALSE;
+    voice_say_stop();
     ga_rest();
     ga.on = FALSE;
 }
@@ -368,8 +376,20 @@ void ui_gueule_anim_cover(u16 x, u16 y, u16 w, u16 h)
         ga.on = FALSE;   // visage recouvert : ne plus y écrire
 }
 
+void ui_gueule_say(u16 ms)
+{
+    ga.sung = FALSE;
+    if (ga.on && voice_say(ga.id)) {
+        ga.sung = TRUE;
+        ga.talk_t = 0;
+        return;
+    }
+    ui_gueule_talk(ms);   // voix coupée : la bouche remue sans son, comme en V3
+}
+
 void ui_gueule_talk(u16 ms)
 {
+    ga.sung = FALSE;
     ga.talk_t = (u32)ms * 3 / 10;
     ga.mouth_t = 0;
 }
@@ -437,6 +457,15 @@ static void ga_eyes(u16 dt, u8 flags)
 
 static void ga_mouth(u16 dt, u8 flags)
 {
+    if (ga.sung) {   // charabia : la bouche suit le son, puis repos (seuls les yeux bougent)
+        if (!(flags & GA_TALK) || !voice_talking()) {
+            ga.sung = FALSE;
+            ga.mouth_want = F_REST;
+        } else {
+            ga.mouth_want = voice_mouth();
+        }
+        return;
+    }
     if (ga.talk_t == 0 || !(flags & GA_TALK)) {
         ga.talk_t = 0;
         ga.mouth_want = F_REST;

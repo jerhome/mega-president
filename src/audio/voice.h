@@ -16,4 +16,18 @@ void voice_set_enabled(bool on);
 // « For sure ! » à la demande (aperçu du réglage), canal 3.
 void voice_preview(void);
 
+
+// --- Charabia des personnages (4.18) ---
+// Lance une réplique (2 syllabes) avec la voix de la gueule id (GueuleId, ordre de la
+// banque). FALSE si la voix est coupée dans les Options (rien n'est joué).
+bool voice_say(u16 gueule);
+// Boucle des écrans, une fois par image : enchaîne les syllabes (durées au compteur de temps).
+void voice_update(void);
+// TRUE tant que la réplique est en cours (syllabes et silence entre elles).
+bool voice_talking(void);
+// Coupe la réplique en cours.
+void voice_say_stop(void);
+// Forme de bouche à l'instant : 0 repos, 1 peu ouverte, 2 ouverte.
+u8 voice_mouth(void);
+
 #endif

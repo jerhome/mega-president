@@ -1,6 +1,7 @@
 // Mega Président — gestion des écrans (tâche 1.1). Voir screen.h.
 #include "audio/music.h"
 #include "audio/sfx.h"
+#include "audio/voice.h"
 #include "ui/screen.h"
 #include "ui/input.h"
 #include "ui/ui_internal.h"
@@ -116,6 +117,7 @@ void screen_run(ScreenId first)
         // Si update() a demandé un changement d'écran, on ne dessine pas l'ancien.
         if (pending == NO_SCREEN && s && s->draw)
             s->draw();
+        voice_update();            // charabia (4.18)
         ui_gueule_anim_update();   // visages animés (3.18)
         sfx_update();
         music_update();
