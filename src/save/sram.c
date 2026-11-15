@@ -26,3 +26,16 @@ void sram_scores_save(const ScoreBoard *b)
         SRAM_writeByte(i, buf[i]);
     SRAM_disable();
 }
+
+u8 sram_tagline_next(u8 n)
+{
+    u8 i;
+    SRAM_enableRO();
+    i = SRAM_readByte(SRAM_TAGLINE_OFFSET);
+    SRAM_disable();
+    i = (u8)((i + 1) % n);          // SRAM vierge (0xFF) : n'importe quel départ convient
+    SRAM_enable();
+    SRAM_writeByte(SRAM_TAGLINE_OFFSET, i);
+    SRAM_disable();
+    return i;
+}

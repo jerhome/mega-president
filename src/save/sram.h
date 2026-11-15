@@ -12,4 +12,9 @@ u8 sram_scores_load(ScoreBoard *b);
 // Écrit les classements.
 void sram_scores_save(const ScoreBoard *b);
 
+// Accroche de l'écran titre : renvoie l'indice suivant (0..n-1) et le mémorise,
+// pour changer d'accroche à chaque démarrage. Octet libre entre les scores et la partie.
+#define SRAM_TAGLINE_OFFSET 254
+u8 sram_tagline_next(u8 n);
+
 #endif

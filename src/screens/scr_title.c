@@ -10,6 +10,7 @@
 #include "content/content_texts.h"
 #include "ui/screen.h"
 #include "version.h"
+#include "save/sram.h"
 #include "ui/ui_art.h"
 #include "screens/evt_art.h"
 
@@ -49,8 +50,25 @@ static u8 group_of(u8 orient)
     return (u8)(GRP_G2 + orient);
 }
 
+// Accroches en rotation (une par démarrage ou retour au titre), 38 colonnes au plus.
+static const char *const taglines[][2] = {
+    { "Élu avec 51 %.",                      "Les 49 autres vous attendent dehors." },
+    { "La République vous fait confiance.",  "Enfin, 51 % d’entre elle." },
+    { "Cinq ans pour changer la vie.",       "Ou au moins la couleur des rideaux." },
+    { "Promettre, c’est gratuit.",           "Tenir, ça coûte des CP." },
+    { "Le pouvoir est à vous.",              "Le SMIC, lui, attend toujours." },
+    { "Ici, c’est vous le monarque.",        "Les syndicats ne sont pas d’accord." },
+    { "Jupiter descend de l’Olympe.",        "Il a raté la marche." },
+    { "Gouverner, c’est prévoir.",           "Surtout les manifs." },
+    { "Cinq ans, 577 députés, une manette.", "Bonne chance, Monsieur le Président." },
+    { "L’Élysée vous attend.",               "Le peuple aussi. Il a des pancartes." },
+};
+#define TAGLINE_COUNT ((u8)(sizeof(taglines) / sizeof(taglines[0])))
+static u8 tagline;
+
 static void title_init(void)
 {
+    tagline = sram_tagline_next(TAGLINE_COUNT);
 #ifdef MP_DEBUG_SKIP_YEARS
     {   // ROM de test seulement : partie automatique jusqu'au rapport de fin d'année 3.
         static bool done;
@@ -198,13 +216,14 @@ static void draw_portrait(void)
                    PORTRAIT_X, PORTRAIT_Y, PAL3);
 }
 
+
 static void title_draw(void)
 {
     if (dirty & D_ALL) {
         draw_frame();
         if (phase == PH_PRESS) {
-            ui_text_center(0, 17, UI_COLS, "Élysée, cinq ans de pouvoir", UI_STYLE_HIGHLIGHT);
-            ui_text_center(0, 18, UI_COLS, "« À vous de gouverner ! »", UI_STYLE_TEXT);
+            ui_text_center(0, 17, UI_COLS, taglines[tagline][0], UI_STYLE_HIGHLIGHT);
+            ui_text_center(0, 18, UI_COLS, taglines[tagline][1], UI_STYLE_TEXT);
             ui_footer(1, 22, UI_TEXT_COLS, has_save ? "B : continuer la partie   C : meilleurs scores"
                                                     : "C : meilleurs scores");
             // Pied de page, séparé des actions par une ligne vide et un filet.
