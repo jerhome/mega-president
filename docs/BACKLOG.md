@@ -253,6 +253,19 @@ Spécification validée : [SPEC_V4.md](SPEC_V4.md). Développement sur la branch
 | 4.22 | Relecture DA de l'écran Options (huissier, icône cartouche, mise en page, lignes grisées) et retouches | 1,5 h | ✅ |
 | 4.23 | ⏭️ Reporté — logo dessiné de l'écran titre : le joueur valide l'écran titre actuel (15/11) | 3 h |
 
+## V4.1 — Relecture et factorisation du code (≈ 18 h)
+
+Après le test console de la V4. Relecture par un développeur de haut niveau (Opus), sans assembleur : C uniquement, `src/sim/` reste portable. Aucun changement de règle ni de contenu.
+
+| # | Tâche | Durée | État |
+|---|---|---|---|
+| 4.1.01 | Captures de référence de chaque écran (ROM de démo) et comparaison automatique avant/après | 2 h |  |
+| 4.1.02 | Audit du code (Opus) : doublons, sûreté mémoire, pile, PAL/NTSC, sauvegarde, cas limites ; rapport classé | 3 h |  |
+| 4.1.03 | Factorisation de l'interface : widgets communs (cadres, listes, jauges, boucle de saisie, boîtes) | 6 h |  |
+| 4.1.04 | Corrections de l'audit : robustesse, bornes, simplifications | 3 h |  |
+| 4.1.05 | Mesures (temps des écrans, ROM, RAM) et optimisations simples en C si un écran rame | 2 h |  |
+| 4.1.06 | Contrôle qualité, comparaison des captures, test console, release | 2 h |  |
+
 ## Questions ouvertes
 
 - ~~Licence du dépôt public~~ → MIT.
