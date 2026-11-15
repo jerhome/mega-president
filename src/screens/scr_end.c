@@ -163,10 +163,10 @@ static void end_draw(void)
     ui_separator(10, 15, 29);
     draw_evo(16, "Chômage", c->unemployment_start, c->unemployment, 2, " %", FALSE);
     draw_evo(17, "Dette", c->debt_start, c->debt, 1, " %", FALSE);
-    ui_text_draw(1, 19, "Piliers", UI_STYLE_HIGHLIGHT);
-    ui_separator(9, 19, 30);
+    ui_text_draw(1, 18, "Piliers", UI_STYLE_HIGHLIGHT);
+    ui_separator(9, 18, 30);
     for (i = 0; i < PIL_TOTAL; i++)
-        draw_evo(20 + i, pillar_names[i], c->pillars_start[i], c->pillars[i], 1, "", TRUE);
+        draw_evo(19 + i, pillar_names[i], c->pillars_start[i], c->pillars[i], 1, "", TRUE);
 
     ui_footer(1, 26, 38, "START : meilleurs scores");
 }

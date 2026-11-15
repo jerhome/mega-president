@@ -143,14 +143,14 @@ static void event_draw(void)
         // Le ministre concerné réagit en haut ; le bas montre la décision et l'écho dans la presse.
         draw_upper(TRUE);
         draw_lower("Votre décision");
-        ui_icon_draw(1, 18, UI_ICON_CHECK);
-        ui_text_draw_n(3, 18, evt_choice[evt][chosen], 36, 0, UI_STYLE_HIGHLIGHT);
+        ui_icon_draw(1, 19, UI_ICON_CHECK);
+        ui_text_draw_n(3, 19, evt_choice[evt][chosen], 36, 0, UI_STYLE_HIGHLIGHT);
         {
             u8 p = persona();
-            u16 x = 3 + ui_text_draw_n(3, 19, rep_nom[p], 36, 0, UI_STYLE_HIGHLIGHT);
+            u16 x = 3 + ui_text_draw_n(3, 20, rep_nom[p], 36, 0, UI_STYLE_HIGHLIGHT);
             if (rep_fonction[p][0]) {
-                x += ui_text_draw(x, 19, ", ", UI_STYLE_DIM);
-                ui_text_draw_n(x, 19, rep_fonction[p], 38 - x, 0, UI_STYLE_DIM);
+                x += ui_text_draw(x, 20, ", ", UI_STYLE_DIM);
+                ui_text_draw_n(x, 20, rep_fonction[p], 38 - x, 0, UI_STYLE_DIM);
             }
             {
                 char q[48];
@@ -158,10 +158,9 @@ static void event_draw(void)
                 strcat(q, "« ");
                 strcat(q, replique());
                 strcat(q, " »");
-                ui_text_draw_n(3, 20, q, 36, 0, UI_STYLE_TEXT);
+                ui_text_draw_n(3, 21, q, 36, 0, UI_STYLE_TEXT);
             }
         }
-        ui_separator(1, 21, 38);
         ui_icon_draw(1, 22, UI_ICON_NEWS);
         ui_text_draw(3, 22, "Le Quotidien du Matin", UI_STYLE_DIM);
         ui_text_wrap(3, 23, 36, 3, flatten(evt_journal[evt][chosen]), UI_STYLE_TEXT);

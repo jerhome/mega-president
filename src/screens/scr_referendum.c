@@ -107,7 +107,7 @@ static void draw_detail(void)
     else if (err != RFD_OK)
         ui_text_draw(1, 19, "Impossible pour l’instant", UI_STYLE_ALERT);
     else
-        ui_text_wrap(1, 19, 38, 4, txt[TXT_REF_AIDE], UI_STYLE_DIM);
+        ui_text_wrap(1, 19, 38, 5, txt[TXT_REF_AIDE], UI_STYLE_DIM);
 }
 
 static void go_phase(Phase p)

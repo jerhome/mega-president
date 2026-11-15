@@ -47,7 +47,7 @@ const char *const txt[TXT_COUNT] = {
     "En cohabitation, seules les lois de\nsouveraineté relèvent de l'Élysée.", // TXT_COHAB_LOI_REFUSEE
     "Souveraineté", // TXT_COHAB_SOUVERAINE
     "Le gouvernement fait adopter une loi :", // TXT_COHAB_LOI_GOUV
-    "Le Premier ministre impose son budget,\nsans vous demander votre avis :", // TXT_COHAB_BUDGET_GOUV
+    "Matignon impose son budget. Votre avis\na été noté, puis classé :", // TXT_COHAB_BUDGET_GOUV
     "Sophie Carrel", // TXT_COHAB_PM_GAUCHE_NOM
     "Bernard Lacombe", // TXT_COHAB_PM_CENTRE_NOM
     "Philippe de Montclar", // TXT_COHAB_PM_DROITE_NOM
@@ -193,15 +193,15 @@ const char *const txt[TXT_COUNT] = {
     "Demander la lecture définitive ?\nCoût : 1 CP.", // TXT_SENAT_LECDEF_CONFIRME
     "Lecture définitive : l'Assemblée a le\ndernier mot. Votre plan est rétabli,\nle Sénat range ses crayons.", // TXT_BUDJ_LECDEF
     "Pas assez de CP pour la lecture\ndéfinitive : le Sénat l'emporte.", // TXT_SENAT_LECDEF_REFUSE
-    "La Première ministre impose un plan\nsocial et de relance : dépenses en\nhausse, impôts des entreprises aussi.", // TXT_COHAB_PLAN_GAUCHE
-    "Le Premier ministre impose un budget\nde reconduction : rien ne bouge, tout\nle monde râle, c'est le centre.", // TXT_COHAB_PLAN_CENTRE
-    "Le Premier ministre impose un budget\nd'économies : moins de dépenses,\nmoins d'impôts des entreprises.", // TXT_COHAB_PLAN_DROITE
-    "Défense : seule ligne qui vous reste,\nà un cran près du plan du PM.", // TXT_COHAB_DEFENSE
+    "Matignon impose un plan social et de\nrelance : dépenses en hausse, et les\nentreprises passent à la caisse.", // TXT_COHAB_PLAN_GAUCHE
+    "Matignon impose un budget de\nreconduction : rien ne bouge et tout\nle monde râle. L'équilibre, quoi.", // TXT_COHAB_PLAN_CENTRE
+    "Matignon impose la rigueur : moins de\ndépenses, moins d'impôts pour les\nentreprises. Ça ruissellera, promis.", // TXT_COHAB_PLAN_DROITE
+    "Défense : seule ligne qui vous reste,\nà un cran près de celle de Matignon.", // TXT_COHAB_DEFENSE
     "Domaine réservé : sécurité et défense.\nUn cran de plus ou de moins, sans CP.\nLes autres lignes sont grisées.", // TXT_COHAB_DEFENSE_AIDE
-    "Chômage, salaires, apprentissage.\nCible jeunes et classes populaires.", // TXT_THEME_EMPLOI_DESC
+    "Chômage, salaires, apprentissage.\nJeunes et populaires. Promis, juré.", // TXT_THEME_EMPLOI_DESC
     "Police, justice, tranquillité. Parle\nsurtout aux retraités. Képis inclus.", // TXT_THEME_SECURITE_DESC
-    "Prix, carburant, chèque et caddie.\nCible populaires et classes moyennes.", // TXT_THEME_POUVOIR_ACHAT_DESC
-    "Climat, transports, sobriété. Cible\njeunes et cadres. Venez à vélo.", // TXT_THEME_ECOLOGIE_DESC
+    "Prix, plein, caddie, fins de mois.\nCible populaires et classes moyennes.", // TXT_THEME_POUVOIR_ACHAT_DESC
+    "Climat, transports, sobriété. Cible\njeunes et cadres. Garez le SUV loin.", // TXT_THEME_ECOLOGIE_DESC
     "Santé et retraites", // TXT_THEME_SANTE
     "Hôpital, pensions, EHPAD. Cible les\nretraités, un peu les autres.", // TXT_THEME_SANTE_DESC
     "Partie d'une ancienne version : elle\ndort au grenier, impossible de la\nreprendre. Une nouvelle partie ?", // TXT_SAVE_ANCIENNE
