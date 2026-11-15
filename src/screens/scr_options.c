@@ -68,6 +68,19 @@ static const char *const row_quip[R_COUNT] = {
     "« Comme une promesse électorale. »",
     "« On revient à la Constitution. »"
 };
+// Lignes de données inactives : raison (ivoire) et réplique (gris bleuté).
+static const char *const why_text[4] = {
+    "Aucun record pour l'instant.",
+    "Impossible pendant une partie.",
+    "Aucune partie sauvegardée.",
+    "Les réglages sont déjà ceux d'origine."
+};
+static const char *const why_quip[4] = {
+    "« Page blanche. L'Histoire attend. »",
+    "« Pas pendant le mandat, voyons. »",
+    "« Rien à effacer. Tout est en ordre. »",
+    "« Tout est d'origine. Même moi. »"
+};
 static const char quip_mute[] = "« Le silence. Comme après un 49.3. »";
 
 // --- Mise en page (lot B : médaillon de l'huissier à droite) ------------------------
@@ -135,6 +148,14 @@ static bool row_enabled(u8 r)
     case R_DEFAULTS:     return !settings_all_default();
     default:             return TRUE;
     }
+}
+
+// Index de la raison d'inactivité d'une ligne de données (la cause « depuis le jeu » prime).
+static u8 why_index(u8 r)
+{
+    if (r == R_ERASE_SCORES) return 0;
+    if (r == R_ERASE_GAME)   return return_screen != SCREEN_TITLE ? 1 : 2;
+    return 3;
 }
 
 // Valeur suivante / précédente d'un réglage (le cran 25 % peut être sauté).
@@ -229,6 +250,13 @@ static void draw_help(void)
     const char *quip;
 
     ui_clear_rect(1, HELP_Y + 1, UI_TEXT_COLS, 5);
+    if (!row_enabled(cur)) {
+        u8 w = why_index(cur);
+        ui_text_draw(1, HELP_Y + 1, why_text[w], UI_STYLE_TEXT);
+        ui_text_center(1, HELP_Y + 3, UI_TEXT_COLS, why_quip[w], UI_STYLE_DIM);
+        ui_footer(1, HELP_Y + 5, UI_TEXT_COLS, "B : retour");
+        return;
+    }
     ui_text_wrap(1, HELP_Y + 1, UI_TEXT_COLS, 2, row_help[cur], UI_STYLE_TEXT);
     if (cur == R_COLORS) {
         // Les deux flèches d'exemple changent de couleur avec le réglage.
@@ -287,23 +315,11 @@ static void options_draw(void)
 
 // --- Logique ------------------------------------------------------------------------
 
-// Ligne sélectionnable suivante dans la direction dir (pas de bouclage) ; cur sinon.
+// Ligne suivante dans la direction dir (pas de bouclage) ; from si on est au bout.
 static u8 next_row(u8 from, s16 dir)
 {
     s16 r = (s16)from + dir;
-    while (r >= 0 && r < R_COUNT) {
-        if (row_enabled((u8)r))
-            return (u8)r;
-        r += dir;
-    }
-    return from;
-}
-
-// Après un effacement : si la ligne courante devient grisée, le curseur remonte.
-static void fix_cursor(void)
-{
-    if (!row_enabled(cur))
-        cur = next_row(cur, -1);
+    return (r >= 0 && r < R_COUNT) ? (u8)r : from;
 }
 
 static void open_confirm(u8 kind)
@@ -370,7 +386,6 @@ static void confirm_update(void)
             scores_reset(&b);
             sram_scores_save(&b);
             has_scores = FALSE;
-            fix_cursor();
             open_confirm(CF_DONE);
         } else {
             close_confirm();
@@ -380,7 +395,6 @@ static void confirm_update(void)
         if (c == 0) {
             sram_game_erase();
             has_game = FALSE;
-            fix_cursor();
             open_confirm(CF_DONE);
         } else {
             close_confirm();
@@ -391,7 +405,6 @@ static void confirm_update(void)
             settings_reset();
             settings_apply_all();
             sram_settings_save();
-            fix_cursor();
         }
         close_confirm();
         break;
@@ -469,6 +482,10 @@ static void options_update(void)
         return;
     }
     if (prs & INPUT_OK) {
+        if (!row_enabled(cur)) {
+            sfx_play(SFX_ERROR);
+            return;
+        }
         sfx_play(SFX_OK);
         open_confirm(cur == R_ERASE_SCORES ? CF_SCORES1 : (cur == R_ERASE_GAME ? CF_GAME1 : CF_DEFAULTS));
     }
