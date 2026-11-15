@@ -68,8 +68,6 @@ void ui_art_size(ArtId id, u16 *w, u16 *h);
 bool ui_art_draw(ArtId id, u16 x, u16 y);
 // Idem dans la ligne de palette pal (PAL2 ou PAL3 ; toute autre valeur -> PAL2).
 bool ui_art_draw_pal(ArtId id, u16 x, u16 y, u16 pal);
-// Efface (plan B) le rectangle occupé par l'illustration placée en x, y.
-void ui_art_erase(ArtId id, u16 x, u16 y);
 // Réserve ntiles tuiles dans la zone des illustrations (libérées par ui_art_close) ;
 // la même clé renvoie la même zone. 0 si la VRAM est pleine. (ui_hemi.c)
 u16 ui_art_reserve(u16 key, u16 ntiles);
@@ -78,7 +76,7 @@ u16 ui_art_reserve(u16 key, u16 ntiles);
 void ui_art_claim_palette(u16 pal);
 // Restaure les palettes empruntées (styles normaux) et libère la VRAM des
 // illustrations (gueules comprises). Les tuiles restent à l'écran : effacer avant
-// (ui_clear, ui_art_erase, ui_gueule_erase) pour éviter un affichage aux mauvaises couleurs.
+// (ui_clear) pour éviter un affichage aux mauvaises couleurs.
 void ui_art_close(void);
 
 // --- Gueules V3 (tâches 3.07 à 3.09) -------------------------------------------
@@ -114,8 +112,6 @@ bool ui_gueule_expr(GueuleId id, Expr e, u16 x, u16 y, u16 pal);
 // Médaillon (ui_medallion, UI_PORTRAIT_W x UI_PORTRAIT_H) puis gueule dans le même
 // rectangle : le motif des écrans. Renvoie FALSE si la gueule n'a pu être dessinée.
 bool ui_portrait(GueuleId id, Expr e, u16 x, u16 y, u16 pal);
-// Efface (plan B) le rectangle de la gueule placée en x, y.
-void ui_gueule_erase(u16 x, u16 y);
 
 // --- Visages animés (tâche 3.18, sans son) -------------------------------------
 // La DERNIÈRE gueule dessinée par ui_gueule_draw s'anime seule (une seule à la fois) :
@@ -125,7 +121,7 @@ void ui_gueule_erase(u16 x, u16 y);
 // Rien pendant les fondus ni sous une boîte de message ; cadences en millisecondes
 // (identiques en PAL et en NTSC) ; aléa propre, jamais celui de la simulation.
 // L'animation s'arrête d'elle-même si le visage est recouvert (fenêtre, ui_clear,
-// ui_gueule_erase, autre illustration) ou à ui_art_close.
+// autre illustration) ou à ui_art_close.
 //
 // Le personnage parle pendant ms millisecondes (bouche irrégulière, 90 à 160 ms par
 // image) ; arrêt net à la fin ou à l'appui sur A, B, C ou START ; 0 = se tait.

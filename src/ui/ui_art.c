@@ -137,15 +137,6 @@ bool ui_art_draw(ArtId id, u16 x, u16 y)
     return ui_art_draw_pal(id, x, y, PAL2);
 }
 
-void ui_art_erase(ArtId id, u16 x, u16 y)
-{
-    u16 w, h;
-
-    ui_art_size(id, &w, &h);
-    if (w)
-        VDP_clearTileMapRect(BG_B, x, y, w, h);
-}
-
 void ui_art_close(void)
 {
     static const Palette *const normal[4] = { &pal_ui_text, &pal_ui_highlight, &pal_ui_dim, &pal_ui_alert };
@@ -578,12 +569,6 @@ bool ui_gueule_draw(GueuleId id, Expr e, u16 x, u16 y, u16 pal)
         return FALSE;
     ga_start(id, e, x, y, pal);
     return TRUE;
-}
-
-void ui_gueule_erase(u16 x, u16 y)
-{
-    ui_gueule_anim_cover(x, y, GUEULE_W, GUEULE_H);
-    VDP_clearTileMapRect(BG_B, x, y, GUEULE_W, GUEULE_H);
 }
 
 bool ui_portrait(GueuleId id, Expr e, u16 x, u16 y, u16 pal)

@@ -73,11 +73,6 @@ void ui_soft_replay(void)
     soft_req = TRUE;
 }
 
-void ui_soft_cancel(void)
-{
-    soft_req = FALSE;
-}
-
 void ui_fade_out_start(void)
 {
     ui_gueule_anim_stop();   // visage au repos avant le fondu au noir
