@@ -126,15 +126,15 @@ static void set_mode(Mode m)
     mode_dirty = TRUE;
 }
 
-// Ligne « libellé, jauge, valeur » : label x=1, jauge x=13 (16 tuiles), valeur à droite.
+// Ligne « libellé, jauge, valeur » : label x=1 (13 car.), jauge x=14 (16 tuiles), valeur à droite.
 static void stat_row(u16 y, const char *label, s32 value, u16 dec, const char *unit,
                      s16 gval, s16 gmax, UiStyle style)
 {
     char buf[14];
     u16 n, ul = ui_text_len(unit);
 
-    ui_text_draw_n(1, y, label, 12, 12, UI_STYLE_TEXT);
-    ui_gauge_draw(13, y, 16, gval, gmax, style);
+    ui_text_draw_n(1, y, label, 13, 13, UI_STYLE_TEXT);
+    ui_gauge_draw(14, y, 16, gval, gmax, style);
     n = ui_format_number(buf, value, dec);
     ui_clear_rect(30, y, 8, 1);
     if (style == UI_STYLE_DIM) style = UI_STYLE_TEXT;   // valeur lisible

@@ -77,7 +77,15 @@ static void event_draw(void)
         ui_text_draw(1, 14, "Votre décision :", UI_STYLE_TEXT);
         ui_text_draw_n(1, 15, evt_choice[evt][chosen], 38, 0, UI_STYLE_HIGHLIGHT);
         ui_text_draw(1, 17, "Journal", UI_STYLE_HIGHLIGHT);
-        ui_text_wrap(1, 18, 28, 7, evt_journal[evt][chosen], UI_STYLE_TEXT);
+        {   // Journal coupé à la main pour ~36 colonnes : on le remet à plat pour 28.
+            static char flat[160];
+            const char *src = evt_journal[evt][chosen];
+            u16 i;
+            for (i = 0; src[i] && i < sizeof(flat) - 1; i++)
+                flat[i] = (src[i] == '\n') ? ' ' : src[i];
+            flat[i] = 0;
+            ui_text_wrap(1, 18, 28, 7, flat, UI_STYLE_TEXT);
+        }
         ui_text_draw(1, 26, "A : continuer", UI_STYLE_TEXT);
     }
 }
