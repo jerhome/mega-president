@@ -215,7 +215,7 @@ On passe tout son temps dans les écrans : ils doivent être superbes. Personnag
 | 3.11 | Passage à la puce FM (YM2612) via XGM2 : outil de composition en code → VGM → XGM2, instruments (basses, nappes, pianos électriques), voix « For sure ! » et bruitages compatibles | 10 h | ✅ |
 | 3.12 | Musiques chill : titre, 5 années, élection | 10 h | 🔄 |
 | 3.13 | Un thème par écran avec un petit cachet lié à ce qu'on voit (journal, Assemblée, carte, budget, référendum, remaniement, destitution, campagne, fin, scores, aide) | 14 h | 🔄 |
-| 3.14 | Intégration : musique par écran, enchaînements | 3 h | |
+| 3.14 | Intégration : musique par écran, enchaînements | 3 h | 🔄 |
 
 ### Jalon V3
 | # | Tâche | Durée | État |
