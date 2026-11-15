@@ -11,17 +11,40 @@
 static bool s_done;     // la voix a déjà été lancée depuis l'allumage
 static bool s_active;   // lecture en cours
 static u32  s_end;      // tick (getTick) de fin prévue
+static bool s_off;      // réglage « Voix » à « Non »
 
-bool voice_play_intro_once(void)
+void voice_set_enabled(bool on)
 {
-    if (s_done) return FALSE;
-    s_done = TRUE;
+    s_off = !on;
+    if (s_off && s_active) {
+        XGM2_stopPCM(SOUND_PCM_CH3);
+        s_active = FALSE;
+    }
+}
+
+static bool voice_start(void)
+{
     Z80_loadDriver(Z80_DRIVER_XGM2, TRUE);
     if (!XGM2_playPCMEx(snd_forsure, sizeof(snd_forsure), SOUND_PCM_CH3, VOICE_PRIO, FALSE, FALSE))
         return FALSE;
     s_end = getTick() + VOICE_TICKS;
     s_active = TRUE;
     return TRUE;
+}
+
+void voice_preview(void)
+{
+    if (!s_off)
+        voice_start();
+}
+
+bool voice_play_intro_once(void)
+{
+    if (s_done) return FALSE;
+    s_done = TRUE;
+    if (s_off)
+        return FALSE;   // voix coupée : la musique du titre démarre sans attendre
+    return voice_start();
 }
 
 bool voice_busy(void)

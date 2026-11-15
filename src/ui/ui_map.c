@@ -20,6 +20,12 @@ static u16 region_color[REGION_COUNT];   // couleur courante (hors clignotement)
 static u8 selected = REGION_NONE;
 static u8 blink;
 static bool map_open;
+static bool colorblind;
+
+void ui_map_set_colorblind(bool on)
+{
+    colorblind = on;
+}
 
 static void apply(u8 region, u16 color)
 {
@@ -78,9 +84,9 @@ void ui_map_set_region_level(u8 region, s16 value, s16 min, s16 max)
     // rouge (7,2,1) sous la moyenne, jaune (7,6,1) autour, vert (1,6,1) au-dessus.
     // Valeurs 0..7 par composante (VDP : 3 bits, 0x0BGR avec bits pairs).
     if (t < 85)
-        color = UI_MAP_LOW;
+        color = colorblind ? UI_MAP_LOW_CB : UI_MAP_LOW;
     else if (t > 170)
-        color = UI_MAP_HIGH;
+        color = colorblind ? UI_MAP_HIGH_CB : UI_MAP_HIGH;
     else
         color = UI_MAP_MID;
     region_color[region] = color;

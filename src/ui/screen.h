@@ -27,6 +27,7 @@ typedef enum {
     SCREEN_REFERENDUM,  // V2 : référendum
     SCREEN_RESHUFFLE,   // V2 : remaniement (choix du nouveau PM)
     SCREEN_MAP,       // carte de popularité par région
+    SCREEN_OPTIONS,   // V3 : réglages (3.19)
     SCREEN_COUNT
 } ScreenId;
 

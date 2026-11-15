@@ -1,5 +1,6 @@
 // Mega Président — accès à la SRAM (console seulement, voir sram.h).
 #include "save/sram.h"
+#include "save/settings.h"
 
 u8 sram_scores_load(ScoreBoard *b)
 {
@@ -38,4 +39,29 @@ u8 sram_tagline_next(u8 n)
     SRAM_writeByte(SRAM_TAGLINE_OFFSET, i);
     SRAM_disable();
     return i;
+}
+
+u8 sram_settings_load(void)
+{
+    u8 buf[SETTINGS_BLOB_SIZE];
+    u16 i;
+
+    SRAM_enableRO();
+    for (i = 0; i < SETTINGS_BLOB_SIZE; i++)
+        buf[i] = SRAM_readByte(SRAM_SETTINGS_OFFSET + i);
+    SRAM_disable();
+    return settings_deserialize(buf, SETTINGS_BLOB_SIZE);
+}
+
+void sram_settings_save(void)
+{
+    u8 buf[SETTINGS_BLOB_SIZE];
+    u16 i;
+
+    settings_serialize(buf);
+    SRAM_enable();
+    for (i = 0; i < SETTINGS_BLOB_SIZE; i++)
+        SRAM_writeByte(SRAM_SETTINGS_OFFSET + i, buf[i]);
+    SRAM_disable();
+    settings_clear_dirty();
 }

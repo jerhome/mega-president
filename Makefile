@@ -25,7 +25,7 @@ DOCKER_SGDK = docker run --rm -u $(shell id -u):$(shell id -g) -e HOME=/tmp \
 
 HOST_CC     ?= gcc
 HOST_CFLAGS := -std=c99 -Wall -Wextra -Werror -O1 -Isrc
-SIM_SRC     := $(wildcard src/sim/*.c) $(wildcard src/content/*.c) src/save/scores.c src/save/gamesave.c
+SIM_SRC     := $(wildcard src/sim/*.c) $(wildcard src/content/*.c) src/save/scores.c src/save/gamesave.c src/save/settings.c
 TEST_SRC    := $(wildcard tests/*.c)
 TEST_BIN    := out/host/tests
 
@@ -98,7 +98,7 @@ $(BLASTEM):
 	# WSLg ne gère pas le réglage vsync d'OpenGL : rendu SDL sans OpenGL
 	sed -i 's/^\tgl on/\tgl off/' $(BLASTEM_DIR)/default.cfg
 
-$(TEST_BIN): $(CONTENT_GEN) $(SIM_SRC) $(TEST_SRC) $(wildcard src/sim/*.h) $(wildcard tests/*.h)
+$(TEST_BIN): $(CONTENT_GEN) $(SIM_SRC) $(TEST_SRC) $(wildcard src/sim/*.h) $(wildcard src/save/*.h) $(wildcard tests/*.h)
 	mkdir -p $(dir $@)
 	$(HOST_CC) $(HOST_CFLAGS) $(SIM_SRC) $(TEST_SRC) -o $@
 

@@ -8,6 +8,7 @@
 #include "ui/ui.h"
 #include "ui/ui_art.h"
 #include "ui/ui_map.h"
+#include "save/settings.h"
 #include "ui/input.h"
 #include "game/game.h"
 #include "sim/regions.h"
@@ -49,7 +50,8 @@ static void map_init(void)
     // Légende : une pastille de la couleur de la carte, puis son sens (écart à la
     // moyenne nationale : un tiers de ± 10 points pour chaque teinte).
     ui_separator(PANEL_X, 17, PANEL_W);
-    ui_gauge_draw(PANEL_X, 18, 2, 1, 1, UI_GAUGE_POSITIVE);
+    // Légende : en daltonisme, la carte passe au bleu (celui de la jauge neutre).
+    ui_gauge_draw(PANEL_X, 18, 2, 1, 1, settings_get(SET_COLORS) ? UI_GAUGE_NEUTRAL : UI_GAUGE_POSITIVE);
     ui_text_draw(PANEL_X + 3, 18, "Forte", UI_STYLE_TEXT);
     ui_gauge_draw(PANEL_X, 19, 2, 1, 1, UI_GAUGE_GOLD);
     ui_text_draw(PANEL_X + 3, 19, "Moyenne", UI_STYLE_TEXT);

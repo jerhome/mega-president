@@ -590,6 +590,92 @@ def patron_upe():
     return P
 
 
+# --- Firmin Tisserand, huissier de l'Élysée (écran Options, 3.19) ---------------------------
+
+def huissier():
+    """Firmin Tisserand : sexagénaire impassible, crâne dégarni et couronne de cheveux gris
+    plaqués, grosse moustache blanche en guidon, sourcils broussailleux, nez fort, joues
+    couperosées ; habit noir, plastron et nœud papillon blancs, chaîne d'argent à médaille sur
+    les épaules, et un petit tournevis dans la poche de poitrine (il « tient les boutons »)."""
+    P = P_({
+        "bg": [(6, 5, 3)],
+        "skin": [(3, 1, 1), (5, 3, 2), (6, 5, 4), (7, 6, 5)],
+        "rose": [(7, 3, 3)],
+        "suit": [(0, 0, 1), (1, 1, 2), (2, 2, 3)],
+        "white": [(6, 6, 5), (7, 7, 7)],
+        "silver": [(4, 4, 5), (6, 6, 7)],
+        "steel": [(3, 4, 5)],
+    })
+    neck(P, w=17, top=58, bottom=74)
+    s = bust(P, top=72, wide=37, suit="suit", shirt="white", tie="white", bow=True, vw=7, vdepth=16)
+    med = P.layer("silver", ink=True, cast=(1, 1))
+    med.ell(CX, 90, 4.5, 4.5, h=3)
+    head = skull(P, cy=38, rx=18, ry=21, jaw=(15, 12, 52), ear_y=42, ear_dx=18, ear_r=(4, 6.5),
+                 sockets=(8, 2.5), cheeks=(11, 47, 5))
+    head.ell(CX - 5, 22, 9, 7, h=3, mode="add")          # crâne qui brille
+    hm = (ellipse(CX - 17, 37, 3.5, 10) | ellipse(CX + 17, 37, 3.5, 10)) - ellipse(CX, 37, 15.5, 21)
+    hm -= rect(0, 44, 79, 95)
+    hr = hair(P, hm, h=2, r=2, mat="silver")
+    nose = nose_layer(P)
+    nose.shape(poly([(CX - 1, 39), (CX + 1, 39), (CX + 4, 50), (CX - 4, 50)]), h=4, r=2)
+    nose.ell(CX, 49, 4.5, 3.5, h=3)
+    mu = P.layer("white", ink=True, cast=(1, 1), smooth=1)  # moustache en guidon
+    mu.ell(CX - 5, 55, 6, 3.4, h=3)
+    mu.ell(CX + 5, 55, 6, 3.4, h=3)
+    for sx in (-1, 1):
+        mu.ell(CX + sx * 11, 55, 2.6, 2, h=2)
+        mu.ell(CX + sx * 13.5, 52.5, 1.5, 1.8, h=2)
+
+    @P.draw
+    def tex(cv, e):
+        comb(cv, hr, [[(CX - 19, 29), (CX - 17, 40)], [(CX + 19, 29), (CX + 17, 40)]], ("silver", 0))
+        comb(cv, mu, [[(CX - 9, 55), (CX - 2, 57)], [(CX + 2, 57), (CX + 9, 55)], [(CX - 7, 53), (CX - 3, 54)],
+                     [(CX + 3, 54), (CX + 7, 53)]], ("white", 0))
+        # chaîne d'argent posée sur les épaules, maillons alternés
+        for i in range(0, 29):
+            t = i / 28.0
+            x = (1 - t) ** 2 * (CX - 27) + 2 * (1 - t) * t * CX + t * t * (CX + 27)
+            y = (1 - t) ** 2 * 76 + 2 * (1 - t) * t * 104 + t * t * 76
+            x, y = int(round(x)), int(round(y))
+            if abs(x - CX) > 4:
+                cv.put(x, y, ("silver", 1) if i % 2 else ("silver", 0))
+                cv.put(x, y + 1, INK)
+        cv.put(CX - 1, 89, ("white", 1))                 # reflet de la médaille
+        # tournevis : manche rouge dans la poche de poitrine, tige d'acier qui dépasse
+        cv.fill(rect(CX + 15, 84, CX + 23, 84), ("suit", 2))
+        cv.fill(rect(CX + 18, 79, CX + 19, 83), ("rose", 0))
+        cv.fill(rect(CX + 18, 75, CX + 18, 78), ("steel", 0))
+        cv.put(CX + 19, 78, INK)
+        cv.put(CX + 20, 79, INK)
+        # joues couperosées
+        for sx in (-1, 1):
+            for (dx, dy) in ((0, 0), (2, 1), (-1, 2), (3, 3), (1, 3)):
+                x, y = CX + sx * 11 + dx * sx, 46 + dy
+                k = cv.get(x, y)
+                if k and k[0] == "skin":
+                    cv.put(x, y, ("rose", 0))
+        nostrils(cv, 50, 3)
+
+    def tip_up(cv):   # un coin de moustache qui se relève
+        cv.fill(ellipse(CX + 14, 47, 1.4, 1.8), ("white", 1))
+        cv.put(CX + 15, 45, INK)
+        cv.put(CX + 16, 47, INK)
+
+    face(P, eye_y=41, eye_dx=8, eye_w=8, iris_r=1.5, lid=2, bags=1, brow_y=33, brow_w=12,
+         brow_thick=3, brow_arch=1, brow_key=("silver", 1), iris=INK,
+         eyes={"neutre": {"open_": 0.7}, "content": {"open_": 0.7, "right": {"closed_smile": True}}},
+         brows={"neutre": (0, 1), "content": ((0, 1), (-1, -2))},
+         mouth_y=61,
+         mouths={"neutre": {"kind": "line", "w": 8, "curve": 0},
+                 "content": {"kind": "line", "w": 8, "curve": 1, "skew": 1},
+                 "furieux": {"kind": "grit", "w": 10, "curve": -0.5},
+                 "gene": {"kind": "wavy", "w": 8}},
+         extras={"content": tip_up, "furieux": vein_at(CX + 7, 20, ("rose", 0)),
+                 "gene": sweat_at(CX - 22, 24)})
+    return P
+
+
 ALL = [("chef_ugr", chef_ugr), ("chef_rsv", chef_rsv), ("chef_mjm", chef_mjm), ("chef_lso", chef_lso),
        ("jour_chaine_info", jour_chaine_info), ("jour_editorialiste", jour_editorialiste),
-       ("senat_president", senat_president), ("synd_ust", synd_ust), ("patron_upe", patron_upe)]
+       ("senat_president", senat_president), ("synd_ust", synd_ust), ("patron_upe", patron_upe),
+       ("huissier", huissier)]

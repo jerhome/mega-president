@@ -305,3 +305,11 @@ IMAGE gueule_patron_upe_neutre_anim  "gfx/gueule_patron_upe_neutre_anim.png" NON
 IMAGE gueule_patron_upe_content_anim "gfx/gueule_patron_upe_content_anim.png" NONE ALL
 IMAGE gueule_patron_upe_furieux_anim "gfx/gueule_patron_upe_furieux_anim.png" NONE ALL
 IMAGE gueule_patron_upe_gene_anim    "gfx/gueule_patron_upe_gene_anim.png" NONE ALL
+IMAGE gueule_huissier                "gfx/gueule_huissier.png" NONE ALL
+IMAGE gueule_huissier_content        "gfx/gueule_huissier_content.png" NONE ALL
+IMAGE gueule_huissier_furieux        "gfx/gueule_huissier_furieux.png" NONE ALL
+IMAGE gueule_huissier_gene           "gfx/gueule_huissier_gene.png" NONE ALL
+IMAGE gueule_huissier_neutre_anim    "gfx/gueule_huissier_neutre_anim.png" NONE ALL
+IMAGE gueule_huissier_content_anim   "gfx/gueule_huissier_content_anim.png" NONE ALL
+IMAGE gueule_huissier_furieux_anim   "gfx/gueule_huissier_furieux_anim.png" NONE ALL
+IMAGE gueule_huissier_gene_anim      "gfx/gueule_huissier_gene_anim.png" NONE ALL

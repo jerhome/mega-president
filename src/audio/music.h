@@ -46,5 +46,13 @@ void music_for_screen(u8 screen_id, u8 year); // morceau d'un écran (ScreenId) 
 void music_stop(void);             // fondu de sortie court puis arrêt
 void music_update(void);           // une fois par image (enchaînements)
 void music_set_enabled(bool on);   // coupe/active la musique (le choix est mémorisé)
+// Réglage « Musique » (Options) : cran 0 = coupée, 1..4 = 25/50/75/100 % de volume
+// PERÇU (même atténuation en dB sur FM et PSG, docs/SPEC_OPTIONS.md § 1.1). Une demande
+// faite pendant un fondu est réappliquée à sa fin (le fondu réécrirait l'ancien volume).
+// MUSIC_HAS_25 = 0 : le cran 1 n'est pas proposé (la batterie PCM ne baisse pas avec
+// le reste : essai du silence prioritaire négatif, voir docs/DECISIONS.md) ; s'il est
+// demandé quand même, il vaut le cran 2.
+#define MUSIC_HAS_25 0
+void music_set_volume(u8 cran);
 
 #endif

@@ -20,5 +20,6 @@ extern const Screen scr_referendum;
 extern const Screen scr_reshuffle;
 
 extern const Screen scr_map;
+extern const Screen scr_options;
 
 #endif
