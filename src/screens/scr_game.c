@@ -711,7 +711,7 @@ static void update_assembly(void)
 
 static void game_init(void)
 {
-    music_play(MUS_GAME);
+    music_play_year(sim_year(&g_game.country));
     ui_list_init(&law_list, 1, 4, 38, 5, law_name, LOI_COUNT);
     if (g_game.country.turn == 0) g_budget_seen = 0;   // nouvelle partie ou 2nd mandat
     menu_sel = 0;
