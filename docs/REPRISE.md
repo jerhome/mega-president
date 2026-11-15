@@ -12,11 +12,12 @@
 - ✅ U1 StrBuf (`src/util/strbuf`), fusionné dans v4.1-dev.
 - ✅ R4 mesures (`make rom-perf`, `docs/MESURES_V4_1.md`) : seul l'hémicycle perd des images (20-25 ms) ; titre avec sauvegarde, options et destitution pas encore mesurés.
 - ✅ R1 intégrité des tables : vignettes générées (les 6 événements V4 ont la bonne image et le bon ministre), tests des répliques, `_Static_assert`, loi en attente non reproposable au 2nd mandat. Fusionné dans v4.1-dev (139 814 vérifications).
-- 🔄 Lancés le 16/11 vers 00 h 45 (résultats peut-être perdus après un `/clear` → vérifier les branches `worktree-agent-*`, merge-base sur v4.1-dev, sinon relancer) :
-  - U2 widgets (src/ui : ui.c, ui_widgets.c, ui_art.c, input.h) ;
+- ✅ U2 widgets (src/ui, documentés dans src/ui/README.md « Widgets réutilisables » ; `ui_confirm_update` : 1 = oui, 0 = non), fusionné dans v4.1-dev.
+- 🔄 Lancés le 16/11 vers 00 h 45-01 h (résultats peut-être perdus après un `/clear` → vérifier les branches `worktree-agent-*`, merge-base sur v4.1-dev, sinon relancer) :
   - R2 sauvegarde, partie cœur (empreinte, `game_sanitize`, 2 emplacements, Fletcher différé ; `budget_seen` & co. reportés) ;
+  - U3 kit d'écran (scr_kit.[ch], scr_txt.h, art_reset_quiet) ;
   - P7 hémicycle (src/ui/ui_hemi.c seulement, objectif < 16 ms, 0 image perdue).
-- À suivre : U3 kit d'écran (après U2), puis E1-E6 (écrans), fin de R2 (`budget_seen`, instantané du rapport), R3 horloges + correctif C2 du charabia (après U2 : touche ui_widgets.c), U4 nettoyage, R6 `-Os`. C1 (`q[48]` de scr_event.c) dans E5.
+- À suivre : E1-E6 (après U3) (écrans), fin de R2 (`budget_seen`, instantané du rapport), R3 horloges + correctif C2 du charabia (U2 fait : peut démarrer), U4 nettoyage, R6 `-Os`. C1 (`q[48]` de scr_event.c) dans E5.
 
 ## Pièges
 - Les worktrees d'agents partent de `main` (V3) : chaque brief commence par `git merge v4.1-dev` (ou v4-dev).
