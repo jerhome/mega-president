@@ -83,6 +83,17 @@ rom-demo: $(CONTENT_GEN)
 	cp out/rom.bin out/demo.bin
 	rm -rf out/src out/rom.out out/rom.bin
 
+# ROM de mesure de performance (docs/MESURES_V4_1.md) : comme rom-demo, avec
+# MP_DEBUG_PERF (maximum d'update + draw et images perdues affichés en bas à droite).
+# Produit out/perf.bin.
+rom-perf: $(CONTENT_GEN)
+	rm -rf out/src out/rom.out
+	printf '%s' '-fstack-protector-strong -DMP_DEBUG_PERF -DMP_DEBUG_SCREEN=$(DEMO)' > out/dbgflags.txt
+	if [ -n "$(SCRIPT)" ]; then printf ' -DMP_DEBUG_SCRIPT="\\"%s\\""' "$(SCRIPT)" >> out/dbgflags.txt; fi
+	$(DOCKER_SGDK) release EXTRA_FLAGS=@/src/out/dbgflags.txt
+	cp out/rom.bin out/perf.bin
+	rm -rf out/src out/rom.out out/rom.bin
+
 run: rom blastem
 	pkill -x blastem || true
 	SDL_VIDEODRIVER=x11 $(BLASTEM) -r E $(ROM) >/dev/null 2>&1 &
