@@ -49,7 +49,7 @@ static const char *const *const val_text[SET_COUNT] = {
 static const char *const row_help[R_COUNT] = {
     "Volume de la musique, effet immédiat.",
     "Essentiels : sans les clics de menu, avec les sons qui informent.",
-    "« For sure ! » au démarrage, et plus tard les voix des personnages.",
+    "« For sure ! » quand la console s'allume.",
     "Clignements et regards des portraits.",
     "Durée des fondus entre les écrans.",
     "Carte et jauges lisibles par tous.",

@@ -526,3 +526,55 @@ tuiles n'ont pas grandi (en-tête `ui_art_gueules.h` inchangé, ROM 896 Ko).
   Kervella (Écologie) ; bourse, industrie, numérique, agriculture → Fontaine (Économie) ;
   sécurité, scandale → Fermont (Intérieur) ; santé → Varenne ; éducation → Marchal ;
   sommet → Valcourt (Affaires étrangères) ; grève, fête → le Premier ministre en place.
+
+## 9. Écran Options (tâche 4.22, relecture de SPEC_OPTIONS.md codée)
+
+Captures relues : `titre_menu`, `options_pal`, `options_ntsc`, `options_daltonisme`,
+`options_confirmation`, `jeu_retour_daltonisme`, `carte_daltonisme`, planches `huissier` et
+`huissier_anim`, puis capture de contrôle après retouches (ROM de démonstration, DEMO=11).
+
+### 9.1 Verdicts
+
+| Élément | Verdict | Commentaire |
+|---|---|---|
+| Huissier Firmin Tisserand | ❌ puis ✅ après retouche DA | Avant : la couronne de cheveux était deux plaques argentées verticales, à lire comme un casque audio ; la moustache, une barre blanche plate (un os en travers de la bouche) ; la couperose, des mouchetures (acné) ; la chaîne, une couture pointillée ; la goutte de « gêné » flottait hors du crâne. Corrigé dans `tools/art/g_divers.py` (`huissier`) : deux touffes plaquées au-dessus et en arrière des oreilles, peignées vers l'arrière, oreilles dégagées ; moustache en guidon à deux ailes (raie centrale), branches qui tombent puis remontent ; rougeur nette en hachures sous les pommettes ; chaîne à maillons de 2 px ; coin de moustache relevé de « content » recollé à la pointe ; goutte sur la tempe. 162 tuiles de base, 73 tuiles d'animation. |
+| Icônes `ARROW_LEFT`/`RIGHT`, `NOTE`, `EYE` | ✅ | Lisibles, bien calées. |
+| Icône `CART` | ❌ puis ✅ | Elle se lisait comme une disquette ou un boîtier gris clair. Redessinée en cartouche Megadrive noire : stries de préhension en haut, étiquette blanche à bandeau bleu, épaulement du connecteur en bas (`tools/ui/make_ui.py`). |
+| Mise en page | ✅ | Conforme à la maquette § 2.2 : médaillon x29 y4, légende 16-17, rangée 27 vide, rien au-delà de la colonne 38, flèches seulement sur la ligne active et absentes en butée. Point mineur accepté : les valeurs de 10 lettres (« Essentiels », « Daltonisme ») touchent leurs flèches ; c'est la largeur prévue. La boîte de confirmation remplace le bord bas de la fenêtre des réglages : acceptable (comportement standard de `ui_msgbox`). |
+| Répliques | ✅ | Le ton est juste (« Le silence. Comme après un 49.3. », « Chacun sa couleur. Même le centre. », « Je n'ai rien vu, rien entendu. »). Retouche : l'aide de la ligne Voix ne promet plus une fonction future (« et plus tard les voix des personnages ») ; elle dit « « For sure ! » quand la console s'allume. ». La tâche 4.18 la remplacera par « « For sure ! » à l'allumage et le charabia des personnages. ». |
+| Daltonisme | ✅ | Simulation deutéranope et protanope (matrices de Machado) sur les couleurs VDP : favorable turquoise (0,4,6) → bleu, défavorable rouge (6,1,1) → brun foncé, sans confusion possible ; carte orangé / jaune / bleu → brun / jaune clair / bleu, trois niveaux distincts par la teinte et la luminosité. Le jaune central gardé à la place de l'ivoire de la spec est le bon choix (le blanc marque la région choisie). Le turquoise et le bleu de la jauge B sont proches pour un deutéranope, mais ils ne portent pas de sens opposé et sont toujours étiquetés. |
+| Menu d'accueil du titre | ✅ | 4 lignes, pastilles des raccourcis, « Continuer » grisée sans sauvegarde. |
+
+### 9.2 Lignes « Données » grisées : décision
+
+**Elles deviennent sélectionnables mais inactives.** Une ligne grise que le curseur saute est une
+porte fermée sans écriteau : le joueur qui veut effacer sa partie depuis le jeu ne comprend pas
+pourquoi rien ne se passe. C'est d'ailleurs le seul endroit où l'aide est vraiment utile. Le coût
+est nul en VRAM et en RAM.
+
+### 9.3 Consigne `md-dev` : lignes inactives (src/screens/scr_options.c seulement)
+
+1. `next_row()` ne saute plus les lignes grisées : les 9 lignes sont toutes atteignables (les
+   rubriques restent hors liste). `fix_cursor()` devient inutile (le curseur reste où il est après
+   un effacement, sur la ligne désormais grisée, ce qui montre le résultat).
+2. `draw_row()` : une ligne de données inactive **sélectionnée** reçoit la barre et le curseur, mais
+   son libellé reste en `UI_STYLE_DIM` (gris sur la barre : « on est là, mais c'est fermé »).
+   Inactive et non sélectionnée : `UI_STYLE_DIM`, comme aujourd'hui.
+3. `draw_help()`, ligne inactive : rangée 21 = la raison (ivoire), rangée 23 = réplique (gris bleuté),
+   pied « B : retour » seul.
+
+   | Ligne et cause | Raison (rangée 21) | Réplique |
+   |---|---|---|
+   | Records, aucun record | Aucun record pour l'instant. | « Page blanche. L'Histoire attend. » |
+   | Partie, ouvert depuis le jeu | Impossible pendant une partie. | « Pas pendant le mandat, voyons. » |
+   | Partie, aucune sauvegarde | Aucune partie sauvegardée. | « Rien à effacer. Tout est en ordre. » |
+   | Réglages d'origine, déjà par défaut | Les réglages sont déjà ceux d'origine. | « Tout est d'origine. Même moi. » |
+
+   La cause « depuis le jeu » prime sur « aucune sauvegarde » (tester `return_screen` d'abord).
+4. **A** sur une ligne inactive : `SFX_ERROR` (gardé en mode « Essentiels », c'est un son qui
+   informe), aucune boîte, l'huissier reste neutre.
+5. Critères : depuis le titre sans sauvegarde ni record, Bas depuis « Couleurs » passe sur les trois
+   lignes de données, chacune affiche sa raison et sa réplique ; depuis le jeu, « Effacer la partie »
+   affiche « Impossible pendant une partie. » ; après « Réglages d'origine » validé, le curseur reste
+   sur la ligne, grisée, avec sa raison ; aucun texte au-delà de la colonne 38 ; capture relue par le
+   DA.

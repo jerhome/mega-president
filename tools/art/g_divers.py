@@ -610,25 +610,30 @@ def huissier():
     s = bust(P, top=72, wide=37, suit="suit", shirt="white", tie="white", bow=True, vw=7, vdepth=16)
     med = P.layer("silver", ink=True, cast=(1, 1))
     med.ell(CX, 90, 4.5, 4.5, h=3)
-    head = skull(P, cy=38, rx=18, ry=21, jaw=(15, 12, 52), ear_y=42, ear_dx=18, ear_r=(4, 6.5),
-                 sockets=(8, 2.5), cheeks=(11, 47, 5))
+    head = skull(P, cy=38, rx=18, ry=21, jaw=(15, 12, 52), ear_y=43, ear_dx=18, ear_r=(4, 6),
+                 sockets=(8, 2))
     head.ell(CX - 5, 22, 9, 7, h=3, mode="add")          # crâne qui brille
-    hm = (ellipse(CX - 17, 37, 3.5, 10) | ellipse(CX + 17, 37, 3.5, 10)) - ellipse(CX, 37, 15.5, 21)
-    hm -= rect(0, 44, 79, 95)
+    # couronne plaquée : deux touffes au-dessus et en arrière des oreilles (pas des écouteurs)
+    hm = (ellipse(CX - 17, 32, 5, 5) | ellipse(CX + 17, 32, 5, 5)
+          | ellipse(CX - 20, 36, 3, 3.5) | ellipse(CX + 20, 36, 3, 3.5)) - ellipse(CX, 37, 15.5, 21)
+    hm -= rect(0, 39, 79, 95)
     hr = hair(P, hm, h=2, r=2, mat="silver")
     nose = nose_layer(P)
     nose.shape(poly([(CX - 1, 39), (CX + 1, 39), (CX + 4, 50), (CX - 4, 50)]), h=4, r=2)
     nose.ell(CX, 49, 4.5, 3.5, h=3)
     mu = P.layer("white", ink=True, cast=(1, 1), smooth=1)  # moustache en guidon
-    mu.ell(CX - 5, 55, 6, 3.4, h=3)
-    mu.ell(CX + 5, 55, 6, 3.4, h=3)
-    for sx in (-1, 1):
-        mu.ell(CX + sx * 11, 55, 2.6, 2, h=2)
-        mu.ell(CX + sx * 13.5, 52.5, 1.5, 1.8, h=2)
+    mu.ell(CX - 5, 54.5, 6, 3.2, h=3)
+    mu.ell(CX + 5, 54.5, 6, 3.2, h=3)
+    for sx in (-1, 1):                                    # branches qui tombent puis remontent
+        mu.ell(CX + sx * 11, 56, 2.8, 2.2, h=2)
+        mu.ell(CX + sx * 14, 54.5, 1.8, 2, h=2)
+        mu.ell(CX + sx * 15.5, 51.5, 1.3, 1.8, h=2)
+        mu.ell(CX + sx * 16, 49.5, 1, 1.3, h=1)
 
     @P.draw
     def tex(cv, e):
-        comb(cv, hr, [[(CX - 19, 29), (CX - 17, 40)], [(CX + 19, 29), (CX + 17, 40)]], ("silver", 0))
+        comb(cv, hr, [[(CX - 14, 31), (CX - 21, 34)], [(CX - 15, 34), (CX - 22, 37)],
+                      [(CX + 14, 31), (CX + 21, 34)], [(CX + 15, 34), (CX + 22, 37)]], ("silver", 0))
         comb(cv, mu, [[(CX - 9, 55), (CX - 2, 57)], [(CX + 2, 57), (CX + 9, 55)], [(CX - 7, 53), (CX - 3, 54)],
                      [(CX + 3, 54), (CX + 7, 53)]], ("white", 0))
         # chaîne d'argent posée sur les épaules, maillons alternés
@@ -637,9 +642,10 @@ def huissier():
             x = (1 - t) ** 2 * (CX - 27) + 2 * (1 - t) * t * CX + t * t * (CX + 27)
             y = (1 - t) ** 2 * 76 + 2 * (1 - t) * t * 104 + t * t * 76
             x, y = int(round(x)), int(round(y))
-            if abs(x - CX) > 4:
+            if abs(x - CX) > 4:   # maillons de 2 px : une chaîne, pas une couture
                 cv.put(x, y, ("silver", 1) if i % 2 else ("silver", 0))
-                cv.put(x, y + 1, INK)
+                cv.put(x, y + 1, ("silver", 0) if i % 2 else ("silver", 1))
+                cv.put(x, y + 2, INK)
         cv.put(CX - 1, 89, ("white", 1))                 # reflet de la médaille
         # tournevis : manche rouge dans la poche de poitrine, tige d'acier qui dépasse
         cv.fill(rect(CX + 15, 84, CX + 23, 84), ("suit", 2))
@@ -647,19 +653,23 @@ def huissier():
         cv.fill(rect(CX + 18, 75, CX + 18, 78), ("steel", 0))
         cv.put(CX + 19, 78, INK)
         cv.put(CX + 20, 79, INK)
-        # joues couperosées
+        # joues couperosées : une rougeur nette sous chaque pommette, pas des mouchetures
         for sx in (-1, 1):
-            for (dx, dy) in ((0, 0), (2, 1), (-1, 2), (3, 3), (1, 3)):
-                x, y = CX + sx * 11 + dx * sx, 46 + dy
+            for (dx, dy) in ((0, 0), (2, 0), (1, 1), (3, 1), (4, 0)):
+                x, y = CX + sx * (9 + dx), 46 + dy
                 k = cv.get(x, y)
                 if k and k[0] == "skin":
                     cv.put(x, y, ("rose", 0))
+        # raie centrale de la moustache (sous le nez) : le guidon se lit en deux ailes
+        cv.put(CX, 52, INK)
+        cv.put(CX, 57, INK)
         nostrils(cv, 50, 3)
 
     def tip_up(cv):   # un coin de moustache qui se relève
-        cv.fill(ellipse(CX + 14, 47, 1.4, 1.8), ("white", 1))
-        cv.put(CX + 15, 45, INK)
-        cv.put(CX + 16, 47, INK)
+        cv.fill(ellipse(CX + 16.5, 47.5, 1.2, 1.6), ("white", 1))
+        cv.put(CX + 17, 45, INK)
+        cv.put(CX + 18, 47, INK)
+        cv.put(CX + 16, 45, INK)
 
     face(P, eye_y=41, eye_dx=8, eye_w=8, iris_r=1.5, lid=2, bags=1, brow_y=33, brow_w=12,
          brow_thick=3, brow_arch=1, brow_key=("silver", 1), iris=INK,
@@ -671,7 +681,7 @@ def huissier():
                  "furieux": {"kind": "grit", "w": 10, "curve": -0.5},
                  "gene": {"kind": "wavy", "w": 8}},
          extras={"content": tip_up, "furieux": vein_at(CX + 7, 20, ("rose", 0)),
-                 "gene": sweat_at(CX - 22, 24)})
+                 "gene": sweat_at(CX - 16, 24)})
     return P
 
 

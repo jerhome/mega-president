@@ -499,7 +499,7 @@ ICONS = [
     ("ARROW_RIGHT", 1, ["........", "..w.....", "..wi....", "..wwi...", "..wwii..", "..wiik..", "..iik...", "..ik...."]),
     ("NOTE", 0, ["....ww..", "....wiw.", "....w.iw", "....w..k", "....w...", ".wwiw...", "wwiiik..", ".iikk..."]),
     ("EYE", 0, ["........", "..iiii..", ".iwbbwi.", "iwbkkbwi", "iwbkkbwi", ".iwbbwik", "..iiiik.", "...kkk.."]),
-    ("CART", 0, [".eeeeee.", "eddddddk", "edwwwwdk", "edwbbwdk", "edwwwwdk", "eddddddk", "ekekekek", ".kkkkkk."]),
+    ("CART", 0, [".eeeeee.", "etmtmtmk", "ettttttk", "etwwwwtk", "etbBbBtk", "etwwwwtk", ".ettttk.", "..kkkk.."]),
 ]
 
 

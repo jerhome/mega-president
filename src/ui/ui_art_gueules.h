@@ -105,7 +105,7 @@ static const GueuleDef gueule_defs[GUEULE_COUNT] = {
       { &gueule_synd_ust_neutre_anim, &gueule_synd_ust_content_anim, &gueule_synd_ust_furieux_anim, &gueule_synd_ust_gene_anim }, { 7, 4, 5, 5 }, 3, 4, 4, 2, 4, 6, 2, 3 },
     { &gueule_patron_upe, { &gueule_patron_upe_content, &gueule_patron_upe_furieux, &gueule_patron_upe_gene }, 2, 2, 5, 7,
       { &gueule_patron_upe_neutre_anim, &gueule_patron_upe_content_anim, &gueule_patron_upe_furieux_anim, &gueule_patron_upe_gene_anim }, { 7, 4, 5, 5 }, 3, 4, 4, 2, 4, 6, 2, 2 },
-    { &gueule_huissier, { &gueule_huissier_content, &gueule_huissier_furieux, &gueule_huissier_gene }, 2, 2, 5, 7,
+    { &gueule_huissier, { &gueule_huissier_content, &gueule_huissier_furieux, &gueule_huissier_gene }, 3, 2, 5, 7,
       { &gueule_huissier_neutre_anim, &gueule_huissier_content_anim, &gueule_huissier_furieux_anim, &gueule_huissier_gene_anim }, { 7, 7, 5, 5 }, 3, 4, 4, 2, 4, 7, 2, 2 },
 };
 #endif
