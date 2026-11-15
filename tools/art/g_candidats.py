@@ -83,22 +83,15 @@ def cand_ecolo():
         "helm": [(0, 3, 1), (2, 5, 1), (4, 7, 2)],
         "iris": [(1, 3, 5)],
     })
-    br = P.layer("hair", cast=(1, 1), gain=1.4, smooth=1)
-    br.shape(poly([(CX + 15, 44), (CX + 22, 44), (CX + 19, 96), (CX + 12, 96)]), h=2, r=3)
-    braid = []
-    for k in range(7):
-        x, y = CX + 19 - k * 0.6, 50 + k * 6
-        br.ell(x + (1.5 if k % 2 else -1.5), y, 4.5, 3.5, h=3)
-        braid.append((x, y, 3.5))
+    # tresse : une corde continue, texturée de chevrons (pas de chapelet de boules)
+    br = P.layer("hair", cast=(1, 1), gain=1.3, smooth=1)
+    br.shape(poly([(CX + 14, 44), (CX + 23, 44), (CX + 20, 96), (CX + 12, 96)]), h=4, r=4)
     neck(P, w=12, top=58, bottom=74)
     s = bust(P, top=72, wide=30, shirt=None, tie=None, sweater=True, lapels=False)
     roll = P.layer("suit", ink=True, cast=(1, 2))
     roll.shape(ellipse(CX, 72, 12, 5), h=3, r=3)
-    br2 = P.layer("hair", cast=(1, 1), gain=1.4, smooth=1)     # la tresse passe devant
-    br2.shape(poly([(CX + 15, 72), (CX + 21, 72), (CX + 19, 96), (CX + 13, 96)]), h=2, r=3)
-    for k in range(4, 8):
-        x, y = CX + 19 - k * 0.6, 50 + k * 6
-        br2.ell(x + (1.5 if k % 2 else -1.5), y, 4.5, 3.5, h=3)
+    br2 = P.layer("hair", cast=(1, 1), gain=1.3, smooth=1)     # la tresse passe devant
+    br2.shape(poly([(CX + 13, 70), (CX + 22, 70), (CX + 20, 96), (CX + 12, 96)]), h=4, r=4)
     head = skull(P, cy=40, rx=17, ry=20, jaw=(14, 11, 52), ear_y=43, ear_dx=17, sockets=(8, 2))
     hm = ellipse(CX, 32, 19, 10) - rect(0, 34, 79, 95)
     hm |= ellipse(CX + 15, 40, 5, 9)
@@ -119,7 +112,13 @@ def cand_ecolo():
                     cv.put(x + 1, y, ("helm", 0))
         cv.fill(line(CX - 21, 28, CX + 21, 28), ("helm", 0))
         cv.fill(line(CX - 17, 30, CX - 15, 48), INK)            # sangle
-        curl_marks(cv, br, braid, hi=("hair", 2))
+        for y in range(47, 96, 5):        # mèches croisées de la tresse
+            t = (y - 44) / 52.0
+            xl, xr = CX + 14 - 2 * t, CX + 23 - 3 * t
+            xc = (xl + xr) / 2
+            for lay in (br, br2):
+                comb(cv, lay, [[(xl + 1, y - 1), (xc, y + 2)], [(xc + 1, y + 2), (xr - 1, y - 1)]], ("hair", 0))
+                comb(cv, lay, [[(xl + 2, y - 3), (xc - 1, y - 1)]], ("hair", 2))
         stripes(cv, s, period=4, x0=1)
         for (x, y) in ((CX - 12, 47), (CX - 9, 49), (CX - 13, 50), (CX - 7, 46), (CX + 11, 47), (CX + 8, 49),
                        (CX + 13, 50), (CX + 6, 46), (CX - 3, 45), (CX + 3, 45), (CX - 10, 52), (CX + 10, 52)):

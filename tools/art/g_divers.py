@@ -275,10 +275,15 @@ def jour_chaine_info():
     fr = ellipse(CX, 22, 22, 12) | ellipse(CX - 12, 28, 10, 8)
     fr -= ellipse(CX + 8, 36, 14, 9)
     hf = hair(P, fr, h=5, r=4, dome=(CX - 4, 18, 18, 9, 5))
-    mic = P.layer("suit", ink=True, cast=(1, 1))
-    mic.shape(rect(CX - 25, 74, CX - 21, 96), h=2, r=2)
-    mh = P.layer("lid", ink=True)
-    mh.ell(CX - 23, 72, 5, 5, h=4)
+    # micro de plateau : manche épais, tête grillagée, cube « 24 » rouge, main qui le tient
+    mic = P.layer("lid", ink=True, cast=(1, 1))
+    mic.shape(poly([(CX - 31, 96), (CX - 25, 96), (CX - 18, 70), (CX - 23, 69)]), h=2, r=2)
+    mh = P.layer("suit", ink=True, cast=(1, 1), gain=1.2)
+    mh.ell(CX - 19.5, 64, 6, 5.5, h=4)
+    cube = P.layer("red", ink=True, cast=(1, 1))
+    cube.shape(rect(CX - 27, 70, CX - 15, 78), h=2, r=1)
+    hand = P.layer("skin", cast=(1, 1))
+    hand.ell(CX - 26, 86, 4.5, 4, h=3)
     nose = nose_layer(P)
     nose.ell(CX + 0.5, 49, 2.5, 2.5, h=3)
 
@@ -289,6 +294,12 @@ def jour_chaine_info():
         comb(cv, hb, [[(CX - 24, 34), (CX - 26, 50), (CX - 22, 60)], [(CX + 24, 34), (CX + 26, 50), (CX + 22, 60)]],
              ("hair", 0))
         comb(cv, hf, [[(CX - 14, 20), (CX - 6, 14)]], ("hair", 2))
+        for y in range(60, 69):       # grille du micro
+            for x in range(CX - 25, CX - 13):
+                if cv.owner_is(x, y, mh) and (x + y) % 2 == 0 and cv.get(x, y)[0] != "ink":
+                    cv.put(x, y, ("suit", 0))
+        from vignettes import text3
+        text3(cv, CX - 25, 72, "24", ("white", 1))
         for y in range(88, 96):      # bandeau rouge « urgent »
             for x in range(0, W):
                 cv.put(x, y, ("red", 1) if y > 88 else INK)

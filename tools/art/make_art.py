@@ -6,7 +6,7 @@ Sorties : res/gfx/art_*.png   PNG indexés 4 bits (16 couleurs, indice 0 transpa
 Option  : --preview DIR       écrit aussi des planches d'aperçu agrandies (PNG RVB)
 
 Python 3 seul, sans PIL. Usage : python3 tools/art/make_art.py
-Les dessins sont décrits dans title.py, portraits.py, vignettes.py et decors.py ;
+Les dessins sont décrits dans title3.py, g_*.py (gueules), vig3.py et decors3.py (V3) ;
 raster.py fournit les primitives (ellipses, polygones, contours d'encre, tramage).
 """
 import os
@@ -22,8 +22,8 @@ import raster      # noqa: E402
 import title       # noqa: E402
 import title3      # noqa: E402
 import portraits   # noqa: E402
-import vignettes   # noqa: E402
-import decors      # noqa: E402
+import vig3       # noqa: E402
+import decors3    # noqa: E402
 import gueules     # noqa: E402
 import persos      # noqa: E402
 
@@ -32,9 +32,9 @@ GROUPS = [
     ("Écran titre (320 x 128)", title.PALETTE, title3.TITLE),
     ("Portraits (56 x 56, palette commune)", portraits.PALETTE, portraits.PORTRAITS),
 ]
-for name, fn, pal in vignettes.VIGNETTES:
+for name, fn, pal in vig3.vignettes():
     GROUPS.append(("Vignette d'événement (64 x 48)", pal, [(name, fn)]))
-for name, fn, pal in decors.DECORS:
+for name, fn, pal in decors3.DECORS:
     GROUPS.append(("Décor", pal, [(name, fn)]))
 
 
