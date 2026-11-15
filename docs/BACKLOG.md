@@ -208,6 +208,7 @@ On passe tout son temps dans les écrans : ils doivent être superbes. Personnag
 | 3.16 | Écran de démarrage redessiné dans le style décalé des gueules (bon enfant, drôle, pointe d'humour de gauche) | 3 h | 🔄 |
 | 3.17 | Vignettes d'événement et décors redessinés dans le style V3 ; hémicycle dynamique (sièges colorés, vote en direct) ; passe sur tout ce qui fait « cheap » | 8 h | ✅ |
 | 3.18 | **Visages animés sans son**, à la Dune : clignements irréguliers, regard qui s'échappe, changement d'expression masqué par un clignement, bouche qui bouge sur les répliques ; une seule gueule animée à la fois (consigne DA, REVUE_DA_V3 § 6) | 8 h | 🔄 |
+| 3.19 | **Écran Options** soigné (avancé de la V4 à la demande du joueur) : son, affichage, jeu, données ; accès depuis le titre et le menu de jeu ; réglages mémorisés en SRAM. Conception DA (docs/SPEC_OPTIONS.md), puis md-dev ; le réglage des voix servira en V4 | 4 h | 🔄 |
 | 3.10 | Intégration des portraits et expressions dans les écrans | 3 h | ✅ |
 
 ### Musique (agent `md-dev` son)
@@ -242,11 +243,11 @@ Spécification validée : [SPEC_V4.md](SPEC_V4.md). Développement sur la branch
 | 4.11 | Écran budget détaillé (6 lignes × 5 crans, préréglage, aperçu en direct, vote / 49.3, cohabitation, Sénat) | 5 h |  |
 | 4.12 | Sauvegarde : `GAMESAVE_VERSION` = 2, message à l'écran titre, test de non-régression | 1 h | 🔄 partie simulation faite, message de l'écran titre à faire |
 | 4.13 | Joueurs automatiques : préréglages, variantes optimiseur, extrême et austère, statistiques par électorat | 3 h | ✅ |
-| 4.14 | Équilibrage V4 (cibles de §3.4, 20 et 60 tours) | 5 h | 🔄 |
+| 4.14 | Équilibrage V4 (cibles de §3.4, 20 et 60 tours) | 5 h | ✅ |
 | 4.15 | Documentation : REGLES (V4), SIM, DECISIONS, BACKLOG | 1,5 h |  |
 | 4.16 | Contrôle qualité : `make check`, budgets RAM et ROM, BlastEm PAL et NTSC, 38 colonnes, deux mandats, cohabitation forcée, sauvegarde | 2 h |  |
 | 4.17 | Jalon : test console du joueur, étiquette git, release | 1 h |  |
-| 4.18 | **Voix « charabia » des personnages** (à la Sims, 1 ou 3 syllabes selon l'avis de la DA) synchronisée avec les lèvres ; en V3, les visages s'animent sans son | 6 h | |
+| 4.18 | **Voix « charabia » des personnages** (à la Sims) : **2 syllabes très accueillantes** par réplique, timbre propre à chaque personnage, lèvres synchronisées puis seuls les yeux bougent ; **voix désactivables** dans les options (choix du joueur, 15/11 ; détail DA : REVUE_DA_V3 § 7) | 10 h | |
 
 ## Questions ouvertes
 

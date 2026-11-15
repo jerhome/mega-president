@@ -44,3 +44,5 @@ Décisions prises en autonomie (ou arbitrages du joueur), à relire. Chacune est
 | 15/11 | `make_art.py` n'exporte plus les portraits V2 de 56 × 56 : `make art` régénérait 14 IMAGE retirées de `gfx_art.res` et décalait l'enum ArtId | — | Rendre `make art` reproductible |
 | 15/11 | La goutte de sueur permanente de Lestrade (PM réformateur) est conservée en neutre : c'est un gag de personnage, pas un défaut | La réserver à « gêné » | Choix du DA |
 | 15/11 | Visages animés sans son en V3 (3.18) ; voix « charabia » à la Sims reportée en V4 (4.18) | Tout en V3.1 | Décision du joueur |
+| 15/11 | Charabia V4 : 2 syllabes très accueillantes par réplique, voix désactivables | Mélange 1/3 syllabes (reco DA) | Choix du joueur |
+| 15/11 | Écran Options en V4 (4.19) : musique, bruitages, voix, animations, mémorisés en SRAM | En V3 | Les voix (4.18) arrivent en V4 ; à avancer en V3 si le joueur le souhaite |
