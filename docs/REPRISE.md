@@ -5,5 +5,5 @@
   - 4.16 contrôle qualité (qa-rom) ;
   - relecture DA des écrans V4 → `docs/REVUE_DA_V4.md` (non commitée si présente).
 - Petits restes 4.18 : aperçu « Voix » des Options joue encore « For sure ! » au lieu de l'huissier ; son qui finit pendant une boîte de message (≈ 0,3 s).
-- Ensuite : corrections QA et DA, puis 4.17 (test console du joueur, étiquette, release ; pas de push sans accord).
+- Ensuite : corrections QA et DA ce soir ; le joueur teste la V4 sur console le 16/11 et fait son retour, puis 4.17 (étiquette, release ; pas de push sans accord).
 - Recréer la tâche planifiée de suivi (mémoire feedback-suivi-planifie).
