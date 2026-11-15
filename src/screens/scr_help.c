@@ -33,8 +33,11 @@ static const HelpPage pages[] = {
       "Une fois par an, vous arbitrez le budget." },
 
     { "LES INDICATEURS",
-      "Popularité : moyenne de trois électorats (populaires, moyennes, "
-      "aisées). Une décision ne plaît presque jamais aux trois.\n"
+      "Popularité : moyenne de cinq "
+      "électorats pondérés par leur poids : populaires, moyennes, cadres, "
+      "retraités, jeunes. Une décision ne plaît presque jamais à tous. "
+      "Une flèche indique la tendance ; C sur le tableau de bord ouvre le "
+      "détail.\n"
       "Économie : croissance, chômage, dette.\n"
       "Cinq piliers de 0 à 100 : social, économie, technologie, écologie, "
       "sécurité.\n\n"
@@ -62,12 +65,15 @@ static const HelpPage pages[] = {
       "selon votre popularité. Pari risqué." },
 
     { "LE BUDGET ANNUEL",
-      "Chaque année, un choix simple pour la loi de finances :\n\n"
-      "Rigueur : la dette recule, les piliers et la popularité "
-      "trinquent.\n\n"
-      "Équilibre : ni l'un ni l'autre, ni triomphe ni drame.\n\n"
-      "Relance : les piliers et l'emploi respirent, la dette s'alourdit. "
-      "Les marchés prennent des notes." },
+      "Chaque année, vous réglez la loi de finances : six lignes "
+      "(social, éducation, sécurité, transition, impôts des ménages et des "
+      "entreprises), cinq crans chacune.\n\n"
+      "Trois préréglages en raccourci : Rigueur, Équilibre, Relance. "
+      "Gauche et droite changent de cran ; l'aperçu montre déficit, "
+      "croissance et opinion de chaque électorat.\n\n"
+      "Un déficit élevé inquiète les marchés : l'opinion trinque. "
+      "Vote ou 49.3 (4 CP). Le Sénat peut amender une ligne ; la lecture "
+      "définitive (1 CP) la rétablit." },
 
     { "ÉLECTION ET SCORE",
       "Au dernier tour du mandat, choisissez un thème de campagne. Le "
@@ -97,7 +103,7 @@ static const HelpPage pages[] = {
       "Croix : naviguer, changer de choix.\n"
       "A : valider.\n"
       "B : retour, annuler.\n"
-      "C : valider, ou aide.\n"
+      "C : aide (détail des électorats sur le tableau de bord).\n"
       "START : pause, ou retour.\n\n"
       "Dans l'aide : gauche et droite changent de page, B ou START "
       "ferment.\n\n"

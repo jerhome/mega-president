@@ -28,6 +28,7 @@ typedef enum {
     SCREEN_RESHUFFLE,   // V2 : remaniement (choix du nouveau PM)
     SCREEN_MAP,       // carte de popularité par région
     SCREEN_OPTIONS,   // V3 : réglages (3.19)
+    SCREEN_ELEC,      // V4 : détail des 5 électorats (C sur le tableau de bord)
     SCREEN_COUNT
 } ScreenId;
 

@@ -7,13 +7,18 @@
 #include "content/content_texts.h"
 #include "screens/evt_art.h"
 #include "ui/ui_art.h"
+#include "screens/scr_txt.h"
 
 static UiList list;
 static bool dirty;
 static bool effects_dirty;
 static const char *items[THEME_COUNT];
 
-static const char *const elec_names[ELEC_COUNT] = { "Populaires", "Moyennes", "Aisées" };
+// Description du thème : seul le 5e (Santé et retraites) en a une dans les textes V4.
+static const char *theme_desc(u8 t)
+{
+    return t == THEME_SANTE_RETRAITES ? txt[TXT_THEME_SANTE_DESC] : "";
+}
 
 static void campaign_init(void)
 {
@@ -21,7 +26,8 @@ static void campaign_init(void)
     items[THEME_SECURITE] = txt[TXT_THEME_SECURITE];
     items[THEME_POUVOIR_ACHAT] = txt[TXT_THEME_POUVOIR_ACHAT];
     items[THEME_ECOLOGIE] = txt[TXT_THEME_ECOLOGIE];
-    ui_list_init(&list, 1, 10, 27, 4, items, THEME_COUNT);
+    items[THEME_SANTE_RETRAITES] = txt[TXT_THEME_SANTE];
+    ui_list_init(&list, 1, 10, 27, THEME_COUNT, items, THEME_COUNT);
     dirty = TRUE;
     effects_dirty = TRUE;
 }
@@ -55,7 +61,6 @@ static const char *mark(s16 b, UiStyle *st)
 
 static void campaign_draw(void)
 {
-    static const UiIcon icons[ELEC_COUNT] = { UI_ICON_SOCIAL, UI_ICON_PERSON, UI_ICON_DEBT };
     const Country *c = &g_game.country;
     u8 e;
 
@@ -82,13 +87,15 @@ static void campaign_draw(void)
             UiStyle st;
             s16 b = sim_theme_bonus(c, list.sel, e);
             const char *m = mark(b, &st);
-            u16 y = 18 + e * 2;
-            ui_icon_draw(1, y, icons[e]);
-            ui_text_draw(3, y, elec_names[e], UI_STYLE_DIM);
-            ui_text_draw_n(18, y, m, 3, 3, st);
-            ui_gauge_draw(22, y, 16, (s16)(b < 0 ? -b : b), 80,
+            u16 y = 17 + e;
+            ui_icon_draw(1, y, elec_icon(e));
+            ui_text_draw_n(3, y, elec_txt(e, ET_LONG), 18, 18, UI_STYLE_DIM);
+            ui_text_draw_n(22, y, m, 3, 3, st);
+            ui_gauge_draw(26, y, 12, (s16)(b < 0 ? -b : b), 80,
                           st == UI_STYLE_ALERT ? UI_GAUGE_NEGATIVE : UI_GAUGE_GOLD);
         }
+        ui_clear_rect(1, 22, 38, 2);
+        ui_text_wrap(1, 22, 38, 2, theme_desc(list.sel), UI_STYLE_DIM);
     }
 }
 

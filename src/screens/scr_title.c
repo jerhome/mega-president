@@ -42,6 +42,8 @@ static bool blink_on;
 static u32 seed_acc;
 static u32 press_ms;
 static u8 has_save;
+static u8 stale_box;     // 1 : message à ouvrir, 2 : ouvert (sauvegarde d'une ancienne version)
+static bool stale_seen;  // annoncée une seule fois par allumage
 static UiList list;
 
 // Menu d'accueil (3.19) : les raccourcis START, B et C restent valables sur toutes les lignes.
@@ -107,6 +109,7 @@ static void title_init(void)
     seed_acc = 0;
     press_ms = 0;
     has_save = game_has_save();
+    stale_box = (u8)(!has_save && !stale_seen && game_save_stale());
     // Retour des options : barre sur « Options » ; sinon « Nouvelle partie » (A garde son effet).
     home_sel = options_take_return() ? HOME_OPTIONS : HOME_NEW;
     // Voix « For sure ! » une seule fois par allumage ; la musique suit juste après.
@@ -182,6 +185,23 @@ static void title_update(void)
 
     // Entropie : compteur d'images et durée d'attente.
     seed_acc = seed_acc * 1103515245UL + 12345UL + input_frame_ticks() + input_held();
+
+    if (stale_box == 2) {   // « Partie d'une ancienne version... Une nouvelle partie ? »
+        s16 r = ui_msgbox_update();
+        if (r < 0 && (p & INPUT_B)) r = 1;
+        if (r < 0) return;
+        ui_msgbox_close();
+        stale_box = 0;
+        stale_seen = TRUE;
+        if (r == 0) {
+            press_ms = screen_time_ms();
+            home_sel = HOME_NEW;
+            go_phase(PH_ORIENT);
+        } else {
+            dirty = D_ALL;
+        }
+        return;
+    }
 
     if (phase == PH_PRESS) {
         u8 act = 0xFF;
@@ -288,7 +308,13 @@ static void title_draw(void)
         dirty &= (u8)~D_ALL;
     }
 
+    if (stale_box == 1 && phase == PH_PRESS) {
+        static const char *const ch[2] = { "Nouvelle partie", "Plus tard" };
+        ui_msgbox_open(NULL, txt[TXT_SAVE_ANCIENNE], ch, 2);
+        stale_box = 2;
+    }
     if (phase == PH_PRESS) {
+        if (stale_box == 2) return;   // la boîte de message couvre la liste : rien à animer dessous
         // Clignotement toutes les 500 ms, quelle que soit la fréquence : pastille START seule.
         bool on = ((screen_time_ms() / 500) & 1) == 0;
         if (dirty & D_LIST) {

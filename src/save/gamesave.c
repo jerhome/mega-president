@@ -42,3 +42,10 @@ u8 gamesave_unpack(void *dst, u16 size, const u8 *in, u16 len)
             d[i] = in[GAMESAVE_HEADER + i];
     return 1;
 }
+
+u8 gamesave_is_stale(const u8 *in, u16 len, u16 size)
+{
+    if (len < GAMESAVE_HEADER) return 0;
+    if (in[0] != 'M' || in[1] != 'P' || in[2] != 'G' || in[3] != '1') return 0;
+    return (u8)!gamesave_unpack(0, size, in, len);
+}

@@ -21,5 +21,13 @@ extern const Screen scr_reshuffle;
 
 extern const Screen scr_map;
 extern const Screen scr_options;
+extern const Screen scr_elec;
+
+// V4 : tendance des électorats (scr_elec.c). t : -1 baisse, 0 stable, +1 hausse.
+#include "sim/sim_state.h"
+extern s16 g_opinion_prev[ELEC_COUNT];
+extern u8  g_opinion_prev_ok;
+s8   elec_trend(const Country *c, u8 e);
+void elec_trend_icon(u16 x, u16 y, s8 t);
 
 #endif

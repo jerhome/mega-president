@@ -16,5 +16,7 @@ u8 sram_game_load(Game *g);
 u8 sram_game_exists(void);
 // Efface la sauvegarde (fin de partie).
 void sram_game_erase(void);
+// 1 si une sauvegarde d'une version précédente est présente (donc ignorée).
+u8 sram_game_stale(void);
 
 #endif
