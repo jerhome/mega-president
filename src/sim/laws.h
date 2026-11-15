@@ -92,6 +92,7 @@ u8 law_cost(const Country *c, const LawDef *law);
 u8 law_is_adopted(const Country *c, u8 id);
 
 // Vérifie qu'une loi peut être proposée (LAW_OK ou code d'erreur).
+u8 law_pending_turns(const Country *c, u8 id);
 u8 law_can_propose(const Country *c, u8 id);
 
 // Applique les lois arrivées à maturité ; écrit leurs identifiants dans out

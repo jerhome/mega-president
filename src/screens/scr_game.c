@@ -91,6 +91,30 @@ static void cat_delay(char *dst, u8 delay_q)
     }
 }
 
+// Prochain apport de capital politique. Forme longue ou abrégée (« +2 CP/2 mois »).
+static void cat_cp_next(char *dst, u8 abbr)
+{
+    const Country *c = &g_game.country;
+    u8 n = sim_cp_turns_to_next(c);
+    strcat(dst, "+");
+    cat_num(dst, sim_cp_gain(c));
+    if (n <= 1) {
+        strcat(dst, abbr ? " CP/tour" : " CP au prochain tour");
+    } else {
+        strcat(dst, abbr ? " CP/" : " CP dans ");
+        cat_num(dst, n);
+        strcat(dst, " mois");
+    }
+}
+
+// Délai restant d'une loi votée, dans l'unité du mode de jeu (tours = mois ou trimestres).
+static void cat_turns(char *dst, u8 turns)
+{
+    cat_num(dst, turns);
+    if (game_is_monthly()) strcat(dst, " mois");
+    else strcat(dst, turns > 1 ? " trimestres" : " trimestre");
+}
+
 static const char *pm_name(u8 pm)
 {
     return pm < PM_COUNT ? txt[TXT_PM_TECHNOCRATE_NOM + 2 * pm] : "-";
@@ -260,14 +284,20 @@ static void draw_menu_full(void)
     else
         strcat(buf, pm_name(c->pm));
     ui_text_draw_n(1, 17, buf, 38, 0, sim_cohabitation(c) ? UI_STYLE_ALERT : UI_STYLE_TEXT);
-    if (sim_cohabitation(c)) {
-        const char *ct = txt[TXT_COHAB_TITRE];
-        ui_text_draw(38 - ui_text_len(ct), 18, ct, UI_STYLE_ALERT);
+    {
+        // Ligne 18 : majorité à gauche ; à droite, prochain apport de CP (forme abrégée si ça ne tient pas).
+        const char *mj = sim_has_majority(c) ? "Majorité absolue" : "Majorité relative";
+        char hint[40];
+        hint[0] = 0;
+        if (sim_cohabitation(c)) strcat(hint, "Cohab. ");
+        cat_cp_next(hint, sim_cohabitation(c));
+        if (!sim_cohabitation(c) && ui_text_len(mj) + 2 + ui_text_len(hint) > 38) {
+            hint[0] = 0;
+            cat_cp_next(hint, 1);
+        }
+        ui_text_draw(1, 18, mj, sim_has_majority(c) ? UI_STYLE_DIM : UI_STYLE_ALERT);
+        ui_text_draw(38 - ui_text_len(hint), 18, hint, sim_cohabitation(c) ? UI_STYLE_ALERT : UI_STYLE_DIM);
     }
-    if (sim_has_majority(c))
-        ui_text_draw(1, 18, "Majorité absolue", UI_STYLE_DIM);
-    else
-        ui_text_draw(1, 18, "Majorité relative", UI_STYLE_ALERT);
 
     ui_window(0, 20, 40, 8);
     menu_build();
@@ -355,11 +385,16 @@ static void law_refresh_disabled(void)
 // Liste des lois ; en cohabitation, « * » à droite des lois de souveraineté.
 static void law_list_draw(void)
 {
+    u8 cohab = sim_cohabitation(&g_game.country);
     ui_list_draw(&law_list);
-    if (!sim_cohabitation(&g_game.country)) return;
     for (u16 r = 0; r < law_list.rows; r++) {
         u16 i = law_list.top + r;
-        if (i < LOI_COUNT && sim_law_sovereign((u8)i))
+        if (i >= LOI_COUNT) break;
+        // Repère d'état : coche = adoptée et appliquée, points = votée, effet en attente.
+        if (law_is_adopted(&g_game.country, (u8)i))
+            ui_text_draw(law_list.x + law_list.w - 4, law_list.y + r,
+                         law_pending_turns(&g_game.country, (u8)i) ? "…" : "✓", UI_STYLE_HIGHLIGHT);
+        if (cohab && sim_law_sovereign((u8)i))
             ui_text_draw(law_list.x + law_list.w - 2, law_list.y + r, "*",
                          ui_list_enabled(&law_list, i) ? UI_STYLE_HIGHLIGHT : UI_STYLE_DIM);
     }
@@ -426,7 +461,16 @@ static void draw_law_detail(void)
     if (err == LAW_ERR_CP)
         ui_text_draw(1, 23, "Capital politique insuffisant", UI_STYLE_ALERT);
     else if (err == LAW_ERR_ADOPTED)
-        ui_text_draw(1, 23, "Déjà adoptée", UI_STYLE_DIM);
+    {
+        u8 pt = law_pending_turns(c, id);
+        buf[0] = 0;
+        strcat(buf, "Adoptée");
+        if (pt) {
+            strcat(buf, ", effet dans ");
+            cat_turns(buf, pt);
+        }
+        ui_text_draw(1, 23, buf, UI_STYLE_HIGHLIGHT);
+    }
     else if (err == LAW_ERR_493)
         ui_text_draw(1, 23, "49.3 déjà utilisé cette année", UI_STYLE_ALERT);
     else if (err == LAW_ERR_COHAB)

@@ -552,8 +552,25 @@ static void test_country_size(void)
     CHECK(sizeof(Country) <= 220);
 }
 
+static void test_cp_delay(void)
+{
+    Country c;
+    u8 t, n;
+    new_game(&c, 0, 1, 7);
+    for (t = 0; t < 5; t++) { c.turn = t; CHECK_EQ(sim_cp_turns_to_next(&c), 1); }
+    c.turns_per_year = 12;
+    for (t = 0; t < 12; t++) {
+        c.turn = t;
+        n = sim_cp_turns_to_next(&c);
+        CHECK(n >= 1 && n <= 3);
+        CHECK(((t + n) % 3) == 0);
+        CHECK(n == 1 || ((t + n - 1) % 3) != 0);
+    }
+}
+
 void test_sim_v2(void)
 {
+    test_cp_delay();
     test_event_capacity();
     test_senate();
     test_cohabitation();

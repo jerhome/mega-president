@@ -265,6 +265,19 @@ static void report_draw(void)
     cat_num(buf, c->cp, 0);
     strcat(buf, ")");
     ui_text_draw(1, y++, buf, UI_STYLE_TEXT);
+    {
+        u8 n = sim_cp_turns_to_next(c);
+        buf[0] = 0;
+        strcat(buf, "Prochain apport : ");
+        if (n <= 1) {
+            strcat(buf, "au prochain tour");
+        } else {
+            strcat(buf, "dans ");
+            cat_num(buf, n, 0);
+            strcat(buf, " mois");
+        }
+        ui_text_draw(1, y++, buf, UI_STYLE_TEXT);
+    }
 
     // À la une : lois votées ce tour
     if (law_mask_any(&g_game.laws_tried)) {
