@@ -55,6 +55,7 @@ static u8 menu_act[MENU_MAX];
 static const char *menu_items[MENU_MAX];
 static u8 menu_n;
 static u8 menu_sel, menu_top;
+static u8 asm_sel;           // groupe sélectionné dans la vue Assemblée
 static char tv_label[UI_LINE_BUF];
 static char ref_label[UI_LINE_BUF];
 static char rsh_label[UI_LINE_BUF];
@@ -387,7 +388,7 @@ static void update_menu(void)
         switch (menu_act[menu_sel]) {
         case A_LAW: forcing = 0; set_mode(M_LAWS); break;
         case A_FORCE: forcing = 1; set_mode(M_LAWS); break;
-        case A_ASSEMBLY: set_mode(M_ASSEMBLY); break;
+        case A_ASSEMBLY: asm_sel = g_game.country.player_group; set_mode(M_ASSEMBLY); break;
         case A_MAP: map_open(SCREEN_GAME); break;
         case A_REFERENDUM: screen_change(SCREEN_REFERENDUM); break;
         case A_RESHUFFLE: screen_change(SCREEN_RESHUFFLE); break;
@@ -653,7 +654,7 @@ static void draw_result_full(void)
         ui_gueule_draw(GUEULE_JOUR_CHAINE_INFO, res_tv_ok ? EXPR_CONTENT : EXPR_FURIEUX, 29, 4, PAL2);
         ui_text_draw(1, 5, res_tv_ok ? "Succès d’audience" : "Le flop", res_tv_ok ? UI_STYLE_HIGHLIGHT : UI_STYLE_ALERT);
         ui_separator(1, 6, 27);
-        ui_text_wrap(1, 7, 27, 7, txt[res_tv_ok ? TXT_TV_SUCCES : TXT_TV_FLOP], UI_STYLE_TEXT);
+        ui_text_flow(1, 7, 27, 9, txt[res_tv_ok ? TXT_TV_SUCCES : TXT_TV_FLOP], UI_STYLE_TEXT);
         ui_icon_draw(1, 18, UI_ICON_POPULARITY);
         ui_text_draw(3, 18, "Popularité", UI_STYLE_DIM);
         buf[0] = 0;
@@ -669,7 +670,7 @@ static void draw_result_full(void)
         ui_medallion(29, 4, UI_PORTRAIT_W, UI_PORTRAIT_H);
         ui_gueule_draw(GUEULE_JOUR_EDITORIALISTE, EXPR_FURIEUX, 29, 4, PAL2);
         ui_text_wrap(1, 5, 27, 2, law_name[last_law], UI_STYLE_HIGHLIGHT);
-        ui_text_wrap(1, 8, 27, 5, txt[TXT_493_UTILISE], UI_STYLE_TEXT);
+        ui_text_flow(1, 8, 27, 7, txt[TXT_493_UTILISE], UI_STYLE_TEXT);
         ui_icon_draw(1, 17, UI_ICON_NEWS);
         ui_text_draw(3, 17, "Le Quotidien du Matin", UI_STYLE_DIM);
         ui_text_wrap(3, 18, 36, 2, law_journal_ok[last_law], UI_STYLE_TEXT);
@@ -810,55 +811,91 @@ static void draw_vote_anim(void)
 
 // --- Assemblée ---------------------------------------------------------------------------
 
+// Assemblée (revue DA P1-4) :
+//  4-5   « Majorité absolue » et sa valeur (gauche), « Bloc présidentiel » et la sienne (droite)
+//  6-15  hémicycle ; à gauche le soutien probable à vos lois, à droite le type de majorité
+//  16-17 jauge de majorité
+//  18-23 en-têtes puis une ligne par groupe (★ / ♦, sigle, sièges, jauge de relation, valeur),
+//        nom complet du groupe sélectionné en note (rangée 24), rangée 25 vide
+#define ASM_ROW0 19
+
+static void draw_assembly_rows(void)
+{
+    const Country *c = &g_game.country;
+    char buf[UI_LINE_BUF];
+
+    for (u16 g = 0; g < GRP_COUNT; g++) {
+        u16 y = ASM_ROW0 + g;
+        bool me = (g == c->player_group);
+        if (g == asm_sel) {
+            ui_select_bar(1, y, 38);
+            ui_icon_draw(1, y, UI_ICON_CURSOR);
+        } else {
+            ui_select_bar_clear(1, y, 38);
+            ui_clear_rect(1, y, 1, 1);
+        }
+        if (me) ui_icon_draw(2, y, UI_ICON_CP);
+        else if (sim_in_bloc(c, (u8)g)) ui_icon_draw(2, y, UI_ICON_BULLET);
+        else ui_clear_rect(2, y, 1, 1);
+        ui_text_draw(4, y, grp_sigle[g], UI_STYLE_HIGHLIGHT);
+        buf[0] = 0;
+        cat_num(buf, c->seats[g]);
+        ui_text_right(13, y, buf, UI_STYLE_TEXT);
+        ui_gauge_draw(16, y, 18, c->relation[g], RELATION_MAX,
+                      c->relation[g] >= 50 ? UI_GAUGE_POSITIVE : UI_GAUGE_NEGATIVE);
+        buf[0] = 0;
+        cat_num(buf, c->relation[g]);
+        ui_clear_rect(35, y, 4, 1);
+        ui_text_right(39, y, buf, me ? UI_STYLE_HIGHLIGHT : UI_STYLE_TEXT);
+    }
+    ui_clear_rect(1, 24, 38, 1);
+    ui_text_center(1, 24, 38, grp_name[asm_sel], UI_STYLE_DIM);
+    ui_hemi_focus(asm_sel);
+}
+
 static void draw_assembly_full(void)
 {
     const Country *c = &g_game.country;
     char buf[UI_LINE_BUF];
-    u16 y, bloc = sim_bloc_seats(c);
+    u16 bloc = sim_bloc_seats(c), sup = parl_support_seats(c);
+    bool maj = sim_has_majority(c);
 
     art_reset();
     draw_header("Assemblée nationale");
     ui_window(0, 3, 40, 25);
-    ui_hemi_draw(HEMI_X, 4, UI_HEMI_ASSEMBLY, c->seats);
-    ui_hemi_focus(c->player_group);
-    // Repères de part et d'autre de l'hémicycle.
-    ui_text_draw(1, 6, "Majorité", UI_STYLE_DIM);
-    ui_number_draw(1, 7, SEATS_MAJORITY, 0, UI_STYLE_TEXT);
-    ui_text_draw(1, 9, "Soutien", UI_STYLE_DIM);
-    ui_number_draw(1, 10, parl_support_seats(c), 0,
-                   parl_support_seats(c) >= SEATS_MAJORITY ? UI_STYLE_TEXT : UI_STYLE_ALERT);
-    ui_text_right(39, 6, "Bloc", UI_STYLE_DIM);
+    ui_text_draw(1, 4, "Majorité absolue", UI_STYLE_DIM);
+    ui_number_draw(1, 5, SEATS_MAJORITY, 0, UI_STYLE_TEXT);
+    ui_text_right(39, 4, "Bloc présidentiel", UI_STYLE_DIM);
     buf[0] = 0;
     cat_num(buf, bloc);
-    ui_text_right(39, 7, buf, sim_has_majority(c) ? UI_STYLE_HIGHLIGHT : UI_STYLE_ALERT);
-    ui_text_right(39, 9, sim_has_majority(c) ? "absolue" : "relative", sim_has_majority(c) ? UI_STYLE_TEXT : UI_STYLE_ALERT);
-    ui_hemi_majority(1, 14, 38, bloc, SEATS_TOTAL, SEATS_MAJORITY);
-    // Groupes : sigle et nom, sièges, relation.
-    for (u16 g = 0; g < GRP_COUNT; g++) {
-        UiStyle st = g == c->player_group ? UI_STYLE_HIGHLIGHT : UI_STYLE_TEXT;
-        y = 16 + g * 2;
-        if (g == c->player_group) ui_icon_draw(1, y, UI_ICON_CP);
-        else if (sim_in_bloc(c, g)) ui_icon_draw(1, y, UI_ICON_BULLET);
-        ui_text_draw(3, y, grp_sigle[g], st);
-        ui_text_draw_n(7, y, grp_name[g], 32, 0, UI_STYLE_DIM);
-        buf[0] = 0;
-        cat_num(buf, c->seats[g]);
-        strcat(buf, " sièges");
-        ui_text_draw(3, y + 1, buf, UI_STYLE_TEXT);
-        ui_text_draw(16, y + 1, "Relation", UI_STYLE_DIM);
-        ui_gauge_draw(25, y + 1, 10, c->relation[g], RELATION_MAX,
-                      c->relation[g] >= 50 ? UI_GAUGE_POSITIVE : UI_GAUGE_NEGATIVE);
-        buf[0] = 0;
-        cat_num(buf, c->relation[g]);
-        ui_text_right(39, y + 1, buf, st);
-    }
-    ui_footer(1, 26, 38, "B : retour");
+    ui_text_right(39, 5, buf, maj ? UI_STYLE_HIGHLIGHT : UI_STYLE_ALERT);
+    ui_hemi_draw(HEMI_X, 6, UI_HEMI_ASSEMBLY, c->seats);
+    // Repères de part et d'autre de l'hémicycle (9 colonnes de chaque côté).
+    ui_text_draw(1, 9, "Soutien", UI_STYLE_DIM);
+    ui_text_draw(1, 10, "aux lois", UI_STYLE_DIM);
+    ui_number_draw(1, 11, sup, 0, sup >= SEATS_MAJORITY ? UI_STYLE_TEXT : UI_STYLE_ALERT);
+    ui_text_right(39, 9, "Majorité", UI_STYLE_DIM);
+    ui_text_right(39, 10, maj ? "absolue" : "relative", maj ? UI_STYLE_TEXT : UI_STYLE_ALERT);
+    ui_hemi_majority(1, 16, 38, bloc, SEATS_TOTAL, SEATS_MAJORITY);
+    ui_text_right(13, 18, "Sièges", UI_STYLE_DIM);
+    ui_text_draw(16, 18, "Relation", UI_STYLE_DIM);
+    draw_assembly_rows();
+    ui_footer(1, 26, 38, "Haut/Bas : groupe   B : retour");
 }
 
 static void update_assembly(void)
 {
-    if (input_pressed() & (INPUT_OK | INPUT_CANCEL))
+    u16 r = input_repeat();
+    if (r & (INPUT_UP | INPUT_DOWN)) {
+        asm_sel = (u8)((asm_sel + ((r & INPUT_UP) ? GRP_COUNT - 1 : 1)) % GRP_COUNT);
+        sfx_play(SFX_MOVE);
+        draw_assembly_rows();
+        return;
+    }
+    if (input_pressed() & (INPUT_OK | INPUT_CANCEL)) {
+        asm_sel = g_game.country.player_group;
         set_mode(M_MENU);
+    }
 }
 
 // --- Écran ---------------------------------------------------------------------------------

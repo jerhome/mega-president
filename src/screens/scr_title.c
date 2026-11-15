@@ -21,7 +21,7 @@ enum { D_ALL = 1, D_LIST = 2, D_DESC = 4 };
 #define LIST_Y 18       // sous le titre de la phase (ligne 17), dans la fenêtre du bas (16-27)
 #define WIN_Y  16       // l illustration occupe les lignes 0 à 15
 #define PORTRAIT_X 29   // gueule 10 x 12 sur l illustration (PAL3 ; le titre est en PAL2)
-#define PORTRAIT_Y 2
+#define PORTRAIT_Y 4   // rangées 4-15 : le bas du médaillon touche la fenêtre (rangée 16)
 
 static const char *const orient_items[ORIENT_COUNT] = {
     "Gauche — RSV", "Centre — MJM", "Droite — UTL"

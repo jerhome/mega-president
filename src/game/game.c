@@ -236,7 +236,8 @@ void game_turn_label(u8 turn, char *buf)
 //   1 campagne puis élection gagnée, 2 campagne puis élection perdue,
 //   3 budget, 4 référendum, 5 remaniement, 6 destitution,
 //   7 fin : destitution, 8 fin : défaite, 9 fin : victoire (deux mandats),
-//   10 élection perdue au 1er tour.
+//   10 élection perdue au 1er tour, 11 titre, 12 tableau de bord,
+//   13 / 15 événement (texte long / court), 14 meilleurs scores remplis.
 static void dbg_opinion(Country *c, s16 v)
 {
     for (u8 e = 0; e < ELEC_COUNT; e++)
@@ -266,6 +267,20 @@ void game_debug_jump(void)
         } else {
             screen_change(SCREEN_CAMPAIGN);
         }
+        break;
+    case 11:   // écran titre normal (choix du PM au script)
+        screen_change(SCREEN_TITLE);
+        break;
+    case 12:   // tableau de bord (Assemblée, carte, intervention télévisée au script)
+        c->turn = 2;
+        screen_change(SCREEN_GAME);
+        break;
+    case 13: case 15:   // événement au texte long (13) ou court (15)
+        g_game.event = (k == 13) ? 1 : 2;
+        screen_change(SCREEN_EVENT);
+        break;
+    case 14:   // meilleurs scores, 10 noms (remplis par scr_scores.c)
+        screen_change(SCREEN_SCORES);
         break;
     case 3:
         c->turn = 3;   // le budget se vote au 4e trimestre
