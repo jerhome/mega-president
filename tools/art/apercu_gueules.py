@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Aperçu agrandi des gueules : python3 tools/art/apercu_gueules.py SORTIE.png [nom...] [--scale N]"""
+"""Aperçu agrandi des gueules : python3 tools/art/apercu_gueules.py SORTIE.png [nom...] [--scale N]
+Animations (3.18) : python3 tools/art/apercu_gueules.py --anim SORTIE.png [nom...]"""
 import os
 import sys
 
@@ -105,8 +106,42 @@ def export(outdir):
     write_rgb_png(os.path.join(outdir, "v2_pres_gauche_x4.png"), scaled(c.px, portraits.PALETTE, 4))
 
 
+def anim_sheet(path, names=None, scale=4, gap=6, bg=0x202020):
+    """Planche des animations (3.18) : une ligne par personnage et expression, avec
+    l'expression puis ses images clignement, regard, parole 1, parole 2 (visage entier)."""
+    import make_art
+    rows = []
+    for name, fn in persos.ALL:
+        if names and name not in names:
+            continue
+        P, pal, pxs, anim = make_art.render_gueule(fn)
+        for e in range(len(gueules.EXPRS)):
+            rows.append(([pxs[e]] + anim[e], pal))
+    n = 1 + len(make_art.ANIMS)
+    Wt = n * (gueules.W + gap) + gap
+    Ht = len(rows) * (gueules.H + gap) + gap
+    img = [[bg] * Wt for _ in range(Ht)]
+    for r, (ims, pal) in enumerate(rows):
+        for c, px in enumerate(ims):
+            ox, oy = gap + c * (gueules.W + gap), gap + r * (gueules.H + gap)
+            for y in range(gueules.H):
+                for x in range(gueules.W):
+                    img[oy + y][ox + x] = pal[px[y][x]]
+    out = []
+    for row in img:
+        rr = []
+        for c in row:
+            rr += [c] * scale
+        for _ in range(scale):
+            out.append(list(rr))
+    write_rgb_png(path, out)
+
+
 if __name__ == "__main__":
     args = sys.argv[1:]
+    if args and args[0] == "--anim":   # --anim SORTIE.png [nom...] : images d'animation
+        anim_sheet(args[1], args[2:] or None)
+        sys.exit(0)
     if args and args[0] == "--export":
         export(args[1])
         sys.exit(0)

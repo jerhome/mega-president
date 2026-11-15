@@ -110,6 +110,7 @@ void screen_run(ScreenId first)
         // Si update() a demandé un changement d'écran, on ne dessine pas l'ancien.
         if (pending == NO_SCREEN && s && s->draw)
             s->draw();
+        ui_gueule_anim_update();   // visages animés (3.18)
         sfx_update();
         music_update();
         ui_frame_end();
