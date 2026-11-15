@@ -1,5 +1,7 @@
 // Mega Président — carte de la popularité par région.
-// La carte emprunte PAL2 : aucun style DIM ni jauge NEUTRAL sur cet écran.
+// La carte emprunte PAL2 (ui_map.h) : les couleurs de PAL2 (style DIM, jauge NEUTRAL)
+// y sont celles de la carte. Attention : la légende en daltonisme utilise pourtant
+// UI_GAUGE_NEUTRAL (voir le rapport d'audit U4).
 
 #include <genesis.h>
 #include <string.h>

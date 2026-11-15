@@ -10,7 +10,7 @@
 //  - les autres lois sont proposées par le gouvernement (sim_end_turn, une
 //    chance sur deux par trimestre, sans CP, effets immédiats d'opinion divisés
 //    par deux) ;
-//  - le budget est décidé par le Premier ministre (sim_cohab_budget) ;
+//  - le budget est décidé par le Premier ministre (sim_cohab_plan) ;
 //  - pas de remaniement, pas de motion de censure ;
 //  - la popularité du président est moins exposée : les cibles d'opinion sous
 //    COHAB_OPINION_REF perdent un tiers de leur écart.
@@ -29,8 +29,6 @@ u8  sim_cohabitation(const Country *c);
 u8  sim_law_sovereign(u8 law_id);
 // Camp du Premier ministre d'opposition (ORIENT_GAUCHE, CENTRE ou DROITE) ; ORIENT_CENTRE hors cohabitation.
 u8  sim_cohab_camp(const Country *c);
-// Budget que le Premier ministre d'opposition impose en fin d'année (aperçu).
-u8  sim_cohab_budget(const Country *c);
 // Prochaine loi que le gouvernement proposerait (aperçu) : LOI_* ou LOI_COUNT si aucune.
 u8  sim_cohab_next_law(const Country *c);
 

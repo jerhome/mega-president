@@ -10,9 +10,8 @@
 // Si le Sénat n'est pas acquis au bloc présidentiel, il amende le plan adopté
 // (une ligne recule d'un cran) ; la lecture définitive (1 CP) le rétablit.
 //
-// Les anciennes fonctions à un seul identifiant (sim_budget_vote(c, BUDGET_*),
-// sim_budget_deficit(b), ...) restent valides : elles s'appliquent au plan du
-// préréglage.
+// Les anciennes fonctions à un identifiant de préréglage (sim_budget_vote, ...)
+// ne servent qu'aux tests PC : voir tests/budget_compat.h.
 
 #include "sim/sim_state.h"
 #include "sim/parliament.h"
@@ -66,15 +65,6 @@ void sim_budget_plan_preview(const Country *c, const BudgetPlan *p, VoteResult *
 // ne l'amende pas (bloc présidentiel majoritaire au Sénat, ou cohabitation).
 u8 sim_budget_senate_amend_line(const Country *c, const BudgetPlan *p);
 
-// --- Compatibilité V1-V3 : un préréglage tient lieu de plan ---
-s8  sim_budget_orientation(u8 budget);              // orientation propre du plan (sans le joueur)
-s16 sim_budget_deficit(u8 budget);
-s16 sim_budget_growth(u8 budget);
-s16 sim_budget_opinion(u8 budget, u8 electorate);
-s16 sim_budget_pillar(u8 budget, u8 pillar);
-s16 sim_budget_tension(u8 budget);
-void sim_budget_preview(const Country *c, u8 budget, VoteResult *out);
-
 // --- Actions ---
 // Vote du plan. BUDGET_OK : vote effectué (voir out->adopted) ; adopté, il entre en
 // vigueur (éventuellement amendé par le Sénat). Rejeté : défiance +3 ; on peut
@@ -83,10 +73,6 @@ u8 sim_budget_plan_vote(Country *c, const BudgetPlan *p, VoteResult *out);
 // 49.3 sur le budget : 4 CP, défiance +8, illimité. Le plan passe tel quel
 // (mais le Sénat peut l'amender).
 u8 sim_budget_plan_force(Country *c, const BudgetPlan *p);
-// Idem avec un préréglage (compatibilité).
-u8 sim_budget_vote(Country *c, u8 budget, VoteResult *out);
-u8 sim_budget_force(Country *c, u8 budget);
-
 // Ligne amendée par le Sénat dans le budget en vigueur (ligne + 1), 0 si aucune.
 u8 sim_budget_amended_line(const Country *c);
 // Lecture définitive (1 CP) : rétablit le plan voulu par le président.

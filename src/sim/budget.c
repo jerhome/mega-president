@@ -46,8 +46,8 @@ static const s8 bud_cohab[ORIENT_COUNT][BUD_LINES] = {
     { -1, 0, 1, -1, 0, -1 },   // droite
 };
 
-#define PILLAR_RECALL 12        // V4.14 : rappel des piliers vers 50 (1/32 de l'écart par trimestre)
-#define MARKET_DIV 7            // V4.14 : malus (dixièmes) = déficit² / 16, déficit en dixièmes de point de PIB
+#define PILLAR_RECALL 12        // V4.14 : rappel des piliers vers 50 (1/12 de l'écart par trimestre)
+#define MARKET_DIV 7            // V4.14 : malus (dixièmes) = déficit² / 7, déficit en dixièmes de point de PIB
 #define INSINCERE_DEFICIT 15    // au-delà (1,5 point), le budget est « insincère »
 
 static s8 lvl_ok(s8 l) { return (s8)(l < BUD_LVL_MIN ? BUD_LVL_MIN : (l > BUD_LVL_MAX ? BUD_LVL_MAX : l)); }
@@ -231,29 +231,6 @@ static void amend_apply(Country *c, BudgetPlan *p, u8 line1)
     p->lvl[i] = (s8)(p->lvl[i] + (p->lvl[i] > 0 ? -1 : 1));
 }
 
-// --- Compatibilité : préréglages ---
-s8 sim_budget_orientation(u8 b)
-{
-    BudgetPlan p;
-    s32 o = 0;
-    u8 i;
-    sim_budget_preset_plan(b, &p);
-    for (i = 0; i < BUD_LINES; i++) o += (s32)p.lvl[i] * bud_line[i].orient;
-    return (s8)o;
-}
-s16 sim_budget_deficit(u8 b) { BudgetPlan p; sim_budget_preset_plan(b, &p); return sim_plan_deficit(&p); }
-s16 sim_budget_growth(u8 b)  { BudgetPlan p; sim_budget_preset_plan(b, &p); return sim_plan_growth(&p); }
-s16 sim_budget_tension(u8 b) { BudgetPlan p; sim_budget_preset_plan(b, &p); return sim_plan_tension(&p); }
-s16 sim_budget_opinion(u8 b, u8 e) { BudgetPlan p; sim_budget_preset_plan(b, &p); return sim_plan_opinion(&p, e); }
-s16 sim_budget_pillar(u8 b, u8 pil) { BudgetPlan p; sim_budget_preset_plan(b, &p); return sim_plan_pillar(&p, pil); }
-
-void sim_budget_preview(const Country *c, u8 b, VoteResult *out)
-{
-    BudgetPlan p;
-    sim_budget_preset_plan(b, &p);
-    plan_vote(c, &p, out);
-}
-
 // --- Actions ---
 static void budget_adopt(Country *c, const BudgetPlan *p)
 {
@@ -289,22 +266,6 @@ u8 sim_budget_plan_force(Country *c, const BudgetPlan *p)
         if (g != c->player_group)
             c->relation[g] = (u8)sim_clamp((s32)c->relation[g] - 1, 0, RELATION_MAX);
     return BUDGET_OK;
-}
-
-u8 sim_budget_vote(Country *c, u8 b, VoteResult *out)
-{
-    BudgetPlan p;
-    if (b >= BUDGET_COUNT) return BUDGET_ERR_ID;
-    sim_budget_preset_plan(b, &p);
-    return sim_budget_plan_vote(c, &p, out);
-}
-
-u8 sim_budget_force(Country *c, u8 b)
-{
-    BudgetPlan p;
-    if (b >= BUDGET_COUNT) return BUDGET_ERR_ID;
-    sim_budget_preset_plan(b, &p);
-    return sim_budget_plan_force(c, &p);
 }
 
 u8 sim_budget_amended_line(const Country *c) { return c->bud_amend_line; }

@@ -65,7 +65,6 @@ void music_init(void)
     s_pending = 0xFF;
     s_fading = FALSE;
     s_enabled = TRUE;
-    Z80_loadDriver(Z80_DRIVER_XGM2, TRUE);
     XGM2_load(xgm2_music);   // table des échantillons de la ressource multi-pistes (pile, pas de tas)
 }
 
