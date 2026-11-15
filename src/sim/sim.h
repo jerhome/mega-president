@@ -31,9 +31,6 @@ typedef struct {
 // Nouvelle partie V1.
 void sim_init_ex(Country *c, const SimSetup *setup);
 
-// Compatibilité V0 : sim_init_ex sans Premier ministre, difficulté Normal.
-void sim_init(Country *c, u8 orientation, u32 seed, u8 turns_per_year);
-
 // Poids électoraux en % des suffrages exprimés : Pop 26, Moy 22, Cad 12, Ret 28, Jeu 12.
 extern const u8 elec_weight[ELEC_COUNT];
 

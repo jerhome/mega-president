@@ -19,16 +19,6 @@ u8 sim_cohab_camp(const Country *c)
     return ORIENT_DROITE;
 }
 
-// Préréglage le plus proche du plan du PM (descriptif ; le plan exact est sim_cohab_plan).
-u8 sim_cohab_budget(const Country *c)
-{
-    switch (sim_cohab_camp(c)) {
-    case ORIENT_GAUCHE: return BUDGET_RELANCE;
-    case ORIENT_DROITE: return BUDGET_RIGUEUR;
-    default:            return BUDGET_EQUILIBRE;
-    }
-}
-
 void cohab_start(Country *c)
 {
     u8 g, best = GRP_COUNT;

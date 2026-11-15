@@ -28,7 +28,7 @@ Arrêter l'émulateur avec `pkill -x blastem` (jamais `pkill -f`, qui tue le she
 
 ## Architecture
 - `src/sim/` : **cœur de simulation portable**, sans SGDK. Il compile pour le 68000 et pour le PC. Types via `sim/sim_types.h`. Interdits : float, double, malloc, stdio.
-- `src/ui/` (à venir) : seule couche autorisée à manipuler tuiles, palettes et plans du VDP, pour permettre le pixel art de la V2 sans réécriture.
+- `src/ui/` : seule couche autorisée à manipuler tuiles, palettes et plans du VDP, pour permettre le pixel art de la V2 sans réécriture.
 - `src/boot/rom_head.c` : en-tête de cartouche, avec la SRAM déclarée en 0x200001-0x20FFFF (octets impairs).
 - `tests/` : tests PC (`CHECK`, `CHECK_EQ`).
 
