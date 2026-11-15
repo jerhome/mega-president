@@ -36,7 +36,7 @@ static void cat_signed(char *dst, s32 v, u16 dec)
 // Mise en page de la une (charte V3) :
 //  1-5    bandeau du journal (illustration 38 x 5)
 //  6      date du bilan, 7 filet
-//  8-19   « photo de une » : médaillon x 29-38 (emplacement 8 x 10 tuiles) ;
+//  8-19   « photo de une » : gueule du président x 29-38 (10 x 12 tuiles, PAL2) ;
 //         le texte coule à sa gauche sur 27 colonnes, puis sur toute la largeur.
 #define PHOTO_X   29
 #define PHOTO_Y   8
@@ -297,14 +297,12 @@ static void report_draw(void)
     ui_text_center(1, 6, 38, buf, UI_STYLE_HIGHLIGHT);
     ui_separator(1, 7, 38);
 
-    // Photo de une : le président (emplacement prévu pour un portrait 8 x 10).
+    // Photo de une : le président, content ou gêné selon le trimestre.
     ui_medallion(PHOTO_X, PHOTO_Y, PHOTO_W, PHOTO_H);
     {
-        ArtId id = ART_PRES(c->orientation);
-        u16 w, h;
-        ui_art_size(id, &w, &h);
-        if (w <= PHOTO_W - 2 && h <= PHOTO_H - 2)
-            ui_art_draw(id, PHOTO_X + 1 + (PHOTO_W - 2 - w) / 2, PHOTO_Y + 1 + (PHOTO_H - 2 - h) / 2);
+        s16 d = r->popularity_after - r->popularity_before;
+        Expr e = (r->affair || d <= -15) ? EXPR_GENE : (d >= 10 ? EXPR_CONTENT : EXPR_NEUTRE);
+        ui_gueule_draw(GUEULE_PRES(c->orientation), e, PHOTO_X, PHOTO_Y, PAL2);
     }
 
     // Popularité et capital politique

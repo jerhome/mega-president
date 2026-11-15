@@ -76,44 +76,51 @@ Provisoire : `python3 tools/map/make_map.py` génère les PNG depuis `tools/map/
 (une lettre par case de 4×4 px, `.` = mer ; lettres H N I E B L C U A R O P K). Pour la V2,
 remplacer `map_france.png` en gardant dimensions et indices.
 
-## Illustrations (src/ui/ui_art.h, res/gfx_art.res) — tâche 2.02
+## Illustrations (src/ui/ui_art.h, res/gfx_art.res) — tâches 2.02, 3.07 à 3.10
 Pixel art caricatural façon BD, **généré par programme** : `python3 tools/art/make_art.py`
-(Python 3 seul) écrit `res/gfx/art_*.png` et `res/gfx_art.res`. Tous les personnages sont
-fictifs. Dessins : `tools/art/title.py`, `portraits.py`, `vignettes.py` + `vignettes2.py`,
-`decors.py` ; primitives (ellipses, polygones, contours d'encre, tramage) : `tools/art/raster.py`.
-`--preview DIR` écrit aussi des planches agrandies.
+(Python 3 seul) écrit `res/gfx/art_*.png`, `res/gfx/gueule_*.png`, `res/gfx_art.res` et
+`src/ui/ui_art_gueules.h`. Tous les personnages sont fictifs. `--preview DIR` écrit des
+planches agrandies.
 
 API (`ui_art.c` est le seul fichier qui touche VDP/PAL pour les illustrations) :
-- `ui_art_draw(id, x, y)` : dessine sur le **plan B** (coin haut gauche en tuiles), palette
-  chargée dans **PAL2** ; `ui_art_draw_pal(id, x, y, PAL1|PAL2|PAL3)` choisit la ligne.
+- `ui_art_draw(id, x, y)` : dessine sur le **plan B**, palette dans **PAL2** ;
+  `ui_art_draw_pal(id, x, y, PAL2|PAL3)` choisit la ligne (toute autre valeur → PAL2).
 - `ui_art_size(id, &w, &h)` (en tuiles), `ui_art_erase(id, x, y)` (efface le plan B).
+- **Gueules V3** : `ui_gueule_draw(GueuleId, Expr, x, y, PAL2|PAL3)` (10 × 12 tuiles,
+  80 × 96 px, une palette par personnage), `ui_gueule_expr` (change l'expression :
+  `EXPR_NEUTRE`, `EXPR_CONTENT`, `EXPR_FURIEUX`, `EXPR_GENE`), `ui_gueule_erase`.
+  Raccourcis : `GUEULE_PRES(ORIENT_*)`, `GUEULE_PM(PM_*)`, `GUEULE_COHAB(camp)`,
+  `GUEULE_CAND(CAND_*)`, `GUEULE_CHEF(GRP_*)`, `GUEULE_MIN(i)`. Les anciens portraits
+  56 × 56 (`ART_PRES_*`, `ART_PM_*`, `ART_COHAB_*`, `ART_CAND_ROUVIERE…`) sont retirés.
+- Cadre : `ui_medallion(x, y, UI_PORTRAIT_W, UI_PORTRAIT_H)` pose un cadre doré sur le
+  pourtour de la gueule (plan A) et un fond sombre (plan B) avant le dessin.
+- `ui_art_reserve(clé, n)` / `ui_art_claim_palette(pal)` : zone VRAM et ligne de palette
+  pour un dessin produit hors de `ui_art` (hémicycle dynamique, `ui_hemi.c`).
 - `ui_art_close()` : **à appeler en quittant l'écran** (et avant `ui_map_draw`) ; restaure
-  `pal_ui_highlight` / `pal_ui_dim` / `pal_ui_alert` et libère la VRAM.
-- Macros : `ART_PRES(ORIENT_*)`, `ART_PM(PM_*)`, `ART_COHAB(camp)`, `ART_CAND(CAND_*)`.
+  PAL2/PAL3 et libère la VRAM (fait aussi automatiquement à chaque changement d'écran).
 
-**Palettes** : chaque illustration a sa palette (15 couleurs + transparent). Les **14 portraits
-partagent la même palette** : plusieurs portraits tiennent sur une seule ligne. V3 :
-portrait en PAL2, vignette ou second décor en PAL3 ; **ne plus utiliser PAL1** (interface).
-Les styles de texte ne dépendent plus des lignes empruntées.
+**Palettes** : chaque illustration a sa palette (15 couleurs + transparent) ; chaque gueule
+aussi. Deux illustrations de palettes différentes = deux lignes : portrait principal en
+**PAL2**, vignette, seconde gueule ou hémicycle en **PAL3**. PAL0/PAL1 = interface.
 
-**VRAM** : tuiles chargées juste après celles de `ui.c` (même zone que la carte, jamais
-affichées ensemble), empilées si plusieurs illustrations (16 au plus) ; une illustration
-déjà chargée est réutilisée. Limite : `TILE_USER_MAX_INDEX` (plus de 1 000 tuiles libres ; après dédoublonnage l'écran
-titre en prend 341, un portrait ≈ 43, une vignette ≈ 46, l'hémicycle 120, le journal 83).
-ROM : ≈ 64 Ko pour les 33 illustrations.
-Images non compressées (DMA direct depuis la ROM, aucun tampon en RAM).
+**VRAM** : tuiles chargées juste après celles de `ui.c` (zone partagée avec la carte, jamais
+affichées ensemble), empilées (24 jeux au plus) ; un jeu déjà chargé est réutilisé. Limite :
+`TILE_USER_MAX_INDEX` (≈ 1 040 tuiles libres). Images non compressées (DMA direct depuis la ROM).
 
 | Id | Taille (tuiles) | Contenu |
 |---|---|---|
-| `ART_TITLE` | 40 × 16 | palais, drapeau, président qui salue, gardes, journalistes ; lignes 0-2 = ciel uni pour le titre |
-| `ART_PRES_GAUCHE/CENTRE/DROITE` | 7 × 7 | le président selon l'orientation |
-| `ART_PM_TECHNOCRATE/RASSEMBLEUR/REFORMATEUR` | 7 × 7 | Delaunay, Deschamps, Maréchal |
-| `ART_COHAB_GAUCHE/CENTRE/DROITE` | 7 × 7 | Carrel, Lacombe, de Montclar (PM d'opposition) |
-| `ART_CAND_ROUSSEL/VASSEUR/MARCHETTI/VALMONT/LENOIR` | 7 × 7 | candidats, ordre `CAND_*` |
-| `ART_EVT_*` (15) | 8 × 6 | grève, canicule, inondation, scandale, sommet, bourse, santé, pollution, sécurité, numérique, éducation, énergie, agriculture, industrie, fête |
-| `ART_DECOR_HEMICYCLE` | 20 × 9 | Assemblée en séance (votes) |
-| `ART_DECOR_URNE` | 8 × 8 | urne, « A VOTÉ » (élection, référendum) |
-| `ART_DECOR_JOURNAL` | 38 × 5 | bandeau « Le Quotidien du Matin » (rapport) |
+| `ART_TITLE` | 40 × 16 | écran titre ; lignes 0-2 = ciel (plaque du titre) |
+| `ART_EVT_*` (15) | 8 × 6 | vignettes d'événements |
+| `ART_DECOR_HEMICYCLE` | 20 × 9 | Assemblée en séance (illustration) |
+| `ART_DECOR_URNE` | 8 × 8 | urne (élection, référendum) |
+| `ART_DECOR_JOURNAL` | 38 × 5 | bandeau « Le Quotidien du Matin » (en PAL3 sur la une) |
+| `GUEULE_*` (30) | 10 × 12 | présidents, PM, PM de cohabitation, candidats, ministres, chefs de groupe, journalistes, président du Sénat, syndicat, patronat |
 
-Pour retoucher : modifier le script du dessin, relancer `make_art.py`, recompiler. L'ordre des
-`IMAGE` de `gfx_art.res` doit rester celui de l'enum `ArtId` et du tableau de `ui_art.c`.
+## Hémicycle dynamique (src/ui/ui_hemi.h) — tâche 3.17
+Demi-cercle de 20 × 10 tuiles, un point par siège (Assemblée 577, Sénat 348), colorés par
+groupe de G1 (gauche) à G5 (droite), sur le **plan A** avec la palette en **PAL3**.
+`ui_hemi_draw(x, y, UI_HEMI_ASSEMBLY|UI_HEMI_SENATE, sièges[5])`, `ui_hemi_vote(pour[5],
+animer)` (les « pour » s'allument de gauche à droite), `ui_hemi_focus(groupe)`
+(clignotement), `ui_hemi_update()` à chaque image, `ui_hemi_majority(x, y, w, voix, total,
+majorité)` (jauge et repère). Géométrie précalculée par `tools/ui/make_hemi.py`
+(`src/ui/ui_hemi_data.h`) ; tuiles générées à l'exécution, sans tampon en RAM.

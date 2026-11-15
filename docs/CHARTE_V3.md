@@ -76,7 +76,7 @@ Les 38 colonnes utiles et le texte UTF-8 (tampons `UI_LINE_BUF`) restent la règ
 | Fenêtre à titre | `ui_window_title(x, y, w, h, titre, gauche)` | B + A | bandeau rangées y..y+2, contenu dès y+3 |
 | Bandeau seul | `ui_banner(x, y, w, titre, gauche)` | B + A | en-tête d'écran (3 rangées) |
 | Filet | `ui_separator(x, y, w)` | B | rangée sans texte, bouts estompés ; derrière un titre de rubrique |
-| Médaillon | `ui_medallion(x, y, w, h)` | B | cadre doré pour portrait (intérieur sombre) |
+| Cadre de portrait | `ui_medallion(x, y, w, h)` | A + B | cadre doré posé sur le pourtour du portrait, fond sombre |
 | Barre de sélection | automatique dans `ui_list_draw` | B | arrondie, reflet ; `UI_LIST_NOBAR` pour une liste hors fenêtre |
 | Jauge à reflet | `ui_gauge_draw` | A | bouts arrondis, reflet, creux sombre ; 4 couleurs |
 | Icônes | `ui_icon_draw` | A | 32 icônes 8×8, chacune avec sa palette |
@@ -108,16 +108,31 @@ palettes cibles). La carte suspend son clignotement pendant un fondu.
 ## 6. Grille et emplacements de portraits
 
 Écran 40 × 28 tuiles. Fenêtres pleine largeur (x 0-39), texte de x 1 à 38.
-Emplacement de portrait standard : **médaillon 10 × 12 tuiles, intérieur 8 × 10
-(64 × 80 px)**, en PAL2. Les portraits actuels (7 × 7) y sont centrés avec
-`ui_art_size` ; un portrait plus grand que l'intérieur n'est pas dessiné (à agrandir
-ensemble si le format final dépasse 64 × 80).
+Emplacement de portrait : **gueule V3 de 10 × 12 tuiles (80 × 96 px)**, en PAL2 (seconde
+gueule en PAL3). `ui_medallion(x, y, 10, 12)` pose un **cadre doré sur le pourtour même
+du portrait** (plan A : contour noir, filet or clair/sombre, coins arrondis peints du fond
+de fenêtre) : le cadre ne coûte aucune colonne et laisse 28 colonnes au texte à côté.
 
-| Écran | Médaillon | Contenu actuel |
-|---|---|---|
-| Tableau de bord | x 29-38, y 4-15 | Premier ministre (ou PM de cohabitation), nom, majorité, CP sous le cadre |
-| Événement | x 29-38, y 3-14 | vignette de l'événement en **PAL3** (place prévue pour un personnage) |
-| Journal (une) | x 29-38, y 8-19 | « photo de une » : le président ; bandeau du journal en **PAL3** |
+Expressions (`Expr`) selon le contexte :
+
+| Écran | Gueule | Position | Expression |
+|---|---|---|---|
+| Tableau de bord | PM (ou PM de cohabitation) | x 29-38, y 4-15 | content si popularité ≥ 55 %, gêné < 40 % ou scandale, furieux si défiance ou tension fortes ; la cohabitation se réjouit des déboires |
+| Journal (une) | président | x 29-38, y 8-19 | content si la popularité monte d'1 point, gêné si elle baisse d'1,5 point ou en cas d'affaire |
+| Élection, 2nd tour | les deux finalistes | x 2 et x 28, y 4-15 | content pour le vainqueur, gêné pour le battu |
+| Remaniement | PM pressenti | x 29-38, y 4-15 | content si possible, gêné sinon |
+| Second mandat | PM ou PM de cohabitation | x 29-38, y 3-14 | selon les législatives |
+| Écran titre | président ou PM choisi | x 29-38, y 2-13 (sur l'illustration, PAL3) | content |
+| Événement | vignette (PAL3) | x 29-38, y 3-14 | — |
+
+## 6 bis. Hémicycle dynamique
+
+`src/ui/ui_hemi.h` : 577 sièges (Sénat : 348) en demi-cercle de 20 × 10 tuiles, une couleur
+par groupe (rouge, rose, jaune orangé, bleu, violet de G1 à G5), tribune et perchoir au
+centre, arc extérieur. Plan A, palette PAL3. Au vote, tout s'éteint puis les groupes
+« pour » s'allument de gauche à droite (250 ms par groupe) ; le verdict s'affiche ensuite
+(A l'accélère). Jauge de majorité avec repère ▼. Vue « Assemblée » : le groupe du joueur
+clignote doucement.
 
 ## 7. Mises en page (3.05)
 

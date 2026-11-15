@@ -93,9 +93,13 @@ void ui_window_title(u16 x, u16 y, u16 w, u16 h, const char *title, bool left);
 void ui_banner(u16 x, u16 y, u16 w, const char *title, bool left);
 // Filet gravé horizontal (plan B, dans une fenêtre) : une rangée sans texte.
 void ui_separator(u16 x, u16 y, u16 w);
-// Médaillon doré de w x h tuiles (cadre d'une tuile) : l'illustration se place
-// à l'intérieur (x+1, y+1, w-2, h-2), sur le plan B.
+// Emplacement de portrait de w x h tuiles (gueule V3 : UI_PORTRAIT_W x UI_PORTRAIT_H) :
+// fond sombre sur le plan B, cadre doré aux coins arrondis posé SUR le bord du
+// rectangle (plan A). L'illustration se dessine ensuite dans le même rectangle.
+// Ne pas écrire de texte sur le pourtour (le cadre occupe le plan A).
 void ui_medallion(u16 x, u16 y, u16 w, u16 h);
+#define UI_PORTRAIT_W 10
+#define UI_PORTRAIT_H 12
 // Barre de sélection (plan B, dans une fenêtre) sur w tuiles ; ui_select_bar_clear
 // remet le fond de la fenêtre.
 void ui_select_bar(u16 x, u16 y, u16 w);

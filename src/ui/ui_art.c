@@ -9,10 +9,6 @@
 // Même ordre que l'enum ArtId (et que res/gfx_art.res).
 static const Image *const art_images[ART_COUNT] = {
     &art_title,
-    &art_pres_gauche, &art_pres_centre, &art_pres_droite,
-    &art_pm_technocrate, &art_pm_rassembleur, &art_pm_reformateur,
-    &art_cohab_gauche, &art_cohab_centre, &art_cohab_droite,
-    &art_cand_rouviere, &art_cand_vasseur, &art_cand_marchetti, &art_cand_valmont, &art_cand_lenoir,
     &art_evt_greve, &art_evt_canicule, &art_evt_inondation, &art_evt_scandale, &art_evt_sommet,
     &art_evt_bourse, &art_evt_sante, &art_evt_pollution, &art_evt_securite, &art_evt_numerique,
     &art_evt_education, &art_evt_energie, &art_evt_agriculture, &art_evt_industrie, &art_evt_fete,
@@ -85,6 +81,33 @@ static u16 load_tileset(u16 key, const TileSet *ts)
     return t;
 }
 
+u16 ui_art_reserve(u16 key, u16 ntiles)
+{
+    u16 i, t;
+
+    key |= 0x8000;   // clés réservées : distinctes des ArtId et des gueules
+    for (i = 0; i < slot_count; i++)
+        if (slot_id[i] == key)
+            return slot_tile[i];
+    if (next_tile == 0)
+        next_tile = art_base();
+    if (slot_count >= ART_SLOTS || (u32)next_tile + ntiles > (u32)TILE_USER_MAX_INDEX + 1)
+        return 0;
+    t = next_tile;
+    next_tile += ntiles;
+    slot_id[slot_count] = key;
+    slot_tile[slot_count] = t;
+    slot_count++;
+    return t;
+}
+
+void ui_art_claim_palette(u16 pal)
+{
+    static const u16 claimed[16] = { 0xFFFF };   // jamais égale à une vraie palette
+    if (pal >= PAL2 && pal <= PAL3)
+        pal_loaded[pal] = claimed;
+}
+
 bool ui_art_draw_pal(ArtId id, u16 x, u16 y, u16 pal)
 {
     const Image *img;
@@ -92,8 +115,8 @@ bool ui_art_draw_pal(ArtId id, u16 x, u16 y, u16 pal)
 
     if (id >= ART_COUNT)
         return FALSE;
-    if (pal == PAL0 || pal > PAL3)
-        pal = PAL2;
+    if (pal != PAL3)
+        pal = PAL2;   // contrat V3 : PAL0/PAL1 réservées à l'interface
     img = art_images[id];
     t = load_tileset(id, img->tileset);
     if (t == 0)
@@ -123,7 +146,7 @@ void ui_art_close(void)
     static const Palette *const normal[4] = { &pal_ui_text, &pal_ui_highlight, &pal_ui_dim, &pal_ui_alert };
     u16 i;
 
-    for (i = PAL1; i <= PAL3; i++) {
+    for (i = PAL2; i <= PAL3; i++) {
         if (pal_loaded[i] != NULL) {
             PAL_setPalette(i, normal[i]->data, DMA);
             pal_loaded[i] = NULL;

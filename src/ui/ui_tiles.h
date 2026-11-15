@@ -35,21 +35,21 @@ enum {
     UI_T_SEP_L = 28,
     UI_T_SEP_M = 29,
     UI_T_SEP_R = 30,
-    UI_T_MD_TL = 31,
-    UI_T_MD_T = 32,
-    UI_T_MD_TR = 33,
-    UI_T_MD_L = 34,
-    UI_T_MD_C = 35,
-    UI_T_MD_R = 36,
-    UI_T_MD_BL = 37,
-    UI_T_MD_B = 38,
-    UI_T_MD_BR = 39,
+    UI_T_PF_TL = 31,
+    UI_T_PF_T = 32,
+    UI_T_PF_TR = 33,
+    UI_T_PF_L = 34,
+    UI_T_PF_R = 35,
+    UI_T_PF_BL = 36,
+    UI_T_PF_B = 37,
+    UI_T_PF_BR = 38,
+    UI_T_PF_C = 39,
     UI_T_COUNT = 40
 };
 
 // Ligne de palette de chaque tuile de décor (0 : PAL0, 1 : PAL1).
 static const u8 ui_frame_pal[UI_T_COUNT] = {
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0
 };
 
 // Jauges (ui_gauge.png) : jeu (0 : A, 1 : B) x partie (0 gauche, 1 milieu, 2 droite) x 9.

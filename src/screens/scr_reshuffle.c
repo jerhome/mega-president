@@ -11,15 +11,20 @@
 #include "screens/evt_art.h"
 #include "ui/ui_art.h"
 
-// Portrait du PM en PAL3 (le style ALERT est donc remplacé par HIGHLIGHT sur cet écran ;
-// PAL2/DIM reste libre pour les éléments grisés de la liste).
-#define PORTRAIT_X 31
-#define PORTRAIT_Y 5
+// Gueule du PM pressenti à droite (10 x 12 tuiles, PAL2), texte sur 27 colonnes à gauche.
+#define PORTRAIT_X 29
+#define PORTRAIT_Y 4
+#define TEXT_W     27
 
-static void draw_portrait(u8 pm, u16 x, u16 y)
+static void draw_portrait(u8 pm, Expr e)
 {
-    if (pm < PM_COUNT)
-        ui_art_draw_pal(ART_PM(pm), x, y, PAL3);
+    if (pm >= PM_COUNT)
+        return;
+    ui_medallion(PORTRAIT_X, PORTRAIT_Y, UI_PORTRAIT_W, UI_PORTRAIT_H);
+    ui_gueule_draw(GUEULE_PM(pm), e, PORTRAIT_X, PORTRAIT_Y, PAL2);
+    ui_clear_rect(PORTRAIT_X - 1, PORTRAIT_Y + UI_PORTRAIT_H, 12, 1);
+    ui_text_center(PORTRAIT_X - 1, PORTRAIT_Y + UI_PORTRAIT_H, 12,
+                   txt[TXT_PM_TECHNOCRATE_NOM + 2 * pm], UI_STYLE_HIGHLIGHT);
 }
 
 typedef enum { P_PICK, P_CONFIRM, P_RESULT } Phase;
@@ -45,14 +50,16 @@ static void cat_num(char *dst, s32 v, u16 dec)
 static void draw_header(void)
 {
     char buf[16];
-    ui_window(0, 0, 40, 3);
-    ui_text_draw(1, 1, txt[TXT_RSH_TITRE], UI_STYLE_HIGHLIGHT);
+    u16 n;
+    ui_banner(0, 0, 40, txt[TXT_RSH_TITRE], TRUE);
     buf[0] = 0;
-    strcat(buf, "CP ");
     cat_num(buf, g_game.country.cp, 0);
     strcat(buf, "/");
     cat_num(buf, CP_MAX, 0);
-    ui_text_draw(38 - ui_text_len(buf), 1, buf, UI_STYLE_TEXT);
+    n = ui_text_len(buf);
+    ui_text_right(39, 1, " CP", UI_STYLE_DIM);
+    ui_text_right(36, 1, buf, UI_STYLE_TEXT);
+    ui_icon_draw(34 - n, 1, UI_ICON_CP);
 }
 
 static void refresh_disabled(void)
@@ -73,7 +80,7 @@ static void rsh_init(void)
         item_pm[n_items] = p;
         items[n_items++] = txt[TXT_PM_TECHNOCRATE_NOM + 2 * p];
     }
-    ui_list_init(&list, 1, 5, 38, n_items, items, n_items);
+    ui_list_init(&list, 1, 6, TEXT_W, n_items, items, n_items);
     refresh_disabled();
     for (u8 i = 0; i < n_items; i++)
         if (ui_list_enabled(&list, i)) { list.sel = i; break; }
@@ -86,19 +93,20 @@ static void draw_detail(void)
     u8 pm = item_pm[list.sel];
     u8 err = sim_reshuffle_check(&g_game.country, pm);
 
-    ui_clear_rect(1, 5 + n_items + 1, 38, 20 - n_items);
-    draw_portrait(pm, PORTRAIT_X, PORTRAIT_Y);
-    ui_text_wrap(1, 5 + n_items + 1, 28, 4, txt[TXT_PM_TECHNOCRATE_DESC + 2 * pm], UI_STYLE_TEXT);
+    ui_clear_rect(1, 9, TEXT_W, 16);
+    ui_clear_rect(1, 18, 38, 7);
+    draw_portrait(pm, err == RSH_OK ? EXPR_CONTENT : EXPR_GENE);
+    ui_text_wrap(1, 9, TEXT_W, 7, txt[TXT_PM_TECHNOCRATE_DESC + 2 * pm], UI_STYLE_TEXT);
     if (err == RSH_ERR_YEAR)
-        ui_text_wrap(1, 16, 38, 2, txt[TXT_RSH_ANNEE], UI_STYLE_HIGHLIGHT);
+        ui_text_wrap(1, 19, 38, 3, txt[TXT_RSH_ANNEE], UI_STYLE_ALERT);
     else if (err == RSH_ERR_COHAB)
-        ui_text_wrap(1, 16, 38, 2, txt[TXT_RSH_COHAB], UI_STYLE_HIGHLIGHT);
+        ui_text_wrap(1, 19, 38, 3, txt[TXT_RSH_COHAB], UI_STYLE_ALERT);
     else if (err == RSH_ERR_CP)
-        ui_text_draw(1, 16, "Capital politique insuffisant", UI_STYLE_HIGHLIGHT);
+        ui_text_draw(1, 19, "Capital politique insuffisant", UI_STYLE_ALERT);
     else if (err != RSH_OK)
-        ui_text_draw(1, 16, "Impossible pour l’instant", UI_STYLE_HIGHLIGHT);
+        ui_text_draw(1, 19, "Impossible pour l’instant", UI_STYLE_ALERT);
     else
-        ui_text_wrap(1, 16, 38, 4, txt[TXT_RSH_AIDE], UI_STYLE_DIM);
+        ui_text_wrap(1, 19, 38, 5, txt[TXT_RSH_AIDE], UI_STYLE_DIM);
 }
 
 static void rsh_update(void)
@@ -168,21 +176,24 @@ static void rsh_draw(void)
         ui_window(0, 3, 40, 25);
         if (phase == P_PICK) {
             refresh_disabled();
-            ui_text_draw(1, 4, "Nouveau Premier ministre :", UI_STYLE_DIM);
+            ui_text_draw(1, 4, "Nouveau Premier ministre", UI_STYLE_DIM);
+            ui_separator(1, 5, TEXT_W);
             ui_list_draw(&list);
-            ui_text_draw(1, 26, "A : choisir   B : retour", UI_STYLE_DIM);
+            ui_footer(1, 26, 38, "A : choisir   B : retour");
             detail_dirty = TRUE;
         } else if (phase == P_RESULT) {
             const Country *c = &g_game.country;
-            ui_text_draw(1, 5, txt[TXT_PM_TECHNOCRATE_NOM + 2 * c->pm], UI_STYLE_HIGHLIGHT);
-            draw_portrait(c->pm, 16, 18);   // sous les textes, au centre
-            ui_text_wrap(1, 7, 38, 3, txt[TXT_RSH_FAIT], UI_STYLE_TEXT);
-            ui_text_wrap(1, 11, 38, 3, txt[TXT_PM_TECHNOCRATE_DESC + 2 * c->pm], UI_STYLE_DIM);
+            ui_text_draw(1, 4, "Nouveau Premier ministre", UI_STYLE_DIM);
+            ui_separator(1, 5, TEXT_W);
+            draw_portrait(c->pm, EXPR_CONTENT);
+            ui_text_wrap(1, 6, TEXT_W, 5, txt[TXT_RSH_FAIT], UI_STYLE_TEXT);
+            ui_text_wrap(1, 12, TEXT_W, 4, txt[TXT_PM_TECHNOCRATE_DESC + 2 * c->pm], UI_STYLE_DIM);
+            ui_icon_draw(1, 19, UI_ICON_POPULARITY);
+            ui_text_draw(3, 19, "Popularité", UI_STYLE_DIM);
             buf[0] = 0;
-            strcat(buf, "Popularité : ");
-            cat_num(buf, pop_before, 1); strcat(buf, " % -> "); cat_num(buf, pop_after, 1); strcat(buf, " %");
-            ui_text_draw(1, 16, buf, UI_STYLE_HIGHLIGHT);
-            ui_text_draw(1, 26, "A : continuer", UI_STYLE_DIM);
+            cat_num(buf, pop_before, 1); strcat(buf, " % → "); cat_num(buf, pop_after, 1); strcat(buf, " %");
+            ui_text_right(39, 19, buf, pop_after >= pop_before ? UI_STYLE_HIGHLIGHT : UI_STYLE_ALERT);
+            ui_footer(1, 26, 38, "A : continuer");
         }
     }
     if (phase == P_PICK && detail_dirty) {
