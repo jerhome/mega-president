@@ -8,20 +8,20 @@
 
 | Fichier | Rôle |
 |---|---|
-| `sim_state.h` | struct `Country` (≈ 164 octets sur 68000 avec alignement 2 ; 172 sur PC ; 126 en V1), énumérations, bornes |
+| `sim_state.h` | struct `Country` (≈ 180 octets sur 68000 avec alignement 2 ; 188 sur PC ; 172 en V2 ; 126 en V1), énumérations, bornes |
 | `sim.h` / `sim.c` | `sim_init_ex`, `sim_end_turn`, lois, 49.3, télévision, PM, jauges, CP, 2nd mandat, scores |
-| `effects.*` | clés d'effets, conversion et bornage (`sim_apply_effect`) |
+| `effects.*` | clés d'effets, conversion et bornage (`sim_apply_effect`) ; V4 : `POP_RETRAITES`, `POP_JEUNES`, alias `POP_CADRES` |
 | `laws.*` | catalogue `law_defs` (40 lois, masque `LawMask` de 64 bits : `law_mask_get/set`), coût effectif, file des lois en attente |
 | `economy.c` | croissance, chômage, dette, tension |
-| `opinion.c` | opinion des 3 électorats, état de grâce, usure |
+| `opinion.c` | opinion des 5 électorats (V4), état de grâce, usure |
 | `parliament.*` | votes, relations |
-| `budget.*` | budget annuel (rigueur / équilibre / relance) |
+| `budget.*` | V4 : budget détaillé (6 lignes × 5 crans, préréglages, Sénat, reconduction, plan du PM) |
 | `institutions.*` | législatives, dissolution, majorité relative, censure, destitution |
 | `election.*` | présidentielle, thème de campagne, score de mandat |
 | `senate.*` | V2 : Sénat (348 sièges), renouvellement, voix de destitution du Sénat |
 | `cohab.*` | V2 : cohabitation (PM d'opposition, lois de souveraineté, lois du gouvernement, budget imposé) |
 | `actions.*` | V2 : référendum, remaniement |
-| `regions.*` | V2 : popularité par région (13 régions, profils en ROM) |
+| `regions.*` | V2 : popularité par région (13 régions, profils en ROM ; V4 : 5 poids d'électorats) |
 
 ## Conversion des clés d'effets (V1)
 
@@ -45,7 +45,7 @@ Comme le contrat §3, sauf :
 | CP | 5 | 4 | 3 |
 | Tension / défiance | 15 / 5 | 20 / 10 | 32 / 20 |
 
-- Opinion de base (pop./moy./ais.) : gauche 58/53/42 %, centre 50/54/50 %, droite 46/55/61 % (± 1,5).
+- Opinion de base (V4 : Pop/Moy/Cad/Ret/Jeu) : gauche 58/53/40/48/60 %, centre 46/54/54/56/44 %, droite 44/55/62/60/38 % (± 1,5). Moyenne pondérée à ±1 point de la V2 (SPEC_V4 §1.3). En V2 : gauche 58/53/42, centre 50/54/50, droite 46/55/61 sur 3 électorats.
 - Relations : parti 80, voisins 55, distance 2 : 30, distance 3 : 15 (+ décalage de difficulté).
 - Sièges (G1…G5) :
 
@@ -83,30 +83,35 @@ Les événements sont appliqués **avant** par l'appelant. Une partie terminée 
 ### Opinion (par électorat)
 
 ```
-33 + affinité(orientation, électorat)
- − (u − 7,5) × k_u      k_u : pop. 5, moy. 4, ais. 3
- + (g − 1,1) × k_g      k_g : pop. 1, moy. 2, ais. 3
+34,2 + affinité(orientation, électorat)               (OPN_BASE = 342)
+ − (u − 7,5) × k_u      k_u : Pop 5, Moy 4, Cad 3, Ret 3, Jeu 6
+ + (g − 1,1) × k_g      k_g : Pop 1, Moy 2, Cad 4, Ret 1, Jeu 2
  + 0,4 × moyenne pondérée des (pilier − 50)
  − 0,2 × (tension − 20)
  + état de grâce
  − 0,12 × scandale
  − 0,05 × (défiance − 30) si défiance > 30
- + budget (voir plus bas)
+ + budget (sim_plan_opinion : lignes + sérieux budgétaire, voir « Budget détaillé »)
  − 2,5 si PM Technocrate
  − usure : 2nd mandat, de −2 à −8 points (linéaire sur le mandat)
 ```
 
-| Affinité | pop. | moy. | ais. |
-|---|---|---|---|
-| gauche | +3 | 0 | −4 |
-| centre | −1,5 | +1,5 | +0,5 |
-| droite | −4 | 0 | +4 |
+**5 électorats (V4)** : classes populaires (Pop, poids 26), classes moyennes (Moy, 22), cadres (Cad, 12), retraités (Ret, 28), jeunes (Jeu, 12). Poids = parts des suffrages exprimés (`elec_weight`, somme 100). `ELEC_AISEES` est un alias de `ELEC_CADRES` (index 2).
 
-Poids des piliers (/16) : populaires 6/3/1/2/4, moyennes 3/4/2/3/4, aisées 1/7/3/2/3 (Soc/Éco/Tech/Écol/Séc). V2 : 6e pilier International, poids faible hors somme (populaires 1, moyennes 1, aisées 2). `OPN_BASE` = 336 (330 en V1) : recalé après l'ajout du pilier international pour garder la réélection d'un joueur actif à ≈ 71 / 55 / 25 % (facile / normal / difficile).
+| Affinité | Pop | Moy | Cad | Ret | Jeu |
+|---|---|---|---|---|---|
+| gauche | +3 | 0 | −3 | −1 | +3 |
+| centre | −2 | +1 | +1,5 | +1,5 | −2 |
+| droite | −4 | 0 | +4 | +1 | −3,5 |
+
+Poids des piliers (/16, Soc/Éco/Tech/Écol/Séc ; International hors somme : 1 / 1 / 2 / 1 / 1) : Pop 6/3/1/2/4, Moy 3/4/2/3/4, Cad 1/6/4/3/2, Ret 5/3/0/1/7, Jeu 4/2/3/6/1.
+
+`OPN_BASE` = **342** (336 en V2 avec 3 électorats) : relevé de 6 dixièmes pour garder la réélection du joueur actif à ≈ 71 / 55 / 25 % (facile / normal / difficile) : les effets d'opinion immédiats des lois et des événements, non encore repassés sur 5 électorats (tâches 4.05 et 4.06), pèsent moins (ils touchent Pop et Cad, soit 38 % des suffrages au lieu de 60 %).
 
 - **Inertie** : `opinion += (cible − opinion) / tpy` + aléa ±0,8 point.
 - **État de grâce** : +12 points au début du 1er mandat, +4 au début du 2nd, −8 par an.
-- **Popularité** = (4 × pop. + 4 × moy. + 2 × ais.) / 10.
+- **Popularité** = Σ `elec_weight[e]` × opinion(e) / 100 (26 / 22 / 12 / 28 / 12).
+- **Électorat-cœur** (`sim_core_opinion`, législatives et renouvellement du Sénat) : gauche (Pop + Jeu) / 2, centre (Moy + Ret) / 2, droite (Cad + Ret) / 2. Il remplace l'ancien alignement implicite ELEC/ORIENT (`opinion[orientation]`).
 
 ### Jauges (au trimestre)
 
@@ -136,18 +141,32 @@ Poids des piliers (/16) : populaires 6/3/1/2/4, moyennes 3/4/2/3/4, aisées 1/7/
 | Défense : sacrifier un ministre | 0 CP : scandale −15, défiance −5, opinion −1, relation du parti −5 |
 | Défense : négocier | 3 CP : relation +15 avec un groupe choisi |
 
-## Budget annuel (`budget.c`)
+## Budget détaillé (`budget.c`, V4)
 
-Présenté au 4e trimestre (`sim_budget_due`), voté par l'Assemblée (`sim_budget_vote`) ou passé en 49.3 (`sim_budget_force`). À la fin de l'année, sans budget adopté : **reconduction = équilibre**. Le budget adopté s'applique toute l'année suivante.
+**6 lignes × 5 crans** (−2, −1, 0 = reconduction, +1, +2 ; pour les impôts, + = hausse). `BudgetPlan { s8 lvl[BUD_LINES]; }`, plan en vigueur dans `Country.budget_lvl[6]` ; `Country.budget` mémorise le préréglage correspondant (`BUDGET_RIGUEUR/EQUILIBRE/RELANCE`) ou `BUDGET_PERSO` (3) ; `BUDGET_COUNT` reste 3 (les préréglages). Présenté au 4e trimestre (`sim_budget_due`), voté (`sim_budget_plan_vote`) ou passé en 49.3 (`sim_budget_plan_force`, 4 CP, défiance +8, illimité), en vigueur jusqu'à l'adoption suivante.
 
-| | Rigueur | Équilibre | Relance |
-|---|---|---|---|
-| Orientation propre (vote : + orientation du joueur / 2) | +40 | 0 | −40 |
-| Déficit (points de PIB par an) | −1,5 | 0 | +1,5 |
-| Tendance de croissance | −0,30 | 0 | +0,30 |
-| Tension (cible) | +6 | 0 | −5 |
-| Opinion cible pop./moy./ais. (points) | −2 / −0,5 / +1,5 | 0 | +2 / +1 / −1,5 |
-| Piliers par trimestre Soc/Éco/Tech/Écol/Séc (points) | −0,5 / +0,2 / 0 / −0,1 / 0 | 0 | +0,5 / −0,1 / +0,2 / +0,2 / +0,1 |
+Effets d'**un cran (+1)** par ligne (tables ROM `bud_line`) :
+
+| Ligne | Déficit (dixièmes/an) | Croiss. (centièmes) | Tension | Orient. vote | Pop | Moy | Cad | Ret | Jeu | Piliers (dixièmes/trim.) |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Social et retraites | +5 | +5 | −2 | −15 | +10 | +3 | −3 | +10 | +3 | Soc +3 |
+| Éducation et recherche | +3 | +5 | 0 | −10 | +2 | +5 | +3 | 0 | +10 | Tech +3, Soc +1 |
+| Sécurité et défense | +3 | 0 | 0 | +15 | +2 | +3 | +2 | +8 | −3 | Séc +3, Intl +1 |
+| Transition et réseaux | +4 | +10 | −1 | −10 | 0 | +3 | +3 | −2 | +8 | Écol +3, Éco +1 |
+| Impôts des ménages | −6 | −10 | +2 | 0 | −6 | −10 | −8 | −6 | −3 | — |
+| Impôts des entreprises | −5 | −15 | −1 | −20 | +3 | 0 | −10 | −2 | +2 | Éco −3 |
+
+- **Linéaires** (niveau × valeur) : déficit, croissance, tension, orientation.
+- **Asymétriques** : opinion et piliers, multiplicateur `m[niveau + 2]` puis division par 2. Dépenses : `{ −5, −2, 0, 2, 3 }` (+2 ne rapporte que 1,5 fois un cran, −2 coûte 2,5 fois). **Impôts : table inversée `{ −3, −2, 0, 2, 5 }`** (écart à SPEC_V4 §2.2, qui donne la table des dépenses à toutes les lignes) : une forte hausse fait très mal (2,5 ×), une forte baisse rapporte peu (1,5 ×) ; avec la table des dépenses, « impôts à −2 » était la stratégie dominante (réélection de l'« austère » à 65 % en droite).
+- **Sérieux budgétaire** : opinion(e) −= déficit du plan × `k_s[e]` / 10, `k_s` = Pop 0, Moy 3, Cad 10, Ret 6, Jeu 0.
+- **Budget insincère** : si le déficit du plan dépasse 1,5 point, chaque groupe hors du parti du joueur perd (déficit − 15) / 2 points de score de vote (`sim_plan_insincere_malus`).
+- **Prime de risque** (`economy.c`) : si dette > 120 % et déficit du plan > 1 point, la tendance de croissance perd 0,05 point par dixième de déficit au-delà de 10.
+- **Vote** : orientation = orientation du joueur / 2 + Σ niveau × orientation de la ligne (bornée à ±100), même `parl_vote`.
+- **Préréglages** (`sim_budget_preset_plan`) : Rigueur `−1 0 0 −1 +1 0` (déficit −1,5 ; croissance −0,25 ; popularité pondérée −0,9 point), Équilibre `0 0 0 0 0 0`, Relance `+1 +1 0 +1 0 0` (déficit +1,2 ; croissance +0,20 ; popularité pondérée +0,6 point).
+- **Reconduction** (fin d'année sans budget adopté, `budget_year_close`) : chaque dépense recule d'un cran vers 0, les impôts ne changent pas (`TurnReport.budget_reconduit`).
+- **Cohabitation** : le plan du PM d'opposition entre en vigueur en fin d'année (`sim_cohab_plan`) : gauche `+1 +1 0 +1 0 +1`, centre tout à 0, droite `−1 0 +1 −1 0 −1`. Le président règle la ligne Sécurité et défense à ±1 cran autour (`sim_cohab_set_defense`, `Country.cohab_def_adj`), sans CP.
+- **Sénat** : si le bloc présidentiel n'a pas la majorité au Sénat (`sim_senate_has_majority` = 0) et hors cohabitation, il **amende** le plan adopté (vote ou 49.3) : la ligne dont la contribution (cran × orientation de la ligne) est la plus négative recule d'un cran vers 0 (`sim_budget_senate_amend_line`, `Country.bud_amend_line/_from`). **Lecture définitive** : `sim_budget_definitive_reading`, 1 CP, rétablit le plan voulu (possible tant que l'année n'est pas close). `TurnReport.senate_amend` (ligne + 1) l'annonce au compte rendu de fin d'année s'il n'a pas été annulé. L'amendement est rare (bloc présidentiel minoritaire au Sénat : surtout en difficile) : ≈ 1 % des budgets des parties automatiques.
+- **Compatibilité** : `sim_budget_vote/force(c, BUDGET_*)`, `sim_budget_deficit/growth/opinion/pillar/tension/orientation/preview(b)` s'appliquent au plan du préréglage. `sim_cohab_budget` renvoie le préréglage le plus proche du camp du PM (descriptif).
 
 ## Institutions (`institutions.c`)
 
@@ -182,7 +201,7 @@ Une loi adoptée ne peut plus être proposée pendant le mandat (le catalogue re
 
 ## Présidentielle (`sim_election`)
 
-- **Popularité de campagne** = popularité avec, par électorat, le bonus du thème : (2 + crédibilité) × poids / 4 points. Poids pop./moy./ais. : emploi 4/3/1, sécurité 2/3/4, pouvoir d'achat 4/4/0, écologie 1/4/3. Crédibilité (bornée à −2..+3 points) : emploi = baisse du chômage × 2 ; sécurité, écologie = progression du pilier / 3 ; pouvoir d'achat = progression du pilier Social / 3, −1 en rigueur.
+- **Popularité de campagne** = popularité avec, par électorat, le bonus du thème : (2 + crédibilité) × poids / 4 points. Poids Pop/Moy/Cad/Ret/Jeu (V4, 5 thèmes) : emploi 4/3/1/0/4, sécurité 2/3/2/4/0, pouvoir d'achat 4/4/0/3/2, écologie 1/3/3/0/4, **santé et retraites 2/2/0/4/0**. Crédibilité (bornée à −2..+3 points) : emploi = baisse du chômage × 2 ; sécurité, écologie = progression du pilier / 3 ; santé et retraites = progression du pilier Social / 3 ; pouvoir d'achat = progression du pilier Social / 3, −1 si la ligne Social du budget est < 0 ou les impôts des ménages > 0. La popularité de campagne pondère les électorats par `elec_weight`.
 - **Bilan** = (chômage de départ − final) / 8 + progression moyenne des piliers / 3, borné à ±15 points.
 - **1er tour, joueur** = 6 % + popularité de campagne / 2 + bilan + aléa ±2,5, borné à 4–60 %.
 - **1er tour, adversaires** : poids GR 110, ÉCO 90, CENTRE 150, DROITE 160, **NAT 150** (230 en V0), × (distance + 40) / 120 si distance < 80, + aléa ±20.
@@ -214,14 +233,14 @@ Champs ajoutés à `Country` : `events_done_hi`, `senate[5]`, `cohab`, `cohab_gr
 - **Fin** : à la première législative où `won` = 1 (majorité, ou sièges gagnés). La dissolution reste possible (au plus une par an).
 - **Lois** : le joueur ne propose que les lois de souveraineté : (champ `sovereign` de `LawDef` : 15 lois, dont POLICE, IMMIGRATION, ENERGIE, CIR et 11 lois V2) ; les autres donnent `LAW_ERR_COHAB`. Le 49.3 suit la même règle.
 - **Gouvernement** : chaque trimestre, 50 % de chances qu'il fasse adopter, sans CP, la loi non souveraine non adoptée la plus proche de l'orientation de son groupe (aperçu : `sim_cohab_next_law`) ; effets différés complets, effets d'opinion immédiats divisés par 2. Compte rendu : `TurnReport.gov_law`.
-- **Budget** : `sim_budget_due` = 0 ; en fin d'année le PM impose relance (camp gauche), équilibre (centre) ou rigueur (droite) : `TurnReport.budget_gov`.
+- **Budget** : `sim_budget_due` = 0 ; en fin d'année le PM impose son plan (V4 : gauche `+1 +1 0 +1 0 +1`, centre tout à 0, droite `−1 0 +1 −1 0 −1`, ligne Sécurité ajustée par le président) : `TurnReport.budget_gov`.
 - **Popularité** : cible d'opinion sous 42 % : écart réduit d'un tiers (exposition aux 2/3) ; au-dessus, inchangée.
 - Autres : pas de motion de censure (`sim_censure_threat` = 0), pas de remaniement ni de `sim_change_pm`. Le référendum reste possible sur toute loi.
 - Fréquence (joueur automatique « dissol » : dissout dès qu'il est sous 42 % de popularité) : 0 à 4 cohabitations pour 100 parties ; très rare pour un joueur compétent (il gagne ses législatives).
 
 ### Référendum (`actions.c`)
 
-6 CP, au plus un par mandat (remis à zéro au 2nd mandat), sur une loi non adoptée (file non pleine). « Oui » par électorat (‰) = 470 + (affinité − 30) × 5 + effet immédiat de la loi pour l'électorat × 6 + (popularité − 45 %) × 0,6 + aléa (±4 points, commun), avec affinité = 50 − |orientation loi − orientation électorat| / 2, électorats à −40 / 0 / +40. Total pondéré 40/40/20 ; **adoptée si ≥ 50 %**. Succès : loi adoptée sans vote (relations inchangées), opinion +4, défiance −3. Échec : opinion −4, défiance +10. Aperçu sans aléa : `sim_referendum_preview` (environ 58 % de succès sur des lois tirées au hasard).
+6 CP, au plus un par mandat (remis à zéro au 2nd mandat), sur une loi non adoptée (file non pleine). « Oui » par électorat (‰) = 470 + (affinité − 30) × 5 + effet immédiat de la loi pour l'électorat × 6 + (popularité − 45 %) × 0,6 + aléa (±4 points, commun), avec affinité = 50 − |orientation loi − orientation électorat| / 2, électorats à −30 / 0 / +40 / +20 / −40 (Pop/Moy/Cad/Ret/Jeu, V4). Total pondéré par `elec_weight` (26/22/12/28/12) ; **adoptée si ≥ 50 %**. Succès : loi adoptée sans vote (relations inchangées), opinion +4, défiance −3. Échec : opinion −4, défiance +10. Aperçu sans aléa : `sim_referendum_preview` (environ 58 % de succès sur des lois tirées au hasard).
 
 ### Remaniement (`actions.c`)
 
@@ -236,11 +255,11 @@ Champs ajoutés à `Country` : `events_done_hi`, `senate[5]`, `cohab`, `cohab_gr
 **Pilier international** : `PIL_INTERNATIONAL` (index 5, 0-1000, départ ≈ 500), clé d'effet `EFF_INTERNATIONAL` (« INTERNATIONAL », 1 unité = 1 point de pilier). `PIL_COUNT` = 5 reste le nombre de piliers « V1 » affichés par les écrans ; `PIL_TOTAL` = 6 dimensionne `pillars` / `pillars_start` et les boucles de la simulation (opinion, score, progression, budget). Il entre dans le score et la progression moyenne comme les autres piliers. Lois : aide au développement +8, alliance +6, LPM +3, service national +2, taxe carbone +2, exportations d'armes −4, immigration −2. Événements : sommet européen, crise diplomatique, sommet climat, Nobel, espionnage, classement, événement sportif, agences de notation (ajouts de « INTERNATIONAL ±n » seulement).
 
 **Régions** (`regions.c`) : 13 régions, `REG_*` dans le même ordre que `REGION_*` de `src/ui/ui_map.h` (vérifié par `tests/test_regions.c`).
-`sim_region_popularity(c, r)` = Σ poids(r, électorat) × opinion(électorat) / 100 + `c->region_gap[r]` (dixièmes de %, `s8`, borné ±10 points). L'écart cible vaut Σ (sensibilité − 3) × (pilier − 500) / 50 − (sensibilité chômage − 3) × (chômage − 7,5 %) / 50 + effets des lois adoptées (table `region_laws`, ex. agriculture productive +1,5 point en Bretagne, énergie +1,5 en Centre-Val de Loire, transports +1,5 en Île-de-France). `sim_region_update` (après l'opinion, à chaque tour) comble 1/6 de l'écart par trimestre. Les élections ignorent les régions. Profils (poids Pop/Moy/Aisées ; sensibilités Soc/Éco/Tech/Écol/Séc/Intl ; chômage) : voir `region_profiles`.
+`sim_region_popularity(c, r)` = Σ poids(r, électorat) × opinion(électorat) / 100 + `c->region_gap[r]` (dixièmes de %, `s8`, borné ±10 points). L'écart cible vaut Σ (sensibilité − 3) × (pilier − 500) / 50 − (sensibilité chômage − 3) × (chômage − 7,5 %) / 50 + effets des lois adoptées (table `region_laws`, ex. agriculture productive +1,5 point en Bretagne, énergie +1,5 en Centre-Val de Loire, transports +1,5 en Île-de-France). `sim_region_update` (après l'opinion, à chaque tour) comble 1/6 de l'écart par trimestre. Les élections ignorent les régions. Profils (poids Pop/Moy/Cad/Ret/Jeu, V4, somme 100, table SPEC_V4 §1.5 ; sensibilités Soc/Éco/Tech/Écol/Séc/Intl ; chômage) : voir `region_profiles`.
 
 ## Partie automatique (tests, 400 graines × 20 tours, événements, 3 PM à parts égales)
 
-Joueur **actif** : budget selon l'orientation (gauche relance, centre équilibre, droite rigueur si la dette dérive), 49.3 si le vote échoue sur une des 4 lois préférées (défiance < 35, CP suffisant), télévision avec modération (usure nulle, CP ≥ 4, popularité < 38 % ou fin de mandat), dissolution en majorité relative si popularité ≥ 47 %, se défend contre la destitution, choisit le meilleur thème ; événements au hasard. **Passif** : ne fait rien (budget reconduit), événements au hasard. **Scand.** : actif qui choisit le plus de scandale et ne se défend pas. **1erch** : passif qui prend toujours le 1er choix des événements.
+Joueur **actif** : budget par préréglage selon l'orientation (gauche relance, centre équilibre, droite rigueur si la dette dérive), 49.3 si le vote échoue sur une des 4 lois préférées (défiance < 35, CP suffisant), télévision avec modération (usure nulle, CP ≥ 4, popularité < 38 % ou fin de mandat), dissolution en majorité relative si popularité ≥ 47 %, se défend contre la destitution, choisit le meilleur thème ; événements au hasard. **Passif** : ne fait rien (budget reconduit), événements au hasard. **Scand.** : actif qui choisit le plus de scandale et ne se défend pas. **1erch** : passif qui prend toujours le 1er choix des événements.
 
 | Diff. | Orient. | Joueur | Pop. % | Chôm. | Dette | Lois | Réélu % | Destit. % | Score 1 | Cumul |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -287,3 +306,25 @@ Mode 60 tours comparé au mode 20 tours (joueur actif, 400 graines) :
 | difficile | droite | 35,3 | 35,4 | 7,50 | 7,56 | 125,7 | 126,2 | 21 | 22 | 0 / 0 |
 
 Le bruit d'échantillonnage de la réélection (400 graines) est d'environ ±2,5 points par ligne : sur d'autres graines, l'écart reste dans ±6, sans biais net (≈ −2 points en Difficile). Pour que le joueur automatique se comporte de la même façon dans les deux modes, la fin de mandat (télévision des 3 derniers trimestres) est exprimée en trimestres.
+
+## V4 : mesures du simulateur (5 électorats et budget détaillé)
+
+`tests/test_sim_v1.c`, 800 graines (400 avant la V4 : le bruit d'échantillonnage de la réélection est de ±2,5 points à 400 graines, la comparaison 20 / 60 tours y était fragile ; tolérance de l'écart des deux modes portée à 7 points sur 800 graines).
+
+**Avant / après** (réélection du joueur actif, V2 à 400 graines, V4 à 800) :
+
+| | Facile | Normal | Difficile |
+|---|---|---|---|
+| V2 (3 électorats) | 71 % | 55 % | 25 % |
+| V4 sans recalage de `OPN_BASE` (336) | 68 % | 52 % | 20 % |
+| **V4 avec `OPN_BASE` = 342** | **72 %** | **55 %** | **24 %** |
+
+Détail V4 (actif, 20 tours) : facile 75 / 75 / 66 %, normal 58 / 56 / 51 %, difficile 25 / 25 / 20 % (gauche / centre / droite) ; écart entre orientations ≤ 9 points ; passif : < 1 % de réélection ; destitution : 0 % pour l'actif ; mode 60 tours : popularité, chômage et dette à ±0,6 point, réélection à ±5 points en moyenne (gauche +5, centre +6 en facile, bruit).
+
+**Popularité finale par électorat** (actif, normal, 1er mandat) : gauche Pop 49,4 / Moy 46,7 / Cad 42,2 / Ret 44,6 / Jeu 50,7 ; centre 43,7 / 45,8 / 44,4 / 44,8 / 43,9 ; droite 40,2 / 42,9 / 45,0 / 42,9 / 39,6. Aucun électorat hors de 20-80 % (vérifié par un test).
+
+**Préréglage fixe toute la partie** (normal, centre) : Rigueur 41,6 % de popularité, dette 114,6 %, réélection 39 % ; Équilibre 46,4 % / 118,3 % / 68 % ; Relance 50,5 % / 121,3 % / 91 %. La relance l'emportait déjà en V2 (mesure sur le code V2 : rigueur 55 %, équilibre 72 %, relance 94 % sur 400 graines) : le déficit coûte peu, car la consolidation spontanée (`DEBT_CONSOL`) et l'inflation plafonnent la dette, et les piliers n'ont aucun rappel vers 50.
+
+**Variantes de budget** (normal ; réélection gauche / centre / droite) : *optimiseur* (glouton par coordonnées sur la popularité prévue, plans adoptables) 58 / 85 / 87 % ; *extrême* (dépenses +2, impôts −2, 49.3 chaque année) 55 / 83 / 77 %, dette 127-141 % ; *austère* (tout à −2) 4 / 24 / 65 %. Cible de SPEC_V4 §3.4 (au plus 5 points au-dessus du joueur actif) **non atteinte** : le joueur actif ne joue qu'avec les préréglages, et l'optimiseur le dépasse de 30 points au centre et à droite. Garde-fou de test provisoire : +45 points. Le calage (tâche 4.14) devra agir sur l'économie (conséquences d'une dette qui monte : prime de risque sur la dette seule, rappel des piliers, `k_s`), pas seulement sur les tables du budget : doubler `k_s` fait passer l'optimiseur à 38 / 63 / 64 % mais rapproche aussi les préréglages entre eux.
+
+**Sénat** : 1 % des budgets des parties automatiques sont amendés (le bloc présidentiel a presque toujours la majorité au Sénat, sauf en difficile).
