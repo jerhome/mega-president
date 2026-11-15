@@ -16,3 +16,5 @@ Règles :
 - Respecte strictement le format du fichier de contenu existant.
 
 Termine par la liste de ce que tu as ajouté ou modifié.
+
+**Ton d'humour (joueur, 15/11)** : plus loin que l'humour à la Ron Gilbert, en frisant l'esprit Radio Nova (décalé, irrévérencieux, second degré), avec subtilité. Les vannes passent ensuite par l'agent `vannes`.
