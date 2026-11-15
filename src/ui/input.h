@@ -35,6 +35,9 @@ u16 input_repeat(void);
 
 // Durée d'une image en 1/300 s (6 en PAL, 5 en NTSC).
 u16 input_frame_ticks(void);
+// Validation / retour avec le son (SFX_OK / SFX_CANCEL) : vrais à l'image de l'appui.
+bool input_go(void);     // A
+bool input_back(void);   // B
 // Blocage des fronts (pressed, repeat) pendant les fondus (couche ui) :
 // DISCARD les ignore (changement d'écran), DEFER les rend à la fin (apparition douce).
 #define INPUT_BLOCK_OFF     0

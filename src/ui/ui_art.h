@@ -111,6 +111,9 @@ bool ui_gueule_expr(GueuleId id, Expr e, u16 x, u16 y, u16 pal);
 #define GUEULE_CAND(cand)    ((GueuleId)(GUEULE_CAND_GAUCHE_RADICALE + (cand)))   // CAND_* (sauf CAND_JOUEUR)
 #define GUEULE_CHEF(grp)     ((GueuleId)(GUEULE_CHEF_UGR + (grp)))                // GRP_*
 #define GUEULE_MIN(i)        ((GueuleId)(GUEULE_MIN_ECONOMIE + (i)))              // 6 ministres
+// Médaillon (ui_medallion, UI_PORTRAIT_W x UI_PORTRAIT_H) puis gueule dans le même
+// rectangle : le motif des écrans. Renvoie FALSE si la gueule n'a pu être dessinée.
+bool ui_portrait(GueuleId id, Expr e, u16 x, u16 y, u16 pal);
 // Efface (plan B) le rectangle de la gueule placée en x, y.
 void ui_gueule_erase(u16 x, u16 y);
 
