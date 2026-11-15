@@ -19,11 +19,11 @@ sys.path.insert(0, HERE)
 
 from compose import export_vgm   # noqa: E402
 import pcm                       # noqa: E402
-import songs                     # noqa: E402
+import songs_v3 as songs          # noqa: E402
 from legacy_psg import legacy_vgm, LEGACY_NAMES  # noqa: E402
 
 # Thèmes PSG de la V2 gardés en attendant leur version FM (index dans legacy_psg_data.SONGS)
-LEGACY_KEPT = [2, 3, 4, 5, 6]
+LEGACY_KEPT = []
 
 SFX = ['move', 'ok', 'cancel', 'error', 'adopted', 'rejected', 'event', 'win', 'lose']
 
