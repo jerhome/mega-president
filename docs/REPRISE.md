@@ -7,6 +7,7 @@
 - `v4.1-dev` : V4.1 en cours (relecture et factorisation, sans assembleur), plan dans `docs/AUDIT_V4_1.md` § 6. Toute modification issue de l'audit va en V4.1, jamais en V4 (demande du joueur).
 - Après chaque correction sur v4-dev : `git merge v4-dev` dans v4.1-dev (worktree de travail : scratchpad `v41`, sinon `git worktree add`). Vérifier `git merge-base --is-ancestor v4-dev v4.1-dev`.
 - `main` = V3 publiée (release v3.0 sur GitHub le 15/11).
+- **Releases définitives v4.0 et v4.1 (Latest)** publiées le 16/11 à la demande du joueur, sans test console. v4.1 = code de v4.1-pre + version affichée v4.1 (E4 et R4 non inclus) ; v4.1-dev affiche désormais v4.1. Les lots restants (E5, E6, QA, test console) iront dans la version suivante.
 - **Pré-release `v4.0-pre`** (16/11, demande du joueur) : v4-dev poussée, étiquette v4.0-pre, release GitHub préversion avec `out/mega-president-v4.0.bin`. À la fin du test : étiquette v4.0 définitive.
 - **Pré-release `v4.1-pre`** (16/11, demande du joueur) : état de v4.1-dev, version affichée « v4.1-pre », étiquette et branche v4.1-dev poussées, release GitHub marquée préversion avec la ROM. ROM locale : `out/mega-president-v4.1-pre.bin` (et `out/rom.bin`). Le joueur la teste : ses retours vont dans v4.1-dev. À la livraison finale : version affichée v4.1.
 
