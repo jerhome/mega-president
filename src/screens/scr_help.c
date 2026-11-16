@@ -16,7 +16,7 @@ typedef struct {
 static const HelpPage pages[] = {
     { "LE BUT DU JEU",
       "Vous voilà élu président de la République. Vous gouvernez cinq ans "
-      "(20 trimestres), vous faites avancer le pays, vous restez populaire, "
+      "(20 ou 60 tours), vous faites avancer le pays, vous restez populaire, "
       "puis vous tentez la réélection.\n\n"
       "Pas de troisième mandat : la Constitution y veille, et les "
       "conseillers aussi.\n\n"
@@ -24,7 +24,7 @@ static const HelpPage pages[] = {
       "ainsi n'entre pas dans les high scores. On ne s'en vante pas." },
 
     { "LE TOUR DE JEU",
-      "Un tour = un trimestre.\n\n"
+      "Un tour = un trimestre (un mois en mode 60 tours).\n\n"
       "1. Le journal du matin résume ce qui a bougé.\n"
       "2. Un événement à trancher, avec deux ou trois choix. Aucun n'est "
       "gratuit.\n"
@@ -41,8 +41,8 @@ static const HelpPage pages[] = {
       "Une flèche indique la tendance ; C sur le tableau de bord ouvre le "
       "détail.\n"
       "Économie : croissance, chômage, dette.\n"
-      "Cinq piliers de 0 à 100 : social, économie, technologie, écologie, "
-      "sécurité.\n\n"
+      "Six piliers de 0 à 100 : social, économie, technologie, écologie, "
+      "sécurité, international.\n\n"
       "Trois jauges de danger :\n"
       "Tension : trop haute, la rue s'invite à l'Élysée.\n"
       "Scandale : la presse a de la mémoire.\n"
@@ -51,10 +51,12 @@ static const HelpPage pages[] = {
       "destitution." },
 
     { "CAPITAL POLITIQUE ET ACTIONS",
-      "Le capital politique (CP) est votre monnaie : 3 par trimestre, plus "
-      "des bonus de popularité et de majorité, plafonné à 15.\n\n"
+      "Le capital politique (CP) est votre monnaie : 1 par trimestre, plus "
+      "jusqu'à 2 de bonus (popularité, majorité), plafonné à 15. En mode "
+      "60 tours, il tombe tous les 3 mois.\n\n"
       "Loi : 2 à 6 CP. Elle met 1 à 4 trimestres à produire ses effets.\n\n"
-      "49.3 : 4 CP. Adoption sans vote, mais la défiance explose.\n\n"
+      "49.3 : 4 CP en plus du coût de la loi. Adoption sans vote, mais la "
+      "défiance explose.\n\n"
       "Intervention télévisée : 2 CP, pour regagner un peu de "
       "popularité." },
 
@@ -91,7 +93,7 @@ static const HelpPage pages[] = {
       "un PM d'opposition gouverne. Vous "
       "ne proposez que les lois de "
       "souveraineté (*) ; il fixe le "
-      "budget.\n\n"
+      "budget, sauf la ligne Sécurité.\n\n"
       "Sénat : 348 sièges, renouvelé par "
       "moitié tous les 3 ans. Destitution : "
       "deux tiers de l'Assemblée ET du "
@@ -106,7 +108,7 @@ static const HelpPage pages[] = {
       "A : valider.\n"
       "B : retour, annuler.\n"
       "C : aide (détail des électorats sur le tableau de bord).\n"
-      "START : pause, ou retour.\n\n"
+      "START : valide, ou ferme l'écran en cours.\n\n"
       "Dans l'aide : gauche et droite changent de page, B ou START "
       "ferment.\n\n"
       "Bon mandat, Madame, Monsieur le Président." }

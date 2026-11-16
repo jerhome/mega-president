@@ -240,7 +240,7 @@ Les parties terminées par une destitution n'y figurent jamais.
 | A | Valider |
 | B | Retour |
 | C | Aide ou détail d'un indicateur |
-| Start | Finir le tour ou ouvrir le menu |
+| Start | Valider, ou fermer l'écran en cours (comme A ou B selon l'écran) ; sans effet sur le tableau de bord |
 
 ## 14. Options (V3)
 
