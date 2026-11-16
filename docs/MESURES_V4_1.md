@@ -49,7 +49,7 @@ Lecture : les chiffres sont lus sur de petites captures (un « 0 » et un « 8 �
 
 ## Limites et suite
 
-- Titre avec sauvegarde (P5), options, destitution et fermeture de l'aide du budget (P2) non relevés.
+- Fermeture de l'aide du budget (P2) non relevés.
 - Le compteur `L` est élevé partout, y compris sur la carte et le tableau de bord ; avant d'optimiser, séparer le temps passé hors update + draw (ajouter un second maximum sur la boucle entière) pour savoir si l'hôte ou `ui_frame_end` est en cause.
 - L'affichage de `M`/`L` coûte lui-même un `ui_text_draw_n` par image (hors de la fenêtre mesurée).
 
@@ -125,3 +125,22 @@ Relevé après correction (mêmes scénarios que plus haut ; PAL lu net, NTSC lu
 | Titre | 8,8 / 8 / 4 | 8,6 / 8 / 4 |
 
 **Verdict : -Os conservé.** Gain de 52 Ko de ROM, L et P identiques partout, M dans le bruit de lecture (±0,2 ms). Les images perdues observées ne viennent donc pas du calcul du processeur (cohérent avec l'enquête « Compteur L »). Vérification sur console à faire avant de clore la version.
+
+## Lot R4 complété : titre avec sauvegarde, options, destitution
+
+Même méthode (`make rom-perf`), maintenant pilotée par `tools/shots.sh -p` (ROM de mesure au lieu de la ROM de démo). Nouvelles démos (ROM de démonstration seulement, `game_debug_jump`) : **28** = titre avec une sauvegarde valide (`sram_game_save`), **29** = écran Options. Destitution = démo 6 existante. Capture à 9 s ; `M` ne couvre que les images après la première (`E` à part, voir plus haut).
+
+| Écran | Démo : script | PAL M (ms) | PAL L | PAL E | PAL P | NTSC M (ms) | NTSC L | NTSC E | NTSC P |
+|---|---|---|---|---|---|---|---|---|---|
+| Titre avec sauvegarde | 28 : `w30 D U w5` | 0,1 | 0 | 3 | 0 | 0,5 | 0 | 4 | 0 |
+| Options | 29 : `w20 D U D U w5` | 2,8 | 4 | 4 | 1 | 2,9 | 8 | 4 | 1 |
+| Destitution, au repos (déplacements) | 6 : `w20 D U D w5` | 0,0 | 0 | 4 | 0 | non relevé | | | |
+| Destitution, validation de la défense | 6 : `w20 D A w5` | 8,5 | 6 | 4 | 4 | 10,4 | 9 | 4 | 6 |
+
+Lecture : même réserve que plus haut (captures de 320x240, chiffres à ±0,2 ms ; `M` sous-estime le coût réel, `P` en images entières est le plus fiable).
+
+- **Titre avec sauvegarde (P5)** : le `fletcher16` de `game_has_save` tourne dans `init`, donc dans la première image (`E` = 3 en PAL, comme sans sauvegarde). Il n'est pas visible dans `M`/`L` et n'ajoute aucune image perdue après l'entrée. Menu fluide (L 0, P 0). P5 : **non confirmé**, y compris avec sauvegarde.
+- **Options (P2)** : 2,8 ms, P 1 : un appui coûte au plus une image. L 4 (PAL) à 8 (NTSC) pour 4 appuis. Fluide.
+- **Destitution** : les déplacements du curseur ne redessinent rien (M 0,0, L 0). C'est la validation de la défense (A) qui coûte : 8,5 ms PAL, 10,4 ms NTSC, mais `P` = 4 images (PAL) et 6 (NTSC), soit ≈ 80 ms / 100 ms de gel d'un seul coup, comme les gros `draw()` du budget et des électorats.
+
+**Verdict.** Aucun de ces trois écrans « rame » en usage normal : le titre (avec ou sans sauvegarde) et les options sont fluides (P 0-1) ; la destitution l'est aussi au repos. Seul point sensible : la transition après validation de la défense (un gel unique de 4 à 6 images, cohérent avec l'enquête U4 : un `draw()` complet en plein affichage, pas le CPU). Il n'y a pas de dépassement de budget CPU (M < 11 ms, sous l'image). Piste C simple, sans assembleur, si ce gel gêne à la manette : n'effacer et ne redessiner que les zones qui changent (barre de défense et message de résultat) au lieu de l'écran entier, ou étaler le redessin sur 2-3 images comme l'hémicycle. À ne pas faire avant le test console (L et P seront différents sur matériel réel). Instrumentation inchangée : seuls `game.c` (démos 28 et 29, sous `MP_DEBUG_SCREEN`) et `tools/shots.sh` (option `-p`) ont été touchés ; `scr_impeach.c` non modifié.

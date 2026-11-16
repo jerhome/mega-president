@@ -244,6 +244,7 @@ void game_turn_label(u8 turn, char *buf)
 //   16 budget en cohabitation, 17 budget amendé par le Sénat, 18 électorats,
 //   19 titre avec sauvegarde d'une ancienne version,
 //   20 / 21 événements V4 EHPAD / marche pour le climat,
+//   28 titre avec sauvegarde valide, 29 options,
 //   26 compte rendu de fin de trimestre, 27 début du second mandat.
 static void dbg_opinion(Country *c, s16 v)
 {
@@ -326,6 +327,13 @@ void game_debug_jump(void)
         SRAM_writeByte(SRAM_GAME_OFFSET + 4, 1);
         SRAM_disable();
         screen_change(SCREEN_TITLE);
+        break;
+    case 28:   // titre avec une sauvegarde valide (mesure P5 : fletcher16)
+        sram_game_save(&g_game);
+        screen_change(SCREEN_TITLE);
+        break;
+    case 29:   // écran Options (mesure 4.1.R4)
+        screen_change(SCREEN_OPTIONS);
         break;
     case 26: {   // compte rendu de fin de trimestre (bilan, indicateurs)
         extern s16 g_report_snap[];

@@ -6,6 +6,7 @@
 #                  (BlastEm tourne en temps réel : 1 s = 50 ou 60 images). Défaut : "3"
 #     -n           NTSC (défaut : PAL)
 #     -k           ne pas recompiler (réutilise out/demo_<n>_<script>.bin s'il existe)
+#     -p           ROM de mesure (make rom-perf : M, L, E, P en bas à droite)
 #     -o DIR       dossier de sortie (défaut : out/shots)
 #   Exemples :  tools/shots.sh -t "2 4" 11 3 12
 #               tools/shots.sh -t "6" "1:w15 S w6 A"
@@ -17,12 +18,13 @@
 # polluer la capture), capture par identifiant de fenêtre (xwd -id), arrêt par PID.
 cd "$(dirname "$0")/.." || exit 1
 
-INSTANTS="3"; REGION=E; BUILD=1; OUT=out/shots
-while getopts "t:nko:" o; do
+PERF=0; INSTANTS="3"; REGION=E; BUILD=1; OUT=out/shots
+while getopts "t:nkpo:" o; do
     case $o in
         t) INSTANTS=$OPTARG ;;
         n) REGION=U ;;
         k) BUILD=0 ;;
+        p) PERF=1 ;;
         o) OUT=$OPTARG ;;
         *) exit 2 ;;
     esac
@@ -61,10 +63,11 @@ for spec in "$@"; do
     demo=${spec%%:*}
     script=""; [ "$spec" != "$demo" ] && script=${spec#*:}
     tag=$(printf '%s' "$script" | tr -c 'A-Za-z0-9' '_')
-    rom="out/demo_${demo}${tag:+_$tag}.bin"
+    pre=demo; [ "$PERF" = 1 ] && pre=perf
+    rom="out/${pre}_${demo}${tag:+_$tag}.bin"
     if [ "$BUILD" = 1 ] || [ ! -f "$rom" ]; then
-        make -s rom-demo DEMO="$demo" SCRIPT="$script" >/dev/null 2>&1 || { echo "échec compilation démo $demo" >&2; status=1; continue; }
-        cp out/demo.bin "$rom"
+        make -s rom-$pre DEMO="$demo" SCRIPT="$script" >/dev/null 2>&1 || { echo "échec compilation démo $demo" >&2; status=1; continue; }
+        cp out/$pre.bin "$rom"
     fi
     "$BLASTEM" -r $REGION "$rom" >/dev/null 2>&1 &
     BPID=$!
