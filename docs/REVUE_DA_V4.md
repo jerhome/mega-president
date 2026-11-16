@@ -183,3 +183,55 @@ Hors du champ de la DA : le pied de page de l'écran titre affiche encore « v3.
 - Référendum : l'aide peut occuper 5 lignes (y 19-23).
 - Bilan des deux mandats : « Piliers » en y 18, collé au bloc Économie, est accepté.
 - Aide de la Défense en cohabitation : le titre est le libellé long de la ligne (« Sécurité et défense »).
+
+## V4.1 : changements visuels
+
+Revue du 16/11 sur `v4.1-dev` (`7e1209d`), comparée à `v4-dev` (`76094b3`). Captures `tools/shots.sh` en PAL : démos 5, 12 (`w20 A w10 A w10 A w30`, pas de 70 ms entre 4,50 et 5,48 s), 20, 21, 23 (`w20 R w10 R`) et 25.
+
+### Verdicts
+
+| Point | Verdict |
+|---|---|
+| 1. Redessins nets (`ui_clear_quiet`) | ✅ **On généralise**, avec une seule exception : l'écran de résultat après une décision qui coûte des CP garde le fondu doux (consigne V41-1). Pages de l'aide : la page nette accompagnée de SFX_MOVE est meilleure que le fondu (on feuillette). Retour de la confirmation du remaniement : également meilleur. |
+| 2. Hémicycle qui apparaît d'un bloc vers la 7e image | ✅ Acceptable sans effet d'apparition, **mais une régression bloquante est apparue** : l'animation du vote est perdue (V41-2). |
+| 3. Légende « Faible » en daltonisme | ❌ À corriger, mais dans le sens inverse de ce qui est demandé : c'est la carte qu'il faut aligner, pas la légende (V41-3). |
+| 4. Vignettes des 6 événements V4 | ✅ Les 6 choix conviennent. Une retouche de l'illustration « santé » est à prévoir (V41-4). |
+
+**Point 1, la règle.** Le fondu doux (150 ms, image au tiers puis remontée) marque un **changement de pièce** ; un redessin net marque une action **dans la même pièce**.
+- Redessin net : page suivante ou précédente, retour par B ou Annuler (boîte de confirmation, aide, liste), saisie (initiales), fermeture d'une aide, changement de ligne ou d'onglet.
+- Fondu doux : passage du tableau de bord au vote, à l'Assemblée ou à la carte ; affichage du **résultat d'une décision payée en CP** (vote, 49.3, dissolution, remaniement, référendum). Sur la démo 5 en V4, le passage à « Remaniement ministériel : nouvelle équipe… » sous le fondu faisait un vrai temps de respiration, accompagné de SFX_ADOPTED et des CP qui passent de 12 à 9. En V4.1, le résultat claque d'un coup et on perd ce temps. C'est le seul cas où la V4 était meilleure.
+- Au plus un fondu doux par appui de bouton. Pas de fondu doux si le réglage « Transitions » vaut « Aucune » (déjà géré par `ui_soft_replay`).
+
+**Point 2.** Relevé V4.1 : à 4,50 s, le cadre est vide en pleine lumière (une image) ; de 4,57 à 4,71 s, le fondu doux montre le titre et la légende sans l'hémicycle ; à 4,78 s, l'hémicycle apparaît complet, à la fin du fondu. Un hémicycle qui « tombe » d'un bloc, en sièges éteints, se lit comme le début du vote : pas besoin d'effet. En revanche, **en V4.1 il apparaît déjà allumé, tous groupes compris, et le reste**. L'allumage groupe par groupe de la V4 (UGR, puis RSV, etc., 250 ms par groupe, visible de 4,85 à 5,48 s sur `v4-dev`) a disparu. C'était le suspense du vote : à rétablir avant toute livraison.
+
+**Point 3.** `UI_MAP_LOW_CB` (7,2,0) ne diffère de `UI_MAP_LOW` (7,2,1) que d'un cran de bleu, ce qui est invisible à l'écran : la carte ne passe pas vraiment à l'orangé. Pour un daltonien rouge-vert, le contraste utile est déjà assuré par le passage de « Forte » au bleu ; rouge, jaune et bleu se distinguent aussi par la luminosité. Un vrai orangé (7,4,0) se confondrait avec le jaune « Moyenne » (7,6,1) : c'est à proscrire. La légende rouge est donc juste ; c'est la constante qui ment.
+
+**Point 4.** Vignettes jugées sur les démos 20 et 21 et sur les planches de `res/gfx/` :
+- EHPAD → santé (médecin endormi, « 36H DE GARDE ») : ✅ juste (« soins chronométrés »).
+- Marche pour le climat → pollution (usine, ours sur son glaçon) : ✅. La vignette « grève » montrerait mieux une foule, mais son panneau « GRÈVE ! » serait faux. On garde « pollution ».
+- Fracture numérique → numérique (« 404 ERREUR ») : ✅ excellent.
+- Affectation → éducation (« ZÉRO VU ! ») : ✅.
+- Chômage des jeunes → industrie (usine « FERMÉ », jeune en casquette) : ✅, le personnage est même du bon âge.
+- Gel des pensions → bourse (CAC en chute) : ✅ par défaut. C'est la vignette de Bercy et de la dette, cohérente avec la condition `DETTE > 100`. Une vignette « retraites » dédiée relève de la V5, pas de la V4.1.
+
+### Consignes pour md-dev
+
+- **V41-1 (15 min) : fondu doux au résultat du remaniement, redessins nets ailleurs.**
+  - `scr_reshuffle.c`, `rsh_draw`, branche `P_RESULT` : appeler `ui_soft_replay()` après le dessin. La branche `P_PICK` (retour d'Annuler) reste nette.
+  - `scr_game.c` : ajouter `set_mode_quiet(Mode)`, qui fait la même chose que `set_mode` en plus d'un drapeau, et faire utiliser `art_reset_quiet()` aux fonctions de dessin de mode quand ce drapeau est levé. L'utiliser pour les retours par B ou Annuler : liste des lois annulée (l. 610), confirmation refusée (l. 626) ou en échec (l. 640 et 649), sortie de l'Assemblée (l. 917). Les passages en avant (`M_VOTE`, `M_RESULT`, `M_ASSEMBLY`, retour au menu après un résultat) gardent `art_reset()`.
+  - Même règle pour `scr_referendum.c` (l. 218) et `scr_impeach.c` (l. 289) : fondu doux seulement si l'on affiche un résultat, net sinon. Saisie des initiales (`scr_scores.c`), fermeture de l'aide du budget : nettes.
+  - Critères : démo 5 (`w20 A w10 A w15 A`), capture à +100 ms après le A de confirmation, image atténuée ; démo 24 avec Annuler, aucune image atténuée ; démo 23, aucune image atténuée entre deux pages.
+- **V41-2 (bloquant, 30 min) : rétablir l'allumage progressif du vote.**
+  - Cause probable : `ui_hemi_vote()` éteint les groupes par `set_group` en `DMA_QUEUE`, mais `soft_start()` lit la CRAM (`PAL_getColors`) dans la même image, avant le vidage de la file. Il capture donc la palette allumée comme cible, puis la repose en fin de fondu (`ui_frame_end`, `PAL_setColors(pal_target…)`), ce qui écrase l'état éteint.
+  - Correctif : exposer dans `ui.c` une fonction `ui_pal_set(index, colors, n)` qui écrit la couleur **et** met à jour `pal_target` et `pal_from` pendant un fondu, sur le modèle de `colorblind_apply`. L'appeler depuis `set_group`, et aussi depuis le clignotement du groupe en évidence.
+  - Critère : démo 12 (`w20 A w10 A w10 A w30`) ; à la fin du fondu, tous les groupes sont éteints, puis ils s'allument un par un toutes les 250 ms, comme sur `v4-dev`. Vérifier aussi en « Transitions : Rapides » (75 ms, le fondu finit avant l'hémicycle) et « Aucune ».
+- **V41-3 (5 min) : carte daltonienne.** Dans `ui_map.h`, poser `UI_MAP_LOW_CB = UI_MAP_LOW`, ou supprimer la constante et son test dans `ui_map.c`, et corriger le commentaire (« orangé »). La légende de `scr_map.c` ne change pas. Critère : démo 25 avec une région faible, même rouge sur la pastille et sur la carte (mesure au pixel).
+- **V41-4 (P3, 15 min, `tools/art/` puis `make art`) : la vignette « santé » est rognée par le médaillon.** Le cadre posé sur l'image (`ui_medallion` sur `ax, ay`) mange environ 4 px de chaque bord : sur la démo 20, on lit « 6H / DL / ARDE » au lieu de « 36H DE GARDE ». Décaler le texte rouge de 4 px vers la droite dans le générateur de la vignette (ou réduire sa police d'un cran) pour qu'aucun pixel de texte ne soit à moins de 5 px du bord. Règle générale pour les vignettes d'événement : aucun texte ni détail lisible dans les 5 px du bord.
+- **V41-5 (P2, 20 min) : flash d'une image avant le fondu doux.** Déjà présent en V4 : à l'entrée du vote, une image montre le nouveau cadre en pleine lumière avant l'atténuation (à 4,50 s sur la démo 12 ; en V4, l'hémicycle partiel apparaissait aussi). `soft_start()` ne s'exécute qu'en fin d'image, après un dessin qui dure plus d'une image. Correctif : dans `ui_clear()`, poser **tout de suite** la palette atténuée (calculer `pal_target` et `pal_from`, puis écrire `pal_from` en CPU) avant d'effacer les plans, puis lancer le `PAL_fade` en fin d'image comme aujourd'hui. Critère : démo 12, aucune image en pleine lumière entre le menu et le vote atténué.
+
+### Décisions DA (à reporter dans DECISIONS.md)
+- Transitions internes : redessin net par défaut. Le fondu doux est réservé aux changements de pièce et aux résultats de décisions payées en CP.
+- L'hémicycle peut apparaître d'un bloc à la fin du fondu, sans effet propre, à condition qu'il apparaisse éteint.
+- Daltonisme : « Faible » reste rouge (7,2,1), sur la carte comme dans la légende ; seul « Forte » passe au bleu.
+- Vignettes des événements V4 : bourse, santé, numérique, éducation, industrie et pollution sont validées ; une vignette « retraites » est renvoyée en V5.
+- Vignettes d'événement : marge de 5 px sans texte, à cause du cadre du médaillon.
