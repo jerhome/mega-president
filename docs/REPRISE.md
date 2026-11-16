@@ -1,4 +1,4 @@
-# Point de reprise (16/11, nuit)
+# Point de reprise (16/11, soir)
 
 À lire en premier après un `/clear`. Puis recréer la tâche planifiée de suivi (mémoire feedback-suivi-planifie).
 
@@ -7,6 +7,7 @@
 - `v4.1-dev` : V4.1 en cours (relecture et factorisation, sans assembleur), plan dans `docs/AUDIT_V4_1.md` § 6. Toute modification issue de l'audit va en V4.1, jamais en V4 (demande du joueur).
 - Après chaque correction sur v4-dev : `git merge v4-dev` dans v4.1-dev (worktree de travail : scratchpad `v41`, sinon `git worktree add`). Vérifier `git merge-base --is-ancestor v4-dev v4.1-dev`.
 - `main` = V3 publiée (release v3.0 sur GitHub le 15/11).
+- **Pré-release `v4.1-pre`** (16/11, demande du joueur) : état de v4.1-dev, version affichée « v4.1-pre », étiquette et branche v4.1-dev poussées, release GitHub marquée préversion avec la ROM. ROM locale : `out/mega-president-v4.1-pre.bin` (et `out/rom.bin`). Le joueur la teste : ses retours vont dans v4.1-dev. À la livraison finale : version affichée v4.1.
 
 ## V4.1 : état des lots (AUDIT_V4_1 § 6)
 - ✅ U1 StrBuf (`src/util/strbuf`), fusionné dans v4.1-dev.
@@ -28,8 +29,8 @@
 - ✅ Aide corrigée (6 piliers, 1 CP/trimestre + 2 de bonus, 60 tours, 49.3, cohabitation, START) + REGLES.md § START. Commité sur v4.1-dev.
 - ✅ E3 : fin du tableau de bord (StrBuf, sb_arrow, kit_group_seats), compte rendu (game_calendar_year), second mandat, game_turn_label ; démos 26 et 27 ; fondus selon la règle DA (set_mode_quiet / page_begin). Rendu identique sur 8 démos ; ROM +1 Ko (gain attendu avec E4-E6 et R6). Fusionné.
 - ✅ R6 : `src/screens/*.c` et `game.c` en -Os via `tools/sgdk_os.mk` (`make SCREENS_OS=0` pour revenir en -O3) : code -54 Ko (_etext 0x5cee4 → 0x4f690), fluidité identique. ⚠️ Changer d'option ne recompile pas les .o existants : supprimer `out/src/screens` et `out/src/game` avant. Fusionné.
-- 🔄 En cours : aucun agent ; ce n'est pas un oubli (le reste attend les retours du test console V4).
-- À suivre, après les retours du test console V4 (ces écrans peuvent changer) : E4 (referendum, impeach, end, scores), E5 (event + C1 `q[48]`, campaign, election), E6 (options, budget + cache P3 + fin de R2 : `budget_seen`, `opinion_prev`, instantané du rapport), scr_elec ; puis version affichée v4.1, QA V4.1 complète (NTSC, démos 5/20/21/25, retours nets), revue DA finale, test console, PushNotification, release.
+- 🔄 En cours (16/11 soir) : 3 agents. (1) md-dev E4 (referendum, impeach, end, scores) en worktree ; (2) qa-rom sur v4.1-pre (NTSC, démos 5/20/21/25, pied de page, sauvegarde V4 refusée), rapport dans sa réponse seulement ; (3) md-dev fin de R4 (mesures titre avec sauvegarde, options, destitution → MESURES_V4_1.md) en worktree. Fusionner E4 et R4 dans v4.1-dev après `make check`.
+- À suivre, après les retours du test console (ces écrans peuvent changer) : E5 (event + C1 `q[48]`, campaign, election), E6 (options, budget + cache P3 + fin de R2 : `budget_seen`, `opinion_prev`, instantané du rapport), scr_elec ; puis version affichée v4.1, QA V4.1 complète (NTSC, démos 5/20/21/25, retours nets), revue DA finale, test console, PushNotification, release.
 
 ## Notifications
 - Dès qu'une version est prête à pousser : PushNotification au joueur, puis attendre son accord (mémoire feedback-notif-push).
