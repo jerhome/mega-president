@@ -17,7 +17,7 @@
 - ✅ R2 sauvegarde (format v3 : empreinte, `game_sanitize`, 2 emplacements, Fletcher différé ; `Game` dans `src/game/game_state.h`). Une sauvegarde V4 (v2) sera refusée par la V4.1 (message « ancienne version »). Fusionné.
 - ✅ P7 hémicycle : 20-25 ms → 9-10 ms par image (rendu identique). Le compteur d'images perdues `L` reste élevé partout : à étudier (boucle entière). Fusionné.
 - ✅ R3 horloges sur getTick (input_frame_ticks réel, plafonné à 300 ms), carte et boîtes en ms, palette carte en DMA_QUEUE, C2 corrigé. Fusionné.
-- ✅ U4 partiel : code mort retiré (fonctions de test dans `tests/budget_compat.c`), Z80 chargé une fois (sfx_init), commentaires et CLAUDE.md. Restent morts : `ui_art_erase`, `ui_gueule_erase`, `ui_map_clear_region`, `ui_soft_cancel`, `voice_preview`. Bug possible signalé : légende daltonienne de la carte sur PAL2 (aussi en V4), confié à E1. Fusionné.
+- ✅ U4 partiel : code mort retiré (fonctions de test dans `tests/budget_compat.c`), Z80 chargé une fois (sfx_init), commentaires et CLAUDE.md. (le reste du code mort : fin de U4). Fusionné.
 - ✅ E1 réduit : remaniement, carte, aide migrés (démos 22-25 ajoutées). Aide et redessins du remaniement sans fondu (I3) : à faire valider par la DA. Pas de bug daltonien sur la carte (en-tête corrigé). Fusionné.
 - ✅ QA intermédiaire v4.1-dev : 0 bloquant ; 34/38 captures identiques à v4 (écarts = accroche aléatoire) ; sauvegarde et partie scriptée OK en PAL/NTSC ; 1 gênant : tuiles parasites 1-2 images pendant la construction de l'hémicycle (correctif lancé). UI_HEMI_SENATE inutilisé. Pied de page à passer en v4.1 à la livraison.
 - ✅ Hémicycle : la carte de tuiles n'est posée qu'une fois toutes les tuiles envoyées (apparition d'un bloc ≈ 7 images après l'entrée), M ≈ 9-10 ms. Fusionné.
@@ -26,9 +26,10 @@
 - ✅ Revue DA V4.1 (REVUE_DA_V4.md, section « V4.1 : changements visuels ») : redessins nets généralisés sauf résultats payés en CP ; hémicycle d'un bloc OK s'il apparaît éteint ; « Faible » reste rouge ; 6 vignettes validées.
 - ✅ Corrections DA V41-1 à V41-5 : allumage du vote rétabli (`ui_pal_set`, testé PAL en transitions normales/Rapides/Aucune ; NTSC non testé), première image atténuée dès `ui_clear`, fondu sur le résultat du remaniement, daltonisme (« Faible » rouge), vignette santé décalée. Fusionné.
 - ✅ Aide corrigée (6 piliers, 1 CP/trimestre + 2 de bonus, 60 tours, 49.3, cohabitation, START) + REGLES.md § START. Commité sur v4.1-dev.
-- 🔄 Lancés le 16/11 vers 00 h 45-01 h (résultats peut-être perdus après un `/clear` → vérifier les branches `worktree-agent-*`, merge-base sur v4.1-dev, sinon relancer) :
-  - E3 : fin de scr_game.c (+ consigne DA V41-1 pour scr_game : set_mode_quiet) (résultats, vote, Assemblée), scr_report, scr_mandate2, game_turn_label ;
-- À suivre (après les retours du test console V4, car ces écrans peuvent changer) : E4-E6, scr_elec (E1 restant), fin de R2 (budget_seen…), R6 `-Os`, puis QA V4.1 complète (NTSC, démos 5/20/21/25) et revue DA finale (U3 fait ; de préférence après les corrections du test console V4, qui toucheront les écrans) (écrans), fin de R2 (`budget_seen`, `opinion_prev`, instantané du rapport : avec les lots E), U4 nettoyage, R6 `-Os`. C1 (`q[48]` de scr_event.c) dans E5.
+- ✅ E3 : fin du tableau de bord (StrBuf, sb_arrow, kit_group_seats), compte rendu (game_calendar_year), second mandat, game_turn_label ; démos 26 et 27 ; fondus selon la règle DA (set_mode_quiet / page_begin). Rendu identique sur 8 démos ; ROM +1 Ko (gain attendu avec E4-E6 et R6). Fusionné.
+- ✅ R6 : `src/screens/*.c` et `game.c` en -Os via `tools/sgdk_os.mk` (`make SCREENS_OS=0` pour revenir en -O3) : code -54 Ko (_etext 0x5cee4 → 0x4f690), fluidité identique. ⚠️ Changer d'option ne recompile pas les .o existants : supprimer `out/src/screens` et `out/src/game` avant. Fusionné.
+- 🔄 En cours : aucun agent ; ce n'est pas un oubli (le reste attend les retours du test console V4).
+- À suivre, après les retours du test console V4 (ces écrans peuvent changer) : E4 (referendum, impeach, end, scores), E5 (event + C1 `q[48]`, campaign, election), E6 (options, budget + cache P3 + fin de R2 : `budget_seen`, `opinion_prev`, instantané du rapport), scr_elec ; puis version affichée v4.1, QA V4.1 complète (NTSC, démos 5/20/21/25, retours nets), revue DA finale, test console, PushNotification, release.
 
 ## Notifications
 - Dès qu'une version est prête à pousser : PushNotification au joueur, puis attendre son accord (mémoire feedback-notif-push).
