@@ -26,9 +26,9 @@
 - ✅ Revue DA V4.1 (REVUE_DA_V4.md, section « V4.1 : changements visuels ») : redessins nets généralisés sauf résultats payés en CP ; hémicycle d'un bloc OK s'il apparaît éteint ; « Faible » reste rouge ; 6 vignettes validées.
 - ✅ Corrections DA V41-1 à V41-5 : allumage du vote rétabli (`ui_pal_set`, testé PAL en transitions normales/Rapides/Aucune ; NTSC non testé), première image atténuée dès `ui_clear`, fondu sur le résultat du remaniement, daltonisme (« Faible » rouge), vignette santé décalée. Fusionné.
 - ✅ Aide corrigée (6 piliers, 1 CP/trimestre + 2 de bonus, 60 tours, 49.3, cohabitation, START) + REGLES.md § START. Commité sur v4.1-dev.
+- ✅ E3 : fin du tableau de bord (StrBuf, sb_arrow, kit_group_seats), compte rendu (game_calendar_year), second mandat, game_turn_label ; démos 26 et 27 ; fondus selon la règle DA (set_mode_quiet / page_begin). Rendu identique sur 8 démos ; ROM +1 Ko (gain attendu avec E4-E6 et R6). Fusionné.
 - 🔄 Lancés le 16/11 vers 00 h 45-01 h (résultats peut-être perdus après un `/clear` → vérifier les branches `worktree-agent-*`, merge-base sur v4.1-dev, sinon relancer) :
   - R6 : essai -Os des écrans via le Makefile seulement (mesures taille et fluidité, gardé seulement si gain net) ;
-  - E3 : fin de scr_game.c (+ consigne DA V41-1 pour scr_game : set_mode_quiet) (résultats, vote, Assemblée), scr_report, scr_mandate2, game_turn_label ;
 - À suivre (après les retours du test console V4, car ces écrans peuvent changer) : E4-E6, scr_elec (E1 restant), fin de R2 (budget_seen…), puis QA V4.1 complète (NTSC, démos 5/20/21/25) et revue DA finale (U3 fait ; de préférence après les corrections du test console V4, qui toucheront les écrans) (écrans), fin de R2 (`budget_seen`, `opinion_prev`, instantané du rapport : avec les lots E), U4 nettoyage, R6 `-Os`. C1 (`q[48]` de scr_event.c) dans E5.
 
 ## Notifications
