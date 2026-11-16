@@ -263,7 +263,7 @@ Après le test console de la V4. Relecture par un développeur de haut niveau (O
 | 4.1.02 | Audit du code (Opus) : doublons, sûreté mémoire, pile, PAL/NTSC, sauvegarde, cas limites ; rapport classé | 3 h | ✅ ([AUDIT_V4_1.md](AUDIT_V4_1.md)) |
 | 4.1.03 | Factorisation (AUDIT_V4_1 § 6, lots U1-U3 et E1-E6) : StrBuf, widgets, kit d'écran, migration des écrans | 14 h | 🔄 |
 | 4.1.04 | Corrections de l'audit (lots R1-R3, U4) : C1, C2, vignettes manquantes, sauvegarde, horloges, code mort ; second mandat : une loi en attente ne peut pas être reproposée (décision du joueur, 16/11) | 7 h | ✅ (R1, R2 cœur, R3, U4 sur v4.1-dev ; fin de R2 avec E6) |
-| 4.1.05 | Mesures (lot R4) et optimisations simples en C (P3, P4, R6 `-Os`) si un écran rame | 2,5 h | ✅ (mesures, hémicycle 20-25 → 9-10 ms, écrans en -Os : -54 Ko) |
+| 4.1.05 | Mesures (lot R4) et optimisations simples en C (P3, P4, R6 `-Os`) si un écran rame | 2,5 h | ✅ (mesures complètes, hémicycle 20-25 → 9-10 ms, écrans en -Os : -54 Ko ; destitution : gel de 4-6 images à la défense, à traiter après le test console) |
 | 4.1.06 | Contrôle qualité, comparaison des captures, test console, release | 2 h |  |
 
 ## Questions ouvertes
