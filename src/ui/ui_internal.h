@@ -34,5 +34,9 @@ void ui_transition_hide(void);
 void ui_transition_show(void);
 // Palettes de l'interface rechargées dans les 4 lignes (après un fondu au noir).
 void ui_palettes_reset(void);
+// Écrit des couleurs de la CRAM sans attendre la file DMA, et met à jour la cible du fondu
+// en cours (sinon sa fin écrase la couleur). À préférer à PAL_setColors pour toute
+// couleur modifiée après le dessin (hémicycle, carte).
+void ui_pal_set(u16 index, const u16 *colors, u16 n);
 
 #endif

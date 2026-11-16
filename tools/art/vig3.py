@@ -325,9 +325,9 @@ def v_sante():
         cv.curve((42, 37), (44, 44), (36, 47), INK)
         text3(cv, 45, 3, "Z", ("blue", 0))
         text3(cv, 50, 8, "Z", ("blue", 0))
-        text3(cv, 2, 20, "36H", ("red", 0))
-        text3(cv, 2, 26, "DE", ("red", 0))
-        text3(cv, 2, 32, "GARDE", ("red", 0))
+        text3(cv, 6, 20, "36H", ("red", 0))
+        text3(cv, 6, 26, "DE", ("red", 0))
+        text3(cv, 6, 32, "GARDE", ("red", 0))
     return S.render()
 
 

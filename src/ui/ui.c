@@ -15,10 +15,14 @@ _Static_assert(UI_ICON_LAST == UI_ICON_COUNT, "UiIcon et tools/ui/make_ui.py (IC
 
 typedef enum { FX_NONE, FX_OUT, FX_HIDDEN, FX_IN, FX_SOFT } FxState;
 
+static u16 dim_color(u16 c);
+static void dim_merge(void);
+
 static FxState fx;
 static bool soft_req;
 static u16 pal_target[64];
 static u16 pal_from[64];
+static bool dimmed;        // ui_clear a déjà atténué la CRAM (pal_target = palette d'avant)
 static u16 anim_ticks;     // 1/300 s, pour le curseur animé
 static u8 cursor_frame;
 static u8 fade_speed;      // réglage « Transitions » : 0 douces, 1 rapides, 2 aucune
@@ -59,6 +63,20 @@ static void colorblind_apply(void)
     pal_target[7] = c[1];
 }
 
+void ui_pal_set(u16 index, const u16 *colors, u16 n)
+{
+    u16 i;
+
+    // Écriture immédiate (CPU) : soft_start() relit la CRAM avant le vidage de la file DMA.
+    PAL_setColors(index, colors, n, CPU);
+    if (fx == FX_IN || fx == FX_SOFT) {   // fondu en cours : sa cible et son départ changent aussi
+        for (i = 0; i < n && index + i < 64; i++) {
+            pal_target[index + i] = colors[i];
+            pal_from[index + i] = fx == FX_SOFT ? dim_color(colors[i]) : colors[i];
+        }
+    }
+}
+
 void ui_set_colorblind(bool on)
 {
     colorblind = on;
@@ -77,6 +95,10 @@ void ui_fade_out_start(void)
 {
     ui_gueule_anim_stop();   // visage au repos avant le fondu au noir
     soft_req = FALSE;
+    if (dimmed) {
+        dim_merge();
+        PAL_setColors(0, pal_target, 64, CPU);
+    }
     if (PAL_isDoingFade())
         PAL_interruptFade();
     if (fade_speed == 2) {   // « Aucune » : changement d'écran sans fondu
@@ -110,6 +132,10 @@ void ui_palettes_reset(void)
 
 void ui_transition_hide(void)
 {
+    if (dimmed) {
+        dim_merge();
+        PAL_setColors(0, pal_target, 64, CPU);
+    }
     if (PAL_isDoingFade())
         PAL_interruptFade();
     VDP_setBackgroundColor(1);   // affichage coupé : couleur de fond = PAL0[1] (noir)
@@ -129,6 +155,7 @@ void ui_transition_show(void)
         return;
     }
     // Palettes voulues par le nouvel écran (écrites en CRAM par init / draw).
+    dimmed = FALSE;
     PAL_getColors(0, pal_target, 64);
     PAL_setColors(0, palette_black, 64, CPU);
     VDP_setBackgroundColor(0);
@@ -149,11 +176,26 @@ static u16 dim_color(u16 c)
     return (u16)((r << 1) | (g << 5) | (b << 9));
 }
 
+// Fin de l'atténuation anticipée : les couleurs que le dessin n'a pas touchées
+// retrouvent leur valeur d'avant ; les autres (nouvelles palettes) sont gardées.
+static void dim_merge(void)
+{
+    u16 now[64], i;
+
+    PAL_getColors(0, now, 64);
+    for (i = 0; i < 64; i++)
+        pal_target[i] = now[i] == dim_color(pal_target[i]) ? pal_target[i] : now[i];
+    dimmed = FALSE;
+}
+
 static void soft_start(void)
 {
     u16 i;
 
-    PAL_getColors(0, pal_target, 64);
+    if (dimmed)
+        dim_merge();
+    else
+        PAL_getColors(0, pal_target, 64);
     for (i = 0; i < 64; i++)
         pal_from[i] = dim_color(pal_target[i]);
     PAL_setColors(0, pal_from, 64, CPU);   // le reste de l'image s'affiche déjà atténué
@@ -259,6 +301,15 @@ void ui_clear(void)
     VDP_clearPlane(BG_B, TRUE);
     ui_bg_rect(0, 0, UI_COLS, UI_ROWS);
     soft_req = TRUE;
+    // Palette atténuée tout de suite : aucune image du nouveau cadre en pleine lumière.
+    if (fx == FX_NONE && fade_speed != 2 && !dimmed && !PAL_isDoingFade()) {
+        u16 i;
+        PAL_getColors(0, pal_target, 64);
+        for (i = 0; i < 64; i++)
+            pal_from[i] = dim_color(pal_target[i]);
+        PAL_setColors(0, pal_from, 64, CPU);
+        dimmed = TRUE;
+    }
 }
 
 void ui_clear_quiet(void)

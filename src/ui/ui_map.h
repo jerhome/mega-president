@@ -46,9 +46,9 @@ void ui_map_set_region_level(u8 region, s16 value, s16 min, s16 max);
 #define UI_MAP_LOW  ((2 << 5) | (7 << 1) | (1 << 9))   // rouge (7,2,1)
 #define UI_MAP_MID  ((6 << 5) | (7 << 1) | (1 << 9))   // jaune (7,6,1)
 #define UI_MAP_HIGH ((6 << 5) | (1 << 1) | (1 << 9))   // vert (1,6,1)
-// Daltonisme (Options, 3.19) : orangé et bleu, lisibles avec un rouge-vert confondu ;
-// le bleu est celui de UI_GAUGE_NEUTRAL (légende de la carte), le jaune ne change pas.
-#define UI_MAP_LOW_CB  ((2 << 5) | (7 << 1) | (0 << 9))  // orangé (7,2,0)
+// Daltonisme (Options, 3.19) : « Forte » passe au bleu, « Faible » reste rouge (un orangé se confondrait
+// avec le jaune « Moyenne ») ; le bleu est celui de UI_GAUGE_NEUTRAL (légende de la carte).
+#define UI_MAP_LOW_CB  UI_MAP_LOW   // rouge identique : la distinction se fait par le bleu de « Forte » (revue DA V41-3)
 #define UI_MAP_HIGH_CB ((3 << 5) | (1 << 1) | (7 << 9))  // bleu (1,3,7)
 // Région mise en évidence par un clignotement blanc (REGION_NONE : aucune).
 // ui_map_update() doit être appelé à chaque image pour animer le clignotement.
