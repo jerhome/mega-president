@@ -70,20 +70,6 @@ static char confirm_text[160];
 
 // --- Utilitaires -----------------------------------------------------------------
 
-static void cat_num(char *dst, s32 v)
-{
-    char b[14];
-    ui_format_number(b, v, 0);
-    strcat(dst, b);
-}
-
-static void cat_dec(char *dst, s32 v, u16 dec)
-{
-    char b[14];
-    ui_format_number(b, v, dec);
-    strcat(dst, b);
-}
-
 // « N trimestre(s) » (20 tours) ou « N mois » (60 tours : délai x 3).
 static void sb_delay(StrBuf *sb, u8 delay_q)
 {
@@ -104,14 +90,7 @@ static void sb_turns(StrBuf *sb, u8 turns)
     else sb_str(sb, turns > 1 ? " trimestres" : " trimestre");
 }
 
-// Ajoute le délai à une chaîne de ligne (E3 : à remplacer par sb_delay).
-static void cat_delay(char *dst, u8 delay_q)
-{
-    u16 n = (u16)strlen(dst);
-    StrBuf sb;
-    sb_init(&sb, dst + n, UI_LINE_BUF - n);
-    sb_delay(&sb, delay_q);
-}
+static bool quiet_back;   // redessin net (retour par B ou Annuler) plutôt que fondu doux
 
 static void set_mode(Mode m)
 {
@@ -123,6 +102,25 @@ static void set_mode(Mode m)
         music_play_year(sim_year(&g_game.country));
     mode = m;
     mode_dirty = TRUE;
+}
+
+// Retour (B, Annuler, refus) : même chose que set_mode, avec un redessin net.
+static void set_mode_quiet(Mode m)
+{
+    set_mode(m);
+    quiet_back = TRUE;
+}
+
+// Début d'une page : redessin net pour un retour, fondu doux pour un changement de pièce.
+static void page_begin(const char *title)
+{
+    if (quiet_back) {
+        kit_page(title);
+    } else {
+        art_reset();
+        kit_header(title);
+    }
+    quiet_back = FALSE;
 }
 
 // --- Tableau de bord -----------------------------------------------------------------
@@ -321,7 +319,7 @@ static void draw_menu_full(void)
     s16 pop = sim_popularity(c);
     s16 sc = c->gauges[JAUGE_SCANDALE], df = c->gauges[JAUGE_DEFIANCE], tn = c->gauges[JAUGE_TENSION];
 
-    kit_page(NULL);
+    page_begin(NULL);
     ui_window(0, 3, 40, 18);
 
     ui_stat_row(4, &(UiStatRow){ UI_ICON_POPULARITY, "Popularité", pop, 1, " %", pop, 1000,
@@ -528,7 +526,7 @@ static void draw_law_detail(void)
 
 static void draw_laws_full(void)
 {
-    kit_page(forcing ? "Forcer une loi (49.3)" : "Proposer une loi");
+    page_begin(forcing ? "Forcer une loi (49.3)" : "Proposer une loi");
     ui_window(0, 3, 40, 8);
     ui_window(0, 11, 40, 17);
     ui_list_set_enabled_by(&law_list, law_enabled, NULL);
@@ -564,7 +562,7 @@ static void update_laws(void)
         }
         break;
     case UI_LIST_CANCELLED:
-        set_mode(M_MENU);
+        set_mode_quiet(M_MENU);
         break;
     default:
         break;
@@ -579,7 +577,7 @@ static void update_confirm(void)
     if (r < 0) return;
     ui_confirm_close();
     if (r == 0) {
-        set_mode(prev_mode);
+        set_mode_quiet(prev_mode);
         return;
     }
     if (confirm_kind == C_QUIT) {
@@ -593,7 +591,7 @@ static void update_confirm(void)
             set_mode(M_RESULT);
         } else {
             sfx_play(SFX_ERROR);
-            set_mode(prev_mode);
+            set_mode_quiet(prev_mode);
         }
     } else {
         if (sim_dissolve(&g_game.country, &g_game.legislatives)) {
@@ -602,7 +600,7 @@ static void update_confirm(void)
             set_mode(M_RESULT);
         } else {
             sfx_play(SFX_ERROR);
-            set_mode(prev_mode);
+            set_mode_quiet(prev_mode);
         }
     }
 }
@@ -615,10 +613,9 @@ static void draw_result_full(void)
 {
     const Country *c = &g_game.country;
     const LegislativeResult *lr = &g_game.legislatives;
-    char buf[UI_LINE_BUF];
     u16 y;
 
-    art_reset();
+    art_reset();   // résultat d'une décision payée en CP : fondu doux
     hemi_live = FALSE;
     ui_window(0, 3, 40, 25);
     if (res_kind == R_TV) {
@@ -632,12 +629,14 @@ static void draw_result_full(void)
         ui_gueule_say(ui_gueule_talk_ms(txt[res_tv_ok ? TXT_TV_SUCCES : TXT_TV_FLOP]));
         ui_icon_draw(1, 18, UI_ICON_POPULARITY);
         ui_text_draw(3, 18, "Popularité", UI_STYLE_DIM);
-        buf[0] = 0;
-        cat_dec(buf, res_pop_before, 1);
-        strcat(buf, " % → ");
-        cat_dec(buf, res_pop_after, 1);
-        strcat(buf, " %");
-        ui_text_right(39, 18, buf, res_tv_ok ? UI_STYLE_HIGHLIGHT : UI_STYLE_ALERT);
+        {
+            SB_LINE(sb);
+            sb_num(&sb, res_pop_before, 1);
+            sb_str(&sb, " % → ");
+            sb_num(&sb, res_pop_after, 1);
+            sb_str(&sb, " %");
+            ui_text_right(39, 18, sb.buf, res_tv_ok ? UI_STYLE_HIGHLIGHT : UI_STYLE_ALERT);
+        }
         ui_gauge_draw(1, 19, 38, res_pop_after, 1000, res_tv_ok ? UI_GAUGE_GOLD : UI_GAUGE_NEGATIVE);
     } else if (res_kind == R_FORCE) {
         const LawDef *law = law_get(last_law);
@@ -650,11 +649,13 @@ static void draw_result_full(void)
         ui_icon_draw(1, 17, UI_ICON_NEWS);
         ui_text_draw(3, 17, "Le Quotidien du Matin", UI_STYLE_DIM);
         ui_text_wrap(3, 18, 36, 2, law_journal_ok[last_law], UI_STYLE_TEXT);
-        buf[0] = 0;
-        strcat(buf, "Effets dans ");
-        cat_delay(buf, law->delay_q);
-        strcat(buf, ".");
-        ui_text_draw(3, 20, buf, UI_STYLE_DIM);
+        {
+            SB_LINE(sb);
+            sb_str(&sb, "Effets dans ");
+            sb_delay(&sb, law->delay_q);
+            sb_str(&sb, ".");
+            ui_text_draw(3, 20, sb.buf, UI_STYLE_DIM);
+        }
         ui_stat_row(22, &(UiStatRow){ UI_ICON_DEFIANCE, "Défiance", c->gauges[JAUGE_DEFIANCE], 0, " %",
                     c->gauges[JAUGE_DEFIANCE], GAUGE_MAX, UI_GAUGE_NEGATIVE, UI_STYLE_ALERT, 39 });
     } else {
@@ -668,21 +669,20 @@ static void draw_result_full(void)
             u16 x = 2 + g * 7;
             s16 d = (s16)lr->seats_after[g] - (s16)lr->seats_before[g];
             ui_text_draw(x + 1, 16, grp_sigle[g], g == c->player_group ? UI_STYLE_HIGHLIGHT : UI_STYLE_TEXT);
-            buf[0] = 0;
-            cat_num(buf, lr->seats_after[g]);
-            ui_text_center(x, 17, 6, buf, UI_STYLE_TEXT);
-            buf[0] = 0;
-            if (d > 0) strcat(buf, "+");
-            cat_num(buf, d);
-            ui_text_center(x, 18, 6, buf, d >= 0 ? UI_STYLE_DIM : UI_STYLE_ALERT);
+            SB_LINE(sb);
+            sb_num(&sb, lr->seats_after[g], 0);
+            ui_text_center(x, 17, 6, sb.buf, UI_STYLE_TEXT);
+            sb_init(&sb, sb_mem, SB_LINE_SIZE);
+            sb_signed(&sb, d, 0);
+            ui_text_center(x, 18, 6, sb.buf, d >= 0 ? UI_STYLE_DIM : UI_STYLE_ALERT);
         }
-        buf[0] = 0;
-        strcat(buf, "Bloc présidentiel ");
-        cat_num(buf, lr->bloc_before);
-        strcat(buf, " → ");
-        cat_num(buf, lr->bloc_after);
-        strcat(buf, lr->majority ? " · majorité absolue" : " · majorité relative");
-        ui_text_center(1, 20, 38, buf, lr->majority ? UI_STYLE_HIGHLIGHT : UI_STYLE_ALERT);
+        {
+            SB_LINE(sb);
+            sb_str(&sb, "Bloc présidentiel ");
+            sb_arrow(&sb, lr->bloc_before, lr->bloc_after, 0);
+            sb_str(&sb, lr->majority ? " · majorité absolue" : " · majorité relative");
+            ui_text_center(1, 20, 38, sb.buf, lr->majority ? UI_STYLE_HIGHLIGHT : UI_STYLE_ALERT);
+        }
         y = 21 + (u16)ui_text_wrap(1, 21, 38, 2, txt[lr->won ? TXT_LEGISLATIVES_GAGNEES : TXT_LEGISLATIVES_PERDUES],
                                    lr->won ? UI_STYLE_TEXT : UI_STYLE_ALERT);
         if ((lr->cohab_started || lr->cohab_ended) && y <= 24)
@@ -706,35 +706,19 @@ static void update_result(void)
 #define HEMI_Y 5
 static bool vote_revealed;
 
-// Légende des groupes sur deux lignes : coche ou croix et sigle, puis sièges.
-static void group_legend(u16 y, const u8 *pour, const u16 *seats)
-{
-    const Country *c = &g_game.country;
-    char buf[UI_LINE_BUF];
-    for (u16 g = 0; g < GRP_COUNT; g++) {
-        u16 x = 2 + g * 7;   // cases de 7 colonnes, x 2 à 36
-        if (pour) ui_icon_draw(x + 1, y, pour[g] ? UI_ICON_CHECK : UI_ICON_CROSS);
-        ui_text_draw(x + 2, y, grp_sigle[g], g == c->player_group ? UI_STYLE_HIGHLIGHT : UI_STYLE_TEXT);
-        buf[0] = 0;
-        cat_num(buf, seats[g]);
-        ui_text_center(x + 1, y + 1, 5, buf, UI_STYLE_DIM);
-    }
-}
-
 static void draw_vote_verdict(void)
 {
-    char buf[UI_LINE_BUF];
+    SB_LINE(sb);
     const char *verdict = last_adopted ? "LOI ADOPTÉE" : "LOI REJETÉE";
     u16 n = ui_text_len(verdict);
 
-    buf[0] = 0;
-    strcat(buf, "Pour ");
-    cat_num(buf, last_vote.votes_pour);
-    strcat(buf, " · Contre ");
-    cat_num(buf, last_vote.votes_contre);
-    strcat(buf, " · Majorité ");
-    cat_num(buf, SEATS_MAJORITY);
-    ui_text_center(1, 19, 38, buf, UI_STYLE_TEXT);
+    sb_str(&sb, "Pour ");
+    sb_num(&sb, last_vote.votes_pour, 0);
+    sb_str(&sb, " · Contre ");
+    sb_num(&sb, last_vote.votes_contre, 0);
+    sb_str(&sb, " · Majorité ");
+    sb_num(&sb, SEATS_MAJORITY, 0);
+    ui_text_center(1, 19, 38, sb.buf, UI_STYLE_TEXT);
     ui_hemi_majority(1, 15, 38, last_vote.votes_pour, SEATS_TOTAL, SEATS_MAJORITY);
     ui_icon_draw(19 - n / 2 - 2, 21, last_adopted ? UI_ICON_CHECK : UI_ICON_CROSS);
     ui_text_center(1, 21, 38, verdict, last_adopted ? UI_STYLE_HIGHLIGHT : UI_STYLE_ALERT);
@@ -743,11 +727,11 @@ static void draw_vote_verdict(void)
                  UI_STYLE_TEXT);
     if (last_adopted) {
         const LawDef *law = law_get(last_law);
-        buf[0] = 0;
-        strcat(buf, "Effets dans ");
-        cat_delay(buf, law->delay_q);
-        strcat(buf, ".");
-        ui_text_draw(3, 24, buf, UI_STYLE_DIM);
+        sb_init(&sb, sb_mem, SB_LINE_SIZE);
+        sb_str(&sb, "Effets dans ");
+        sb_delay(&sb, law->delay_q);
+        sb_str(&sb, ".");
+        ui_text_draw(3, 24, sb.buf, UI_STYLE_DIM);
     }
     ui_footer(1, 26, 38, "A : continuer");
 }
@@ -762,7 +746,7 @@ static void draw_vote_full(void)
     ui_text_center(1, 4, 38, law_name[last_law], UI_STYLE_HIGHLIGHT);
     ui_hemi_draw(HEMI_X, HEMI_Y, UI_HEMI_ASSEMBLY, c->seats);
     ui_hemi_vote(last_vote.pour, TRUE);
-    group_legend(17, last_vote.pour, c->seats);
+    kit_group_seats(17, c->seats, NULL, last_vote.pour);
     vote_revealed = FALSE;
 }
 
@@ -798,9 +782,9 @@ static void draw_vote_anim(void)
 static void draw_assembly_rows(void)
 {
     const Country *c = &g_game.country;
-    char buf[UI_LINE_BUF];
 
     for (u16 g = 0; g < GRP_COUNT; g++) {
+        SB_LINE(sb);
         u16 y = ASM_ROW0 + g;
         bool me = (g == c->player_group);
         if (g == asm_sel) {
@@ -814,15 +798,14 @@ static void draw_assembly_rows(void)
         else if (sim_in_bloc(c, (u8)g)) ui_icon_draw(2, y, UI_ICON_BULLET);
         else ui_clear_rect(2, y, 1, 1);
         ui_text_draw(4, y, grp_sigle[g], UI_STYLE_HIGHLIGHT);
-        buf[0] = 0;
-        cat_num(buf, c->seats[g]);
-        ui_text_right(13, y, buf, UI_STYLE_TEXT);
+        sb_num(&sb, c->seats[g], 0);
+        ui_text_right(13, y, sb.buf, UI_STYLE_TEXT);
         ui_gauge_draw(16, y, 18, c->relation[g], RELATION_MAX,
                       c->relation[g] >= 50 ? UI_GAUGE_POSITIVE : UI_GAUGE_NEGATIVE);
-        buf[0] = 0;
-        cat_num(buf, c->relation[g]);
+        sb_init(&sb, sb_mem, SB_LINE_SIZE);
+        sb_num(&sb, c->relation[g], 0);
         ui_clear_rect(35, y, 4, 1);
-        ui_text_right(39, y, buf, me ? UI_STYLE_HIGHLIGHT : UI_STYLE_TEXT);
+        ui_text_right(39, y, sb.buf, me ? UI_STYLE_HIGHLIGHT : UI_STYLE_TEXT);
     }
     ui_clear_rect(1, 24, 38, 1);
     ui_text_center(1, 24, 38, grp_name[asm_sel], UI_STYLE_DIM);
@@ -832,7 +815,7 @@ static void draw_assembly_rows(void)
 static void draw_assembly_full(void)
 {
     const Country *c = &g_game.country;
-    char buf[UI_LINE_BUF];
+    SB_LINE(sb);
     u16 bloc = sim_bloc_seats(c), sup = parl_support_seats(c);
     bool maj = sim_has_majority(c);
 
@@ -842,9 +825,8 @@ static void draw_assembly_full(void)
     ui_text_draw(1, 4, "Majorité absolue", UI_STYLE_DIM);
     ui_number_draw(1, 5, SEATS_MAJORITY, 0, UI_STYLE_TEXT);
     ui_text_right(39, 4, "Bloc présidentiel", UI_STYLE_DIM);
-    buf[0] = 0;
-    cat_num(buf, bloc);
-    ui_text_right(39, 5, buf, maj ? UI_STYLE_HIGHLIGHT : UI_STYLE_ALERT);
+    sb_num(&sb, bloc, 0);
+    ui_text_right(39, 5, sb.buf, maj ? UI_STYLE_HIGHLIGHT : UI_STYLE_ALERT);
     ui_hemi_draw(HEMI_X, 6, UI_HEMI_ASSEMBLY, c->seats);
     // Repères de part et d'autre de l'hémicycle (9 colonnes de chaque côté).
     ui_text_draw(1, 9, "Soutien", UI_STYLE_DIM);
@@ -870,7 +852,7 @@ static void update_assembly(void)
     }
     if (input_pressed() & (INPUT_OK | INPUT_CANCEL)) {
         asm_sel = g_game.country.player_group;
-        set_mode(M_MENU);
+        set_mode_quiet(M_MENU);
     }
 }
 

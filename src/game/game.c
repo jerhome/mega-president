@@ -1,7 +1,10 @@
 #include "game/game.h"
 #include "ui/screen.h"
 #include "save/sram_game.h"
-#include "ui/ui.h"
+#include "util/strbuf.h"
+#ifdef MP_DEBUG_SCREEN
+#include "ui/ui.h"   // ui_set_colorblind (démos seulement)
+#endif
 #include "content/content_texts.h"
 #include "screens/screens.h"
 
@@ -205,34 +208,28 @@ u16 game_calendar_year(u8 turn)
     return (u16)(GAME_START_YEAR + 5 * c->mandate + turn / c->turns_per_year);
 }
 
-static void cat_n(char *dst, s32 v)
-{
-    char b[14];
-    ui_format_number(b, v, 0);
-    strcat(dst, b);
-}
-
 void game_turn_label(u8 turn, char *buf)
 {
+    StrBuf sb;
     const Country *c = &g_game.country;
     u8 total = sim_mandate_turns(c);
     u8 t = turn < total ? turn : (u8)(total - 1);
 
-    buf[0] = 0;
+    sb_init(&sb, buf, 40);   // 40 octets au moins (game.h)
     if (game_is_monthly()) {
-        strcat(buf, txt[TXT_TOUR_MOIS]);
-        strcat(buf, " ");
-        cat_n(buf, t + 1);
-        strcat(buf, "/60 - ");
-        strcat(buf, game_month_name(t));
-        strcat(buf, " ");
-        cat_n(buf, game_calendar_year(t));
+        sb_str(&sb, txt[TXT_TOUR_MOIS]);
+        sb_str(&sb, " ");
+        sb_num(&sb, t + 1, 0);
+        sb_str(&sb, "/60 - ");
+        sb_str(&sb, game_month_name(t));
+        sb_str(&sb, " ");
+        sb_num(&sb, game_calendar_year(t), 0);
     } else {
-        strcat(buf, "Mandat ");
-        cat_n(buf, c->mandate + 1);
-        strcat(buf, " - Trimestre ");
-        cat_n(buf, t + 1);
-        strcat(buf, " / 20");
+        sb_str(&sb, "Mandat ");
+        sb_num(&sb, c->mandate + 1, 0);
+        sb_str(&sb, " - Trimestre ");
+        sb_num(&sb, t + 1, 0);
+        sb_str(&sb, " / 20");
     }
 }
 
@@ -246,7 +243,8 @@ void game_turn_label(u8 turn, char *buf)
 //   13 / 15 événement (texte long / court), 14 meilleurs scores remplis,
 //   16 budget en cohabitation, 17 budget amendé par le Sénat, 18 électorats,
 //   19 titre avec sauvegarde d'une ancienne version,
-//   20 / 21 événements V4 EHPAD / marche pour le climat.
+//   20 / 21 événements V4 EHPAD / marche pour le climat,
+//   26 compte rendu de fin de trimestre, 27 début du second mandat.
 static void dbg_opinion(Country *c, s16 v)
 {
     for (u8 e = 0; e < ELEC_COUNT; e++)
@@ -328,6 +326,28 @@ void game_debug_jump(void)
         SRAM_writeByte(SRAM_GAME_OFFSET + 4, 1);
         SRAM_disable();
         screen_change(SCREEN_TITLE);
+        break;
+    case 26: {   // compte rendu de fin de trimestre (bilan, indicateurs)
+        extern s16 g_report_snap[];
+        c->turn = 5;
+        g_report_snap[0] = c->growth;
+        g_report_snap[1] = c->unemployment;
+        g_report_snap[2] = c->debt;
+        for (u16 i = 0; i < PIL_TOTAL; i++) g_report_snap[3 + i] = c->pillars[i];
+        g_report_snap[3 + PIL_TOTAL] = c->gauges[JAUGE_TENSION];
+        c->unemployment -= 40;
+        c->debt += 25;
+        c->pillars[PIL_SOCIAL] += 30;
+        c->pillars[PIL_SECURITE] -= 20;
+        game_end_turn();
+        break;
+    }
+    case 27:   // début du second mandat (législatives)
+        c->turn = sim_mandate_turns(c);
+        dbg_opinion(c, 650);
+        game_run_election();
+        sim_start_second_mandate(c, &g_game.legislatives);
+        screen_change(SCREEN_MANDATE2);
         break;
     case 22:   // carte de la popularité par région
         c->turn = 6;
