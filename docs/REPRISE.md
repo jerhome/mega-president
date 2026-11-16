@@ -21,11 +21,12 @@
 - ✅ E1 réduit : remaniement, carte, aide migrés (démos 22-25 ajoutées). Aide et redessins du remaniement sans fondu (I3) : à faire valider par la DA. Pas de bug daltonien sur la carte (en-tête corrigé). Fusionné.
 - ✅ QA intermédiaire v4.1-dev : 0 bloquant ; 34/38 captures identiques à v4 (écarts = accroche aléatoire) ; sauvegarde et partie scriptée OK en PAL/NTSC ; 1 gênant : tuiles parasites 1-2 images pendant la construction de l'hémicycle (correctif lancé). UI_HEMI_SENATE inutilisé. Pied de page à passer en v4.1 à la livraison.
 - ✅ Hémicycle : la carte de tuiles n'est posée qu'une fois toutes les tuiles envoyées (apparition d'un bloc ≈ 7 images après l'entrée), M ≈ 9-10 ms. Fusionné.
+- ✅ E2 : tableau de bord partie 1 (kit_header, ui_stat_row, menu borné, ui_confirm, liste des lois, « file pleine », pm_name) ; rendu identique hors curseur ; menu et lois sans fondu interne. Fusionné.
 - 🔄 Lancés le 16/11 vers 00 h 45-01 h (résultats peut-être perdus après un `/clear` → vérifier les branches `worktree-agent-*`, merge-base sur v4.1-dev, sinon relancer) :
-  - E2 : scr_game.c partie 1 (bandeau, indicateurs, menu borné, confirmations, liste des lois, « file pleine ») ;
+  - E3 : fin de scr_game.c (résultats, vote, Assemblée), scr_report, scr_mandate2, game_turn_label ;
   - fin de U4 (code mort de src/ui et voice_preview, rappel d'entrée d'écran, réglages chargés dans main.c) + enquête sur le compteur L ;
   - DA : jugement des changements visuels V4.1 (fondu supprimé, apparition de l'hémicycle, légende daltonienne, vignettes) → section dans REVUE_DA_V4.md.
-- À suivre : E3-E6, scr_elec (E1 restant) (U3 fait ; de préférence après les corrections du test console V4, qui toucheront les écrans) (écrans), fin de R2 (`budget_seen`, `opinion_prev`, instantané du rapport : avec les lots E), U4 nettoyage, R6 `-Os`. C1 (`q[48]` de scr_event.c) dans E5.
+- À suivre : E4-E6, scr_elec (E1 restant) (U3 fait ; de préférence après les corrections du test console V4, qui toucheront les écrans) (écrans), fin de R2 (`budget_seen`, `opinion_prev`, instantané du rapport : avec les lots E), U4 nettoyage, R6 `-Os`. C1 (`q[48]` de scr_event.c) dans E5.
 
 ## Notifications
 - Dès qu'une version est prête à pousser : PushNotification au joueur, puis attendre son accord (mémoire feedback-notif-push).
