@@ -1,4 +1,5 @@
 // Mega Président — gestion des écrans (tâche 1.1). Voir screen.h.
+#include "audio/music.h"
 #include "audio/sfx.h"
 #include "audio/voice.h"
 #include "ui/screen.h"
@@ -20,15 +21,27 @@ static u32 enter_tick;   // getTick() (1/300 s) à l'entrée dans l'écran coura
 // Durée d'update + draw de chaque image, en 1/76800 s (getSubTick : getTick() n'a
 // que la résolution d'une image) ; images perdues d'après l'écart de getTick()
 // entre deux tours de boucle. Remis à zéro à chaque changement d'écran.
+// La PREMIÈRE image d'un écran (dessin complet, affichage encore coupé par
+// ui_transition_hide) est comptée à part (E, en images) : pendant ce temps l'écran est
+// noir, getSubTick() n'y est pas fiable et la perte n'est pas visible. M et L ne
+// couvrent que les images suivantes (affichage allumé). P = maximum d'update + draw
+// compté en images entières d'après getTick() (le compteur de VBlank) : il voit les
+// dessins qui s'étalent sur plusieurs images, que M (getSubTick) sous-estime.
 static u32 perf_max;    // maximum d'update + draw (1/76800 s)
 static u16 perf_lost;   // images perdues sur l'écran courant
-static u32 perf_last;   // getTick() au tour précédent
+static u32 perf_last;
+static u16 perf_entry;  // images de la première image de l'écran (affichage coupé)
+static u8 perf_first;   // TRUE : la prochaine image est la première de l'écran
+static u16 perf_p;      // maximum d'update + draw en images entières (getTick)
 
 static void perf_reset(void)
 {
     perf_max = 0;
     perf_lost = 0;
     perf_last = 0;
+    perf_entry = 0;
+    perf_first = TRUE;
+    perf_p = 0;
 }
 
 static u16 perf_put(char *p, u32 v)   // entier décimal, retourne la longueur
@@ -42,7 +55,7 @@ static u16 perf_put(char *p, u32 v)   // entier décimal, retourne la longueur
 
 static void perf_show(void)
 {
-    char b[16];
+    char b[32];
     u16 n = 0;
     u32 d = (perf_max * 10) / 768;   // dixièmes de milliseconde
     b[n++] = 'M';
@@ -52,8 +65,14 @@ static void perf_show(void)
     b[n++] = ' ';
     b[n++] = 'L';
     n += perf_put(b + n, perf_lost);
+    b[n++] = ' ';
+    b[n++] = 'E';
+    n += perf_put(b + n, perf_entry);
+    b[n++] = ' ';
+    b[n++] = 'P';
+    n += perf_put(b + n, perf_p);
     b[n] = 0;
-    ui_text_draw_n(26, 27, b, 12, 12, UI_STYLE_ALERT);
+    ui_text_draw_n(14, 27, b, 24, 24, UI_STYLE_ALERT);
 }
 #endif
 
@@ -148,6 +167,7 @@ void screen_run(ScreenId first)
             perf_last = now;
         }
         perf_t0 = getSubTick();
+        u32 perf_tick0 = getTick();
 #endif
         input_update();
         s = screens[current];
@@ -159,7 +179,9 @@ void screen_run(ScreenId first)
 #ifdef MP_DEBUG_PERF
         {
             u32 d = getSubTick() - perf_t0;
-            if (d > perf_max && d < 76800)
+            if (!perf_first && (getTick() - perf_tick0) / (IS_PAL_SYSTEM ? 6 : 5) > perf_p)
+                perf_p = (u16)((getTick() - perf_tick0) / (IS_PAL_SYSTEM ? 6 : 5));
+            if (!perf_first && d > perf_max && d < 76800)
                 perf_max = d;
             if (pending == NO_SCREEN)
                 perf_show();
@@ -171,5 +193,12 @@ void screen_run(ScreenId first)
         music_update();
         ui_frame_end();
         SYS_doVBlankProcess();
+#ifdef MP_DEBUG_PERF
+        if (perf_first) {
+            perf_first = FALSE;
+            perf_last = 0;   // le décompte des images perdues commence à l'image suivante
+            perf_entry = (u16)((getTick() - perf_tick0) / (IS_PAL_SYSTEM ? 6 : 5));
+        }
+#endif
     }
 }

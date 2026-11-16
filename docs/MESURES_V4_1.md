@@ -63,3 +63,27 @@ Mêmes scénarios et même méthode (`make rom-perf`, BlastEm, M = maximum d'upd
 | Assemblée (hémicycle) | 23,0 ms | 9,0 ms | 24,8 ms | 10,0 ms |
 
 Objectif M < 16 ms atteint. Changements : table rang -> groupe construite en un parcours (plus de recherche par pixel pour les 577 sièges) ; tuiles générées 24 par image dans `ui_hemi_update` (tampon statique de 768 o + table de 577 o) et envoyées par `DMA_QUEUE`, au lieu des ≈ 170 envois CPU d'un coup ; palettes en `DMA_QUEUE` au changement d'état. L'hémicycle se complète en 7 images (≈ 120 ms), pendant le fondu d'entrée ; le résultat final est identique au pixel près (`shots_compare` : 2 captures identiques, vote et Assemblée). Le compteur `L` reste à 16-27 comme sur les écrans légers : il vient du tour de boucle hors update + draw ou de l'hôte, pas de l'hémicycle. RAM statique : 7 936 o.
+
+## Compteur L (images perdues) : enquête (lot U4)
+
+Question : pourquoi `L` restait à 2-28 même sur la carte et le tableau de bord ? Méthode : instrumentation temporaire de la boucle (relevé des `getTick()` aux points de la boucle, à l'image où une perte est détectée), ROM `make rom-perf`, BlastEm PAL et NTSC.
+
+**1. Artefact de mesure (corrigé).** La première image de chaque écran dessine tout l'écran alors que l'affichage est encore coupé (`ui_transition_hide`) : elle dure 2 à 7 images (PAL : 6 sur le tableau de bord, 5 au budget, 2 sur la carte), invisibles puisque l'écran est noir et fondu en entrée. Elle était comptée dans `L` (5 à 6 images perdues sur chaque écran) et dans `M` (où `getSubTick()` n'est pas fiable affichage coupé : le `M9,0` du tableau de bord était cette première image). Correction dans `screen.c` (`MP_DEBUG_PERF` seulement) : la première image est comptée à part, affichée **`E<n>`** (en images) ; `M` et `L` ne portent que sur les images suivantes. Ni VBlank, ni `SYS_doVBlankProcess` (au plus 1 image d'attente), ni DMA de fin de boucle ne sont en cause : le reste de la boucle (voix, visages, sons, musique, `ui_frame_end`) dure moins de 0,5 ms.
+
+**2. Vraies images perdues : les images de dessin après un appui.** Le tableau de bord au repos (et ses deux appuis), la carte au repos : `L` = 0 à 2. Sur le budget, `L` = 13 pour 7 appuis (`N` = 7 événements de 1 à 3 images chacun) : chaque perte tombe sur l'image où l'écran se redessine après un appui. Le relevé de `getTick()` montre que c'est `draw()` (parfois `update()`) qui s'étale sur 2 à 3 VBlank ; ni `sfx_play` (essai avec le son coupé : même résultat), ni l'affichage de `M`/`L` (affiché 1 image sur 16 : même résultat) ne sont en cause.
+
+**3. `M` (getSubTick) sous-estime ces dessins.** Au même instant, `getSubTick()` annonce 5,7 ms alors que `getTick()` compte 2 à 3 images (40 à 60 ms en PAL). Cause non élucidée (hypothèse : le 68000 est gelé par les écritures VDP en plein affichage, ce que le compteur de ligne ne restitue pas fidèlement). On ajoute donc **`P<n>`** : maximum d'update + draw en images entières, d'après `getTick()` (résolution d'une image, mais fiable). Ordre de grandeur : `M` ne doit plus être lu seul.
+
+Relevé après correction (mêmes scénarios que plus haut ; PAL lu net, NTSC lu sur des captures rognées : ±1) :
+
+| Écran | PAL M (ms) | PAL L | PAL E | PAL P | NTSC L | NTSC P |
+|---|---|---|---|---|---|---|
+| Tableau de bord | 0,8 | 0 | 5 | 0 | 0 | 0 |
+| Budget | 6,0 | 13 | 5 | 3 | 14 | 2 à 3 |
+| Électorats | 6,1 | 9 | 4 | 3 | 10 | 2 à 3 |
+| Vote (hémicycle) | 7,3 | 16 | 6 | 3 | 20 | 5 |
+| Assemblée (hémicycle) | 8,1 | 11 | 6 | 4 | 17 | 6 |
+| Carte | 1,5 | 2 | 2 | 0 | 7 | 1 |
+| Titre (sans sauvegarde) | 6,8 | 7 | 3 | 3 | 9 | 4 |
+
+**Conclusion.** Il y a de vraies images perdues, mais seulement sur les images qui redessinent un écran chargé après un appui (budget, électorats, hémicycle, titre) : 2 à 4 images en PAL, davantage en NTSC (images plus courtes). Les écrans légers sont à 0-2. Aucune optimisation « simple et sûre » n'a été faite : le coût réel de ces `draw()` n'est pas dans `M` et le détail (quelles écritures VDP) reste à profiler. Pistes : redessiner seulement la ligne modifiée au lieu du panneau entier (budget : `ui_clear_rect` + textes complets), étaler le dessin sur plusieurs images comme pour l'hémicycle (P7), ou passer par `DMA_QUEUE` plutôt que par des écritures CPU en plein affichage. Les `M` du tableau « Après P7 » ci-dessus sont à relire avec cette réserve ; la valeur de `L` sur console reste à mesurer.
