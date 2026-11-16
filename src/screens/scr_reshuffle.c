@@ -170,6 +170,7 @@ static void rsh_draw(void)
                 ui_text_right(39, 19, sb.buf, pop_after >= pop_before ? UI_STYLE_HIGHLIGHT : UI_STYLE_ALERT);
             }
             ui_footer(1, 26, 38, "A : continuer");
+            ui_soft_replay();   // résultat d'une décision payée : fondu doux (revue DA V41-1)
         }
     }
     if (phase == P_PICK && detail_dirty) {

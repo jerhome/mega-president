@@ -37,7 +37,7 @@ void ui_map_set_colorblind(bool on)
 
 static void apply(u8 region, u16 color)
 {
-    PAL_setColor(MAP_PAL_BASE + 1 + region, color);
+    ui_pal_set(MAP_PAL_BASE + 1 + region, &color, 1);
 }
 
 void ui_map_draw(u16 x, u16 y)
@@ -119,7 +119,7 @@ void ui_map_update(void)
         return;   // palette écrite seulement au changement d'état
     blink_hi = hi;
     blink_col = hi ? 0x0EEE : region_color[selected];
-    PAL_setColors(MAP_PAL_BASE + 1 + selected, &blink_col, 1, DMA_QUEUE);
+    ui_pal_set(MAP_PAL_BASE + 1 + selected, &blink_col, 1);
 }
 
 const char *ui_map_region_name(u8 region)

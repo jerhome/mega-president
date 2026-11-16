@@ -40,7 +40,7 @@ static void set_group(u8 g, bool on)
     group_on[g] = on;
     pal[2 + 2 * g] = on ? lit[g][0] : off[g][0];
     pal[3 + 2 * g] = on ? lit[g][1] : off[g][1];
-    PAL_setColors(HEMI_PAL * 16 + 2 + 2 * g, &pal[2 + 2 * g], 2, DMA_QUEUE);
+    ui_pal_set(HEMI_PAL * 16 + 2 + 2 * g, &pal[2 + 2 * g], 2);
 }
 
 // Génération des tuiles : préparée dans ui_hemi_draw (table rang -> groupe), puis
@@ -186,7 +186,7 @@ bool ui_hemi_update(void)
                 set_group(focus, group_on[focus]);
             } else {
                 static u16 c = RGB(7, 7, 7);
-                PAL_setColors(HEMI_PAL * 16 + 2 + 2 * focus, &c, 1, DMA_QUEUE);
+                ui_pal_set(HEMI_PAL * 16 + 2 + 2 * focus, &c, 1);
             }
         }
     }
