@@ -51,11 +51,11 @@ static void set_group(u8 g, bool on)
 static u8 tbl[TBL_MAX];        // rang de siège -> couleur du fond (reflet = fond - 1)
 static u32 chunk[CHUNK * 8];
 static UiHemiChamber b_ch;
+static bool b_map;                       // carte de tuiles encore à poser
 static u16 b_x, b_y, b_base, b_i, b_n;   // b_i >= b_n : génération terminée
 
 static void build_chunk(void)
 {
-    const u16 *txy = b_ch == UI_HEMI_SENATE ? hemi_senat_tile_xy : hemi_an_tile_xy;
     const u16 *first = b_ch == UI_HEMI_SENATE ? hemi_senat_first : hemi_an_first;
     const u32 *pix = b_ch == UI_HEMI_SENATE ? hemi_senat_pix : hemi_an_pix;
     const u16 *dfirst = b_ch == UI_HEMI_SENATE ? hemi_senat_dfirst : hemi_an_dfirst;
@@ -77,10 +77,21 @@ static void build_chunk(void)
             u8 c = (u8)(tbl[(u16)(v >> 7)] - ((v >> 6) & 1));
             rows[(v >> 3) & 7] |= (u32)c << ((7 - (v & 7)) * 4);
         }
-        VDP_setTileMapXY(BG_A, UI_ATTR(HEMI_PAL, b_base + i), b_x + (txy[i] & 31), b_y + (txy[i] >> 5));
     }
     VDP_loadTileData(chunk, b_base + i0, n, DMA_QUEUE);
     b_i = i0 + n;
+}
+
+// Carte de tuiles posée une fois toutes les tuiles envoyées (image suivante, après le
+// DMA du dernier lot) : aucune tuile non prête n'est visible.
+static void place_map(void)
+{
+    const u16 *txy = b_ch == UI_HEMI_SENATE ? hemi_senat_tile_xy : hemi_an_tile_xy;
+    u16 i;
+
+    for (i = 0; i < b_n; i++)
+        VDP_setTileMapXY(BG_A, UI_ATTR(HEMI_PAL, b_base + i), b_x + (txy[i] & 31), b_y + (txy[i] >> 5));
+    b_map = FALSE;
 }
 
 void ui_hemi_draw(u16 x, u16 y, UiHemiChamber ch, const u16 *seats)
@@ -90,6 +101,7 @@ void ui_hemi_draw(u16 x, u16 y, UiHemiChamber ch, const u16 *seats)
     u16 acc = 0, start = 0, base, i;
 
     b_n = b_i = 0;
+    b_map = FALSE;
     base = ui_art_reserve(0x100 + ch, ntiles);
     if (base == 0)
         return;
@@ -107,6 +119,7 @@ void ui_hemi_draw(u16 x, u16 y, UiHemiChamber ch, const u16 *seats)
     b_y = y;
     b_base = base;
     b_n = ntiles;
+    b_map = TRUE;
 
     pal[0] = 0;
     pal[1] = 0;
@@ -150,8 +163,10 @@ bool ui_hemi_update(void)
 {
     if (b_i < b_n)
         build_chunk();
-    if (!shown || PAL_isDoingFade() || b_i < b_n)
-        return anim_next >= UI_HEMI_GROUPS && b_i >= b_n;
+    else if (b_map)
+        place_map();
+    if (!shown || PAL_isDoingFade() || b_i < b_n || b_map)
+        return anim_next >= UI_HEMI_GROUPS && b_i >= b_n && !b_map;
     if (anim_next < UI_HEMI_GROUPS) {
         anim_ticks += input_frame_ticks();
         if (anim_ticks >= STEP_TICKS) {
