@@ -24,6 +24,16 @@ ROM         := out/rom.bin
 DOCKER_SGDK = docker run --rm -u $(shell id -u):$(shell id -g) -e HOME=/tmp \
               -v "$(CURDIR)":/src $(SGDK_IMAGE)
 
+# SCREENS_OS=1 : src/screens/*.c et game.c en -Os, le reste en -O3 (tools/sgdk_os.mk) ;
+# SCREENS_OS=0 : release SGDK standard (tout en -O3).
+SCREENS_OS ?= 1
+ifeq ($(SCREENS_OS),1)
+DOCKER_REL  = docker run --rm -u $(shell id -u):$(shell id -g) -e HOME=/tmp \
+              -v "$(CURDIR)":/src --entrypoint make $(SGDK_IMAGE) -f /src/tools/sgdk_os.mk release
+else
+DOCKER_REL  = $(DOCKER_SGDK) release
+endif
+
 HOST_CC     ?= gcc
 HOST_CFLAGS := -std=c99 -Wall -Wextra -Werror -O1 -Isrc
 SIM_SRC     := src/game/game_sanitize.c $(wildcard src/sim/*.c) $(wildcard src/content/*.c) src/save/scores.c src/save/gamesave.c src/save/settings.c $(wildcard src/util/*.c)
@@ -57,7 +67,7 @@ music:
 	python3 tools/music/make_music.py
 
 rom: $(CONTENT_GEN)
-	$(DOCKER_SGDK) release EXTRA_FLAGS=-fstack-protector-strong
+	$(DOCKER_REL) EXTRA_FLAGS=-fstack-protector-strong
 
 debug:
 	$(DOCKER_SGDK) debug
@@ -67,7 +77,7 @@ debug:
 rom-annee4: $(CONTENT_GEN)
 	rm -rf out/src out/rom.out
 	echo "-fstack-protector-strong -DMP_DEBUG_SKIP_YEARS" > out/dbgflags.txt
-	$(DOCKER_SGDK) release EXTRA_FLAGS=@/src/out/dbgflags.txt
+	$(DOCKER_REL) EXTRA_FLAGS=@/src/out/dbgflags.txt
 	rm -rf out/src out/rom.out
 
 # ROM de démonstration (captures, docs/CHARTE_V3.md § 9) : saut direct à un écran
@@ -79,7 +89,7 @@ rom-demo: $(CONTENT_GEN)
 	rm -rf out/src out/rom.out
 	printf '%s' '-fstack-protector-strong -DMP_DEBUG_SCREEN=$(DEMO)' > out/dbgflags.txt
 	if [ -n "$(SCRIPT)" ]; then printf ' -DMP_DEBUG_SCRIPT="\\"%s\\""' "$(SCRIPT)" >> out/dbgflags.txt; fi
-	$(DOCKER_SGDK) release EXTRA_FLAGS=@/src/out/dbgflags.txt
+	$(DOCKER_REL) EXTRA_FLAGS=@/src/out/dbgflags.txt
 	cp out/rom.bin out/demo.bin
 	rm -rf out/src out/rom.out out/rom.bin
 
@@ -90,7 +100,7 @@ rom-perf: $(CONTENT_GEN)
 	rm -rf out/src out/rom.out
 	printf '%s' '-fstack-protector-strong -DMP_DEBUG_PERF -DMP_DEBUG_SCREEN=$(DEMO)' > out/dbgflags.txt
 	if [ -n "$(SCRIPT)" ]; then printf ' -DMP_DEBUG_SCRIPT="\\"%s\\""' "$(SCRIPT)" >> out/dbgflags.txt; fi
-	$(DOCKER_SGDK) release EXTRA_FLAGS=@/src/out/dbgflags.txt
+	$(DOCKER_REL) EXTRA_FLAGS=@/src/out/dbgflags.txt
 	cp out/rom.bin out/perf.bin
 	rm -rf out/src out/rom.out out/rom.bin
 
