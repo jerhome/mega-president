@@ -24,11 +24,11 @@
 - ✅ E2 : tableau de bord partie 1 (kit_header, ui_stat_row, menu borné, ui_confirm, liste des lois, « file pleine », pm_name) ; rendu identique hors curseur ; menu et lois sans fondu interne. Fusionné.
 - ✅ Fin de U4 : code mort de src/ui et voice_preview supprimés, screen.c découplé (`screen_set_enter_hook`, inits et réglages dans main.c), compteur L : artefact corrigé (première image comptée à part, `E<n>`), vraies pertes de 2-4 images sur les redessins lourds après un appui (budget, électorats, titre) ; `M` sous-estime ces dessins, voir `P<n>`. Fusionné.
 - ✅ Revue DA V4.1 (REVUE_DA_V4.md, section « V4.1 : changements visuels ») : redessins nets généralisés sauf résultats payés en CP ; hémicycle d'un bloc OK s'il apparaît éteint ; « Faible » reste rouge ; 6 vignettes validées.
+- ✅ Corrections DA V41-1 à V41-5 : allumage du vote rétabli (`ui_pal_set`, testé PAL en transitions normales/Rapides/Aucune ; NTSC non testé), première image atténuée dès `ui_clear`, fondu sur le résultat du remaniement, daltonisme (« Faible » rouge), vignette santé décalée. Fusionné.
+- ✅ Aide corrigée (6 piliers, 1 CP/trimestre + 2 de bonus, 60 tours, 49.3, cohabitation, START) + REGLES.md § START. Commité sur v4.1-dev.
 - 🔄 Lancés le 16/11 vers 00 h 45-01 h (résultats peut-être perdus après un `/clear` → vérifier les branches `worktree-agent-*`, merge-base sur v4.1-dev, sinon relancer) :
   - E3 : fin de scr_game.c (+ consigne DA V41-1 pour scr_game : set_mode_quiet) (résultats, vote, Assemblée), scr_report, scr_mandate2, game_turn_label ;
-  - corrections DA V41-1 à V41-5 (**V41-2 bloquant : animation du vote cassée**, palette du fondu) — hors scr_game.c ;
-  - redacteur : faits périmés de l'aide (6 piliers, CP par trimestre), édite directement le worktree scratchpad `v41` (non commité).
-- À suivre : E4-E6, scr_elec (E1 restant) (U3 fait ; de préférence après les corrections du test console V4, qui toucheront les écrans) (écrans), fin de R2 (`budget_seen`, `opinion_prev`, instantané du rapport : avec les lots E), U4 nettoyage, R6 `-Os`. C1 (`q[48]` de scr_event.c) dans E5.
+- À suivre (après les retours du test console V4, car ces écrans peuvent changer) : E4-E6, scr_elec (E1 restant), fin de R2 (budget_seen…), R6 `-Os`, puis QA V4.1 complète (NTSC, démos 5/20/21/25) et revue DA finale (U3 fait ; de préférence après les corrections du test console V4, qui toucheront les écrans) (écrans), fin de R2 (`budget_seen`, `opinion_prev`, instantané du rapport : avec les lots E), U4 nettoyage, R6 `-Os`. C1 (`q[48]` de scr_event.c) dans E5.
 
 ## Notifications
 - Dès qu'une version est prête à pousser : PushNotification au joueur, puis attendre son accord (mémoire feedback-notif-push).
