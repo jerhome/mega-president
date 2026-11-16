@@ -9,13 +9,10 @@
 #include "content/content_world.h"
 #include "scr_scores.h"
 #include "ui/ui_art.h"
-#include <string.h>
+#include "screens/scr_txt.h"
+#include "util/strbuf.h"
 
 static bool dirty;
-
-static const char *const pillar_names[PIL_TOTAL] = {
-    "Social", "Économie", "Technologie", "Écologie", "Sécurité", "International"
-};
 
 static void end_init(void)
 {
@@ -42,7 +39,7 @@ static void end_update(void)
 static void draw_evo(u16 y, const char *label, s16 from, s16 to, u16 dec,
                      const char *unit, bool higher_better)
 {
-    char buf[UI_LINE_BUF], n[14];
+    SB_LINE(sb);
     s16 d = (s16)(to - from);
     bool good = (d > 0) == higher_better;
     UiStyle st = d == 0 ? UI_STYLE_DIM : (good ? UI_STYLE_TEXT : UI_STYLE_ALERT);
@@ -51,24 +48,19 @@ static void draw_evo(u16 y, const char *label, s16 from, s16 to, u16 dec,
         ui_icon_draw(1, y, d > 0 ? (good ? UI_ICON_UP_GOOD : UI_ICON_UP_BAD)
                                  : (good ? UI_ICON_DOWN_GOOD : UI_ICON_DOWN_BAD));
     ui_text_draw(3, y, label, UI_STYLE_DIM);
-    ui_format_number(buf, from, dec);
-    strcat(buf, " → ");
-    ui_format_number(n, to, dec);
-    strcat(buf, n);
-    strcat(buf, unit);
-    ui_text_right(32, y, buf, UI_STYLE_TEXT);
-    buf[0] = 0;
-    if (d > 0) strcat(buf, "+");
-    ui_format_number(n, d, dec);
-    strcat(buf, n);
-    ui_text_right(39, y, buf, st);
+    sb_arrow(&sb, from, to, dec);
+    sb_str(&sb, unit);
+    ui_text_right(32, y, sb.buf, UI_STYLE_TEXT);
+    sb_init(&sb, sb_mem, SB_LINE_SIZE);
+    sb_signed(&sb, d, dec);
+    ui_text_right(39, y, sb.buf, st);
 }
 
 // Défaite : score du joueur au dernier tour atteint et nom de l'élu (colonne de gauche).
 static void draw_defeat(void)
 {
     const ElectionResult *e = &g_game.election;
-    char buf[UI_LINE_BUF], n[14];
+    SB_LINE(sb);
     u8 i, w = e->round2[0] >= e->round2[1] ? 0 : 1;
     s16 score = 0;
     bool second = FALSE;
@@ -82,29 +74,27 @@ static void draw_defeat(void)
         for (i = 0; i < ELECTION_CANDIDATES; i++)
             if (e->cand[i] == CAND_JOUEUR)
                 score = e->round1[i];
-    buf[0] = 0;
-    strcat(buf, second ? "Second tour : " : "Premier tour : ");
-    ui_format_number(n, score, 1);
-    strcat(buf, n);
-    strcat(buf, " %");
-    ui_text_draw(1, 6, buf, UI_STYLE_TEXT);
+    sb_str(&sb, second ? "Second tour : " : "Premier tour : ");
+    sb_num(&sb, score, 1);
+    sb_str(&sb, " %");
+    ui_text_draw(1, 6, sb.buf, UI_STYLE_TEXT);
     if (e->finalist[w] < CAND_POOL_COUNT) {
-        buf[0] = 0;
-        strcat(buf, "Élu(e) : ");
-        strcat(buf, cand_name[e->finalist[w]]);
-        ui_text_draw_n(1, 7, buf, 27, 0, UI_STYLE_DIM);
+        sb_init(&sb, sb_mem, SB_LINE_SIZE);
+        sb_str(&sb, "Élu(e) : ");
+        sb_str(&sb, cand_name[e->finalist[w]]);
+        ui_text_draw_n(1, 7, sb.buf, 27, 0, UI_STYLE_DIM);
     }
 }
 
 // Ligne « libellé ............ valeur » de la colonne de gauche.
 static void stat(u16 y, UiIcon icon, const char *label, s32 v, u16 dec, const char *unit, UiStyle st)
 {
-    char buf[UI_LINE_BUF];
+    SB_LINE(sb);
     ui_icon_draw(1, y, icon);
     ui_text_draw(3, y, label, UI_STYLE_DIM);
-    ui_format_number(buf, v, dec);
-    strcat(buf, unit);
-    ui_text_right(28, y, buf, st);
+    sb_num(&sb, v, dec);
+    sb_str(&sb, unit);
+    ui_text_right(28, y, sb.buf, st);
 }
 
 static void end_draw(void)
@@ -166,7 +156,7 @@ static void end_draw(void)
     ui_text_draw(1, 18, "Piliers", UI_STYLE_HIGHLIGHT);
     ui_separator(9, 18, 30);
     for (i = 0; i < PIL_TOTAL; i++)
-        draw_evo(19 + i, pillar_names[i], c->pillars_start[i], c->pillars[i], 1, "", TRUE);
+        draw_evo(19 + i, pillar_name(i, FALSE), c->pillars_start[i], c->pillars[i], 1, "", TRUE);
 
     ui_footer(1, 26, 38, "START : meilleurs scores");
 }

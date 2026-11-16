@@ -6,6 +6,7 @@
 #include "ui/input.h"
 #include "save/sram.h"
 #include "sim/sim_state.h"
+#include "util/strbuf.h"
 
 enum { PH_VIEW = 0, PH_ENTRY };
 
@@ -13,6 +14,7 @@ static ScoreBoard board;
 static u8 phase;
 static u8 tab;                 // tableau affiché
 static bool dirty;
+static bool shown;             // déjà dessiné : les redessins suivants sont nets
 static s8 hilite[SCORES_TABLES];   // rang à mettre en évidence (-1 : aucun)
 static char ini[3] = { 'A', 'A', 'A' };   // mémorisées d'une partie à l'autre
 static u8 pos;
@@ -59,6 +61,7 @@ static void scores_init(void)
     phase = PH_VIEW;
     pos = 0;
     dirty = TRUE;
+    shown = FALSE;
     if (pending) {
         for (t = 0; t < SCORES_TABLES; t++)
             if (off_active[t] && score_is_high(&board.t[t], off_score[t])) {
@@ -147,7 +150,7 @@ static void draw_entry(void)
 static void draw_view(void)
 {
     const ScoreTable *t = &board.t[tab];
-    char buf[14];
+    SB_LINE(sb);
     char line[4];
     u8 i;
     u16 x;
@@ -169,22 +172,25 @@ static void draw_view(void)
         u16 y = 5 + i * 2;
         UiStyle st = (hilite[tab] == (s8)i) ? UI_STYLE_HIGHLIGHT : UI_STYLE_TEXT;
 
-        ui_format_number(buf, i + 1, 0);
+        sb_init(&sb, sb_mem, SB_LINE_SIZE);
+        sb_num(&sb, i + 1, 0);
         x = 4 + (i < 9 ? 1 : 0);
         if (e->score == 0) {
-            ui_text_draw(x, y, buf, UI_STYLE_DIM);
+            ui_text_draw(x, y, sb.buf, UI_STYLE_DIM);
             ui_text_draw(11, y, "---", UI_STYLE_DIM);
             continue;
         }
-        ui_text_draw(x, y, buf, st);
+        ui_text_draw(x, y, sb.buf, st);
         if (i == 0) ui_icon_draw(2, y, UI_ICON_CP);
         line[0] = e->ini[0]; line[1] = e->ini[1]; line[2] = e->ini[2]; line[3] = 0;
         ui_text_draw(11, y, line, st);
-        ui_format_number(buf, e->score, 0);
-        ui_text_draw(17 + 5 - ui_text_len(buf), y, buf, st);
+        sb_init(&sb, sb_mem, SB_LINE_SIZE);
+        sb_num(&sb, e->score, 0);
+        ui_text_draw(17 + 5 - ui_text_len(sb.buf), y, sb.buf, st);
         ui_text_draw(24, y, orient_names[e->orient < ORIENT_COUNT ? e->orient : 0], st);
-        ui_format_number(buf, e->year, 0);
-        ui_text_draw(33, y, buf, st);
+        sb_init(&sb, sb_mem, SB_LINE_SIZE);
+        sb_num(&sb, e->year, 0);
+        ui_text_draw(33, y, sb.buf, st);
     }
     ui_footer(1, 26, 38, "Gauche/Droite : tableau   A : retour");
 }
@@ -194,7 +200,10 @@ static void scores_draw(void)
     if (!dirty)
         return;
     dirty = FALSE;
-    ui_clear();
+    // Première page : fondu doux (changement de pièce) ; saisie, onglet, validation : net.
+    if (shown) ui_clear_quiet();
+    else ui_clear();
+    shown = TRUE;
     if (phase == PH_ENTRY)
         draw_entry();
     else

@@ -2,7 +2,6 @@
 // électorat, confirmation, suspense puis résultat. Retour au tableau de bord.
 #include "audio/sfx.h"
 #include <genesis.h>
-#include <string.h>
 #include "screens.h"
 #include "ui/ui.h"
 #include "ui/input.h"
@@ -12,6 +11,8 @@
 #include "screens/evt_art.h"
 #include "ui/ui_art.h"
 #include "screens/scr_txt.h"
+#include "screens/scr_kit.h"
+#include "util/strbuf.h"
 
 typedef enum { P_PICK, P_CONFIRM, P_SUSPENSE, P_RESULT } Phase;
 
@@ -26,28 +27,7 @@ static u8 chosen;
 static s16 pop_before, pop_after;
 static u8 def_before, def_after;
 static u32 phase_ms;
-
-static void cat_num(char *dst, s32 v, u16 dec)
-{
-    char b[14];
-    ui_format_number(b, v, dec);
-    strcat(dst, b);
-}
-
-static void draw_header(void)
-{
-    char buf[16];
-    u16 n;
-    ui_banner(0, 0, 40, txt[TXT_REF_TITRE], TRUE);
-    buf[0] = 0;
-    cat_num(buf, g_game.country.cp, 0);
-    strcat(buf, "/");
-    cat_num(buf, CP_MAX, 0);
-    n = ui_text_len(buf);
-    ui_text_right(39, 1, " CP", UI_STYLE_DIM);
-    ui_text_right(36, 1, buf, UI_STYLE_TEXT);
-    ui_icon_draw(34 - n, 1, UI_ICON_CP);
-}
+static bool quiet_next;     // prochain redessin net (retour dans la même pièce)
 
 static void refresh_disabled(void)
 {
@@ -74,14 +54,13 @@ static void ref_init(void)
 
 static void gauge_row(u16 y, const char *label, s16 yes, UiStyle st)
 {
-    char buf[14];
+    SB_LINE(sb);
     ui_text_draw_n(1, y, label, 18, 18, st);
     ui_gauge_draw(20, y, 11, yes, 1000, yes >= 500 ? UI_GAUGE_POSITIVE : UI_GAUGE_NEGATIVE);
-    buf[0] = 0;
-    cat_num(buf, yes, 1);
-    strcat(buf, " %");
+    sb_num(&sb, yes, 1);
+    sb_str(&sb, " %");
     ui_clear_rect(31, y, 8, 1);
-    ui_text_right(39, y, buf, yes >= 500 ? UI_STYLE_HIGHLIGHT : UI_STYLE_ALERT);
+    ui_text_right(39, y, sb.buf, yes >= 500 ? UI_STYLE_HIGHLIGHT : UI_STYLE_ALERT);
 }
 
 static void draw_detail(void)
@@ -113,6 +92,7 @@ static void draw_detail(void)
 static void go_phase(Phase p)
 {
     phase = p;
+    quiet_next = FALSE;
     dirty = TRUE;
     phase_ms = screen_time_ms();
 }
@@ -125,6 +105,7 @@ static void launch(void)
     if (sim_referendum(c, chosen, &res) != RFD_OK) {
         sfx_play(SFX_ERROR);
         go_phase(P_PICK);
+        quiet_next = TRUE;
         refresh_disabled();
         return;
     }
@@ -165,7 +146,10 @@ static void ref_update(void)
         if (r < 0) break;
         ui_msgbox_close();
         if (r == 0) launch();
-        else go_phase(P_PICK);
+        else {
+            go_phase(P_PICK);
+            quiet_next = TRUE;   // Annuler / B : même pièce, redessin net
+        }
         break;
     }
     case P_SUSPENSE:
@@ -184,39 +168,46 @@ static void ref_update(void)
 
 static void draw_result(void)
 {
-    char buf[UI_LINE_BUF];
+    SB_LINE(sb);
     ui_text_center(1, 4, 38, law_name[chosen], UI_STYLE_HIGHLIGHT);
     ui_text_wrap(1, 6, 38, 3, txt[res.adopted ? TXT_REF_OUI : TXT_REF_NON], UI_STYLE_TEXT);
     ui_text_draw(1, 10, txt[TXT_REF_LABEL_OUI], UI_STYLE_TEXT);
     ui_gauge_draw(10, 10, 20, res.yes, 1000, UI_GAUGE_POSITIVE);
-    buf[0] = 0; cat_num(buf, res.yes, 1); strcat(buf, " %");
-    ui_text_right(39, 10, buf, UI_STYLE_HIGHLIGHT);
+    sb_num(&sb, res.yes, 1); sb_str(&sb, " %");
+    ui_text_right(39, 10, sb.buf, UI_STYLE_HIGHLIGHT);
     ui_text_draw(1, 11, txt[TXT_REF_LABEL_NON], UI_STYLE_TEXT);
     ui_gauge_draw(10, 11, 20, 1000 - res.yes, 1000, UI_GAUGE_NEGATIVE);
-    buf[0] = 0; cat_num(buf, 1000 - res.yes, 1); strcat(buf, " %");
-    ui_text_right(39, 11, buf, UI_STYLE_ALERT);
+    sb_init(&sb, sb_mem, SB_LINE_SIZE);
+    sb_num(&sb, 1000 - res.yes, 1); sb_str(&sb, " %");
+    ui_text_right(39, 11, sb.buf, UI_STYLE_ALERT);
     ui_text_draw(1, 13, "OUI par électorat", UI_STYLE_HIGHLIGHT);
     ui_separator(19, 13, 20);
     for (u16 e = 0; e < ELEC_COUNT; e++)
         gauge_row(14 + e, elec_txt(e, ET_LONG), res.yes_elec[e], UI_STYLE_DIM);
-    buf[0] = 0;
-    strcat(buf, "Popularité : ");
-    cat_num(buf, pop_before, 1); strcat(buf, " % → "); cat_num(buf, pop_after, 1); strcat(buf, " %");
+    sb_init(&sb, sb_mem, SB_LINE_SIZE);
+    sb_str(&sb, "Popularité : ");
+    sb_num(&sb, pop_before, 1); sb_str(&sb, " % → ");
+    sb_num(&sb, pop_after, 1); sb_str(&sb, " %");
     ui_icon_draw(1, 20, UI_ICON_POPULARITY);
-    ui_text_draw(3, 20, buf, res.adopted ? UI_STYLE_TEXT : UI_STYLE_ALERT);
-    buf[0] = 0;
-    strcat(buf, "Défiance : ");
-    cat_num(buf, def_before, 0); strcat(buf, " → "); cat_num(buf, def_after, 0);
+    ui_text_draw(3, 20, sb.buf, res.adopted ? UI_STYLE_TEXT : UI_STYLE_ALERT);
+    sb_init(&sb, sb_mem, SB_LINE_SIZE);
+    sb_str(&sb, "Défiance : ");
+    sb_arrow(&sb, def_before, def_after, 0);
     ui_icon_draw(1, 21, UI_ICON_DEFIANCE);
-    ui_text_draw(3, 21, buf, res.adopted ? UI_STYLE_TEXT : UI_STYLE_ALERT);
+    ui_text_draw(3, 21, sb.buf, res.adopted ? UI_STYLE_TEXT : UI_STYLE_ALERT);
 }
 
 static void ref_draw(void)
 {
     if (dirty) {
         dirty = FALSE;
-        art_reset();
-        draw_header();
+        if (quiet_next) {
+            kit_page(txt[TXT_REF_TITRE]);
+        } else {
+            art_reset();
+            kit_header(txt[TXT_REF_TITRE]);
+        }
+        quiet_next = FALSE;
         ui_window(0, 3, 40, 25);
         switch (phase) {
         case P_PICK:

@@ -3,7 +3,6 @@
 
 #include "audio/sfx.h"
 #include <genesis.h>
-#include <string.h>
 #include "screens.h"
 #include "ui/ui.h"
 #include "ui/input.h"
@@ -12,6 +11,8 @@
 #include "content/content_world.h"
 #include "screens/evt_art.h"
 #include "ui/ui_art.h"
+#include "screens/scr_kit.h"
+#include "util/strbuf.h"
 
 // P_INTRO : annonce de la procédure, avec l'hémicycle (pas de place pour lui à l'écran de défense).
 typedef enum { P_INTRO, P_MAIN, P_GROUP } Phase;
@@ -20,6 +21,7 @@ enum { I_TV, I_SACRIFICE, I_NEGOCIER, I_CONTINUE, I_COUNT };
 
 static Phase phase;
 static bool dirty;        // redessin complet
+static bool quiet_next;   // redessin net (changement de page dans la même pièce)
 static bool top_dirty;    // aperçu du vote, jauges
 static bool list_dirty;   // liste, message
 static bool side_dirty;   // gueule de droite (selon la défense choisie)
@@ -36,26 +38,21 @@ static char msg[4][UI_LINE_BUF];
 static u8 msg_alert;
 static u8 has_msg;
 
-static void cat_num(char *dst, s32 v)
-{
-    char b[14];
-    ui_format_number(b, v, 0);
-    strcat(dst, b);
-}
-
 static void items_build(void)
 {
     const Country *c = &g_game.country;
     u32 dis = 0;
 
-    def_tv[0] = 0;
-    strcat(def_tv, "Discours télévisé (");
-    cat_num(def_tv, DEFENSE_TV_CP);
-    strcat(def_tv, " CP)");
-    def_neg[0] = 0;
-    strcat(def_neg, "Négocier un appui (");
-    cat_num(def_neg, DEFENSE_NEGOCIER_CP);
-    strcat(def_neg, " CP)");
+    StrBuf sb;
+
+    sb_init(&sb, def_tv, UI_LINE_BUF);
+    sb_str(&sb, "Discours télévisé (");
+    sb_num(&sb, DEFENSE_TV_CP, 0);
+    sb_str(&sb, " CP)");
+    sb_init(&sb, def_neg, UI_LINE_BUF);
+    sb_str(&sb, "Négocier un appui (");
+    sb_num(&sb, DEFENSE_NEGOCIER_CP, 0);
+    sb_str(&sb, " CP)");
     def_items[I_TV] = def_tv;
     def_items[I_SACRIFICE] = "Sacrifier un ministre";
     def_items[I_NEGOCIER] = def_neg;
@@ -96,8 +93,8 @@ static void apply_defense(u8 d, u8 group)
 {
     Country *c = &g_game.country;
     u16 vb = votes_now();
-    u16 sb2 = sim_impeach_senate_votes(c);
-    u8 sb = c->gauges[JAUGE_SCANDALE];
+    u16 sv0 = sim_impeach_senate_votes(c);
+    u8 sc0 = c->gauges[JAUGE_SCANDALE];
     u8 db = c->gauges[JAUGE_DEFIANCE];
 
     if (!sim_defend(c, d, group)) {
@@ -109,16 +106,15 @@ static void apply_defense(u8 d, u8 group)
     {
         static const char *const lab[4] = { "Scandale  ", "Défiance  ", "Assemblée ", "Sénat     " };
         u16 before[4], after[4];
-        before[0] = sb; after[0] = c->gauges[JAUGE_SCANDALE];
+        before[0] = sc0; after[0] = c->gauges[JAUGE_SCANDALE];
         before[1] = db; after[1] = c->gauges[JAUGE_DEFIANCE];
         before[2] = vb; after[2] = votes_now();
-        before[3] = sb2; after[3] = sim_impeach_senate_votes(c);
+        before[3] = sv0; after[3] = sim_impeach_senate_votes(c);
         for (u8 i = 0; i < 4; i++) {
-            msg[i][0] = 0;
-            strcat(msg[i], lab[i]);
-            cat_num(msg[i], before[i]);
-            strcat(msg[i], " → ");
-            cat_num(msg[i], after[i]);
+            StrBuf sb;
+            sb_init(&sb, msg[i], UI_LINE_BUF);
+            sb_str(&sb, lab[i]);
+            sb_arrow(&sb, before[i], after[i], 0);
         }
     }
     msg_alert = sim_impeach_would_pass(c);
@@ -135,8 +131,9 @@ static void group_setup(void)
     grp_n = 0;
     for (u8 g = 0; g < GRP_COUNT; g++) {
         if (g == c->player_group) continue;
-        grp_label[grp_n][0] = 0;
-        strcat(grp_label[grp_n], grp_sigle[g]);
+        StrBuf sb;
+        sb_init(&sb, grp_label[grp_n], UI_LINE_BUF);
+        sb_str(&sb, grp_sigle[g]);
         grp_items[grp_n] = grp_label[grp_n];
         grp_id[grp_n] = g;
         grp_n++;
@@ -150,6 +147,7 @@ static void impeach_update(void)
     if (phase == P_INTRO) {
         if (input_pressed() & (INPUT_OK | INPUT_START)) {
             phase = P_MAIN;
+            quiet_next = TRUE;   // page suivante : redessin net
             dirty = TRUE;
         }
         return;
@@ -197,7 +195,7 @@ static void impeach_update(void)
 static void draw_top(void)
 {
     const Country *c = &g_game.country;
-    char buf[UI_LINE_BUF];
+    SB_LINE(sb);
     u16 v = votes_now();
     u16 sv = sim_impeach_senate_votes(c);
     u8 pass = sim_impeach_would_pass(c);
@@ -205,25 +203,24 @@ static void draw_top(void)
     ui_clear_rect(1, 8, 38, 6);
     ui_icon_draw(1, 8, UI_ICON_ASSEMBLY);
     ui_text_draw(3, 8, "Assemblée", UI_STYLE_DIM);
-    buf[0] = 0;
-    cat_num(buf, v);
-    strcat(buf, " / ");
-    cat_num(buf, SEATS_TOTAL);
-    strcat(buf, " (il en faut ");
-    cat_num(buf, IMPEACH_MAJORITY);
-    strcat(buf, ")");
-    ui_text_right(39, 8, buf, v >= IMPEACH_MAJORITY ? UI_STYLE_ALERT : UI_STYLE_TEXT);
+    sb_num(&sb, v, 0);
+    sb_str(&sb, " / ");
+    sb_num(&sb, SEATS_TOTAL, 0);
+    sb_str(&sb, " (il en faut ");
+    sb_num(&sb, IMPEACH_MAJORITY, 0);
+    sb_str(&sb, ")");
+    ui_text_right(39, 8, sb.buf, v >= IMPEACH_MAJORITY ? UI_STYLE_ALERT : UI_STYLE_TEXT);
     ui_gauge_draw(1, 9, 38, v, SEATS_TOTAL, v >= IMPEACH_MAJORITY ? UI_GAUGE_NEGATIVE : UI_GAUGE_POSITIVE);
     ui_icon_draw(1, 10, UI_ICON_ASSEMBLY);
     ui_text_draw(3, 10, "Sénat", UI_STYLE_DIM);
-    buf[0] = 0;
-    cat_num(buf, sv);
-    strcat(buf, " / ");
-    cat_num(buf, SENATE_SEATS);
-    strcat(buf, " (il en faut ");
-    cat_num(buf, SENATE_IMPEACH_MAJORITY);
-    strcat(buf, ")");
-    ui_text_right(39, 10, buf, sv >= SENATE_IMPEACH_MAJORITY ? UI_STYLE_ALERT : UI_STYLE_TEXT);
+    sb_init(&sb, sb_mem, SB_LINE_SIZE);
+    sb_num(&sb, sv, 0);
+    sb_str(&sb, " / ");
+    sb_num(&sb, SENATE_SEATS, 0);
+    sb_str(&sb, " (il en faut ");
+    sb_num(&sb, SENATE_IMPEACH_MAJORITY, 0);
+    sb_str(&sb, ")");
+    ui_text_right(39, 10, sb.buf, sv >= SENATE_IMPEACH_MAJORITY ? UI_STYLE_ALERT : UI_STYLE_TEXT);
     ui_gauge_draw(1, 11, 38, sv, SENATE_SEATS,
                   sv >= SENATE_IMPEACH_MAJORITY ? UI_GAUGE_NEGATIVE : UI_GAUGE_POSITIVE);
     ui_icon_draw(1, 12, pass ? UI_ICON_CROSS : UI_ICON_CHECK);
@@ -286,25 +283,26 @@ static void impeach_draw(void)
 {
     if (dirty) {
         dirty = FALSE;
-        art_reset();
+        if (quiet_next) art_reset_quiet();
+        else art_reset();
+        quiet_next = FALSE;
         ui_banner(0, 0, 40, "Procédure de destitution", TRUE);
         ui_icon_draw(37, 1, UI_ICON_SCANDAL);
         ui_window(0, 3, 40, 25);
         ui_text_wrap(1, 4, 38, 3, txt[TXT_DESTITUTION_PROCEDURE], UI_STYLE_TEXT);
         if (phase == P_INTRO) {
-            char buf[UI_LINE_BUF];
+            SB_LINE(sb);
             // Hémicycle illustré à gauche, président du Sénat (furieux) à droite.
             ui_art_draw_pal(ART_DECOR_HEMICYCLE, 4, 10, PAL3);
             ui_medallion(29, 9, UI_PORTRAIT_W, UI_PORTRAIT_H);
             ui_gueule_draw(GUEULE_SENAT_PRESIDENT, EXPR_FURIEUX, 29, 9, PAL2);
             ui_gueule_say(ui_gueule_talk_ms(txt[TXT_DESTITUTION_PROCEDURE]));
-            buf[0] = 0;
-            strcat(buf, "Scandale ");
-            cat_num(buf, g_game.country.gauges[JAUGE_SCANDALE]);
-            strcat(buf, " %   Défiance ");
-            cat_num(buf, g_game.country.gauges[JAUGE_DEFIANCE]);
-            strcat(buf, " %");
-            ui_text_center(1, 22, 38, buf, UI_STYLE_ALERT);
+            sb_str(&sb, "Scandale ");
+            sb_num(&sb, g_game.country.gauges[JAUGE_SCANDALE], 0);
+            sb_str(&sb, " %   Défiance ");
+            sb_num(&sb, g_game.country.gauges[JAUGE_DEFIANCE], 0);
+            sb_str(&sb, " %");
+            ui_text_center(1, 22, 38, sb.buf, UI_STYLE_ALERT);
             ui_footer(1, 26, 38, "A : préparer la défense");
             return;
         }
