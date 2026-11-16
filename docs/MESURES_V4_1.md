@@ -95,3 +95,33 @@ Relevé après correction (mêmes scénarios que plus haut ; PAL lu net, NTSC lu
 | Titre (sans sauvegarde) | 6,8 | 7 | 3 | 3 | 9 | 4 |
 
 **Conclusion.** Il y a de vraies images perdues, mais seulement sur les images qui redessinent un écran chargé après un appui (budget, électorats, hémicycle, titre) : 2 à 4 images en PAL, davantage en NTSC (images plus courtes). Les écrans légers sont à 0-2. Aucune optimisation « simple et sûre » n'a été faite : le coût réel de ces `draw()` n'est pas dans `M` et le détail (quelles écritures VDP) reste à profiler. Pistes : redessiner seulement la ligne modifiée au lieu du panneau entier (budget : `ui_clear_rect` + textes complets), étaler le dessin sur plusieurs images comme pour l'hémicycle (P7), ou passer par `DMA_QUEUE` plutôt que par des écritures CPU en plein affichage. Les `M` du tableau « Après P7 » ci-dessus sont à relire avec cette réserve ; la valeur de `L` sur console reste à mesurer.
+
+## R6 -Os (audit P9)
+
+**Montage.** `tools/sgdk_os.mk` inclut `makefile.gen` de SGDK et ajoute deux règles par fichier : `$(OUT)/src/screens/%.o: CFLAGS += -Os` et `$(OUT)/src/game/game.o: CFLAGS += -Os`. Le `Makefile` l'appelle (`DOCKER_REL`, `--entrypoint make ... -f /src/tools/sgdk_os.mk release`) pour `rom`, `rom-demo`, `rom-perf` et `rom-annee4` ; `make SCREENS_OS=0` revient au release SGDK standard (tout en -O3). Aucun `#pragma`, aucun fichier de `src/` touché.
+
+**Vérification de l'application.** La ligne de compilation (`make` sans silence) montre `-O3 ... -flto -ffat-lto-objects -Os` pour chaque `src/screens/*.c` et `game.c` ; le dernier niveau gagne. Avec la LTO, GCC conserve le niveau d'optimisation par fonction (attribut enregistré dans l'IR) : l'édition de liens sans `-O` ne les ré-optimise pas en -O3. Preuve dans `out/symbol.txt` : `_etext` passe de `0x5cae4` à `0x4f290` (-52 Ko), ce qui ne s'explique que par un code réellement compacté.
+
+**Taille** (taille de fonction = écart avec le symbole suivant, en octets) :
+
+| | -O3 (avant) | -Os (après) |
+|---|---|---|
+| `_etext` | 0x5cae4 (379 620) | 0x4f290 (324 240), -55 380 |
+| `game_update` | 13 890 | 1 758 |
+| `game_draw` | 5 818 | 4 882 |
+| `budget_draw` | 12 330 | 5 616 |
+| `election_init` | 5 558 | 228 |
+
+(Les écarts de `game_update` et `election_init` viennent aussi de l'inlining : en -Os, GCC n'incorpore plus ces fonctions dans leurs appelants.) La ROM reste à 1 179 648 o (arrondie par `sizebnd` à 128 Ko).
+
+**Fluidité** (`make rom-perf`, PAL, mêmes scénarios, capture à 9 s ; M en ms) :
+
+| Écran | -O3 M / L / P | -Os M / L / P |
+|---|---|---|
+| Tableau de bord | 0,8 / 0 / 0 | 0,5 / 0 / 0 |
+| Budget | 6,0 / 13 / 3 | 6,2 / 13 / 3 |
+| Électorats | 6,3 / 9 / 3 | 6,5 / 9 / 3 |
+| Vote | 8,0 / 16 / 4 | 8,0 / 16 / 4 |
+| Titre | 8,8 / 8 / 4 | 8,6 / 8 / 4 |
+
+**Verdict : -Os conservé.** Gain de 52 Ko de ROM, L et P identiques partout, M dans le bruit de lecture (±0,2 ms). Les images perdues observées ne viennent donc pas du calcul du processeur (cohérent avec l'enquête « Compteur L »). Vérification sur console à faire avant de clore la version.
