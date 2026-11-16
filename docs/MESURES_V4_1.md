@@ -63,3 +63,11 @@ Mêmes scénarios et même méthode (`make rom-perf`, BlastEm, M = maximum d'upd
 | Assemblée (hémicycle) | 23,0 ms | 9,0 ms | 24,8 ms | 10,0 ms |
 
 Objectif M < 16 ms atteint. Changements : table rang -> groupe construite en un parcours (plus de recherche par pixel pour les 577 sièges) ; tuiles générées 24 par image dans `ui_hemi_update` (tampon statique de 768 o + table de 577 o) et envoyées par `DMA_QUEUE`, au lieu des ≈ 170 envois CPU d'un coup ; palettes en `DMA_QUEUE` au changement d'état. L'hémicycle se complète en 7 images (≈ 120 ms), pendant le fondu d'entrée ; le résultat final est identique au pixel près (`shots_compare` : 2 captures identiques, vote et Assemblée). Le compteur `L` reste à 16-27 comme sur les écrans légers : il vient du tour de boucle hors update + draw ou de l'hôte, pas de l'hémicycle. RAM statique : 7 936 o.
+
+## Correctif P7 : tuiles parasites au fondu d'entrée (`ui_hemi.c`)
+
+Défaut : la carte de tuiles (tilemap) était posée tuile par tuile pendant la génération (24 par image), donc le fondu d'entrée montrait un demi-cercle en construction avec des tuiles non prêtes (couleurs aberrantes) sur 1 à 2 images. Correctif : la carte n'est posée (`place_map`) qu'à l'image suivant l'envoi du dernier lot de tuiles (le DMA a eu lieu au vblank entre-temps) ; `ui_hemi_update` ne signale « terminé » qu'ensuite. Aucune tuile non prête n'est donc visible : l'hémicycle apparaît d'un bloc, ≈ 7 images après l'entrée dans l'écran.
+
+Mesures (`make rom-perf`, vote et Assemblée) : vote PAL M 9,1 ms, NTSC M 9,0 ms ; Assemblée PAL M 9,1 ms, NTSC M 10,0 ms. Gain de P7 conservé (M < 16 ms). Captures fines 4,5 à 5 s du script `w20 A w10 A w10 A w30` : plus de tuiles parasites ; rendu final inchangé (même génération, même carte). La dissolution utilise le même `ui_hemi_draw` : non capturée séparément.
+
+Note : `UI_HEMI_SENATE` n'est appelé par aucun écran (code mort probable), conservé.
