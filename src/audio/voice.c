@@ -36,12 +36,6 @@ static bool voice_start(void)
     return TRUE;
 }
 
-void voice_preview(void)
-{
-    if (!s_off)
-        voice_start();
-}
-
 bool voice_play_intro_once(void)
 {
     if (s_done) return FALSE;

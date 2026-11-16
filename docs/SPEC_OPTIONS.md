@@ -415,7 +415,7 @@ RAM : 6 octets de valeurs + 1 drapeau.
   une liste à trous).
 - `src/screens/scr_options.c` + `options_open(ScreenId return_to)` ; `SCREEN_OPTIONS` dans
   `ScreenId`, enregistré dans `main.c`.
-- **Démarrage** : dans `screen_run()` (`screen.c`), juste après `sfx_init()` et `music_init()` et
+- **Démarrage** : dans `main()` (`main.c`, avant `screen_run()`), juste après `sfx_init()` et `music_init()` et
   **avant** l'init du premier écran : `sram_settings_load()` puis `settings_apply_all()`. Sinon « For
   sure ! » partirait avant la lecture du réglage Voix.
 

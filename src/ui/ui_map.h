@@ -50,8 +50,6 @@ void ui_map_set_region_level(u8 region, s16 value, s16 min, s16 max);
 // le bleu est celui de UI_GAUGE_NEUTRAL (légende de la carte), le jaune ne change pas.
 #define UI_MAP_LOW_CB  ((2 << 5) | (7 << 1) | (0 << 9))  // orangé (7,2,0)
 #define UI_MAP_HIGH_CB ((3 << 5) | (1 << 1) | (7 << 9))  // bleu (1,3,7)
-// Couleur neutre (aucune donnée) pour une région.
-void ui_map_clear_region(u8 region);
 // Région mise en évidence par un clignotement blanc (REGION_NONE : aucune).
 // ui_map_update() doit être appelé à chaque image pour animer le clignotement.
 void ui_map_highlight(u8 region);

@@ -44,7 +44,10 @@ void screen_change(ScreenId id);
 ScreenId screen_current(void);
 // Millisecondes écoulées depuis l'entrée dans l'écran courant (PAL = NTSC).
 u32 screen_time_ms(void);
-// Boucle principale : initialise ui et manette, entre dans « first », ne revient pas.
+// Rappel appelé à chaque entrée dans un écran, juste après son init() (musique, etc.).
+void screen_set_enter_hook(void (*hook)(ScreenId id));
+// Boucle principale : entre dans « first », ne revient pas. L'appelant a déjà fait
+// ui_init(), input_init(), sfx_init(), music_init() et appliqué les réglages (main.c).
 void screen_run(ScreenId first);
 
 #endif

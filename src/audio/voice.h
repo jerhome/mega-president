@@ -13,8 +13,6 @@ bool voice_play_intro_once(void);
 bool voice_busy(void);
 // Réglage « Voix » (Options). Coupée : voice_play_intro_once ne joue rien (et renvoie FALSE).
 void voice_set_enabled(bool on);
-// « For sure ! » à la demande (aperçu du réglage), canal 3.
-void voice_preview(void);
 
 
 // --- Charabia des personnages (4.18) ---

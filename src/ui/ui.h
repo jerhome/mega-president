@@ -245,8 +245,6 @@ s16 ui_confirm_update(void);
 #define UI_FADE_IN_MS    220   // apparition du nouvel écran
 #define UI_SOFT_MS       150   // apparition douce après un redessin complet (ui_clear)
 
-// Annule l'apparition douce demandée par ui_clear (redessin sans effet).
-void ui_soft_cancel(void);
 // Rejoue l'apparition douce de l'écran affiché (aperçu du réglage « Transitions »).
 void ui_soft_replay(void);
 

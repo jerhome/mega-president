@@ -66,15 +66,6 @@ void ui_map_close(void)
     PAL_setPalette(MAP_PAL, pal_ui_dim.data, DMA);
 }
 
-void ui_map_clear_region(u8 region)
-{
-    if (region >= REGION_COUNT)
-        return;
-    region_color[region] = pal_map.data[1 + region];
-    if (region != selected)
-        apply(region, region_color[region]);
-}
-
 void ui_map_set_region_level(u8 region, s16 value, s16 min, s16 max)
 {
     s32 t;   // 0..255

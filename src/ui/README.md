@@ -106,10 +106,10 @@ planches agrandies.
 API (`ui_art.c` est le seul fichier qui touche VDP/PAL pour les illustrations) :
 - `ui_art_draw(id, x, y)` : dessine sur le **plan B**, palette dans **PAL2** ;
   `ui_art_draw_pal(id, x, y, PAL2|PAL3)` choisit la ligne (toute autre valeur → PAL2).
-- `ui_art_size(id, &w, &h)` (en tuiles), `ui_art_erase(id, x, y)` (efface le plan B).
+- `ui_art_size(id, &w, &h)` (en tuiles).
 - **Gueules V3** : `ui_gueule_draw(GueuleId, Expr, x, y, PAL2|PAL3)` (10 × 12 tuiles,
   80 × 96 px, une palette par personnage), `ui_gueule_expr` (change l'expression :
-  `EXPR_NEUTRE`, `EXPR_CONTENT`, `EXPR_FURIEUX`, `EXPR_GENE`), `ui_gueule_erase`.
+  `EXPR_NEUTRE`, `EXPR_CONTENT`, `EXPR_FURIEUX`, `EXPR_GENE`).
   Raccourcis : `GUEULE_PRES(ORIENT_*)`, `GUEULE_PM(PM_*)`, `GUEULE_COHAB(camp)`,
   `GUEULE_CAND(CAND_*)`, `GUEULE_CHEF(GRP_*)`, `GUEULE_MIN(i)`. Les anciens portraits
   56 × 56 (`ART_PRES_*`, `ART_PM_*`, `ART_COHAB_*`, `ART_CAND_ROUVIERE…`) sont retirés.
@@ -120,7 +120,7 @@ API (`ui_art.c` est le seul fichier qui touche VDP/PAL pour les illustrations) :
   `ui_gueule_talk_ms(texte)` donne une durée selon la longueur de la réplique.
   Mise à jour par `screen.c` (`ui_gueule_anim_update`), suspendue pendant les fondus et
   sous une boîte de message ; arrêt automatique si le visage est recouvert (fenêtre,
-  `ui_clear`, `ui_gueule_erase`, illustration, carte) ou à `ui_art_close`.
+  `ui_clear`, illustration, carte) ou à `ui_art_close`.
   VRAM : une planche d'animation (≈ 15 à 30 tuiles) chargée à la première image animée.
 - Cadre : `ui_medallion(x, y, UI_PORTRAIT_W, UI_PORTRAIT_H)` pose un cadre doré sur le
   pourtour de la gueule (plan A) et un fond sombre (plan B) avant le dessin.
